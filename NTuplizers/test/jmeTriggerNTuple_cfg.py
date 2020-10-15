@@ -49,6 +49,11 @@ opts.register('reco', 'HLT_TRKv06_TICL',
               vpo.VarParsing.varType.string,
               'keyword defining reconstruction methods for JME inputs')
 
+opts.register('onlyTriggerResultsInNTuple', False,
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.bool,
+              'store only the trigger-results booleans in the output NTuple')
+
 opts.register('trkdqm', False,
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.bool,
@@ -91,22 +96,6 @@ elif opt_reco == 'HLT_TRKv06':      from JMETriggerAnalysis.Common.configs.hltPh
 elif opt_reco == 'HLT_TRKv06_TICL': from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06_TICL_cfg import cms, process
 else:
    raise RuntimeError('invalid argument for option "reco": "'+opt_reco+'"')
-
-###
-### analysis sequence
-###
-#process.analysisCollectionsSequence = cms.Sequence()
-#
-### Muons
-#process.load('JMETriggerAnalysis.NTuplizers.userMuons_cff')
-#process.analysisCollectionsSequence *= process.userMuonsSequence
-#
-### Electrons
-#process.load('JMETriggerAnalysis.NTuplizers.userElectrons_cff')
-#process.analysisCollectionsSequence *= process.userElectronsSequence
-#
-#process.analysisCollectionsPath = cms.Path(process.analysisCollectionsSequence)
-#process.schedule.extend([process.analysisCollectionsPath])
 
 ## JMETrigger NTuple
 process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
@@ -310,6 +299,27 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
 process.analysisNTupleEndPath = cms.EndPath(process.JMETriggerNTuple)
 process.schedule.extend([process.analysisNTupleEndPath])
+
+if opts.onlyTriggerResultsInNTuple:
+   # reset input collections
+   process.JMETriggerNTuple.doubles = cms.PSet()
+   process.JMETriggerNTuple.recoVertexCollections = cms.PSet()
+   process.JMETriggerNTuple.l1tPFCandidateCollections = cms.PSet()
+   process.JMETriggerNTuple.recoPFCandidateCollections = cms.PSet()
+   process.JMETriggerNTuple.patPackedCandidateCollections = cms.PSet()
+   process.JMETriggerNTuple.recoGenJetCollections = cms.PSet()
+   process.JMETriggerNTuple.l1tPFJetCollections = cms.PSet()
+   process.JMETriggerNTuple.recoCaloJetCollections = cms.PSet()
+   process.JMETriggerNTuple.recoPFClusterJetCollections = cms.PSet()
+   process.JMETriggerNTuple.recoPFJetCollections = cms.PSet()
+   process.JMETriggerNTuple.patJetCollections = cms.PSet()
+   process.JMETriggerNTuple.recoGenMETCollections = cms.PSet()
+   process.JMETriggerNTuple.recoCaloMETCollections = cms.PSet()
+   process.JMETriggerNTuple.recoPFClusterMETCollections = cms.PSet()
+   process.JMETriggerNTuple.recoPFMETCollections = cms.PSet()
+   process.JMETriggerNTuple.patMETCollections = cms.PSet()
+   process.JMETriggerNTuple.patMuonCollections = cms.PSet()
+   process.JMETriggerNTuple.patElectronCollections = cms.PSet()
 
 # update process.GlobalTag.globaltag
 if opts.globalTag is not None:
@@ -558,3 +568,9 @@ if opts.verbosity > 0:
    print 'process.maxEvents =', process.maxEvents.dumpPython()
    print 'process.options =', process.options.dumpPython()
    print '-------------------------------'
+
+
+for _mod in process.MC_JME_v1.moduleNames():
+    print _mod
+
+remove all other modules
