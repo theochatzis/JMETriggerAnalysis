@@ -225,12 +225,16 @@ def customise_hltPhase2_scheduleJMETriggers(process):
     )
 
     ## sequence: AK4 Jets, PFCHS
-    process.HLTAK4PFCHSJetsReconstruction = cms.Sequence(
-        process.particleFlowPtrs
+    process.HLTParticleFlowCHSSequence = cms.Sequence(
+        process.HLTParticleFlowSequence
+      + process.particleFlowPtrs
       + process.goodOfflinePrimaryVertices
       + process.pfPileUpJME
       + process.pfNoPileUpJME
-      + process.hltAK4PFCHSJets
+    )
+
+    process.HLTAK4PFCHSJetsReconstruction = cms.Sequence(
+        process.hltAK4PFCHSJets
       + process.hltAK4PFCHSJetCorrectorL1
       + process.hltAK4PFCHSJetCorrectorL2
       + process.hltAK4PFCHSJetCorrectorL3
@@ -241,11 +245,7 @@ def customise_hltPhase2_scheduleJMETriggers(process):
 
 #    ## sequence: AK8 Jets, PFCHS
 #    process.HLTAK8PFCHSJetsReconstruction = cms.Sequence(
-#        process.particleFlowPtrs
-#      + process.goodOfflinePrimaryVertices
-#      + process.pfPileUpJME
-#      + process.pfNoPileUpJME
-#      + process.hltAK8PFCHSJets
+#        process.hltAK8PFCHSJets
 #      + process.hltAK8PFCHSJetCorrectorL1
 #      + process.hltAK8PFCHSJetCorrectorL2
 #      + process.hltAK8PFCHSJetCorrectorL3
@@ -403,7 +403,7 @@ def customise_hltPhase2_scheduleJMETriggers(process):
 
     process.HLT_AK4PFCHSJet550_v1 = cms.Path(
         process.l1tSingleAK4PFPuppiJet130
-      + process.HLTParticleFlowSequence
+      + process.HLTParticleFlowCHSSequence
       + process.HLTAK4PFCHSJetsReconstruction
       + process.hltSingleAK4PFCHSJet550
     )
@@ -442,7 +442,7 @@ def customise_hltPhase2_scheduleJMETriggers(process):
 
     process.HLT_PFCHSMET250_v1 = cms.Path(
         process.l1tPFPuppiMET100
-      + process.HLTParticleFlowSequence
+      + process.HLTParticleFlowCHSSequence
       + process.HLTPFCHSMETReconstruction
       + process.hltPFCHSMET250
     )
@@ -487,22 +487,22 @@ def customise_hltPhase2_scheduleJMETriggers(process):
     process.schedule_().extend([
       process.MC_JME_v1,
 
-      process.L1T_AK4PFPuppiJet130_v1,
-      process.HLT_AK4PFJet550_v1,
-      process.HLT_AK4PFCHSJet550_v1,
-      process.HLT_AK4PFPuppiJet550_v1,
-
-      process.L1T_PFPuppiHT440_v1,
-      process.HLT_PFPuppiHT1050_v1,
-
-      process.L1T_PFPuppiMET100_v1,
-      process.HLT_PFMET250_v1,
-      process.HLT_PFCHSMET250_v1,
-      process.HLT_PFPuppiMET250_v1,
-
-      process.HLT_PFPuppiMET120_v1,
-      process.HLT_PFPuppiMET120_PFPuppiMHT120_v1,
-      process.HLT_PFPuppiMET120_PFPuppiMHT120_PFPuppiHT60_v1,
+#      process.L1T_AK4PFPuppiJet130_v1,
+#      process.HLT_AK4PFJet550_v1,
+#      process.HLT_AK4PFCHSJet550_v1,
+#      process.HLT_AK4PFPuppiJet550_v1,
+#
+#      process.L1T_PFPuppiHT440_v1,
+#      process.HLT_PFPuppiHT1050_v1,
+#
+#      process.L1T_PFPuppiMET100_v1,
+#      process.HLT_PFMET250_v1,
+#      process.HLT_PFCHSMET250_v1,
+#      process.HLT_PFPuppiMET250_v1,
+#
+#      process.HLT_PFPuppiMET120_v1,
+#      process.HLT_PFPuppiMET120_PFPuppiMHT120_v1,
+#      process.HLT_PFPuppiMET120_PFPuppiMHT120_PFPuppiHT60_v1,
     ])
 
     return process
