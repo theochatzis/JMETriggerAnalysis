@@ -152,7 +152,7 @@ def customise_hltPhase2_common(process):
     if not hasattr(process, 'CondDB'):
       process.load('CondCore.CondDB.CondDB_cfi')
 
-    process.CondDB.connect = 'sqlite_file:/afs/cern.ch/user/t/tomei/public/L1TObjScaling.db'
+    process.CondDB.connect = 'sqlite_file:L1TObjScaling.db'
 
     process.L1TScalingESSource = cms.ESSource('PoolDBESSource',
       process.CondDB,
