@@ -1,5 +1,12 @@
 #!/bin/bash
 
+OUTDIR=${CMSSW_BASE}/src/JMETriggerAnalysis/Common/python/configs
+
+if [ ! -d ${OUTDIR} ]; then
+  printf "%s\n" ">> invalid target directory: ${OUTDIR}"
+  exit 1
+fi
+
 recos=(
  TRKv00
  TRKv00_TICL
@@ -9,8 +16,6 @@ recos=(
  TRKv06_TICL
  TRKv06p1
  TRKv06p1_TICL
- TRKv06p3
- TRKv06p3_TICL
  TRKv07p2
  TRKv07p2_TICL
 )
@@ -18,7 +23,7 @@ recos=(
 for reco_i in "${recos[@]}"; do
   cmsDriver.py step3 \
     --geometry Extended2026D49 --era Phase2C9 \
-    --conditions 111X_mcRun4_realistic_T15_v4 \
+    --conditions 111X_mcRun4_realistic_T15_v5 \
     --processName RECO2 \
     --step RAW2DIGI,RECO \
     --eventcontent RECO \
@@ -31,6 +36,8 @@ for reco_i in "${recos[@]}"; do
     -n 10 \
     --customise SLHCUpgradeSimulations/Configuration/aging.customise_aging_1000,Configuration/DataProcessing/Utils.addMonitoring \
     --customise JMETriggerAnalysis/Common/customizeHLTForPhase2.customise_hltPhase2_scheduleJMETriggers_${reco_i} \
-    --python_filename hltPhase2_${reco_i}_cfg.py
+    --python_filename ${OUTDIR}/hltPhase2_${reco_i}_cfg.py
 done
-unset reco_i recos
+unset reco_i
+
+unset OUTDIR recos
