@@ -1,7 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
-
 from JMETriggerAnalysis.Common.hltPhase2_L1T import customise_hltPhase2_L1T
 from JMETriggerAnalysis.Common.hltPhase2_TRKv00 import customise_hltPhase2_TRKv00
 from JMETriggerAnalysis.Common.hltPhase2_TRKv02 import customise_hltPhase2_TRKv02
