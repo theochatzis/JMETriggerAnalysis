@@ -24,7 +24,7 @@ for reco_i in "${recos[@]}"; do
   cmsDriver.py step3 \
     --geometry Extended2026D49 --era Phase2C9 \
     --conditions 111X_mcRun4_realistic_T15_v5 \
-    --processName RECO2 \
+    --processName HLTX \
     --step RAW2DIGI,RECO \
     --eventcontent RECO \
     --datatier RECO \

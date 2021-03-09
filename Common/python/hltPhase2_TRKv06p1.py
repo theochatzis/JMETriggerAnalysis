@@ -137,7 +137,7 @@ def customise_hltPhase2_TRKv06p1(process):
             value1 = cms.double(200.0),
             value2 = cms.double(50.0)
         ),
-        mightGet = cms.untracked.vstring('IntermediateHitDoublets_pixelTracksHitDoublets__RECO2'),
+        mightGet = cms.untracked.vstring('IntermediateHitDoublets_pixelTracksHitDoublets__HLTX'),
         useBendingCorrection = cms.bool(True)
     )
 
@@ -146,10 +146,7 @@ def customise_hltPhase2_TRKv06p1(process):
         Filter = cms.InputTag("pixelTrackFilterByKinematics"),
         Fitter = cms.InputTag("pixelFitterByHelixProjections"),
         SeedingHitSets = cms.InputTag("pixelTracksHitSeeds"),
-        mightGet = cms.untracked.vstring(
-            '',
-            'RegionsSeedingHitSets_pixelTracksHitSeeds__RECO2'
-        ),
+        mightGet = cms.untracked.vstring('RegionsSeedingHitSets_pixelTracksHitSeeds__HLTX'),
         passLabel = cms.string('pixelTracks')
     )
 
@@ -453,10 +450,7 @@ def customise_hltPhase2_TRKv06p1(process):
             value1 = cms.double(100),
             value2 = cms.double(6)
         ),
-        mightGet = cms.untracked.vstring(
-            'IntermediateHitDoublets_highPtTripletStepHitDoublets__RECO',
-            'IntermediateHitDoublets_highPtTripletStepHitDoublets__RECO2'
-        ),
+        mightGet = cms.untracked.vstring('IntermediateHitDoublets_highPtTripletStepHitDoublets__HLTX'),
         useBendingCorrection = cms.bool(True)
     )
 
@@ -470,10 +464,7 @@ def customise_hltPhase2_TRKv06p1(process):
         TTRHBuilder = cms.string('WithTrackAngle'),
         forceKinematicWithRegionDirection = cms.bool(False),
         magneticField = cms.string(''),
-        mightGet = cms.untracked.vstring(
-            'RegionsSeedingHitSets_highPtTripletStepHitTriplets__RECO',
-            'RegionsSeedingHitSets_highPtTripletStepHitTriplets__RECO2'
-        ),
+        mightGet = cms.untracked.vstring('RegionsSeedingHitSets_highPtTripletStepHitTriplets__HLTX'),
         propagator = cms.string('PropagatorWithMaterial'),
         seedingHitSets = cms.InputTag("highPtTripletStepHitTriplets")
     )

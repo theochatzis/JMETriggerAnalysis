@@ -250,10 +250,7 @@ def customise_hltPhase2_TRKv00(process):
             value1 = cms.double(200),
             value2 = cms.double(50)
         ),
-        mightGet = cms.untracked.vstring(
-            'IntermediateHitDoublets_initialStepHitDoublets__RECO',
-            'IntermediateHitDoublets_initialStepHitDoublets__RECO'
-        ),
+        mightGet = cms.untracked.vstring('IntermediateHitDoublets_initialStepHitDoublets__HLTX'),
         useBendingCorrection = cms.bool(True)
     )
 
@@ -272,10 +269,7 @@ def customise_hltPhase2_TRKv00(process):
         TTRHBuilder = cms.string('WithTrackAngle'),
         forceKinematicWithRegionDirection = cms.bool(False),
         magneticField = cms.string(''),
-        mightGet = cms.untracked.vstring(
-            'RegionsSeedingHitSets_initialStepHitQuadruplets__RECO',
-            'RegionsSeedingHitSets_initialStepHitQuadruplets__RECO'
-        ),
+        mightGet = cms.untracked.vstring('RegionsSeedingHitSets_initialStepHitQuadruplets__HLTX'),
         propagator = cms.string('PropagatorWithMaterial'),
         seedingHitSets = cms.InputTag("initialStepHitQuadruplets")
     )
@@ -706,10 +700,7 @@ def customise_hltPhase2_TRKv00(process):
         TTRHBuilder = cms.string('WithTrackAngle'),
         forceKinematicWithRegionDirection = cms.bool(False),
         magneticField = cms.string(''),
-        mightGet = cms.untracked.vstring(
-            'RegionsSeedingHitSets_pixelPairStepHitDoublets__RECO',
-            'RegionsSeedingHitSets_pixelPairStepHitDoublets__RECO'
-        ),
+        mightGet = cms.untracked.vstring('RegionsSeedingHitSets_pixelPairStepHitDoublets__HLTX'),
         propagator = cms.string('PropagatorWithMaterial'),
         seedingHitSets = cms.InputTag("pixelPairStepHitDoublets")
     )
@@ -974,10 +965,7 @@ def customise_hltPhase2_TRKv00(process):
         TTRHBuilder = cms.string('WithTrackAngle'),
         forceKinematicWithRegionDirection = cms.bool(False),
         magneticField = cms.string(''),
-        mightGet = cms.untracked.vstring(
-            'RegionsSeedingHitSets_detachedQuadStepHitQuadruplets__RECO',
-            'RegionsSeedingHitSets_detachedQuadStepHitQuadruplets__RECO'
-        ),
+        mightGet = cms.untracked.vstring('RegionsSeedingHitSets_detachedQuadStepHitQuadruplets__HLTX'),
         propagator = cms.string('PropagatorWithMaterial'),
         seedingHitSets = cms.InputTag("detachedQuadStepHitQuadruplets")
     )
@@ -1000,10 +988,7 @@ def customise_hltPhase2_TRKv00(process):
             value1 = cms.double(500),
             value2 = cms.double(100)
         ),
-        mightGet = cms.untracked.vstring(
-            'IntermediateHitDoublets_detachedQuadStepHitDoublets__RECO',
-            'IntermediateHitDoublets_detachedQuadStepHitDoublets__RECO'
-        ),
+        mightGet = cms.untracked.vstring('IntermediateHitDoublets_detachedQuadStepHitDoublets__HLTX'),
         useBendingCorrection = cms.bool(True)
     )
 
@@ -1222,10 +1207,7 @@ def customise_hltPhase2_TRKv00(process):
         TTRHBuilder = cms.string('WithTrackAngle'),
         forceKinematicWithRegionDirection = cms.bool(False),
         magneticField = cms.string(''),
-        mightGet = cms.untracked.vstring(
-            'RegionsSeedingHitSets_lowPtTripletStepHitTriplets__RECO',
-            'RegionsSeedingHitSets_lowPtTripletStepHitTriplets__RECO'
-        ),
+        mightGet = cms.untracked.vstring('RegionsSeedingHitSets_lowPtTripletStepHitTriplets__HLTX'),
         propagator = cms.string('PropagatorWithMaterial'),
         seedingHitSets = cms.InputTag("lowPtTripletStepHitTriplets")
     )
@@ -1248,10 +1230,7 @@ def customise_hltPhase2_TRKv00(process):
             value1 = cms.double(70),
             value2 = cms.double(8)
         ),
-        mightGet = cms.untracked.vstring(
-            'IntermediateHitDoublets_lowPtTripletStepHitDoublets__RECO',
-            'IntermediateHitDoublets_lowPtTripletStepHitDoublets__RECO'
-        ),
+        mightGet = cms.untracked.vstring('IntermediateHitDoublets_lowPtTripletStepHitDoublets__HLTX'),
         useBendingCorrection = cms.bool(True)
     )
 
@@ -1467,10 +1446,7 @@ def customise_hltPhase2_TRKv00(process):
         TTRHBuilder = cms.string('WithTrackAngle'),
         forceKinematicWithRegionDirection = cms.bool(False),
         magneticField = cms.string(''),
-        mightGet = cms.untracked.vstring(
-            'RegionsSeedingHitSets_lowPtQuadStepHitQuadruplets__RECO',
-            'RegionsSeedingHitSets_lowPtQuadStepHitQuadruplets__RECO'
-        ),
+        mightGet = cms.untracked.vstring('RegionsSeedingHitSets_lowPtQuadStepHitQuadruplets__HLTX'),
         propagator = cms.string('PropagatorWithMaterial'),
         seedingHitSets = cms.InputTag("lowPtQuadStepHitQuadruplets")
     )
@@ -1495,10 +1471,7 @@ def customise_hltPhase2_TRKv00(process):
             value1 = cms.double(1000),
             value2 = cms.double(150)
         ),
-        mightGet = cms.untracked.vstring(
-            'IntermediateHitDoublets_lowPtQuadStepHitDoublets__RECO',
-            'IntermediateHitDoublets_lowPtQuadStepHitDoublets__RECO'
-        ),
+        mightGet = cms.untracked.vstring('IntermediateHitDoublets_lowPtQuadStepHitDoublets__HLTX'),
         useBendingCorrection = cms.bool(True)
     )
 
@@ -1717,10 +1690,7 @@ def customise_hltPhase2_TRKv00(process):
         TTRHBuilder = cms.string('WithTrackAngle'),
         forceKinematicWithRegionDirection = cms.bool(False),
         magneticField = cms.string(''),
-        mightGet = cms.untracked.vstring(
-            'RegionsSeedingHitSets_highPtTripletStepHitTriplets__RECO',
-            'RegionsSeedingHitSets_highPtTripletStepHitTriplets__RECO'
-        ),
+        mightGet = cms.untracked.vstring('RegionsSeedingHitSets_highPtTripletStepHitTriplets__HLTX'),
         propagator = cms.string('PropagatorWithMaterial'),
         seedingHitSets = cms.InputTag("highPtTripletStepHitTriplets")
     )
@@ -1743,10 +1713,7 @@ def customise_hltPhase2_TRKv00(process):
             value1 = cms.double(100),
             value2 = cms.double(6)
         ),
-        mightGet = cms.untracked.vstring(
-            'IntermediateHitDoublets_highPtTripletStepHitDoublets__RECO',
-            'IntermediateHitDoublets_highPtTripletStepHitDoublets__RECO'
-        ),
+        mightGet = cms.untracked.vstring('IntermediateHitDoublets_highPtTripletStepHitDoublets__HLTX'),
         useBendingCorrection = cms.bool(True)
     )
 
@@ -1934,32 +1901,6 @@ def customise_hltPhase2_TRKv00(process):
         process.ecalUncalibRecHitSequence +
         process.ecalRecHit
     )
-
-    #cmssw_10_6
-    # process.dtlocalreco = cms.Sequence(
-    #     process.dt1DRecHits +
-    #     process.dt4DSegments
-    #     #dt1DCosmicRecHits +
-    #     #dt4DCosmicSegments
-    # )
-
-    #cmssw_10_6
-    # process.me0LocalReco = cms.Sequence(
-    #     process.me0RecHits +
-    #     process.me0Segments
-    # )
-
-    #cmssw_10_6
-    # process.csclocalreco = cms.Sequence(
-    #     process.csc2DRecHits +
-    #     process.cscSegments
-    # )
-
-    #cmssw_10_6
-    # process.gemLocalReco = cms.Sequence(
-    #     process.gemRecHits +
-    #     process.gemSegments
-    # )
 
     process.muonLocalReco = cms.Sequence(
         process.dtlocalreco +  #not in the clean config
