@@ -200,20 +200,20 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   TriggerResultsCollections = cms.vstring(
     'MC_JME',
     'L1T_SinglePFPuppiJet200off',
-    'HLT_AK4PFJet550',
-    'HLT_AK4PFCHSJet550',
-    'HLT_AK4PFPuppiJet550',
+    'HLT_AK4PFJet520',
+    'HLT_AK4PFCHSJet520',
+    'HLT_AK4PFPuppiJet520',
     'L1T_PFPuppiHT450off',
-    'HLT_PFPuppiHT1050',
+    'HLT_PFPuppiHT1070',
     'L1T_PFPuppiMET200off',
     'L1T_PFPuppiMET245off',
     'HLT_PFMET250',
     'HLT_PFCHSMET250',
     'HLT_PFPuppiMET250',
-    'HLT_PFPuppiMET120',
-    'HLT_PFPuppiMET120_PFPuppiMHT120',
-    'HLT_PFPuppiMET120_PFPuppiMHT120_PFPuppiHT60',
-    'HLT_PFPuppiMETTypeOne120_PFPuppiMHT120',
+    'HLT_PFPuppiMET140',
+    'HLT_PFPuppiMET140_PFPuppiMHT140',
+    'HLT_PFPuppiMET140_PFPuppiMHT140_PFPuppiHT60',
+    'HLT_PFPuppiMETTypeOne140_PFPuppiMHT140',
   ),
 
   fillCollectionConditions = cms.PSet(),
@@ -433,9 +433,9 @@ process.schedule_().extend([process.analysisNTupleEndPath])
 #
 #process.setSchedule_(cms.Schedule(
 #  process.l1tReconstructionPath,
-#  process.HLT_AK4PFPuppiJet550,
-#  process.HLT_PFPuppiHT1050,
-#  process.HLT_PFPuppiMET250,
+#  process.HLT_AK4PFPuppiJet520,
+#  process.HLT_PFPuppiHT1070,
+#  process.HLT_PFPuppiMET140_PFPuppiMHT140,
 #))
 
 # JMETriggerNTuple: save only TriggerResults
