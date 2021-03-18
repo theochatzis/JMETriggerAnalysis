@@ -1,0 +1,15 @@
+*~
+*.root
+!*/data/*.root
+*.png
+*.pdf
+*.txt
+*.log
+*.pyc
+*.d
+*.so
+*.tar.gz
+*.zip
+bin/
+obj/
+lib/
