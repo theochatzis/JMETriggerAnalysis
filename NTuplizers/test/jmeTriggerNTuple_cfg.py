@@ -144,6 +144,7 @@ else:
 ### analysis sequence
 ###
 process.schedule_().append(process.MC_JME)
+process.schedule_().append(process.MC_JME_Others)
 
 ## JMETrigger NTuple
 from JMETriggerAnalysis.Common.multiplicityValueProducerFromNestedCollectionEdmNewDetSetVectorSiPixelClusterDouble_cfi\

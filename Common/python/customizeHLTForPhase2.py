@@ -251,6 +251,7 @@ def customise_hltPhase2_redefineReconstructionSequences(process, useL1T=True, TR
     return process
 
 def customise_hltPhase2_scheduleHLTJMERecoWithoutFilters(process):
+    # include all JME collections (incl. non-baseline objects)
     process.HLTJMESequence = cms.Sequence(
         process.HLTCaloMETReconstruction
 #     + process.HLTCaloJetsReconstruction
@@ -274,21 +275,6 @@ def customise_hltPhase2_scheduleHLTJMERecoWithoutFilters(process):
     return process
 
 def customise_hltPhase2_scheduleJMETriggers(process):
-    ## sequence: HLT-JME objects (without filters)
-    ## (kept for now to study object performance without preselections)
-    process.HLTJMESequence = cms.Sequence(
-        process.HLTCaloMETReconstruction
-#     + process.HLTCaloJetsReconstruction
-      + process.HLTPFClusterJMEReconstruction
-      + process.HLTAK4PFJetsReconstruction
-      + process.HLTAK8PFJetsReconstruction
-      + process.HLTPFJetsCHSReconstruction
-      + process.HLTPFMETsReconstruction
-      + process.HLTPFCHSMETReconstruction
-      + process.HLTPFSoftKillerMETReconstruction
-      + process.HLTPFPuppiJMEReconstruction
-    )
-
     ## sequence: ParticleFlow
     process.HLTParticleFlowSequence = cms.Sequence(
         process.RawToDigi
@@ -474,11 +460,30 @@ def customise_hltPhase2_scheduleJMETriggers(process):
     process.hltPFPuppiMETTypeOne140 = _hltPFMET200.clone(inputTag = 'hltPFPuppiMETTypeOne', MinPt = 140.)
 
     ## Trigger Paths
+
+    ## Path: MC_JME
+    ## - unfiltered path with baseline JME objects in the HLT menu (PF+PUPPI)
     process.MC_JME = cms.Path(
         process.HLTParticleFlowSequence
-      + process.HLTJMESequence
+      + process.HLTPFPuppiJMEReconstruction
       + process.hltPFPuppiHT
       + process.hltPFPuppiMHT
+    )
+
+    ## Path: MC_JME_Others
+    ## - unfiltered path with non-baseline JME objects (e.g. PF, PF+CHS)
+    ## - not meant to be included in the HLT menu (kept for POG studies)
+    process.MC_JME_Others = cms.Path(
+        process.HLTParticleFlowSequence
+#     + process.HLTCaloJetsReconstruction
+      + process.HLTCaloMETReconstruction
+      + process.HLTPFClusterJMEReconstruction
+      + process.HLTAK4PFJetsReconstruction
+      + process.HLTAK8PFJetsReconstruction
+      + process.HLTPFJetsCHSReconstruction
+      + process.HLTPFMETsReconstruction
+      + process.HLTPFCHSMETReconstruction
+      + process.HLTPFSoftKillerMETReconstruction
     )
 
     process.L1T_SinglePFPuppiJet230off = cms.Path(
@@ -593,6 +598,7 @@ def customise_hltPhase2_scheduleJMETriggers(process):
     # schedule
     process.schedule_().extend([
 #      process.MC_JME,
+#      process.MC_JME_Others,
 
       process.L1T_SinglePFPuppiJet230off,
 #      process.HLT_AK4PFJet520,
