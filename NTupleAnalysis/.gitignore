@@ -7,4 +7,5 @@
 *.jpeg
 *.tar
 *.tar.gz
-outputs_*/
+output_*
+old/
