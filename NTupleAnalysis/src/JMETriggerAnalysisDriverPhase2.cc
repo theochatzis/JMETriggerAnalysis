@@ -328,6 +328,15 @@ void JMETriggerAnalysisDriverPhase2::init(){
 void JMETriggerAnalysisDriverPhase2::analyze(){
   H1("eventsProcessed")->Fill(0.5);
 
+/*
+  if(true){
+    auto const& GenEventInfo_qScale = value<float>("GenEventInfo_qScale");
+    auto const& pileupInfo_BX0_max_pT_hats = value<float>("pileupInfo_BX0_max_pT_hats");
+
+    if(pileupInfo_BX0_max_pT_hats > GenEventInfo_qScale) return;
+  }
+*/
+
   float wgt(1.f);
   std::string const tfileName = theFile_->GetName();
   auto const tfileBasename = tfileName.substr(tfileName.find_last_of("/\\") + 1);

@@ -2769,6 +2769,30 @@ if __name__ == '__main__':
 
     _tfile_MET2018.Close()
 
+    effysMET_ttbar = {}
+    for _tmpPU in [
+      'NoPU',
+      'PU140',
+      'PU200',
+    ]:
+      effysMET_ttbar[_tmpPU] = {}
+      for _tmpMETThresh in [
+        '120',
+        '130',
+        '140',
+        '150',
+        '160',
+      ]:
+        effysMET_ttbar[_tmpPU][_tmpMETThresh] = getMETEfficiencies(**{
+          'fpath': inputDir+'/'+_tmpReco+'/Phase2HLTTDR_TTTo2L2Nu_14TeV_'+_tmpPU+'.root',
+          'hltThreshold_MET': float(_tmpMETThresh),
+          'hltThreshold_METTypeOne': float(_tmpMETThresh),
+          'hltThreshold_METTypeOneMHT20': float(_tmpMETThresh),
+          'hltThreshold_METTypeOneMHT30': float(_tmpMETThresh),
+          'hltThreshold_METTypeOneMHT40': float(_tmpMETThresh),
+          'hltThreshold_METTypeOneMHT50': float(_tmpMETThresh),
+        })
+
     for _tmpRef in [
       'GEN',
 #      'Offline',
@@ -3211,6 +3235,176 @@ if __name__ == '__main__':
         canvas.Close()
 
         print '\033[1m'+outputDir+'/triggerEff_METTypeOneXvs2018_wrt'+_tmpRef+'_'+_tmpPU+'\033[0m'
+
+      # MET (VBF-HiggsToInv vs TTbar)
+      for _tmpEff in [
+        'HLT',
+        'L1TpHLT',
+      ]:
+        for _tmpHLTthr in [
+          '120',
+          '130',
+          '140',
+          '150',
+          '160',
+        ]:
+          for _tmpMETType in [
+            'METTypeOne',
+            'METTypeOneMHT20',
+            'METTypeOneMHT30',
+            'METTypeOneMHT40',
+            'METTypeOneMHT50',
+          ]:
+            canvas = ROOT.TCanvas(tmpName(), tmpName(False))
+            canvas.cd()
+
+            h0 = canvas.DrawFrame(0, 0.0001, 500, 1.19)
+
+            try:
+              effysMET['NoPU'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetMarkerSize(1)
+              effysMET['NoPU'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineWidth(2)
+              effysMET['NoPU'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kBlack)
+              effysMET['NoPU'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineColor(ROOT.kBlack)
+              effysMET['NoPU'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineStyle(2)
+              effysMET['NoPU'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].Draw('lepz')
+            except: pass
+
+            try:
+              effysMET['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetMarkerSize(1)
+              effysMET['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineWidth(2)
+              effysMET['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kRed)
+              effysMET['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineColor(ROOT.kRed)
+              effysMET['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineStyle(2)
+              effysMET['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].Draw('lepz')
+            except: pass
+
+            try:
+              effysMET['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetMarkerSize(1)
+              effysMET['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineWidth(2)
+              effysMET['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kBlue)
+              effysMET['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineColor(ROOT.kBlue)
+              effysMET['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineStyle(2)
+              effysMET['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].Draw('lepz')
+            except: pass
+
+            try:
+              effysMET_ttbar['NoPU'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetMarkerSize(1)
+              effysMET_ttbar['NoPU'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineWidth(2)
+              effysMET_ttbar['NoPU'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kBlack)
+              effysMET_ttbar['NoPU'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineColor(ROOT.kBlack)
+              effysMET_ttbar['NoPU'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineStyle(1)
+              effysMET_ttbar['NoPU'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].Draw('lepz')
+            except: pass
+
+            try:
+              effysMET_ttbar['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetMarkerSize(1)
+              effysMET_ttbar['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineWidth(2)
+              effysMET_ttbar['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kRed)
+              effysMET_ttbar['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineColor(ROOT.kRed)
+              effysMET_ttbar['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineStyle(1)
+              effysMET_ttbar['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].Draw('lepz')
+            except: pass
+
+            try:
+              effysMET_ttbar['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetMarkerSize(1)
+              effysMET_ttbar['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineWidth(2)
+              effysMET_ttbar['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kBlue)
+              effysMET_ttbar['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineColor(ROOT.kBlue)
+              effysMET_ttbar['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].SetLineStyle(1)
+              effysMET_ttbar['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].Draw('lepz')
+            except: pass
+
+            topLabel = ROOT.TPaveText(0.11, 0.93, 0.95, 0.98, 'NDC')
+            topLabel.SetFillColor(0)
+            topLabel.SetFillStyle(1001)
+            topLabel.SetTextColor(ROOT.kBlack)
+            topLabel.SetTextAlign(12)
+            topLabel.SetTextFont(42)
+            topLabel.SetTextSize(0.035)
+            topLabel.SetBorderSize(0)
+            topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+            topLabel.Draw('same')
+
+            objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
+            objLabel.SetFillColor(0)
+            objLabel.SetFillStyle(1001)
+            objLabel.SetTextColor(ROOT.kBlack)
+            objLabel.SetTextAlign(32)
+            objLabel.SetTextFont(42)
+            objLabel.SetTextSize(0.035)
+            objLabel.SetBorderSize(0)
+            objLabel.AddText('14 TeV')
+            objLabel.Draw('same')
+
+            l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.65, 0.88, 'NDC')
+            l1tRateLabel.SetFillColor(0)
+            l1tRateLabel.SetFillStyle(1001)
+            l1tRateLabel.SetTextColor(ROOT.kBlack)
+            l1tRateLabel.SetTextAlign(12)
+            l1tRateLabel.SetTextFont(42)
+            l1tRateLabel.SetTextSize(0.035)
+            l1tRateLabel.SetBorderSize(0)
+            l1tRateLabel.AddText('HLT : PF+PUPPI Type-1 p_{T}^{miss}'+' MHT'*('MHT' in _tmpMETType))
+            l1tRateLabel.Draw('same')
+
+            hltRateLabel = ROOT.TPaveText(0.165, 0.76, 0.65, 0.82, 'NDC')
+            hltRateLabel.SetFillColor(0)
+            hltRateLabel.SetFillStyle(1001)
+            hltRateLabel.SetTextColor(ROOT.kBlack)
+            hltRateLabel.SetTextAlign(12)
+            hltRateLabel.SetTextFont(42)
+            hltRateLabel.SetTextSize(0.035)
+            hltRateLabel.SetBorderSize(0)
+            hltRateLabel.AddText('HLT p_{T}^{miss} / MHT Threshold = '+_tmpHLTthr+' GeV')
+#            hltRateLabel.Draw('same')
+
+            try:
+              leg1 = ROOT.TLegend(0.65, 0.60, 0.94, 0.81)
+              leg1.SetNColumns(1)
+              leg1.SetTextFont(42)
+              leg1.AddEntry(effysMET_ttbar['NoPU'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef], 'No PU', 'lepx')
+              leg1.AddEntry(effysMET_ttbar['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef], '140 PU', 'lepx')
+              leg1.AddEntry(effysMET_ttbar['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef], '200 PU', 'lepx')
+              leg1.Draw('same')
+            except: pass
+
+            try:
+              _htmp1 = effysMET_ttbar['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].Clone()
+              _htmp1.SetLineColor(1)
+              _htmp1.SetLineStyle(1)
+            except: pass
+
+            try:
+              _htmp2 = effysMET['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef].Clone()
+              _htmp2.SetLineColor(1)
+              _htmp2.SetLineStyle(2)
+            except: pass
+
+            leg2 = ROOT.TLegend(0.75, 0.45, 0.94, 0.60)
+            leg2.SetNColumns(1)
+            leg2.SetTextFont(42)
+            try: leg2.AddEntry(_htmp1, 't#bar{t}', 'l')
+            except: pass
+            try: leg2.AddEntry(_htmp2, 'VBF Higgs #rightarrow #nu#nu', 'l')
+            except: pass
+            leg2.Draw('same')
+
+            _tmpYaxis = 'Efficiency'
+            if _tmpEff == 'L1TpHLT': _tmpYaxis = 'L1T+HLT Efficiency'
+            elif _tmpEff == 'HLT': _tmpYaxis = 'HLT Efficiency'
+
+            h0.SetTitle(';'+_tmpRef+' p_{T}^{miss} [GeV];'+_tmpYaxis)
+            h0.GetYaxis().SetTitleOffset(h0.GetYaxis().GetTitleOffset() * 1.0)
+
+            canvas.SetLogy(0)
+            canvas.SetGrid(1, 1)
+
+            for _tmpExt in EXTS:
+              canvas.SaveAs(outputDir+'/triggerEff_TTbarVsVBFHToInv_'+_tmpMETType+'_wrt'+_tmpRef+'_'+_tmpEff+'_'+_tmpHLTthr+'.'+_tmpExt)
+
+            canvas.Close()
+
+            print '\033[1m'+outputDir+'/triggerEff_TTbarVsVBFHToInv_'+_tmpMETType+'_wrt'+_tmpRef+'_'+_tmpEff+'_'+_tmpHLTthr+'\033[0m'
 
   ###
   ### Rates
