@@ -44,6 +44,13 @@ bool JMETriggerAnalysisDriverPhase2::jetBelongsToCategory(const std::string& cat
   else if(categLabel == "_HGCalPt3"){ ret = (1.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (400. <= jetPt) and (jetPt < 2000.); }
   else if(categLabel == "_HGCalPt4"){ ret = (1.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (2000. <= jetPt); }
 
+  else if(categLabel == "_HGCalToHF"){ ret = (2.8 <= jetAbsEta) and (jetAbsEta < 3.2); }
+  else if(categLabel == "_HGCalToHFPt0"){ ret = (2.8 <= jetAbsEta) and (jetAbsEta < 3.2) and (30. <= jetPt) and (jetPt < 60.); }
+  else if(categLabel == "_HGCalToHFPt1"){ ret = (2.8 <= jetAbsEta) and (jetAbsEta < 3.2) and (60. <= jetPt) and (jetPt < 110.); }
+  else if(categLabel == "_HGCalToHFPt2"){ ret = (2.8 <= jetAbsEta) and (jetAbsEta < 3.2) and (110. <= jetPt) and (jetPt < 400.); }
+  else if(categLabel == "_HGCalToHFPt3"){ ret = (2.8 <= jetAbsEta) and (jetAbsEta < 3.2) and (400. <= jetPt) and (jetPt < 2000.); }
+  else if(categLabel == "_HGCalToHFPt4"){ ret = (2.8 <= jetAbsEta) and (jetAbsEta < 3.2) and (2000. <= jetPt); }
+
   else if(categLabel == "_HF"){ ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0); }
   else if(categLabel == "_HFPt0"){ ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (30. <= jetPt) and (jetPt < 60.); }
   else if(categLabel == "_HFPt1"){ ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (60. <= jetPt) and (jetPt < 110.); }
@@ -98,6 +105,13 @@ void JMETriggerAnalysisDriverPhase2::init(){
 //  "_HGCalPt2",
 //  "_HGCalPt3",
 //  "_HGCalPt4",
+
+    "_HGCalToHF",
+//  "_HGCalToHFPt0",
+//  "_HGCalToHFPt1",
+//  "_HGCalToHFPt2",
+//  "_HGCalToHFPt3",
+//  "_HGCalToHFPt4",
 
     "_HF",
 //  "_HFPt0",
@@ -354,7 +368,7 @@ void JMETriggerAnalysisDriverPhase2::analyze(){
   //// AK4 Jets
   const float minAK4JetPt(30.);
   const float minAK4JetPtRef(20.);
-  const float maxAK4JetDeltaRmatchRef(0.1);
+  const float maxAK4JetDeltaRmatchRef(0.2);
 
   // Single-Jet
   for(auto const& jetLabel : labelMap_jetAK4_){
@@ -443,7 +457,7 @@ void JMETriggerAnalysisDriverPhase2::analyze(){
   //// AK8 Jets
   const float minAK8JetPt(90.);
   const float minAK8JetPtRef(60.);
-  const float maxAK8JetDeltaRmatchRef(0.1);
+  const float maxAK8JetDeltaRmatchRef(0.2);
 
   for(auto const& jetLabel : labelMap_jetAK8_){
     auto const isGENJets = (jetLabel.first.find("GenJets") != std::string::npos);
@@ -871,6 +885,9 @@ float JMETriggerAnalysisDriverPhase2::getMHT(float const jetPtMin, float const j
       }
     }
     if(not isMatchedToGEN) continue;
+*/
+/*
+    if(std::abs(v_eta.at(jetIdx)) >= 2.8 and std::abs(v_eta.at(jetIdx)) <= 3.2) continue;
 */
     ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float>> const p4polar(v_pt.at(jetIdx), v_eta.at(jetIdx), v_phi.at(jetIdx), v_mass.at(jetIdx));
 
