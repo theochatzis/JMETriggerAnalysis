@@ -976,7 +976,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   objLabel.AddText('14 TeV')
   objLabel.Draw('same')
 
-  l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.50, 0.90, 'NDC')
+  l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.45, 0.90, 'NDC')
   l1tRateLabel.SetFillColor(0)
   l1tRateLabel.SetFillStyle(1001)
   l1tRateLabel.SetTextColor(ROOT.kBlack)
@@ -987,7 +987,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   l1tRateLabel.AddText('AK4 PF+PUPPI Jets')
   l1tRateLabel.Draw('same')
 
-  hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.35, 0.85, 'NDC')
+  hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.45, 0.85, 'NDC')
   hltRateLabel.SetFillColor(0)
   hltRateLabel.SetFillStyle(1001)
   hltRateLabel.SetTextColor(ROOT.kBlack)
@@ -1080,12 +1080,12 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     'PU140': {
       'HB': [30, 40, 50, 60, 100, 140, 200, 600],
       'HGCal': [30, 40, 50, 60, 100, 140, 200, 600],
-      'HF': [30, 40, 50, 60, 100, 200, 600],
+      'HF': [30, 40, 50, 60, 100, 190, 610],
     },
     'PU200': {
       'HB': [30, 40, 50, 60, 100, 140, 200, 600],
       'HGCal': [30, 40, 50, 60, 100, 140, 200, 600],
-      'HF': [30, 40, 50, 60, 100, 200, 600],
+      'HF': [30, 40, 50, 60, 100, 190, 610],
     },
   }
 
@@ -1115,7 +1115,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   canvas = ROOT.TCanvas(tmpName(), tmpName(False))
   canvas.cd()
 
-  h0 = canvas.DrawFrame(30., 0.001, 500., 4.9)
+  h0 = canvas.DrawFrame(30., 3e-4, 500., 4.9)
 
   try:
     graphs['PU140']['HB'].SetMarkerStyle(20)
@@ -1191,7 +1191,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   objLabel.AddText('14 TeV')
   objLabel.Draw('same')
 
-  l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.50, 0.90, 'NDC')
+  l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.45, 0.90, 'NDC')
   l1tRateLabel.SetFillColor(0)
   l1tRateLabel.SetFillStyle(1001)
   l1tRateLabel.SetTextColor(ROOT.kBlack)
@@ -1202,7 +1202,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   l1tRateLabel.AddText('AK4 PF+PUPPI Jets')
   l1tRateLabel.Draw('same')
 
-  hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.35, 0.85, 'NDC')
+  hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.45, 0.85, 'NDC')
   hltRateLabel.SetFillColor(0)
   hltRateLabel.SetFillStyle(1001)
   hltRateLabel.SetTextColor(ROOT.kBlack)
@@ -1404,7 +1404,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   objLabel.AddText('14 TeV')
   objLabel.Draw('same')
 
-  l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.50, 0.90, 'NDC')
+  l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.45, 0.90, 'NDC')
   l1tRateLabel.SetFillColor(0)
   l1tRateLabel.SetFillStyle(1001)
   l1tRateLabel.SetTextColor(ROOT.kBlack)
@@ -1415,7 +1415,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   l1tRateLabel.AddText('AK4 PF+PUPPI Jets')
   l1tRateLabel.Draw('same')
 
-  hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.35, 0.85, 'NDC')
+  hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.45, 0.85, 'NDC')
   hltRateLabel.SetFillColor(0)
   hltRateLabel.SetFillStyle(1001)
   hltRateLabel.SetTextColor(ROOT.kBlack)
@@ -1541,7 +1541,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   canvas = ROOT.TCanvas(tmpName(), tmpName(False))
   canvas.cd()
 
-  h0 = canvas.DrawFrame(30., 0.001, 500., 4.9)
+  h0 = canvas.DrawFrame(30., 1e-4, 500., 4.9)
 
   try:
     graphs['PU140']['HB'].SetMarkerStyle(20)
@@ -1617,7 +1617,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   objLabel.AddText('14 TeV')
   objLabel.Draw('same')
 
-  l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.50, 0.90, 'NDC')
+  l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.45, 0.90, 'NDC')
   l1tRateLabel.SetFillColor(0)
   l1tRateLabel.SetFillStyle(1001)
   l1tRateLabel.SetTextColor(ROOT.kBlack)
@@ -1628,7 +1628,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   l1tRateLabel.AddText('AK4 PF+PUPPI Jets')
   l1tRateLabel.Draw('same')
 
-  hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.35, 0.85, 'NDC')
+  hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.45, 0.85, 'NDC')
   hltRateLabel.SetFillColor(0)
   hltRateLabel.SetFillStyle(1001)
   hltRateLabel.SetTextColor(ROOT.kBlack)
@@ -3852,6 +3852,7 @@ if __name__ == '__main__':
     h0.GetYaxis().SetTitleOffset(h0.GetYaxis().GetTitleOffset() * 1.0)
     h0.GetYaxis().SetNoExponent()
     h0.GetYaxis().SetMoreLogLabels()
+    h0.GetXaxis().SetNdivisions(505)
     h0.Draw('axis,same')
 
     for _tmpExt in EXTS:
