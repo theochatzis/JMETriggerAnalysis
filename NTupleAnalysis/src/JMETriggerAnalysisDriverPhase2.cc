@@ -120,14 +120,14 @@ void JMETriggerAnalysisDriverPhase2::init(){
 //  "_HFPt3",
 //  "_HFPt4",
 
-//  "_HF1",
+    "_HF1",
 //  "_HF1Pt0",
 //  "_HF1Pt1",
 //  "_HF1Pt2",
 //  "_HF1Pt3",
 //  "_HF1Pt4",
 
-//  "_HF2",
+    "_HF2",
 //  "_HF2Pt0",
 //  "_HF2Pt1",
 //  "_HF2Pt2",
