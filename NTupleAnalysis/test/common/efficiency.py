@@ -19,7 +19,7 @@ def get_efficiency(hP, hT):
     x, y = ctypes.c_double(0.), ctypes.c_double(0.)
     g.GetPoint(0, x, y)
 
-    eff = [y, g.GetErrorYhigh(0), g.GetErrorYlow(0)]
+    eff = [y.value, g.GetErrorYhigh(0), g.GetErrorYlow(0)]
 
     del hP1, hT1, g
 

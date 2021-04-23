@@ -141,14 +141,14 @@ def get_rebinned_histo_1bin(h, merge_outflow=True):
     h = get_rebinned_histo(h, [h.GetBinLowEdge(1), h.GetBinLowEdge(h.GetNbinsX()+1)])
 
     if merge_outflow:
-        h.AddBinContent(1, h.GetBinContent(0) + h.GetBinContent(h.GetNbinsX()+1))
-        h.SetBinError  (1, math.sqrt(math.pow(h.GetBinError(1), 2) + math.pow(h.GetBinError(0), 2) + math.pow(h.GetBinError(h.GetNbinsX()+1), 2)))
+      h.AddBinContent(1, h.GetBinContent(0) + h.GetBinContent(h.GetNbinsX()+1))
+      h.SetBinError(1, math.sqrt(math.pow(h.GetBinError(1), 2) + math.pow(h.GetBinError(0), 2) + math.pow(h.GetBinError(h.GetNbinsX()+1), 2)))
 
     h.SetBinContent(0, 0.)
-    h.SetBinError  (0, 0.)
+    h.SetBinError(0, 0.)
 
     h.SetBinContent(h.GetNbinsX()+1, 0.)
-    h.SetBinError  (h.GetNbinsX()+1, 0.)
+    h.SetBinError(h.GetNbinsX()+1, 0.)
 
     return h
 
