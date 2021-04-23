@@ -1,10 +1,12 @@
 #!/bin/bash -e
 
 # directory with input JMETriggerNTuple(s)
-INPDIR=/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/Upgrade/JetMET_PhaseII/JMETriggerAnalysis_phase2/ntuples/output_hltPhase2_201209
+#INPDIR=/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/Upgrade/JetMET_PhaseII/JMETriggerAnalysis_phase2/ntuples/output_hltPhase2_201209
+INPDIR=/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/Upgrade/JetMET_PhaseII/JMETriggerAnalysis_phase2/ntuples/output_hltPhase2_210421_HFtest
 
 # directory with outputs of NTupleAnalysis
-OUTDIR=output_hltPhase2_201209_HLTTDR
+#OUTDIR=output_hltPhase2_201209_HLTTDR_hltGENdR05
+OUTDIR=output_hltPhase2_210421_HFtest_hltPt0dR06
 
 mkdir -p ${OUTDIR}
 
@@ -24,7 +26,7 @@ if [[ ${HOSTNAME} == lxplus* ]]; then NUM_PROC=3; fi;
 
 for rootfile_i in ${OUTDIR}/outputs/*/*.root; do
   while [ $(jobs -p | wc -l) -ge ${NUM_PROC} ]; do sleep 5; done
-  jmeAnalysisHarvester.py -l 1 -i ${rootfile_i} -o ${OUTDIR}/harvesting2 || true &
+  jmeAnalysisHarvester.py -l 1 -i ${rootfile_i} -o ${OUTDIR}/harvesting || true &
 done
 unset rootfile_i
 
