@@ -88,7 +88,9 @@ def getRates(**kwargs):
     return ret
 
   rateFactor = 1.
-  if not (kwargs['qcd_weighted'] and (kwargs['processName'].startswith('MinBias') or kwargs['processName'].startswith('QCD'))):
+  if kwargs['qcd_weighted'] and (kwargs['processName'].startswith('MinBias') or kwargs['processName'].startswith('QCD')):
+    rateFactor = kwargs['qcd_weighted_SF']
+  else:
     rateFactor = getRateFactor(kwargs['processName'], kwargs['instLumiHzPerPb']) / ret['v_eventsProcessed']
 
   def _addTH1(theDict, theKey, theTH1):
@@ -1992,7 +1994,7 @@ def plotMETResponse(fpath_PU140, fpath_PU200, outputName, exts):
     histos['PU140']['PFRaw'].SetLineWidth(2)
     histos['PU140']['PFRaw'].SetLineStyle(2)
     histos['PU140']['PFRaw'].Draw('ep,same')
-  
+
     histos['PU140']['PFCHSRaw'].SetMarkerStyle(25)
     histos['PU140']['PFCHSRaw'].SetMarkerSize(1)
     histos['PU140']['PFCHSRaw'].SetMarkerColor(ROOT.kViolet)
@@ -2000,7 +2002,7 @@ def plotMETResponse(fpath_PU140, fpath_PU200, outputName, exts):
     histos['PU140']['PFCHSRaw'].SetLineWidth(2)
     histos['PU140']['PFCHSRaw'].SetLineStyle(2)
     histos['PU140']['PFCHSRaw'].Draw('ep,same')
-  
+
     histos['PU140']['PFPuppiRaw'].SetMarkerStyle(26)
     histos['PU140']['PFPuppiRaw'].SetMarkerSize(1)
     histos['PU140']['PFPuppiRaw'].SetMarkerColor(2)
@@ -2008,7 +2010,7 @@ def plotMETResponse(fpath_PU140, fpath_PU200, outputName, exts):
     histos['PU140']['PFPuppiRaw'].SetLineWidth(2)
     histos['PU140']['PFPuppiRaw'].SetLineStyle(2)
     histos['PU140']['PFPuppiRaw'].Draw('ep,same')
-  
+
     histos['PU140']['PFPuppiTypeOne'].SetMarkerStyle(32)
     histos['PU140']['PFPuppiTypeOne'].SetMarkerSize(1)
     histos['PU140']['PFPuppiTypeOne'].SetMarkerColor(4)
@@ -2032,7 +2034,7 @@ def plotMETResponse(fpath_PU140, fpath_PU200, outputName, exts):
     histos['PU200']['PFCHSRaw'].SetLineColor(ROOT.kViolet)
     histos['PU200']['PFCHSRaw'].SetLineWidth(2)
     histos['PU200']['PFCHSRaw'].Draw('ep,same')
-  
+
     histos['PU200']['PFPuppiRaw'].SetMarkerStyle(22)
     histos['PU200']['PFPuppiRaw'].SetMarkerSize(1)
     histos['PU200']['PFPuppiRaw'].SetMarkerColor(2)
@@ -2185,8 +2187,8 @@ def plotMETResolution(resType, fpath_PU140, fpath_PU200, outputName, exts):
 
     histos['PU140']['PFCHSRaw'].SetMarkerStyle(25)
     histos['PU140']['PFCHSRaw'].SetMarkerSize(1)
-    histos['PU140']['PFCHSRaw'].SetMarkerColor(ROOT.kViolet-3)
-    histos['PU140']['PFCHSRaw'].SetLineColor(ROOT.kViolet-3)
+    histos['PU140']['PFCHSRaw'].SetMarkerColor(ROOT.kViolet)
+    histos['PU140']['PFCHSRaw'].SetLineColor(ROOT.kViolet)
     histos['PU140']['PFCHSRaw'].SetLineWidth(2)
     histos['PU140']['PFCHSRaw'].SetLineStyle(2)
     histos['PU140']['PFCHSRaw'].Draw('ep,same')
@@ -2218,8 +2220,8 @@ def plotMETResolution(resType, fpath_PU140, fpath_PU200, outputName, exts):
   
     histos['PU200']['PFCHSRaw'].SetMarkerStyle(21)
     histos['PU200']['PFCHSRaw'].SetMarkerSize(1)
-    histos['PU200']['PFCHSRaw'].SetMarkerColor(ROOT.kViolet+2)
-    histos['PU200']['PFCHSRaw'].SetLineColor(ROOT.kViolet+2)
+    histos['PU200']['PFCHSRaw'].SetMarkerColor(ROOT.kViolet)
+    histos['PU200']['PFCHSRaw'].SetLineColor(ROOT.kViolet)
     histos['PU200']['PFCHSRaw'].SetLineWidth(2)
     histos['PU200']['PFCHSRaw'].Draw('ep,same')
   
@@ -3506,7 +3508,7 @@ if __name__ == '__main__':
 
   rateConfig = {
     'PU140': {
-      'iLumiHzPerPb': 0.053,
+      'iLumiHzPerPb': 0.050,
       'hltThresholdSingleJet': 520,
       'hltThresholdHT': 1070,
       'hltThresholdMET': 110,
@@ -3551,6 +3553,7 @@ if __name__ == '__main__':
           'fpaths': [inputDir+'/'+_tmpReco+'/Phase2HLTTDR_'+_tmp2.format(_puTag)+'.root' for _tmp2 in rateFiles[_tmp]],
           'instLumiHzPerPb': rateConfig[_puTag]['iLumiHzPerPb'],
           'qcd_weighted': not opts.no_qcd_weighted,
+          'qcd_weighted_SF': (rateConfig[_puTag]['iLumiHzPerPb']/0.0525 if _puTag == 'PU140' else 1.0),
           'processName': _tmp,
           'hltThreshold_SingleJet': rateConfig[_puTag]['hltThresholdSingleJet'],
           'hltThreshold_HT': rateConfig[_puTag]['hltThresholdHT'],
@@ -3745,7 +3748,7 @@ if __name__ == '__main__':
     leg1 = ROOT.TLegend(0.41, 0.73, 0.94, 0.90)
     leg1.SetNColumns(1)
     leg1.SetTextFont(42)
-    leg1.AddEntry(h140tmp, 'PU 140, L = 5.3 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
+    leg1.AddEntry(h140tmp, 'PU 140, L = 5.0 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
     leg1.AddEntry(h200tmp, 'PU 200, L = 7.5 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
     leg1.Draw('same')
 
@@ -3841,7 +3844,7 @@ if __name__ == '__main__':
     leg1 = ROOT.TLegend(0.41, 0.73, 0.94, 0.90)
     leg1.SetNColumns(1)
     leg1.SetTextFont(42)
-    leg1.AddEntry(h140tmp, 'PU 140, L = 5.3 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
+    leg1.AddEntry(h140tmp, 'PU 140, L = 5.0 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
     leg1.AddEntry(h200tmp, 'PU 200, L = 7.5 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
     leg1.Draw('same')
 
@@ -3938,7 +3941,7 @@ if __name__ == '__main__':
     leg1 = ROOT.TLegend(0.41, 0.73, 0.94, 0.90)
     leg1.SetNColumns(1)
     leg1.SetTextFont(42)
-    leg1.AddEntry(h140tmp, 'PU 140, L = 5.3 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
+    leg1.AddEntry(h140tmp, 'PU 140, L = 5.0 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
     leg1.AddEntry(h200tmp, 'PU 200, L = 7.5 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
     leg1.Draw('same')
 
@@ -4028,7 +4031,7 @@ if __name__ == '__main__':
     leg1 = ROOT.TLegend(0.41, 0.73, 0.94, 0.90)
     leg1.SetNColumns(1)
     leg1.SetTextFont(42)
-    leg1.AddEntry(h140tmp, 'PU 140, L = 5.3 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
+    leg1.AddEntry(h140tmp, 'PU 140, L = 5.0 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
     leg1.AddEntry(h200tmp, 'PU 200, L = 7.5 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
     leg1.Draw('same')
 
@@ -4126,7 +4129,7 @@ if __name__ == '__main__':
       leg1 = ROOT.TLegend(0.41, 0.73, 0.94, 0.90)
       leg1.SetNColumns(1)
       leg1.SetTextFont(42)
-      leg1.AddEntry(h140tmp, 'PU 140, L = 5.3 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
+      leg1.AddEntry(h140tmp, 'PU 140, L = 5.0 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
       leg1.AddEntry(h200tmp, 'PU 200, L = 7.5 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
       leg1.Draw('same')
   
@@ -4280,7 +4283,7 @@ if __name__ == '__main__':
       puLabel.SetTextFont(42)
       puLabel.SetTextSize(0.0325)
       puLabel.SetBorderSize(0)
-      puLabel.AddText('L = '+('7.5' if _tmpPU == 'PU200' else '5.3')+' #upoint 10^{34} cm^{-2} s^{-1}')
+      puLabel.AddText('L = '+('7.5' if _tmpPU == 'PU200' else '5.0')+' #upoint 10^{34} cm^{-2} s^{-1}')
       puLabel.Draw('same')
 
       leg1 = ROOT.TLegend(0.63, 0.53, 0.94, 0.90)
