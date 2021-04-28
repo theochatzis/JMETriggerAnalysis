@@ -9,8 +9,7 @@ from JMETriggerAnalysis.Common.hltPhase2_TRKv06p3 import customise_hltPhase2_TRK
 from JMETriggerAnalysis.Common.hltPhase2_TRKv07p2 import customise_hltPhase2_TRKv07p2
 from JMETriggerAnalysis.Common.hltPhase2_PF import customise_hltPhase2_PF
 from JMETriggerAnalysis.Common.hltPhase2_JME import customise_hltPhase2_JME
-from JMETriggerAnalysis.Common.multiplicityValueProducerFromNestedCollectionEdmNewDetSetVectorSiPixelClusterDouble_cfi\
- import multiplicityValueProducerFromNestedCollectionEdmNewDetSetVectorSiPixelClusterDouble as _nSiPixelClusters
+from HLTrigger.JetMET.hltSiPixelClusterMultiplicityValueProducer_cfi import hltSiPixelClusterMultiplicityValueProducer as _hltSiPixelClusterMultiplicityValueProducer
 
 from HLTrigger.Configuration.common import producers_by_type
 
@@ -622,7 +621,7 @@ def customise_hltPhase2_scheduleJMETriggers(process):
     return process
 
 def customise_hltPhase2_reconfigurePuppi(process):
-    process.hltPixelClustersMultiplicity = _nSiPixelClusters.clone(src = 'siPixelClusters', defaultValue = -1.)
+    process.hltPixelClustersMultiplicity = _hltSiPixelClusterMultiplicityValueProducer.clone(src = 'siPixelClusters', defaultValue = -1.)
 
     for mod_i in producers_by_type(process, 'PuppiProducer'):
       for seqName_i in process.sequences_():

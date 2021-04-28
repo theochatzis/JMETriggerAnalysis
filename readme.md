@@ -15,6 +15,8 @@ scramv1 project CMSSW CMSSW_11_1_8
 cd CMSSW_11_1_8/src
 eval `scramv1 runtime -sh`
 
+git cms-merge-topic cms-sw:32903
+
 # [optional; required only for PF-Hadron calibrations]
 # workaround for PFSimParticle::trackerSurfaceMomentum
 # ref: hatakeyamak:FBaseSimEvent_ProtectAgainstMissingTrackerSurfaceMomentum
