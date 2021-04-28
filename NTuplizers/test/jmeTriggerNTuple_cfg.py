@@ -143,8 +143,9 @@ else:
 ###
 ### analysis sequence
 ###
-process.schedule_().append(process.MC_JME)
-process.schedule_().append(process.MC_JME_Others)
+if opt_reco != 'HLT_75e33':
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 ## JMETrigger NTuple
 from HLTrigger.JetMET.hltSiPixelClusterMultiplicityValueProducer_cfi import hltSiPixelClusterMultiplicityValueProducer as _hltSiPixelClusterMultiplicityValueProducer
