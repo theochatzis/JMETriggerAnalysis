@@ -143,29 +143,29 @@ else:
 ###
 ### analysis sequence
 ###
-process.schedule_().append(process.MC_JME)
-process.schedule_().append(process.MC_JME_Others)
+if opt_reco != 'HLT_75e33':
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 ## JMETrigger NTuple
-from JMETriggerAnalysis.Common.multiplicityValueProducerFromNestedCollectionEdmNewDetSetVectorSiPixelClusterDouble_cfi\
- import multiplicityValueProducerFromNestedCollectionEdmNewDetSetVectorSiPixelClusterDouble as _nSiPixelClusters
-from JMETriggerAnalysis.Common.multiplicityValueProducerFromNestedCollectionEdmNewDetSetVectorPhase2TrackerCluster1DDouble_cfi\
- import multiplicityValueProducerFromNestedCollectionEdmNewDetSetVectorPhase2TrackerCluster1DDouble as _nSiOuterTrackerClusters
-from JMETriggerAnalysis.Common.multiplicityValueProducerRecoTrackDouble_cfi import multiplicityValueProducerRecoTrackDouble as _nTracks
-from JMETriggerAnalysis.Common.multiplicityValueProducerRecoVertexDouble_cfi import multiplicityValueProducerRecoVertexDouble as _nVertices
+from HLTrigger.JetMET.hltSiPixelClusterMultiplicityValueProducer_cfi import hltSiPixelClusterMultiplicityValueProducer as _hltSiPixelClusterMultiplicityValueProducer
+from HLTrigger.JetMET.hltSiPhase2TrackerClusterMultiplicityValueProducer_cfi import hltSiPhase2TrackerClusterMultiplicityValueProducer as _hltSiPhase2TrackerClusterMultiplicityValueProducer
 
-process.hltPixelClustersMultiplicity = _nSiPixelClusters.clone(src = 'siPixelClusters', defaultValue = -1.)
+from JMETriggerAnalysis.Common.hltTrackMultiplicityValueProducer_cfi import hltTrackMultiplicityValueProducer as _hltTrackMultiplicityValueProducer
+from JMETriggerAnalysis.Common.hltVertexMultiplicityValueProducer_cfi import hltVertexMultiplicityValueProducer as _hltVertexMultiplicityValueProducer
+
+process.hltPixelClustersMultiplicity = _hltSiPixelClusterMultiplicityValueProducer.clone(src = 'siPixelClusters', defaultValue = -1.)
 if not hasattr(process, 'hltOuterTrackerClustersMultiplicity'):
-  process.hltOuterTrackerClustersMultiplicity = _nSiOuterTrackerClusters.clone(src = 'siPhase2Clusters', defaultValue = -1.)
+  process.hltOuterTrackerClustersMultiplicity = _hltSiPhase2TrackerClusterMultiplicityValueProducer.clone(src = 'siPhase2Clusters', defaultValue = -1.)
 
-process.hltPixelTracksMultiplicity = _nTracks.clone(src = 'pixelTracks', defaultValue = -1.)
-process.hltPixelTracksCleanerMultiplicity = _nTracks.clone(src = 'pixelTracksCleaner', defaultValue = -1.)
-process.hltPixelTracksMergerMultiplicity = _nTracks.clone(src = 'pixelTracksMerger', defaultValue = -1.)
-process.hltTracksMultiplicity = _nTracks.clone(src = 'generalTracks', defaultValue = -1.)
+process.hltPixelTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracks', defaultValue = -1.)
+process.hltPixelTracksCleanerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracksCleaner', defaultValue = -1.)
+process.hltPixelTracksMergerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracksMerger', defaultValue = -1.)
+process.hltTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'generalTracks', defaultValue = -1.)
 
-process.hltPixelVerticesMultiplicity = _nVertices.clone(src = 'pixelVertices', defaultValue = -1.)
-process.hltPrimaryVerticesMultiplicity = _nVertices.clone(src = 'offlinePrimaryVertices', defaultValue = -1.)
-process.offlinePrimaryVerticesMultiplicity = _nVertices.clone(src = 'offlineSlimmedPrimaryVertices', defaultValue = -1.)
+process.hltPixelVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'pixelVertices', defaultValue = -1.)
+process.hltPrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlinePrimaryVertices', defaultValue = -1.)
+process.offlinePrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlineSlimmedPrimaryVertices', defaultValue = -1.)
 
 from JMETriggerAnalysis.NTuplizers.qcdWeightProducer import qcdWeightProducer
 process.qcdWeightPU140 = qcdWeightProducer(BXFrequency = 30. * 1e6, PU = 140.)
@@ -788,7 +788,7 @@ elif opts.inputFiles:
    process.source.secondaryFileNames = []
 else:
    process.source.fileNames = [
-     '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v2/280000/015FB6F1-59B4-304C-B540-2392A983A97D.root',
+     '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v2/280000/007CCF38-CBE4-6B4D-A97A-580FA0CA0850.root',
    ]
    process.source.secondaryFileNames = []
 
