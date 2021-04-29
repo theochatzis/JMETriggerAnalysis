@@ -806,14 +806,14 @@ def plotJetResolution(fpath_PU140, fpath_PU200, outputName, exts):
   hltRateLabel.AddText('p_{T}^{HLT} > 30 GeV')
   hltRateLabel.Draw('same')
 
-  leg1 = ROOT.TLegend(0.72, 0.70, 0.94, 0.90)
+  leg1 = ROOT.TLegend(0.70, 0.70, 0.94, 0.90)
   leg1.SetNColumns(1)
   leg1.SetTextFont(42)
   leg1.SetTextSize(0.035)
   try:
-    leg1.AddEntry(histos['PU200']['HB']   ,     '|#eta|<1.5', 'lepx')
-    leg1.AddEntry(histos['PU200']['HGCal'], '1.5<|#eta|<3.0', 'lepx')
-    leg1.AddEntry(histos['PU200']['HF']   , '3.0<|#eta|<5.0', 'lepx')
+    leg1.AddEntry(histos['PU200']['HB']   ,       '|#eta| < 1.5', 'lepx')
+    leg1.AddEntry(histos['PU200']['HGCal'], '1.5 < |#eta| < 3.0', 'lepx')
+    leg1.AddEntry(histos['PU200']['HF']   , '3.0 < |#eta| < 5.0', 'lepx')
   except: pass
   leg1.Draw('same')
 
@@ -829,7 +829,7 @@ def plotJetResolution(fpath_PU140, fpath_PU200, outputName, exts):
     _htmpPU200.SetLineStyle(1)
   except: pass
 
-  leg2 = ROOT.TLegend(0.54, 0.70, 0.72, 0.83)
+  leg2 = ROOT.TLegend(0.54, 0.70, 0.70, 0.83)
   leg2.SetNColumns(1)
   leg2.SetTextFont(42)
   leg2.SetTextSize(0.035)
@@ -1040,9 +1040,9 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     leg1.SetTextFont(42)
     leg1.SetTextSize(0.035)
     leg1.SetEntrySeparation(0.4)
-    leg1.AddEntry(_htmpHB, '|#eta|<1.5', 'ep')
-    leg1.AddEntry(_htmpHGCal, '1.5<|#eta|<3.0', 'ep')
-    leg1.AddEntry(_htmpHF, '3.0<|#eta|<5.0', 'ep')
+    leg1.AddEntry(_htmpHB, '|#eta| < 1.5', 'ep')
+    leg1.AddEntry(_htmpHGCal, '1.5 < |#eta| < 3.0', 'ep')
+    leg1.AddEntry(_htmpHF, '3.0 < |#eta| < 5.0', 'ep')
     leg1.Draw('same')
   except: pass
 
@@ -1257,9 +1257,9 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     leg1.SetTextFont(42)
     leg1.SetEntrySeparation(0.4)
     leg1.SetTextSize(0.035)
-    leg1.AddEntry(_htmpHB   ,     '|#eta|<1.5', 'ep')
-    leg1.AddEntry(_htmpHGCal, '1.5<|#eta|<3.0', 'ep')
-    leg1.AddEntry(_htmpHF   , '3.0<|#eta|<5.0', 'ep')
+    leg1.AddEntry(_htmpHB   ,       '|#eta| < 1.5', 'ep')
+    leg1.AddEntry(_htmpHGCal, '1.5 < |#eta| < 3.0', 'ep')
+    leg1.AddEntry(_htmpHF   , '3.0 < |#eta| < 5.0', 'ep')
     leg1.Draw('same')
   except: pass
 
@@ -1472,9 +1472,9 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     leg1.SetTextFont(42)
     leg1.SetTextSize(0.035)
     leg1.SetEntrySeparation(0.4)
-    leg1.AddEntry(_htmpHB   ,     '|#eta|<1.5', 'ep')
-    leg1.AddEntry(_htmpHGCal, '1.5<|#eta|<3.0', 'ep')
-    leg1.AddEntry(_htmpHF   , '3.0<|#eta|<5.0', 'ep')
+    leg1.AddEntry(_htmpHB   ,       '|#eta| < 1.5', 'ep')
+    leg1.AddEntry(_htmpHGCal, '1.5 < |#eta| < 3.0', 'ep')
+    leg1.AddEntry(_htmpHF   , '3.0 < |#eta| < 5.0', 'ep')
     leg1.Draw('same')
   except: pass
 
@@ -1687,9 +1687,9 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     leg1.SetTextFont(42)
     leg1.SetTextSize(0.035)
     leg1.SetEntrySeparation(0.4)
-    leg1.AddEntry(_htmpHB   ,     '|#eta|<1.5', 'ep')
-    leg1.AddEntry(_htmpHGCal, '1.5<|#eta|<3.0', 'ep')
-    leg1.AddEntry(_htmpHF   , '3.0<|#eta|<5.0', 'ep')
+    leg1.AddEntry(_htmpHB   ,       '|#eta| < 1.5', 'ep')
+    leg1.AddEntry(_htmpHGCal, '1.5 < |#eta| < 3.0', 'ep')
+    leg1.AddEntry(_htmpHF   , '3.0 < |#eta| < 5.0', 'ep')
     leg1.Draw('same')
   except: pass
 
@@ -2537,7 +2537,7 @@ if __name__ == '__main__':
       objLabel.AddText('14 TeV')
       objLabel.Draw('same')
 
-      l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.80, 0.88, 'NDC')
+      l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.70, 0.88, 'NDC')
       l1tRateLabel.SetFillColor(0)
       l1tRateLabel.SetFillStyle(1001)
       l1tRateLabel.SetTextColor(ROOT.kBlack)
@@ -2551,11 +2551,12 @@ if __name__ == '__main__':
       leg1 = ROOT.TLegend(0.60, 0.20, 0.94, 0.44)
       leg1.SetNColumns(1)
       leg1.SetTextFont(42)
+      leg1.SetTextSize(0.040)
       leg1.SetEntrySeparation(0.4) 
       try:
-        leg1.AddEntry(effysJet['PU200']['200']['SingleJet_L1TpHLT_wrt_'+_tmpRef], 'p_{T}^{HLT}>200 GeV ', 'lepx')
-        leg1.AddEntry(effysJet['PU200']['350']['SingleJet_L1TpHLT_wrt_'+_tmpRef], 'p_{T}^{HLT}>350 GeV ', 'lepx')
-        leg1.AddEntry(effysJet['PU200']['500']['SingleJet_L1TpHLT_wrt_'+_tmpRef], 'p_{T}^{HLT}>500 GeV ', 'lepx')
+        leg1.AddEntry(effysJet['PU200']['200']['SingleJet_L1TpHLT_wrt_'+_tmpRef], 'p_{T}^{HLT} > 200 GeV ', 'lepx')
+        leg1.AddEntry(effysJet['PU200']['350']['SingleJet_L1TpHLT_wrt_'+_tmpRef], 'p_{T}^{HLT} > 350 GeV ', 'lepx')
+        leg1.AddEntry(effysJet['PU200']['500']['SingleJet_L1TpHLT_wrt_'+_tmpRef], 'p_{T}^{HLT} > 500 GeV ', 'lepx')
       except: pass
       leg1.Draw('same')
 
@@ -2574,6 +2575,7 @@ if __name__ == '__main__':
       leg2 = ROOT.TLegend(0.70, 0.46, 0.94, 0.61)
       leg2.SetNColumns(1)
       leg2.SetTextFont(42)
+      leg2.SetTextSize(0.040)
       try:
         leg2.AddEntry(_htmpPU140, 'PU 140', 'l')
       except: pass
