@@ -501,7 +501,7 @@ def plotJetResponse(fpath_PU140, fpath_PU200, outputName, exts):
    canvas = ROOT.TCanvas(tmpName(), tmpName(False))
    canvas.cd()
 
-   h0 = canvas.DrawFrame(0.001, 0.0001, 2.39, 0.27 if _etaTag in ['EtaIncl', 'HB'] else 0.17)
+   h0 = canvas.DrawFrame(0.001, 0.0001, 2.29, 0.27 if _etaTag in ['EtaIncl', 'HB'] else 0.17)
 
    try:
      histos['PU140']['pt030to100'].SetMarkerStyle(20)
@@ -552,7 +552,7 @@ def plotJetResponse(fpath_PU140, fpath_PU200, outputName, exts):
      histos['PU200']['pt300to600'].Draw('hist,e0,same')
    except: pass
 
-   topLabel = ROOT.TPaveText(0.15, 0.93, 0.55, 0.98, 'NDC')
+   topLabel = ROOT.TPaveText(0.165, 0.85, 0.55, 0.90, 'NDC')
    topLabel.SetFillColor(0)
    topLabel.SetFillStyle(1001)
    topLabel.SetTextColor(ROOT.kBlack)
@@ -560,7 +560,7 @@ def plotJetResponse(fpath_PU140, fpath_PU200, outputName, exts):
    topLabel.SetTextFont(42)
    topLabel.SetTextSize(0.035)
    topLabel.SetBorderSize(0)
-   topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+   topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
    topLabel.Draw('same')
 
    objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -574,7 +574,7 @@ def plotJetResponse(fpath_PU140, fpath_PU200, outputName, exts):
    objLabel.AddText('14 TeV')
    objLabel.Draw('same')
 
-   l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.50, 0.90, 'NDC')
+   l1tRateLabel = ROOT.TPaveText(0.165, 0.77, 0.45, 0.82, 'NDC')
    l1tRateLabel.SetFillColor(0)
    l1tRateLabel.SetFillStyle(1001)
    l1tRateLabel.SetTextColor(ROOT.kBlack)
@@ -585,7 +585,7 @@ def plotJetResponse(fpath_PU140, fpath_PU200, outputName, exts):
    l1tRateLabel.AddText('AK4 PF+PUPPI Jets')
    l1tRateLabel.Draw('same')
 
-   hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.35, 0.85, 'NDC')
+   hltRateLabel = ROOT.TPaveText(0.165, 0.72, 0.45, 0.77, 'NDC')
    hltRateLabel.SetFillColor(0)
    hltRateLabel.SetFillStyle(1001)
    hltRateLabel.SetTextColor(ROOT.kBlack)
@@ -631,10 +631,10 @@ def plotJetResponse(fpath_PU140, fpath_PU200, outputName, exts):
    leg2.SetNColumns(1)
    leg2.SetTextFont(42)
    try:
-     leg2.AddEntry(_htmpPU140, '140 PU', 'l')
+     leg2.AddEntry(_htmpPU140, 'PU 140', 'l')
    except: pass
    try:
-     leg2.AddEntry(_htmpPU200, '200 PU', 'l')
+     leg2.AddEntry(_htmpPU200, 'PU 200', 'l')
    except: pass
    leg2.Draw('same')
 
@@ -760,7 +760,7 @@ def plotJetResolution(fpath_PU140, fpath_PU200, outputName, exts):
     histos['PU200']['HB'].Draw('hist,e0,same')
   except: pass
 
-  topLabel = ROOT.TPaveText(0.15, 0.93, 0.55, 0.98, 'NDC')
+  topLabel = ROOT.TPaveText(0.165, 0.85, 0.55, 0.90, 'NDC')
   topLabel.SetFillColor(0)
   topLabel.SetFillStyle(1001)
   topLabel.SetTextColor(ROOT.kBlack)
@@ -768,7 +768,7 @@ def plotJetResolution(fpath_PU140, fpath_PU200, outputName, exts):
   topLabel.SetTextFont(42)
   topLabel.SetTextSize(0.035)
   topLabel.SetBorderSize(0)
-  topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+  topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
   topLabel.Draw('same')
 
   objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -782,7 +782,7 @@ def plotJetResolution(fpath_PU140, fpath_PU200, outputName, exts):
   objLabel.AddText('14 TeV')
   objLabel.Draw('same')
 
-  l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.50, 0.90, 'NDC')
+  l1tRateLabel = ROOT.TPaveText(0.165, 0.79, 0.45, 0.84, 'NDC')
   l1tRateLabel.SetFillColor(0)
   l1tRateLabel.SetFillStyle(1001)
   l1tRateLabel.SetTextColor(ROOT.kBlack)
@@ -793,7 +793,7 @@ def plotJetResolution(fpath_PU140, fpath_PU200, outputName, exts):
   l1tRateLabel.AddText('AK4 PF+PUPPI Jets')
   l1tRateLabel.Draw('same')
 
-  hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.37, 0.85, 'NDC')
+  hltRateLabel = ROOT.TPaveText(0.165, 0.74, 0.45, 0.79, 'NDC')
   hltRateLabel.SetFillColor(0)
   hltRateLabel.SetFillStyle(1001)
   hltRateLabel.SetTextColor(ROOT.kBlack)
@@ -804,9 +804,10 @@ def plotJetResolution(fpath_PU140, fpath_PU200, outputName, exts):
   hltRateLabel.AddText('p_{T}^{HLT} > 30 GeV')
   hltRateLabel.Draw('same')
 
-  leg1 = ROOT.TLegend(0.65, 0.70, 0.94, 0.90)
+  leg1 = ROOT.TLegend(0.72, 0.70, 0.94, 0.90)
   leg1.SetNColumns(1)
   leg1.SetTextFont(42)
+  leg1.SetTextSize(0.035)
   try:
     leg1.AddEntry(histos['PU200']['HB']   ,     '|#eta|<1.5', 'lepx')
     leg1.AddEntry(histos['PU200']['HGCal'], '1.5<|#eta|<3.0', 'lepx')
@@ -826,14 +827,15 @@ def plotJetResolution(fpath_PU140, fpath_PU200, outputName, exts):
     _htmpPU200.SetLineStyle(1)
   except: pass
 
-  leg2 = ROOT.TLegend(0.40, 0.70, 0.65, 0.82)
+  leg2 = ROOT.TLegend(0.54, 0.70, 0.72, 0.83)
   leg2.SetNColumns(1)
   leg2.SetTextFont(42)
+  leg2.SetTextSize(0.035)
   try:
-    leg2.AddEntry(_htmpPU140, '140 PU', 'l')
+    leg2.AddEntry(_htmpPU140, 'PU 140', 'l')
   except: pass
   try:
-    leg2.AddEntry(_htmpPU200, '200 PU', 'l')
+    leg2.AddEntry(_htmpPU200, 'PU 200', 'l')
   except: pass
   leg2.Draw('same')
 
@@ -956,7 +958,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     graphs['PU200']['HF'].Draw('lepz')
   except: pass
 
-  topLabel = ROOT.TPaveText(0.15, 0.93, 0.55, 0.98, 'NDC')
+  topLabel = ROOT.TPaveText(0.165, 0.85, 0.55, 0.90, 'NDC')
   topLabel.SetFillColor(0)
   topLabel.SetFillStyle(1001)
   topLabel.SetTextColor(ROOT.kBlack)
@@ -964,7 +966,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   topLabel.SetTextFont(42)
   topLabel.SetTextSize(0.035)
   topLabel.SetBorderSize(0)
-  topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+  topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
   topLabel.Draw('same')
 
   objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -978,7 +980,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   objLabel.AddText('14 TeV')
   objLabel.Draw('same')
 
-  l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.45, 0.90, 'NDC')
+  l1tRateLabel = ROOT.TPaveText(0.165, 0.35, 0.45, 0.40, 'NDC')
   l1tRateLabel.SetFillColor(0)
   l1tRateLabel.SetFillStyle(1001)
   l1tRateLabel.SetTextColor(ROOT.kBlack)
@@ -989,7 +991,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   l1tRateLabel.AddText('AK4 PF+PUPPI Jets')
   l1tRateLabel.Draw('same')
 
-  hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.45, 0.85, 'NDC')
+  hltRateLabel = ROOT.TPaveText(0.165, 0.30, 0.45, 0.35, 'NDC')
   hltRateLabel.SetFillColor(0)
   hltRateLabel.SetFillStyle(1001)
   hltRateLabel.SetTextColor(ROOT.kBlack)
@@ -1048,14 +1050,14 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     _htmpPU140 = graphs['PU140']['HB'].Clone()
     _htmpPU140.SetLineColor(1)
     _htmpPU140.SetLineStyle(2)
-    leg2.AddEntry(_htmpPU140, '140 PU', 'l')
+    leg2.AddEntry(_htmpPU140, 'PU 140', 'l')
   except: pass
 
   try:
     _htmpPU200 = graphs['PU200']['HB'].Clone()
     _htmpPU200.SetLineColor(1)
     _htmpPU200.SetLineStyle(1)
-    leg2.AddEntry(_htmpPU200, '200 PU', 'l')
+    leg2.AddEntry(_htmpPU200, 'PU 200', 'l')
   except: pass
 
   leg2.Draw('same')
@@ -1171,7 +1173,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     graphs['PU200']['HF'].Draw('lepz')
   except: pass
 
-  topLabel = ROOT.TPaveText(0.15, 0.93, 0.55, 0.98, 'NDC')
+  topLabel = ROOT.TPaveText(0.165, 0.85, 0.55, 0.90, 'NDC')
   topLabel.SetFillColor(0)
   topLabel.SetFillStyle(1001)
   topLabel.SetTextColor(ROOT.kBlack)
@@ -1179,7 +1181,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   topLabel.SetTextFont(42)
   topLabel.SetTextSize(0.035)
   topLabel.SetBorderSize(0)
-  topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+  topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
   topLabel.Draw('same')
 
   objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -1193,7 +1195,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   objLabel.AddText('14 TeV')
   objLabel.Draw('same')
 
-  l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.45, 0.90, 'NDC')
+  l1tRateLabel = ROOT.TPaveText(0.165, 0.35, 0.45, 0.40, 'NDC')
   l1tRateLabel.SetFillColor(0)
   l1tRateLabel.SetFillStyle(1001)
   l1tRateLabel.SetTextColor(ROOT.kBlack)
@@ -1204,7 +1206,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   l1tRateLabel.AddText('AK4 PF+PUPPI Jets')
   l1tRateLabel.Draw('same')
 
-  hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.45, 0.85, 'NDC')
+  hltRateLabel = ROOT.TPaveText(0.165, 0.30, 0.45, 0.35, 'NDC')
   hltRateLabel.SetFillColor(0)
   hltRateLabel.SetFillStyle(1001)
   hltRateLabel.SetTextColor(ROOT.kBlack)
@@ -1229,7 +1231,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     _htmpHB.SetMarkerColor(graphs['PU200']['HB'].GetMarkerColor())
     _htmpHB.SetMarkerSize(graphs['PU200']['HB'].GetMarkerSize())
     _htmpHB.SetMarkerStyle(graphs['PU200']['HB'].GetMarkerStyle())
-  
+
     _htmpHGCal = ROOT.TH1D()
     _htmpHGCal.SetLineStyle(graphs['PU200']['HGCal'].GetLineStyle())
     _htmpHGCal.SetLineWidth(graphs['PU200']['HGCal'].GetLineWidth())
@@ -1237,7 +1239,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     _htmpHGCal.SetMarkerColor(graphs['PU200']['HGCal'].GetMarkerColor())
     _htmpHGCal.SetMarkerSize(graphs['PU200']['HGCal'].GetMarkerSize())
     _htmpHGCal.SetMarkerStyle(graphs['PU200']['HGCal'].GetMarkerStyle())
-  
+
     _htmpHF = ROOT.TH1D()
     _htmpHF.SetLineStyle(graphs['PU200']['HF'].GetLineStyle())
     _htmpHF.SetLineWidth(graphs['PU200']['HF'].GetLineWidth())
@@ -1245,7 +1247,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     _htmpHF.SetMarkerColor(graphs['PU200']['HF'].GetMarkerColor())
     _htmpHF.SetMarkerSize(graphs['PU200']['HF'].GetMarkerSize())
     _htmpHF.SetMarkerStyle(graphs['PU200']['HF'].GetMarkerStyle())
-  
+
     leg1 = ROOT.TLegend(0.60, 0.65, 0.94, 0.90)
     leg1.SetNColumns(1)
     leg1.SetTextFont(42)
@@ -1263,13 +1265,13 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     _htmpPU140 = graphs['PU140']['HB'].Clone()
     _htmpPU140.SetLineColor(1)
     _htmpPU140.SetLineStyle(2)
-    leg2.AddEntry(_htmpPU140, '140 PU', 'l')
+    leg2.AddEntry(_htmpPU140, 'PU 140', 'l')
   except: pass
   try:
     _htmpPU200 = graphs['PU200']['HB'].Clone()
     _htmpPU200.SetLineColor(1)
     _htmpPU200.SetLineStyle(1)
-    leg2.AddEntry(_htmpPU200, '200 PU', 'l')
+    leg2.AddEntry(_htmpPU200, 'PU 200', 'l')
   except: pass
   leg2.Draw('same')
 
@@ -1384,7 +1386,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     graphs['PU200']['HF'].Draw('lepz')
   except: pass
 
-  topLabel = ROOT.TPaveText(0.15, 0.93, 0.55, 0.98, 'NDC')
+  topLabel = ROOT.TPaveText(0.165, 0.85, 0.55, 0.90, 'NDC')
   topLabel.SetFillColor(0)
   topLabel.SetFillStyle(1001)
   topLabel.SetTextColor(ROOT.kBlack)
@@ -1392,7 +1394,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   topLabel.SetTextFont(42)
   topLabel.SetTextSize(0.035)
   topLabel.SetBorderSize(0)
-  topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+  topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
   topLabel.Draw('same')
 
   objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -1406,7 +1408,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   objLabel.AddText('14 TeV')
   objLabel.Draw('same')
 
-  l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.45, 0.90, 'NDC')
+  l1tRateLabel = ROOT.TPaveText(0.165, 0.35, 0.45, 0.40, 'NDC')
   l1tRateLabel.SetFillColor(0)
   l1tRateLabel.SetFillStyle(1001)
   l1tRateLabel.SetTextColor(ROOT.kBlack)
@@ -1417,7 +1419,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   l1tRateLabel.AddText('AK4 PF+PUPPI Jets')
   l1tRateLabel.Draw('same')
 
-  hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.45, 0.85, 'NDC')
+  hltRateLabel = ROOT.TPaveText(0.165, 0.30, 0.45, 0.35, 'NDC')
   hltRateLabel.SetFillColor(0)
   hltRateLabel.SetFillStyle(1001)
   hltRateLabel.SetTextColor(ROOT.kBlack)
@@ -1476,13 +1478,13 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     _htmpPU140 = graphs['PU140']['HB'].Clone()
     _htmpPU140.SetLineColor(1)
     _htmpPU140.SetLineStyle(2)
-    leg2.AddEntry(_htmpPU140, '140 PU', 'l')
+    leg2.AddEntry(_htmpPU140, 'PU 140', 'l')
   except: pass
   try:
     _htmpPU200 = graphs['PU200']['HB'].Clone()
     _htmpPU200.SetLineColor(1)
     _htmpPU200.SetLineStyle(1)
-    leg2.AddEntry(_htmpPU200, '200 PU', 'l')
+    leg2.AddEntry(_htmpPU200, 'PU 200', 'l')
   except: pass
   leg2.Draw('same')
 
@@ -1597,7 +1599,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     graphs['PU200']['HF'].Draw('lepz')
   except: pass
 
-  topLabel = ROOT.TPaveText(0.15, 0.93, 0.55, 0.98, 'NDC')
+  topLabel = ROOT.TPaveText(0.165, 0.85, 0.55, 0.90, 'NDC')
   topLabel.SetFillColor(0)
   topLabel.SetFillStyle(1001)
   topLabel.SetTextColor(ROOT.kBlack)
@@ -1605,7 +1607,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   topLabel.SetTextFont(42)
   topLabel.SetTextSize(0.035)
   topLabel.SetBorderSize(0)
-  topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+  topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
   topLabel.Draw('same')
 
   objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -1619,7 +1621,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   objLabel.AddText('14 TeV')
   objLabel.Draw('same')
 
-  l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.45, 0.90, 'NDC')
+  l1tRateLabel = ROOT.TPaveText(0.165, 0.35, 0.45, 0.40, 'NDC')
   l1tRateLabel.SetFillColor(0)
   l1tRateLabel.SetFillStyle(1001)
   l1tRateLabel.SetTextColor(ROOT.kBlack)
@@ -1630,7 +1632,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   l1tRateLabel.AddText('AK4 PF+PUPPI Jets')
   l1tRateLabel.Draw('same')
 
-  hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.45, 0.85, 'NDC')
+  hltRateLabel = ROOT.TPaveText(0.165, 0.30, 0.45, 0.35, 'NDC')
   hltRateLabel.SetFillColor(0)
   hltRateLabel.SetFillStyle(1001)
   hltRateLabel.SetTextColor(ROOT.kBlack)
@@ -1689,13 +1691,13 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     _htmpPU140 = graphs['PU140']['HB'].Clone()
     _htmpPU140.SetLineColor(1)
     _htmpPU140.SetLineStyle(2)
-    leg2.AddEntry(_htmpPU140, '140 PU', 'l')
+    leg2.AddEntry(_htmpPU140, 'PU 140', 'l')
   except: pass
   try:
     _htmpPU200 = graphs['PU200']['HB'].Clone()
     _htmpPU200.SetLineColor(1)
     _htmpPU200.SetLineStyle(1)
-    leg2.AddEntry(_htmpPU200, '200 PU', 'l')
+    leg2.AddEntry(_htmpPU200, 'PU 200', 'l')
   except: pass
   leg2.Draw('same')
 
@@ -1814,7 +1816,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     graphs['PU200']['Pt200'].Draw('lepz')
   except: pass
 
-  topLabel = ROOT.TPaveText(0.15, 0.93, 0.55, 0.98, 'NDC')
+  topLabel = ROOT.TPaveText(0.165, 0.85, 0.55, 0.90, 'NDC')
   topLabel.SetFillColor(0)
   topLabel.SetFillStyle(1001)
   topLabel.SetTextColor(ROOT.kBlack)
@@ -1822,7 +1824,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   topLabel.SetTextFont(42)
   topLabel.SetTextSize(0.035)
   topLabel.SetBorderSize(0)
-  topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+  topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
   topLabel.Draw('same')
 
   objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -1836,7 +1838,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   objLabel.AddText('14 TeV')
   objLabel.Draw('same')
 
-  l1tRateLabel = ROOT.TPaveText(0.165, 0.85, 0.50, 0.90, 'NDC')
+  l1tRateLabel = ROOT.TPaveText(0.165, 0.35, 0.50, 0.40, 'NDC')
   l1tRateLabel.SetFillColor(0)
   l1tRateLabel.SetFillStyle(1001)
   l1tRateLabel.SetTextColor(ROOT.kBlack)
@@ -1847,7 +1849,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   l1tRateLabel.AddText('AK4 PF+PUPPI Jets')
   l1tRateLabel.Draw('same')
 
-  hltRateLabel = ROOT.TPaveText(0.165, 0.80, 0.35, 0.85, 'NDC')
+  hltRateLabel = ROOT.TPaveText(0.165, 0.30, 0.35, 0.35, 'NDC')
   hltRateLabel.SetFillColor(0)
   hltRateLabel.SetFillStyle(1001)
   hltRateLabel.SetTextColor(ROOT.kBlack)
@@ -1906,13 +1908,13 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
     _htmpPU140 = graphs['PU140']['Pt050'].Clone()
     _htmpPU140.SetLineColor(1)
     _htmpPU140.SetLineStyle(2)
-    leg2.AddEntry(_htmpPU140, '140 PU', 'l')
+    leg2.AddEntry(_htmpPU140, 'PU 140', 'l')
   except: pass
   try:
     _htmpPU200 = graphs['PU200']['Pt050'].Clone()
     _htmpPU200.SetLineColor(1)
     _htmpPU200.SetLineStyle(1)
-    leg2.AddEntry(_htmpPU200, '200 PU', 'l')
+    leg2.AddEntry(_htmpPU200, 'PU 200', 'l')
   except: pass
   leg2.Draw('same')
 
@@ -2050,7 +2052,7 @@ def plotMETResponse(fpath_PU140, fpath_PU200, outputName, exts):
     histos['PU200']['PFPuppiTypeOne'].Draw('ep,same')
   except: pass
 
-  topLabel = ROOT.TPaveText(0.15, 0.93, 0.55, 0.98, 'NDC')
+  topLabel = ROOT.TPaveText(0.165, 0.85, 0.55, 0.90, 'NDC')
   topLabel.SetFillColor(0)
   topLabel.SetFillStyle(1001)
   topLabel.SetTextColor(ROOT.kBlack)
@@ -2058,7 +2060,7 @@ def plotMETResponse(fpath_PU140, fpath_PU200, outputName, exts):
   topLabel.SetTextFont(42)
   topLabel.SetTextSize(0.035)
   topLabel.SetBorderSize(0)
-  topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+  topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
   topLabel.Draw('same')
 
   objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -2099,10 +2101,10 @@ def plotMETResponse(fpath_PU140, fpath_PU200, outputName, exts):
   leg2.SetNColumns(1)
   leg2.SetTextFont(42)
   try:
-    leg2.AddEntry(_htmpPU140, '140 PU', 'l')
+    leg2.AddEntry(_htmpPU140, 'PU 140', 'l')
   except: pass
   try:
-    leg2.AddEntry(_htmpPU200, '200 PU', 'l')
+    leg2.AddEntry(_htmpPU200, 'PU 200', 'l')
   except: pass
   leg2.Draw('same')
 
@@ -2248,7 +2250,7 @@ def plotMETResolution(resType, fpath_PU140, fpath_PU200, outputName, exts):
   topLabel.SetTextFont(42)
   topLabel.SetTextSize(0.035)
   topLabel.SetBorderSize(0)
-  topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+  topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
   topLabel.Draw('same')
 
   objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -2289,8 +2291,8 @@ def plotMETResolution(resType, fpath_PU140, fpath_PU200, outputName, exts):
   leg2.SetNColumns(1)
   leg2.SetTextFont(42)
   try:
-    leg2.AddEntry(_htmpPU140, '140 PU', 'l')
-    leg2.AddEntry(_htmpPU200, '200 PU', 'l')
+    leg2.AddEntry(_htmpPU140, 'PU 140', 'l')
+    leg2.AddEntry(_htmpPU200, 'PU 200', 'l')
   except: pass
   leg2.Draw('same')
 
@@ -2505,7 +2507,7 @@ if __name__ == '__main__':
       topLabel.SetTextFont(42)
       topLabel.SetTextSize(0.035)
       topLabel.SetBorderSize(0)
-      topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+      topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
       topLabel.Draw('same')
 
       objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -2557,10 +2559,10 @@ if __name__ == '__main__':
       leg2.SetNColumns(1)
       leg2.SetTextFont(42)
       try:
-        leg2.AddEntry(_htmpPU140, '140 PU', 'l')
+        leg2.AddEntry(_htmpPU140, 'PU 140', 'l')
       except: pass
       try:
-        leg2.AddEntry(_htmpPU200, '200 PU', 'l')
+        leg2.AddEntry(_htmpPU200, 'PU 200', 'l')
       except: pass
       leg2.Draw('same')
 
@@ -2650,7 +2652,7 @@ if __name__ == '__main__':
       topLabel.SetTextFont(42)
       topLabel.SetTextSize(0.035)
       topLabel.SetBorderSize(0)
-      topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+      topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
       topLabel.Draw('same')
 
       objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -2693,13 +2695,13 @@ if __name__ == '__main__':
         _htmpPU140 = effysHT['PU140']['1300']['HT_L1TpHLT_wrt_'+_tmpRef].Clone()
         _htmpPU140.SetLineColor(1)
         _htmpPU140.SetLineStyle(2)
-        leg2.AddEntry(_htmpPU140, '140 PU', 'l')
+        leg2.AddEntry(_htmpPU140, 'PU 140', 'l')
       except: pass
       try:
         _htmpPU200 = effysHT['PU200']['1300']['HT_L1TpHLT_wrt_'+_tmpRef].Clone()
         _htmpPU200.SetLineColor(1)
         _htmpPU200.SetLineStyle(1)
-        leg2.AddEntry(_htmpPU200, '200 PU', 'l')
+        leg2.AddEntry(_htmpPU200, 'PU 200', 'l')
       except: pass
       leg2.Draw('same')
 
@@ -2838,7 +2840,7 @@ if __name__ == '__main__':
         topLabel.SetTextFont(42)
         topLabel.SetTextSize(0.035)
         topLabel.SetBorderSize(0)
-        topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+        topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
         topLabel.Draw('same')
   
         objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -2849,7 +2851,7 @@ if __name__ == '__main__':
         objLabel.SetTextFont(42)
         objLabel.SetTextSize(0.035)
         objLabel.SetBorderSize(0)
-        objLabel.AddText('200 PU (14 TeV)')
+        objLabel.AddText('PU 200 (14 TeV)')
         objLabel.Draw('same')
   
         l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.65, 0.88, 'NDC')
@@ -2941,7 +2943,7 @@ if __name__ == '__main__':
               topLabel.SetTextFont(42)
               topLabel.SetTextSize(0.035)
               topLabel.SetBorderSize(0)
-              topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+              topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
               topLabel.Draw('same')
   
               objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -2952,7 +2954,7 @@ if __name__ == '__main__':
               objLabel.SetTextFont(42)
               objLabel.SetTextSize(0.035)
               objLabel.SetBorderSize(0)
-              objLabel.AddText(_tmpPU[2:]+' PU (14 TeV)')
+              objLabel.AddText('PU '+_tmpPU[2:]+' (14 TeV)')
               objLabel.Draw('same')
   
               if 'MHT' in _tmpMET:
@@ -3059,7 +3061,7 @@ if __name__ == '__main__':
               topLabel.SetTextFont(42)
               topLabel.SetTextSize(0.035)
               topLabel.SetBorderSize(0)
-              topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+              topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
               topLabel.Draw('same')
 
               objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -3070,7 +3072,7 @@ if __name__ == '__main__':
               objLabel.SetTextFont(42)
               objLabel.SetTextSize(0.035)
               objLabel.SetBorderSize(0)
-              objLabel.AddText(_tmpPU[2:]+' PU (14 TeV)')
+              objLabel.AddText('PU '+_tmpPU[2:]+' (14 TeV)')
               objLabel.Draw('same')
 
               l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.65, 0.88, 'NDC')
@@ -3189,7 +3191,7 @@ if __name__ == '__main__':
           topLabel.SetTextFont(42)
           topLabel.SetTextSize(0.035)
           topLabel.SetBorderSize(0)
-          topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+          topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
           topLabel.Draw('same')
   
           objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -3200,7 +3202,7 @@ if __name__ == '__main__':
           objLabel.SetTextFont(42)
           objLabel.SetTextSize(0.035)
           objLabel.SetBorderSize(0)
-          objLabel.AddText(_tmpPU[2:]+' PU (14 TeV)')
+          objLabel.AddText('PU '+_tmpPU[2:]+' (14 TeV)')
           objLabel.Draw('same')
   
           l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.65, 0.88, 'NDC')
@@ -3326,7 +3328,7 @@ if __name__ == '__main__':
             topLabel.SetTextFont(42)
             topLabel.SetTextSize(0.035)
             topLabel.SetBorderSize(0)
-            topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+            topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
             topLabel.Draw('same')
 
             objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -3367,8 +3369,8 @@ if __name__ == '__main__':
               leg1.SetNColumns(1)
               leg1.SetTextFont(42)
               leg1.AddEntry(effysMET_ttbar['NoPU'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef], 'No PU', 'lepx')
-              leg1.AddEntry(effysMET_ttbar['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef], '140 PU', 'lepx')
-              leg1.AddEntry(effysMET_ttbar['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef], '200 PU', 'lepx')
+              leg1.AddEntry(effysMET_ttbar['PU140'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef], 'PU 140', 'lepx')
+              leg1.AddEntry(effysMET_ttbar['PU200'][_tmpHLTthr][_tmpMETType+'_'+_tmpEff+'_wrt_'+_tmpRef], 'PU 200', 'lepx')
               leg1.Draw('same')
             except: pass
 
@@ -3706,7 +3708,7 @@ if __name__ == '__main__':
     h200tmp.Draw('e2,same')
     h200.Draw('hist,same')
 
-    topLabel = ROOT.TPaveText(0.11, 0.93, 0.95, 0.98, 'NDC')
+    topLabel = ROOT.TPaveText(0.165, 0.85, 0.46, 0.90, 'NDC')
     topLabel.SetFillColor(0)
     topLabel.SetFillStyle(1001)
     topLabel.SetTextColor(ROOT.kBlack)
@@ -3714,8 +3716,19 @@ if __name__ == '__main__':
     topLabel.SetTextFont(42)
     topLabel.SetTextSize(0.035)
     topLabel.SetBorderSize(0)
-    topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+    topLabel.AddText('#font[61]{CMS}')
     topLabel.Draw('same')
+
+    topLabel2 = ROOT.TPaveText(0.165, 0.80, 0.46, 0.85, 'NDC')
+    topLabel2.SetFillColor(0)
+    topLabel2.SetFillStyle(1001)
+    topLabel2.SetTextColor(ROOT.kBlack)
+    topLabel2.SetTextAlign(12)
+    topLabel2.SetTextFont(42)
+    topLabel2.SetTextSize(0.035)
+    topLabel2.SetBorderSize(0)
+    topLabel2.AddText('#font[52]{Phase-2 Simulation}')
+    topLabel2.Draw('same')
 
     objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
     objLabel.SetFillColor(0)
@@ -3728,15 +3741,15 @@ if __name__ == '__main__':
     objLabel.AddText('14 TeV')
     objLabel.Draw('same')
 
-    l1tRateLabel = ROOT.TPaveText(0.65, 0.60, 0.94, 0.73, 'NDC')
+    l1tRateLabel = ROOT.TPaveText(0.46, 0.63, 0.94, 0.73, 'NDC')
     l1tRateLabel.SetFillColor(0)
     l1tRateLabel.SetFillStyle(1001)
     l1tRateLabel.SetTextColor(ROOT.kBlack)
     l1tRateLabel.SetTextAlign(22)
     l1tRateLabel.SetTextFont(42)
-    l1tRateLabel.SetTextSize(0.0325)
+    l1tRateLabel.SetTextSize(0.035)
     l1tRateLabel.SetBorderSize(0)
-    l1tRateLabel.AddText('HLT : Single-Jet')
+    l1tRateLabel.AddText('HLT : Single-Jet (|#eta|<5.0)')
     l1tRateLabel.Draw('same')
 
 #    hltTargetRateLine = ROOT.TLine(_tmp['xmin'], _tmp['hltTargetRateHz'], _tmp['xmax'], _tmp['hltTargetRateHz'])
@@ -3745,11 +3758,12 @@ if __name__ == '__main__':
 #    hltTargetRateLine.SetLineColor(ROOT.kViolet-1)
 #    hltTargetRateLine.Draw('same')
 
-    leg1 = ROOT.TLegend(0.41, 0.73, 0.94, 0.90)
+    leg1 = ROOT.TLegend(0.46, 0.73, 0.94, 0.90)
     leg1.SetNColumns(1)
     leg1.SetTextFont(42)
-    leg1.AddEntry(h140tmp, 'PU 140, L = 5.0 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
-    leg1.AddEntry(h200tmp, 'PU 200, L = 7.5 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
+    leg1.SetTextSize(0.035)
+    leg1.AddEntry(h140tmp, '5.0 #upoint 10^{34} cm^{-2} s^{-1}, PU 140', 'lf')
+    leg1.AddEntry(h200tmp, '7.5 #upoint 10^{34} cm^{-2} s^{-1}, PU 200', 'lf')
     leg1.Draw('same')
 
     canvas.SetLogy(1)
@@ -3802,7 +3816,7 @@ if __name__ == '__main__':
     h200tmp.Draw('e2,same')
     h200.Draw('hist,same')
 
-    topLabel = ROOT.TPaveText(0.11, 0.93, 0.95, 0.98, 'NDC')
+    topLabel = ROOT.TPaveText(0.165, 0.85, 0.46, 0.90, 'NDC')
     topLabel.SetFillColor(0)
     topLabel.SetFillStyle(1001)
     topLabel.SetTextColor(ROOT.kBlack)
@@ -3810,8 +3824,19 @@ if __name__ == '__main__':
     topLabel.SetTextFont(42)
     topLabel.SetTextSize(0.035)
     topLabel.SetBorderSize(0)
-    topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+    topLabel.AddText('#font[61]{CMS}')
     topLabel.Draw('same')
+
+    topLabel2 = ROOT.TPaveText(0.165, 0.80, 0.46, 0.85, 'NDC')
+    topLabel2.SetFillColor(0)
+    topLabel2.SetFillStyle(1001)
+    topLabel2.SetTextColor(ROOT.kBlack)
+    topLabel2.SetTextAlign(12)
+    topLabel2.SetTextFont(42)
+    topLabel2.SetTextSize(0.035)
+    topLabel2.SetBorderSize(0)
+    topLabel2.AddText('#font[52]{Phase-2 Simulation}')
+    topLabel2.Draw('same')
 
     objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
     objLabel.SetFillColor(0)
@@ -3824,13 +3849,13 @@ if __name__ == '__main__':
     objLabel.AddText('14 TeV')
     objLabel.Draw('same')
 
-    l1tRateLabel = ROOT.TPaveText(0.48, 0.63, 0.94, 0.73, 'NDC')
+    l1tRateLabel = ROOT.TPaveText(0.46, 0.63, 0.94, 0.73, 'NDC')
     l1tRateLabel.SetFillColor(0)
     l1tRateLabel.SetFillStyle(1001)
     l1tRateLabel.SetTextColor(ROOT.kBlack)
     l1tRateLabel.SetTextAlign(22)
     l1tRateLabel.SetTextFont(42)
-    l1tRateLabel.SetTextSize(0.0325)
+    l1tRateLabel.SetTextSize(0.035)
     l1tRateLabel.SetBorderSize(0)
     l1tRateLabel.AddText('HLT : Jet H_{T} (p_{T} > 30 GeV, |#eta| < 2.4)')
     l1tRateLabel.Draw('same')
@@ -3841,11 +3866,12 @@ if __name__ == '__main__':
 #    hltTargetRateLine.SetLineColor(ROOT.kViolet-1)
 #    hltTargetRateLine.Draw('same')
 
-    leg1 = ROOT.TLegend(0.41, 0.73, 0.94, 0.90)
+    leg1 = ROOT.TLegend(0.46, 0.73, 0.94, 0.90)
     leg1.SetNColumns(1)
     leg1.SetTextFont(42)
-    leg1.AddEntry(h140tmp, 'PU 140, L = 5.0 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
-    leg1.AddEntry(h200tmp, 'PU 200, L = 7.5 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
+    leg1.SetTextSize(0.035)
+    leg1.AddEntry(h140tmp, '5.0 #upoint 10^{34} cm^{-2} s^{-1}, PU 140', 'lf')
+    leg1.AddEntry(h200tmp, '7.5 #upoint 10^{34} cm^{-2} s^{-1}, PU 200', 'lf')
     leg1.Draw('same')
 
     canvas.SetLogy(1)
@@ -3899,7 +3925,7 @@ if __name__ == '__main__':
     h200tmp.Draw('e2,same')
     h200.Draw('hist,same')
 
-    topLabel = ROOT.TPaveText(0.11, 0.93, 0.95, 0.98, 'NDC')
+    topLabel = ROOT.TPaveText(0.165, 0.85, 0.46, 0.90, 'NDC')
     topLabel.SetFillColor(0)
     topLabel.SetFillStyle(1001)
     topLabel.SetTextColor(ROOT.kBlack)
@@ -3907,8 +3933,19 @@ if __name__ == '__main__':
     topLabel.SetTextFont(42)
     topLabel.SetTextSize(0.035)
     topLabel.SetBorderSize(0)
-    topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+    topLabel.AddText('#font[61]{CMS}')
     topLabel.Draw('same')
+
+    topLabel2 = ROOT.TPaveText(0.165, 0.80, 0.46, 0.85, 'NDC')
+    topLabel2.SetFillColor(0)
+    topLabel2.SetFillStyle(1001)
+    topLabel2.SetTextColor(ROOT.kBlack)
+    topLabel2.SetTextAlign(12)
+    topLabel2.SetTextFont(42)
+    topLabel2.SetTextSize(0.035)
+    topLabel2.SetBorderSize(0)
+    topLabel2.AddText('#font[52]{Phase-2 Simulation}')
+    topLabel2.Draw('same')
 
     objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
     objLabel.SetFillColor(0)
@@ -3921,13 +3958,13 @@ if __name__ == '__main__':
     objLabel.AddText('14 TeV')
     objLabel.Draw('same')
 
-    l1tRateLabel = ROOT.TPaveText(0.60, 0.63, 0.94, 0.73, 'NDC')
+    l1tRateLabel = ROOT.TPaveText(0.46, 0.63, 0.94, 0.73, 'NDC')
     l1tRateLabel.SetFillColor(0)
     l1tRateLabel.SetFillStyle(1001)
     l1tRateLabel.SetTextColor(ROOT.kBlack)
     l1tRateLabel.SetTextAlign(22)
     l1tRateLabel.SetTextFont(42)
-    l1tRateLabel.SetTextSize(0.0325)
+    l1tRateLabel.SetTextSize(0.035)
     l1tRateLabel.SetBorderSize(0)
     l1tRateLabel.AddText('HLT : Raw p_{T}^{miss}')
     l1tRateLabel.Draw('same')
@@ -3938,11 +3975,12 @@ if __name__ == '__main__':
 #    hltTargetRateLine.SetLineColor(ROOT.kViolet-1)
 #    hltTargetRateLine.Draw('same')
 
-    leg1 = ROOT.TLegend(0.41, 0.73, 0.94, 0.90)
+    leg1 = ROOT.TLegend(0.46, 0.73, 0.94, 0.90)
     leg1.SetNColumns(1)
     leg1.SetTextFont(42)
-    leg1.AddEntry(h140tmp, 'PU 140, L = 5.0 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
-    leg1.AddEntry(h200tmp, 'PU 200, L = 7.5 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
+    leg1.SetTextSize(0.035)
+    leg1.AddEntry(h140tmp, '5.0 #upoint 10^{34} cm^{-2} s^{-1}, PU 140', 'lf')
+    leg1.AddEntry(h200tmp, '7.5 #upoint 10^{34} cm^{-2} s^{-1}, PU 200', 'lf')
     leg1.Draw('same')
 
     canvas.SetLogy(1)
@@ -3995,7 +4033,7 @@ if __name__ == '__main__':
     h200tmp.Draw('e2,same')
     h200.Draw('hist,same')
 
-    topLabel = ROOT.TPaveText(0.11, 0.93, 0.95, 0.98, 'NDC')
+    topLabel = ROOT.TPaveText(0.165, 0.85, 0.46, 0.90, 'NDC')
     topLabel.SetFillColor(0)
     topLabel.SetFillStyle(1001)
     topLabel.SetTextColor(ROOT.kBlack)
@@ -4003,8 +4041,19 @@ if __name__ == '__main__':
     topLabel.SetTextFont(42)
     topLabel.SetTextSize(0.035)
     topLabel.SetBorderSize(0)
-    topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+    topLabel.AddText('#font[61]{CMS}')
     topLabel.Draw('same')
+
+    topLabel2 = ROOT.TPaveText(0.165, 0.80, 0.46, 0.85, 'NDC')
+    topLabel2.SetFillColor(0)
+    topLabel2.SetFillStyle(1001)
+    topLabel2.SetTextColor(ROOT.kBlack)
+    topLabel2.SetTextAlign(12)
+    topLabel2.SetTextFont(42)
+    topLabel2.SetTextSize(0.035)
+    topLabel2.SetBorderSize(0)
+    topLabel2.AddText('#font[52]{Phase-2 Simulation}')
+    topLabel2.Draw('same')
 
     objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
     objLabel.SetFillColor(0)
@@ -4017,22 +4066,23 @@ if __name__ == '__main__':
     objLabel.AddText('14 TeV')
     objLabel.Draw('same')
 
-    l1tRateLabel = ROOT.TPaveText(0.60, 0.63, 0.94, 0.73, 'NDC')
+    l1tRateLabel = ROOT.TPaveText(0.46, 0.63, 0.94, 0.73, 'NDC')
     l1tRateLabel.SetFillColor(0)
     l1tRateLabel.SetFillStyle(1001)
     l1tRateLabel.SetTextColor(ROOT.kBlack)
     l1tRateLabel.SetTextAlign(22)
     l1tRateLabel.SetTextFont(42)
-    l1tRateLabel.SetTextSize(0.0325)
+    l1tRateLabel.SetTextSize(0.035)
     l1tRateLabel.SetBorderSize(0)
     l1tRateLabel.AddText('HLT : Type-1 p_{T}^{miss}')
     l1tRateLabel.Draw('same')
 
-    leg1 = ROOT.TLegend(0.41, 0.73, 0.94, 0.90)
+    leg1 = ROOT.TLegend(0.46, 0.73, 0.94, 0.90)
     leg1.SetNColumns(1)
     leg1.SetTextFont(42)
-    leg1.AddEntry(h140tmp, 'PU 140, L = 5.0 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
-    leg1.AddEntry(h200tmp, 'PU 200, L = 7.5 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
+    leg1.SetTextSize(0.035)
+    leg1.AddEntry(h140tmp, '5.0 #upoint 10^{34} cm^{-2} s^{-1}, PU 140', 'lf')
+    leg1.AddEntry(h200tmp, '7.5 #upoint 10^{34} cm^{-2} s^{-1}, PU 200', 'lf')
     leg1.Draw('same')
 
     l1tRateLabel.Draw('same')
@@ -4093,7 +4143,7 @@ if __name__ == '__main__':
       h200tmp.Draw('e2,same')
       h200.Draw('hist,same')
 
-      topLabel = ROOT.TPaveText(0.11, 0.93, 0.95, 0.98, 'NDC')
+      topLabel = ROOT.TPaveText(0.165, 0.85, 0.46, 0.90, 'NDC')
       topLabel.SetFillColor(0)
       topLabel.SetFillStyle(1001)
       topLabel.SetTextColor(ROOT.kBlack)
@@ -4101,8 +4151,19 @@ if __name__ == '__main__':
       topLabel.SetTextFont(42)
       topLabel.SetTextSize(0.035)
       topLabel.SetBorderSize(0)
-      topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+      topLabel.AddText('#font[61]{CMS}')
       topLabel.Draw('same')
+
+      topLabel2 = ROOT.TPaveText(0.165, 0.80, 0.46, 0.85, 'NDC')
+      topLabel2.SetFillColor(0)
+      topLabel2.SetFillStyle(1001)
+      topLabel2.SetTextColor(ROOT.kBlack)
+      topLabel2.SetTextAlign(12)
+      topLabel2.SetTextFont(42)
+      topLabel2.SetTextSize(0.035)
+      topLabel2.SetBorderSize(0)
+      topLabel2.AddText('#font[52]{Phase-2 Simulation}')
+      topLabel2.Draw('same')
 
       objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
       objLabel.SetFillColor(0)
@@ -4114,41 +4175,42 @@ if __name__ == '__main__':
       objLabel.SetBorderSize(0)
       objLabel.AddText('14 TeV')
       objLabel.Draw('same')
-  
-      l1tRateLabel = ROOT.TPaveText(0.57, 0.63, 0.94, 0.73, 'NDC')
+
+      l1tRateLabel = ROOT.TPaveText(0.46, 0.63, 0.94, 0.73, 'NDC')
       l1tRateLabel.SetFillColor(0)
       l1tRateLabel.SetFillStyle(1001)
       l1tRateLabel.SetTextColor(ROOT.kBlack)
       l1tRateLabel.SetTextAlign(22)
       l1tRateLabel.SetTextFont(42)
-      l1tRateLabel.SetTextSize(0.0325)
+      l1tRateLabel.SetTextSize(0.035)
       l1tRateLabel.SetBorderSize(0)
       l1tRateLabel.AddText('HLT : Type-1 p_{T}^{miss} + MHT')
       l1tRateLabel.Draw('same')
-  
-      leg1 = ROOT.TLegend(0.41, 0.73, 0.94, 0.90)
+
+      leg1 = ROOT.TLegend(0.46, 0.73, 0.94, 0.90)
       leg1.SetNColumns(1)
       leg1.SetTextFont(42)
-      leg1.AddEntry(h140tmp, 'PU 140, L = 5.0 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
-      leg1.AddEntry(h200tmp, 'PU 200, L = 7.5 #upoint 10^{34} cm^{-2} s^{-1}', 'lf')
+      leg1.SetTextSize(0.035)
+      leg1.AddEntry(h140tmp, '5.0 #upoint 10^{34} cm^{-2} s^{-1}, PU 140', 'lf')
+      leg1.AddEntry(h200tmp, '7.5 #upoint 10^{34} cm^{-2} s^{-1}, PU 200', 'lf')
       leg1.Draw('same')
-  
+
       l1tRateLabel.Draw('same')
-  
+
       canvas.SetLogy(1)
       canvas.SetGrid(1, 1)
-  
-      h0.SetTitle(';HLT p_{T}^{miss} Threshold [GeV];HLT Rate [Hz]')
+
+      h0.SetTitle(';HLT p_{T}^{miss} and MHT Threshold [GeV];HLT Rate [Hz]')
       h0.GetYaxis().SetTitleOffset(h0.GetYaxis().GetTitleOffset() * 1.0)
       h0.GetYaxis().SetNoExponent()
       h0.GetYaxis().SetMoreLogLabels()
       h0.Draw('axis,same')
-  
+
       for _tmpExt in EXTS:
         canvas.SaveAs(outputDir+'/triggerRate_'+_metType+'.'+_tmpExt)
-  
+
       canvas.Close()
-  
+
       print '\033[1m'+outputDir+'/triggerRate_'+_metType+'\033[0m'
 
     ## MET comparison (Raw vs TypeOne vs TypeOne+MHT)
@@ -4250,7 +4312,7 @@ if __name__ == '__main__':
       topLabel.SetTextFont(42)
       topLabel.SetTextSize(0.035)
       topLabel.SetBorderSize(0)
-      topLabel.AddText('#font[62]{CMS} #font[52]{Phase-2 Simulation}')
+      topLabel.AddText('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
       topLabel.Draw('same')
 
       objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -4261,7 +4323,7 @@ if __name__ == '__main__':
       objLabel.SetTextFont(42)
       objLabel.SetTextSize(0.035)
       objLabel.SetBorderSize(0)
-      objLabel.AddText(_tmpPU[2:]+' PU (14 TeV)')
+      objLabel.AddText('PU '+_tmpPU[2:]+' (14 TeV)')
       objLabel.Draw('same')
 
       l1tRateLabel = ROOT.TPaveText(0.57, 0.43, 0.94, 0.53, 'NDC')
@@ -4270,25 +4332,26 @@ if __name__ == '__main__':
       l1tRateLabel.SetTextColor(ROOT.kBlack)
       l1tRateLabel.SetTextAlign(22)
       l1tRateLabel.SetTextFont(42)
-      l1tRateLabel.SetTextSize(0.0325)
+      l1tRateLabel.SetTextSize(0.035)
       l1tRateLabel.SetBorderSize(0)
       l1tRateLabel.AddText('HLT : Type-1 p_{T}^{miss} (+MHT)')
       l1tRateLabel.Draw('same')
 
-      puLabel = ROOT.TPaveText(0.165, 0.76, 0.43, 0.83, 'NDC')
+      puLabel = ROOT.TPaveText(0.165, 0.85, 0.43, 0.90, 'NDC')
       puLabel.SetFillColor(0)
       puLabel.SetFillStyle(1001)
       puLabel.SetTextColor(ROOT.kBlack)
       puLabel.SetTextAlign(12)
       puLabel.SetTextFont(42)
-      puLabel.SetTextSize(0.0325)
+      puLabel.SetTextSize(0.035)
       puLabel.SetBorderSize(0)
-      puLabel.AddText('L = '+('7.5' if _tmpPU == 'PU200' else '5.0')+' #upoint 10^{34} cm^{-2} s^{-1}')
+      puLabel.AddText(('7.5' if _tmpPU == 'PU200' else '5.0')+' #upoint 10^{34} cm^{-2} s^{-1}')
       puLabel.Draw('same')
 
       leg1 = ROOT.TLegend(0.63, 0.53, 0.94, 0.90)
       leg1.SetNColumns(1)
       leg1.SetTextFont(42)
+      leg1.SetTextSize(0.035)
 #      leg1.AddEntry(h1tmp, 'Raw', 'lf')
       leg1.AddEntry(h2tmp, 'Type-1', 'lf')
       leg1.AddEntry(h3tmp, 'Type-1 + MHT_{20}', 'lf')
