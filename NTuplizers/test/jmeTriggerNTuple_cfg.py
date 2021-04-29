@@ -188,6 +188,9 @@ process.jmeTriggerNTupleInputsSeq = cms.Sequence(
 process.jmeTriggerNTupleInputsPath = cms.Path(process.jmeTriggerNTupleInputsSeq)
 process.schedule_().append(process.jmeTriggerNTupleInputsPath)
 
+ak4jets_stringCut = '' #'pt > 20'
+ak8jets_stringCut = '' #'pt > 80'
+
 process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   TTreeName = cms.string('Events'),
@@ -290,10 +293,10 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoCaloJetCollections = cms.PSet(
 
-#   hltAK4CaloJets = cms.InputTag('hltAK4CaloJets'),
-#   hltAK8CaloJets = cms.InputTag('hltAK8CaloJets'),
+    hltAK4CaloJets = cms.InputTag('hltAK4CaloJets'),
+#    hltAK8CaloJets = cms.InputTag('hltAK8CaloJets'),
 
-#   l1tSlwPFPuppiJets = cms.InputTag('l1tSlwPFPuppiJets', 'UncalibratedPhase1L1TJetFromPfCandidates'),
+#    l1tSlwPFPuppiJets = cms.InputTag('l1tSlwPFPuppiJets', 'UncalibratedPhase1L1TJetFromPfCandidates'),
     l1tSlwPFPuppiJetsCorrected = cms.InputTag('l1tSlwPFPuppiJetsCorrected', 'Phase1L1TJetFromPfCandidates'),
   ),
 
@@ -309,8 +312,9 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 #    l1tAK4PFJets = cms.InputTag('ak4PFL1PF'),
 #    l1tAK4PFPuppiJets = cms.InputTag('ak4PFL1Puppi'),
 
-#    hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
+    hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
 #    hltAK4PFJetsCorrected = cms.InputTag('hltAK4PFJetsCorrected'),
+    hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
 #    hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
 #    hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
 #    hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
@@ -383,39 +387,39 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   stringCutObjectSelectors = cms.PSet(
     # GEN
-    ak4GenJetsNoNu = cms.string('pt > 15'),
-    ak8GenJetsNoNu = cms.string('pt > 50'),
+    ak4GenJetsNoNu = cms.string(''),
+    ak8GenJetsNoNu = cms.string(''),
 
     # L1T AK4
-    l1tAK4CaloJets = cms.string('pt > 20'),
-    l1tAK4PFJets = cms.string('pt > 20'),
-    l1tAK4PFPuppiJets = cms.string('pt > 20'),
-    l1tSlwPFPuppiJets = cms.string('pt > 20'),
+    l1tAK4CaloJets = cms.string(ak4jets_stringCut),
+    l1tAK4PFJets = cms.string(ak4jets_stringCut),
+    l1tAK4PFPuppiJets = cms.string(ak4jets_stringCut),
+    l1tSlwPFPuppiJets = cms.string(ak4jets_stringCut),
 
-    l1tAK4CaloJetsCorrected = cms.string('pt > 20'),
-    l1tAK4PFJetsCorrected = cms.string('pt > 20'),
-    l1tAK4PFPuppiJetsCorrected = cms.string('pt > 20'),
-    l1tSlwPFPuppiJetsCorrected = cms.string('pt > 20'),
+    l1tAK4CaloJetsCorrected = cms.string(ak4jets_stringCut),
+    l1tAK4PFJetsCorrected = cms.string(ak4jets_stringCut),
+    l1tAK4PFPuppiJetsCorrected = cms.string(ak4jets_stringCut),
+    l1tSlwPFPuppiJetsCorrected = cms.string(ak4jets_stringCut),
 
     # HLT AK4
-    hltAK4CaloJets = cms.string('pt > 20'),
-    hltAK4PFClusterJets = cms.string('pt > 20'),
-    hltAK4PFJets = cms.string('pt > 20'),
-    hltAK4PFJetsCorrected = cms.string('pt > 20'),
-    hltAK4PFCHSJetsCorrected = cms.string('pt > 20'),
-    hltAK4PFPuppiJetsCorrected = cms.string('pt > 20'),
+    hltAK4CaloJets = cms.string(ak4jets_stringCut),
+    hltAK4PFClusterJets = cms.string(ak4jets_stringCut),
+    hltAK4PFJets = cms.string(ak4jets_stringCut),
+    hltAK4PFJetsCorrected = cms.string(ak4jets_stringCut),
+    hltAK4PFCHSJetsCorrected = cms.string(ak4jets_stringCut),
+    hltAK4PFPuppiJetsCorrected = cms.string(ak4jets_stringCut),
 
     # HLT AK8
-    hltAK8CaloJets = cms.string('pt > 80'),
-    hltAK8PFClusterJets = cms.string('pt > 80'),
-    hltAK8PFJetsCorrected = cms.string('pt > 80'),
-    hltAK8PFCHSJetsCorrected = cms.string('pt > 80'),
-    hltAK8PFPuppiJetsCorrected = cms.string('pt > 80'),
+    hltAK8CaloJets = cms.string(ak8jets_stringCut),
+    hltAK8PFClusterJets = cms.string(ak8jets_stringCut),
+    hltAK8PFJetsCorrected = cms.string(ak8jets_stringCut),
+    hltAK8PFCHSJetsCorrected = cms.string(ak8jets_stringCut),
+    hltAK8PFPuppiJetsCorrected = cms.string(ak8jets_stringCut),
 
     # Offline
-    offlineAK4PFCHSJetsCorrected = cms.string('pt > 20'),
-    offlineAK4PFPuppiJetsCorrected = cms.string('pt > 20'),
-    offlineAK8PFPuppiJetsCorrected = cms.string('pt > 80'),
+    offlineAK4PFCHSJetsCorrected = cms.string(ak4jets_stringCut),
+    offlineAK4PFPuppiJetsCorrected = cms.string(ak4jets_stringCut),
+    offlineAK8PFPuppiJetsCorrected = cms.string(ak8jets_stringCut),
   ),
 
   outputBranchesToBeDropped = cms.vstring(
