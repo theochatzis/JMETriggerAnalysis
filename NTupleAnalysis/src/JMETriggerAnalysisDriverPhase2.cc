@@ -72,6 +72,20 @@ bool JMETriggerAnalysisDriverPhase2::jetBelongsToCategory(const std::string& cat
   else if(categLabel == "_HF2Pt3"){ ret = (4.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (400. <= jetPt) and (jetPt < 2000.); }
   else if(categLabel == "_HF2Pt4"){ ret = (4.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (2000. <= jetPt); }
 
+  else if(categLabel == "_HF3"){ ret = (3.0 <= jetAbsEta) and (jetAbsEta < 3.2); }
+  else if(categLabel == "_HF3Pt0"){ ret = (3.0 <= jetAbsEta) and (jetAbsEta < 3.2) and (30. <= jetPt) and (jetPt < 60.); }
+  else if(categLabel == "_HF3Pt1"){ ret = (3.0 <= jetAbsEta) and (jetAbsEta < 3.2) and (60. <= jetPt) and (jetPt < 110.); }
+  else if(categLabel == "_HF3Pt2"){ ret = (3.0 <= jetAbsEta) and (jetAbsEta < 3.2) and (110. <= jetPt) and (jetPt < 400.); }
+  else if(categLabel == "_HF3Pt3"){ ret = (3.0 <= jetAbsEta) and (jetAbsEta < 3.2) and (400. <= jetPt) and (jetPt < 2000.); }
+  else if(categLabel == "_HF3Pt4"){ ret = (3.0 <= jetAbsEta) and (jetAbsEta < 3.2) and (2000. <= jetPt); }
+
+  else if(categLabel == "_HF4"){ ret = (3.2 <= jetAbsEta) and (jetAbsEta < 4.0); }
+  else if(categLabel == "_HF4Pt0"){ ret = (3.2 <= jetAbsEta) and (jetAbsEta < 4.0) and (30. <= jetPt) and (jetPt < 60.); }
+  else if(categLabel == "_HF4Pt1"){ ret = (3.2 <= jetAbsEta) and (jetAbsEta < 4.0) and (60. <= jetPt) and (jetPt < 110.); }
+  else if(categLabel == "_HF4Pt2"){ ret = (3.2 <= jetAbsEta) and (jetAbsEta < 4.0) and (110. <= jetPt) and (jetPt < 400.); }
+  else if(categLabel == "_HF4Pt3"){ ret = (3.2 <= jetAbsEta) and (jetAbsEta < 4.0) and (400. <= jetPt) and (jetPt < 2000.); }
+  else if(categLabel == "_HF4Pt4"){ ret = (3.2 <= jetAbsEta) and (jetAbsEta < 4.0) and (2000. <= jetPt); }
+
   return ret;
 }
 
@@ -133,6 +147,20 @@ void JMETriggerAnalysisDriverPhase2::init(){
 //  "_HF2Pt2",
 //  "_HF2Pt3",
 //  "_HF2Pt4",
+
+    "_HF3",
+//  "_HF3Pt0",
+//  "_HF3Pt1",
+//  "_HF3Pt2",
+//  "_HF3Pt3",
+//  "_HF3Pt4",
+
+    "_HF4",
+//  "_HF4Pt0",
+//  "_HF4Pt1",
+//  "_HF4Pt2",
+//  "_HF4Pt3",
+//  "_HF4Pt4",
   };
 
   // histogram: events counter
@@ -146,11 +174,11 @@ void JMETriggerAnalysisDriverPhase2::init(){
       {"l1tPFCorr"      , "l1tAK4PFJetsCorrected"},
       {"l1tPFPuppiCorr2", "l1tAK4PFPuppiJetsCorrected"},
       {"l1tPFPuppiCorr" , "l1tSlwPFPuppiJetsCorrected"},
-//    {"hltCalo"        , "hltAK4CaloJets"},
-//    {"hltPFCluster"   , "hltAK4PFClusterJets"},
-//    {"hltPF"          , "hltAK4PFJets"},
-      {"hltPFCorr"      , "hltAK4PFJetsCorrected"},
-//    {"hltPFCHS"       , "hltAK4PFCHSJets"},
+      {"hltCalo"        , "hltAK4CaloJets"},
+//      {"hltPFCluster"   , "hltAK4PFClusterJets"},
+      {"hltPF"          , "hltAK4PFJets"},
+//      {"hltPFCorr"      , "hltAK4PFJetsCorrected"},
+//      {"hltPFCHS"       , "hltAK4PFCHSJets"},
       {"hltPFCHSCorr"   , "hltAK4PFCHSJetsCorrected"},
       {"hltPFPuppi"     , "hltAK4PFPuppiJets"},
       {"hltPFPuppiCorr" , "hltAK4PFPuppiJetsCorrected"},
@@ -162,13 +190,13 @@ void JMETriggerAnalysisDriverPhase2::init(){
 //    {"l1tAK4PFPuppiJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
     {"l1tSlwPFPuppiJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}}},//, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
 
-//  {"hltAK4CaloJets"            , {{"GEN", "ak4GenJetsNoNu"}}},
-//  {"hltAK4PFClusterJets"       , {{"GEN", "ak4GenJetsNoNu"}}},
-//  {"hltAK4PFJets"              , {{"GEN", "ak4GenJetsNoNu"}}},
-    {"hltAK4PFJetsCorrected"     , {{"GEN", "ak4GenJetsNoNu"}}},
-//  {"hltAK4PFCHSJets"           , {{"GEN", "ak4GenJetsNoNu"}}},
-    {"hltAK4PFCHSJetsCorrected"  , {{"GEN", "ak4GenJetsNoNu"}}},//, {"Offline", "offlineAK4PFCHSJetsCorrected"}}},
-//  {"hltAK4PFPuppiJets"         , {{"GEN", "ak4GenJetsNoNu"}}},
+    {"hltAK4CaloJets"            , {{"GEN", "ak4GenJetsNoNu"}}},
+//    {"hltAK4PFClusterJets"       , {{"GEN", "ak4GenJetsNoNu"}}},
+    {"hltAK4PFJets"              , {{"GEN", "ak4GenJetsNoNu"}}},
+//    {"hltAK4PFJetsCorrected"     , {{"GEN", "ak4GenJetsNoNu"}}},
+//    {"hltAK4PFCHSJets"           , {{"GEN", "ak4GenJetsNoNu"}}},
+//    {"hltAK4PFCHSJetsCorrected"  , {{"GEN", "ak4GenJetsNoNu"}}},//, {"Offline", "offlineAK4PFCHSJetsCorrected"}}},
+//    {"hltAK4PFPuppiJets"         , {{"GEN", "ak4GenJetsNoNu"}}},
     {"hltAK4PFPuppiJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}}},//, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
 
 //    {"offlineAK4PFCHSJetsCorrected"  , {{"GEN", "ak4GenJetsNoNu"}}},
@@ -178,24 +206,24 @@ void JMETriggerAnalysisDriverPhase2::init(){
   labelMap_jetAK8_.clear();
   labelMap_jetAK8_ = {
     {"ak8GenJetsNoNu", {
-//    {"hltCalo"        , "hltAK8CaloJets"},
-//    {"hltPFCluster"   , "hltAK8PFClusterJets"},
-//    {"hltPF"          , "hltAK8PFJets"},
+//      {"hltCalo"        , "hltAK8CaloJets"},
+//      {"hltPFCluster"   , "hltAK8PFClusterJets"},
+//      {"hltPF"          , "hltAK8PFJets"},
       {"hltPFCorr"      , "hltAK8PFJetsCorrected"},
-//    {"hltPFCHS"       , "hltAK8PFCHSJets"},
+//      {"hltPFCHS"       , "hltAK8PFCHSJets"},
       {"hltPFCHSCorr"   , "hltAK8PFCHSJetsCorrected"},
-//    {"hltPFPuppi"     , "hltAK8PFPuppiJets"},
+//      {"hltPFPuppi"     , "hltAK8PFPuppiJets"},
       {"hltPFPuppiCorr" , "hltAK8PFPuppiJetsCorrected"},
 //      {"offlPFPuppiCorr", "offlineAK8PFPuppiJetsCorrected"},
     }},
 
-//  {"hltAK8CaloJets"            , {{"GEN", "ak8GenJetsNoNu"}}},
-//  {"hltAK8PFClusterJets"       , {{"GEN", "ak8GenJetsNoNu"}}},
-//  {"hltAK8PFJets"              , {{"GEN", "ak8GenJetsNoNu"}}},
+//    {"hltAK8CaloJets"            , {{"GEN", "ak8GenJetsNoNu"}}},
+//    {"hltAK8PFClusterJets"       , {{"GEN", "ak8GenJetsNoNu"}}},
+//    {"hltAK8PFJets"              , {{"GEN", "ak8GenJetsNoNu"}}},
     {"hltAK8PFJetsCorrected"     , {{"GEN", "ak8GenJetsNoNu"}}},
-//  {"hltAK8PFCHSJets"           , {{"GEN", "ak8GenJetsNoNu"}}},
+//    {"hltAK8PFCHSJets"           , {{"GEN", "ak8GenJetsNoNu"}}},
     {"hltAK8PFCHSJetsCorrected"  , {{"GEN", "ak8GenJetsNoNu"}}}, //, {"Offline", "offlineAK8PFCHSJetsCorrected"}}},
-//  {"hltAK8PFPuppiJets"         , {{"GEN", "ak8GenJetsNoNu"}}},
+//    {"hltAK8PFPuppiJets"         , {{"GEN", "ak8GenJetsNoNu"}}},
     {"hltAK8PFPuppiJetsCorrected", {{"GEN", "ak8GenJetsNoNu"}}}, //, {"Offline", "offlineAK8PFPuppiJetsCorrected"}}},
 
 //    {"offlineAK8PFCHSJetsCorrected"  , {{"GEN", "ak8GenJetsNoNu"}}},

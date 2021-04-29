@@ -2,17 +2,18 @@
 
 # directory with input JMETriggerNTuple(s)
 #INPDIR=/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/Upgrade/JetMET_PhaseII/JMETriggerAnalysis_phase2/ntuples/output_hltPhase2_201209
-INPDIR=/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/Upgrade/JetMET_PhaseII/JMETriggerAnalysis_phase2/ntuples/output_hltPhase2_210421_HFtest
+#INPDIR=/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/Upgrade/JetMET_PhaseII/JMETriggerAnalysis_phase2/ntuples/output_hltPhase2_210421_HFtest
+INPDIR=/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/Upgrade/JetMET_PhaseII/JMETriggerAnalysis_phase2/ntuples/output_hltPhase2_210427_HFtestCalo
 
 # directory with outputs of NTupleAnalysis
 #OUTDIR=output_hltPhase2_201209_HLTTDR_hltGENdR05
-OUTDIR=output_hltPhase2_210421_HFtest_hltPt0dR06
+#OUTDIR=output_hltPhase2_210421_HFtest_hltPt0dR06
+OUTDIR=output_hltPhase2_210427_HFtestCalo
 
 mkdir -p ${OUTDIR}
+[ -d ${OUTDIR}/ntuples ] || (ln -sf ${INPDIR} ${OUTDIR}/ntuples)
 
-ln -sf ${INPDIR} ${OUTDIR}/ntuples
-
-batch_driver.py -l 1 -n 100000 -p JMETriggerAnalysisDriverPhase2 \
+batch_driver.py -l 1 -n 50000 -p JMETriggerAnalysisDriverPhase2 \
  -i ${OUTDIR}/ntuples/*/*.root -o ${OUTDIR}/jobs \
  --AccountingGroup group_u_CMS.CAF.PHYS --JobFlavour longlunch
 
@@ -22,7 +23,7 @@ merge_batchOutputs.py -l 1 -i ${OUTDIR}/jobs/*/*.root -o ${OUTDIR}/outputs
 rm -rf ${OUTDIR}/jobs
 
 NUM_PROC=$(nproc)
-if [[ ${HOSTNAME} == lxplus* ]]; then NUM_PROC=3; fi;
+if [[ ${HOSTNAME} == lxplus* ]]; then NUM_PROC=1; fi;
 
 for rootfile_i in ${OUTDIR}/outputs/*/*.root; do
   while [ $(jobs -p | wc -l) -ge ${NUM_PROC} ]; do sleep 5; done
