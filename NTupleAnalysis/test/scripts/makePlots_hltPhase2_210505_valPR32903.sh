@@ -14,8 +14,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-inpdir=${JMEANA_BASE}/output_hltPhase2_210428_hltMuonVal
-outdir=plots_hltPhase2_210428_hltMuonVal
+inpdir=${JMEANA_BASE}/output_hltPhase2_210505_valPR32903_4c2994be
+outdir=plots_hltPhase2_210505_valPR32903_4c2994be
 
 samples=(
 # Phase2HLTTDR_QCD_PtFlat15to3000_14TeV_NoPU

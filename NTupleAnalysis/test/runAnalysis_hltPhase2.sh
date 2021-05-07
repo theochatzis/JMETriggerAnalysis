@@ -4,13 +4,15 @@
 #INPDIR=/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/Upgrade/JetMET_PhaseII/JMETriggerAnalysis_phase2/ntuples/output_hltPhase2_201209
 #INPDIR=/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/Upgrade/JetMET_PhaseII/JMETriggerAnalysis_phase2/ntuples/output_hltPhase2_210421_HFtest
 #INPDIR=/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/Upgrade/JetMET_PhaseII/JMETriggerAnalysis_phase2/ntuples/output_hltPhase2_210427_HFtestCalo
-INPDIR=/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/Upgrade/JetMET_PhaseII/JMETriggerAnalysis_phase2/ntuples/output_hltPhase2_210428_hltMuonVal
+#INPDIR=/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/Upgrade/JetMET_PhaseII/JMETriggerAnalysis_phase2/ntuples/output_hltPhase2_210428_hltMuonVal
+INPDIR=/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/Upgrade/JetMET_PhaseII/JMETriggerAnalysis_phase2/ntuples/output_hltPhase2_210505_valPR32903_4c2994be
 
 # directory with outputs of NTupleAnalysis
 #OUTDIR=output_hltPhase2_201209_HLTTDR_hltGENdR05
 #OUTDIR=output_hltPhase2_210421_HFtest_hltPt0dR06
 #OUTDIR=output_hltPhase2_210427_HFtestCalo
-OUTDIR=output_hltPhase2_210428_hltMuonVal
+#OUTDIR=output_hltPhase2_210428_hltMuonVal
+OUTDIR=output_hltPhase2_210505_valPR32903_4c2994be
 
 mkdir -p ${OUTDIR}
 [ -d ${OUTDIR}/ntuples ] || (ln -sf ${INPDIR} ${OUTDIR}/ntuples)
