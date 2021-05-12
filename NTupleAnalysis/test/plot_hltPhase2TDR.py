@@ -667,6 +667,12 @@ def plotJetResolution(fpath_PU140, fpath_PU200, outputName, exts):
     },
   }
 
+  saveOutput_jetResponsePerBin = False
+
+  if saveOutput_jetResponsePerBin:
+    tmpOutFile = ROOT.TFile(os.path.dirname(outputName)+'/hltPhase2_jetResponsePerPtBin.root', 'recreate')
+    tmpOutFile.cd()
+
   for [_puTag, _tmpFilePath] in [
     ['PU140', fpath_PU140],
     ['PU200', fpath_PU200],
@@ -686,6 +692,14 @@ def plotJetResolution(fpath_PU140, fpath_PU200, outputName, exts):
         _h1tmp_err = _h1tmp.GetRMSError() / _h1tmp.GetMean() if _h1tmp.GetMean() != 0. else None
         h1vals.append([_h1tmp_val, _h1tmp_err])
 
+        if saveOutput_jetResponsePerBin:
+          _h1tmp2 = _h1tmp.Clone()
+          tmpOutputName = _puTag+'_hltAK4PFPuppiJetsCorrected_'+_etaTag+'_MatchedToGEN_pt_overGEN__GENptFrom{:04f}To{:04f}'
+          tmpOutputName = tmpOutputName.format(binEdges[pTbinEdge_idx], binEdges[pTbinEdge_idx+1])
+          _h1tmp2.SetName(tmpOutputName)
+          tmpOutFile.cd()
+          _h1tmp2.Write()
+
       histos[_puTag][_etaTag] = ROOT.TH1D(tmpName(), tmpName(False), len(binEdges)-1, binEdges)
       histos[_puTag][_etaTag].SetDirectory(0)
       histos[_puTag][_etaTag].UseCurrentStyle()
@@ -693,6 +707,9 @@ def plotJetResolution(fpath_PU140, fpath_PU200, outputName, exts):
         if h1vals[_binIdx] != [None, None]:
           histos[_puTag][_etaTag].SetBinContent(_binIdx+1, h1vals[_binIdx][0])
           histos[_puTag][_etaTag].SetBinError(_binIdx+1, h1vals[_binIdx][1])
+
+  if saveOutput_jetResponsePerBin:
+    tmpOutFile.Close()
 
   canvas = ROOT.TCanvas(tmpName(), tmpName(False))
   canvas.cd()
