@@ -34,6 +34,16 @@ opts.register('wantSummary', False,
               vpo.VarParsing.varType.bool,
               'show cmsRun summary at job completion')
 
+opts.register('isData', True,
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.bool,
+              'apply customizations for real collisions Data')
+
+opts.register('era', "2018",
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.string,
+              'keyword for data-taking period')
+
 #opts.register('globalTag', None,
 #              vpo.VarParsing.multiplicity.singleton,
 #              vpo.VarParsing.varType.string,
@@ -155,61 +165,88 @@ process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
 
 ## ES modules for HLT JECs
 process.jescESSource = cms.ESSource('PoolDBESSource',
-  _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/data/JESC_Run3Winter20_V1_MC.db'),
+  _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/data/JESC_Run3Winter20_V2_MC.db'),
   toGet = cms.VPSet(
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
-      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V1_MC_AK4CaloHLT'),
+      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V2_MC_AK4CaloHLT'),
       label = cms.untracked.string('AK4CaloHLT'),
     ),
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
-      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V1_MC_AK4PFClusterHLT'),
+      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V2_MC_AK4PFClusterHLT'),
       label = cms.untracked.string('AK4PFClusterHLT'),
     ),
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
-      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V1_MC_AK4PFHLT'),
+      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V2_MC_AK4PFHLT'),
       label = cms.untracked.string('AK4PFHLT'),
     ),
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
-      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V1_MC_AK4PFHLT'),
+      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V2_MC_AK4PFHLT'),
       label = cms.untracked.string('AK4PFchsHLT'),
     ),
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
-      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V1_MC_AK4PFPuppiHLT'),
+      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V2_MC_AK4PFPuppiHLT'),
       label = cms.untracked.string('AK4PFPuppiHLT'),
     ),
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
-      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V1_MC_AK4CaloHLT'),#!!
+      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V2_MC_AK4CaloHLT'),#!!
       label = cms.untracked.string('AK8CaloHLT'),
     ),
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
-      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V1_MC_AK4PFClusterHLT'),#!!
+      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V2_MC_AK4PFClusterHLT'),#!!
       label = cms.untracked.string('AK8PFClusterHLT'),
     ),
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
-      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V1_MC_AK4PFHLT'),#!!
+      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V2_MC_AK4PFHLT'),#!!
       label = cms.untracked.string('AK8PFHLT'),
     ),
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
-      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V1_MC_AK4PFHLT'),#!!
+      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V2_MC_AK4PFHLT'),#!!
       label = cms.untracked.string('AK8PFchsHLT'),
     ),
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
-      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V1_MC_AK4PFPuppiHLT'),#!!
+      tag = cms.string('JetCorrectorParametersCollection_Run3Winter20_V2_MC_AK4PFPuppiHLT'),#!!
       label = cms.untracked.string('AK8PFPuppiHLT'),
     ),
   ),
 )
 process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
+
+### METFilters
+#from JMETriggerAnalysis.NTuplizers.METFilters_cff import METFilters
+#process = METFilters(process, era=opts.era, isData=False)
+#
+### Muons
+#from JMETriggerAnalysis.NTuplizers.userMuons_cff import userMuons
+#process, userMuonsCollection = userMuons(process)
+#
+### Electrons
+#from JMETriggerAnalysis.NTuplizers.userElectrons_cff import userElectrons
+#process, userElectronsCollection = userElectrons(process, era=opts.era)
+#
+### METs
+#from JMETriggerAnalysis.NTuplizers.userMETs_cff import userMETs
+#process = userMETs(process, isData=False, era=opts.era) 
+#
+### Jets
+#from JMETriggerAnalysis.NTuplizers.userJets_AK04PFCHS_cff import userJets_AK04PFCHS
+#process, userJetsAK04PFCHSCollection = userJets_AK04PFCHS(process, era=opts.era, isData=opts.isData)
+#
+#from JMETriggerAnalysis.NTuplizers.ele32DoubleL1ToSingleL1FlagProducer_cfi import ele32DoubleL1ToSingleL1FlagProducer
+#process.ele32DoubleL1ToSingleL1Flag = ele32DoubleL1ToSingleL1FlagProducer.clone(
+#  electrons = cms.InputTag('slimmedElectrons'),
+#  triggerResults = cms.InputTag('TriggerResults::HLT'),
+#  triggerObjects = cms.InputTag('slimmedPatTrigger'),
+#)
 
 ## Output NTuple
 process.TFileService = cms.Service('TFileService', fileName = cms.string(opts.output))
@@ -217,9 +254,57 @@ process.TFileService = cms.Service('TFileService', fileName = cms.string(opts.ou
 process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   TTreeName = cms.string('Events'),
   TriggerResults = cms.InputTag('TriggerResults'),
-  TriggerResultsFilterOR = cms.vstring(),
+  TriggerResultsFilterOR = cms.vstring(
+    # IsoMu
+    'HLT_IsoMu24',
+    'HLT_IsoMu24_eta2p1',
+    'HLT_IsoMu27',
+
+    # Ele
+    'HLT_Ele27_WPTight_Gsf',
+    'HLT_Ele32_WPTight_Gsf',
+    'HLT_Ele32_WPTight_Gsf_L1DoubleEG',
+    'HLT_Ele35_WPTight_Gsf',
+  ),
   TriggerResultsFilterAND = cms.vstring(),
-  TriggerResultsCollections = cms.vstring(),
+  TriggerResultsCollections = cms.vstring(
+    # IsoMu
+    'HLT_IsoMu24',
+    'HLT_IsoMu24_eta2p1',
+    'HLT_IsoMu27',
+
+    # Ele
+    'HLT_Ele27_WPTight_Gsf',
+    'HLT_Ele32_WPTight_Gsf',
+    'HLT_Ele32_WPTight_Gsf_L1DoubleEG',
+    'HLT_Ele35_WPTight_Gsf',
+
+    # PFJet, PFHT, Others
+    'HLT_PFHT1050',
+    'HLT_PFJet400',
+    'HLT_PFJet450',
+    'HLT_PFJet500',
+    'HLT_PFJet550',
+
+    # PFMET
+    'HLT_PFMET200_NotCleaned',
+    'HLT_PFMET200_HBHECleaned',
+    'HLT_PFMET200_HBHE_BeamHaloCleaned',
+    'HLT_PFMET250_HBHECleaned',
+    'HLT_PFMET300',
+    'HLT_PFMET300_HBHECleaned',
+    'HLT_PFMET400',
+    'HLT_PFMET500',
+    'HLT_PFMET600',
+    'HLT_PFMETTypeOne190_HBHE_BeamHaloCleaned',
+    'HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned',
+  ),
+  fillCollectionConditions = cms.PSet(),
+
+  bools = cms.PSet(
+    Flag_ele32DoubleL1ToSingleL1 = cms.InputTag('ele32DoubleL1ToSingleL1Flag'),
+  ),
+
   outputBranchesToBeDropped = cms.vstring(),
 
   HepMCProduct = cms.InputTag('generatorSmeared'),
@@ -325,7 +410,37 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     offlinePFMET = cms.InputTag('slimmedMETs'),
     offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
   ),
+
+#  patMuonCollections = cms.PSet(
+#    offlineMuons = cms.InputTag(userMuonsCollection),
+#  ),
+#
+#  patElectronCollections = cms.PSet(
+#    offlineElectrons = cms.InputTag(userElectronsCollection),
+#  ),
 )
+
+## Trigger Flags
+process.triggerFlagsTask = cms.Task()
+
+hltPathsWithTriggerFlags = [
+  'HLT_PFJet400',
+  'HLT_PFJet450',
+  'HLT_PFJet500',
+  'HLT_PFJet550',
+  'HLT_PFHT1050',
+  'HLT_PFMET200_NotCleaned',
+  'HLT_PFMET200_HBHECleaned',
+  'HLT_PFMET200_HBHE_BeamHaloCleaned',
+  'HLT_PFMET250_HBHECleaned',
+  'HLT_PFMET300',
+  'HLT_PFMET300_HBHECleaned',
+  'HLT_PFMET400',
+  'HLT_PFMET500',
+  'HLT_PFMET600',
+  'HLT_PFMETTypeOne190_HBHE_BeamHaloCleaned',
+  'HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned',
+]
 
 if opts.keepPFPuppi:
   process.hltPFPuppi.puppiDiagnostics = True
@@ -360,7 +475,7 @@ process.maxEvents.input = opts.maxEvents
 process.source.skipEvents = cms.untracked.uint32(opts.skipEvents)
 
 # multi-threading settings
-process.options.numberOfThreads = max(opts.numThreads, 1)
+process.options.numberOfThreads = max(opts.numThreads, 8)
 process.options.numberOfStreams = max(opts.numStreams, 0)
 
 # show cmsRun summary at job completion
