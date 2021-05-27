@@ -34,7 +34,7 @@ opts.register('wantSummary', False,
               vpo.VarParsing.varType.bool,
               'show cmsRun summary at job completion')
 
-opts.register('isData', True,
+opts.register('isData', False,
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.bool,
               'apply customizations for real collisions Data')
@@ -254,18 +254,7 @@ process.TFileService = cms.Service('TFileService', fileName = cms.string(opts.ou
 process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   TTreeName = cms.string('Events'),
   TriggerResults = cms.InputTag('TriggerResults'),
-  TriggerResultsFilterOR = cms.vstring(
-    # IsoMu
-    'HLT_IsoMu24',
-    'HLT_IsoMu24_eta2p1',
-    'HLT_IsoMu27',
-
-    # Ele
-    'HLT_Ele27_WPTight_Gsf',
-    'HLT_Ele32_WPTight_Gsf',
-    'HLT_Ele32_WPTight_Gsf_L1DoubleEG',
-    'HLT_Ele35_WPTight_Gsf',
-  ),
+  TriggerResultsFilterOR = cms.vstring(),
   TriggerResultsFilterAND = cms.vstring(),
   TriggerResultsCollections = cms.vstring(
     # IsoMu
