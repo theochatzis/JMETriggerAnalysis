@@ -151,7 +151,7 @@ process = addPaths_MC_JMEPFPuppi(process)
 import os
 from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
 process.pfhcESSource = cms.ESSource('PoolDBESSource',
-  _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/data/PFHC_Run3Winter20_HLT_v01.db'),
+  _CondDB.clone(connect = 'sqlite_file:PFHC_Run3Winter20_HLT_v01.db'),
   toGet = cms.VPSet(
     cms.PSet(
       record = cms.string('PFCalibrationRcd'),
@@ -165,7 +165,7 @@ process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
 
 ## ES modules for HLT JECs
 process.jescESSource = cms.ESSource('PoolDBESSource',
-  _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/data/JESC_Run3Winter20_V2_MC.db'),
+  _CondDB.clone(connect = 'sqlite_file:JESC_Run3Winter20_V2_MC.db'),
   toGet = cms.VPSet(
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
@@ -221,33 +221,6 @@ process.jescESSource = cms.ESSource('PoolDBESSource',
 )
 process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
 
-### METFilters
-#from JMETriggerAnalysis.NTuplizers.METFilters_cff import METFilters
-#process = METFilters(process, era=opts.era, isData=False)
-#
-### Muons
-#from JMETriggerAnalysis.NTuplizers.userMuons_cff import userMuons
-#process, userMuonsCollection = userMuons(process)
-#
-### Electrons
-#from JMETriggerAnalysis.NTuplizers.userElectrons_cff import userElectrons
-#process, userElectronsCollection = userElectrons(process, era=opts.era)
-#
-### METs
-#from JMETriggerAnalysis.NTuplizers.userMETs_cff import userMETs
-#process = userMETs(process, isData=False, era=opts.era) 
-#
-### Jets
-#from JMETriggerAnalysis.NTuplizers.userJets_AK04PFCHS_cff import userJets_AK04PFCHS
-#process, userJetsAK04PFCHSCollection = userJets_AK04PFCHS(process, era=opts.era, isData=opts.isData)
-#
-#from JMETriggerAnalysis.NTuplizers.ele32DoubleL1ToSingleL1FlagProducer_cfi import ele32DoubleL1ToSingleL1FlagProducer
-#process.ele32DoubleL1ToSingleL1Flag = ele32DoubleL1ToSingleL1FlagProducer.clone(
-#  electrons = cms.InputTag('slimmedElectrons'),
-#  triggerResults = cms.InputTag('TriggerResults::HLT'),
-#  triggerObjects = cms.InputTag('slimmedPatTrigger'),
-#)
-
 ## Output NTuple
 process.TFileService = cms.Service('TFileService', fileName = cms.string(opts.output))
 
@@ -289,10 +262,6 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     'HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned',
   ),
   fillCollectionConditions = cms.PSet(),
-
-  bools = cms.PSet(
-    Flag_ele32DoubleL1ToSingleL1 = cms.InputTag('ele32DoubleL1ToSingleL1Flag'),
-  ),
 
   outputBranchesToBeDropped = cms.vstring(),
 
@@ -399,14 +368,6 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     offlinePFMET = cms.InputTag('slimmedMETs'),
     offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
   ),
-
-#  patMuonCollections = cms.PSet(
-#    offlineMuons = cms.InputTag(userMuonsCollection),
-#  ),
-#
-#  patElectronCollections = cms.PSet(
-#    offlineElectrons = cms.InputTag(userElectronsCollection),
-#  ),
 )
 
 ## Trigger Flags
@@ -464,7 +425,7 @@ process.maxEvents.input = opts.maxEvents
 process.source.skipEvents = cms.untracked.uint32(opts.skipEvents)
 
 # multi-threading settings
-process.options.numberOfThreads = max(opts.numThreads, 8)
+process.options.numberOfThreads = max(opts.numThreads, 1)
 process.options.numberOfStreams = max(opts.numStreams, 0)
 
 # show cmsRun summary at job completion
