@@ -14,7 +14,7 @@ if __name__ == '__main__':
    ### args -----------
    parser = argparse.ArgumentParser(description=__doc__)
 
-   parser.add_argument('-s', '--script', dest='script', action='store', default=os.path.dirname(__file__)+'/run.py',
+   parser.add_argument('-s', '--script', dest='script', action='store', default=os.path.dirname(__file__)+'run.py',
                        help='path to python script executed in each batch job')
 
    parser.add_argument('-i', '--inputs', dest='inputs', required=True, nargs='+', default=[],
@@ -28,6 +28,9 @@ if __name__ == '__main__':
 
    parser.add_argument('-o', '--output', dest='output', required=True, action='store', default=None,
                        help='path to output directory')
+
+   parser.add_argument('-od', '--outputdir', dest='outputdir', required=True, action='store', default=None,
+                       help='path to output directory in eos')
 
    parser.add_argument('-n', '--nperjob', dest='nperjob', type=long, action='store', default=5000, #default=None, required=True,
                        help='number of events per job')
@@ -91,6 +94,7 @@ if __name__ == '__main__':
       KILL(log_prx+'target path to output directory already exists and it is not a directory [-o]: '+opts.output)
 
    OUT_DIR = os.path.abspath(opts.output)
+   OUTPUT_DIR = os.path.abspath(opts.outputdir)
 
    BATCH_HTC = bool(opts.batch == 'htc')
 
@@ -143,14 +147,15 @@ if __name__ == '__main__':
        del input_dirname
 
        OUTDIR_PATH = OUT_DIR+'/'+('/'.join(input_subdirs)) if len(input_subdirs) else OUT_DIR
+       OUTPUTDIR_PATH = OUTPUT_DIR
 
        for j_minmax_evt in range(len(minmax_evts)):
 
            OUTEXE_NAME = os.path.splitext(os.path.basename(i_inpf))[0]+'__'+str(j_minmax_evt)
 
            OUTEXE_PATH     = OUTDIR_PATH+'/'+OUTEXE_NAME+'.sh'
-           OUTPUT_PATH_TMP = OUTDIR_PATH+'/'+OUTEXE_NAME+'.root.tmp'
-           OUTPUT_PATH     = OUTDIR_PATH+'/'+OUTEXE_NAME+'.root'
+           OUTPUT_PATH_TMP = OUTPUTDIR_PATH+'/'+OUTEXE_NAME+'.root.tmp'
+           OUTPUT_PATH     = OUTPUTDIR_PATH+'/'+OUTEXE_NAME+'.root'
 
            OUTEXE_ABSPATH     = os.path.abspath(os.path.realpath(OUTEXE_PATH))
            OUTPUT_ABSPATH_TMP = os.path.abspath(os.path.realpath(OUTPUT_PATH_TMP))
@@ -231,10 +236,10 @@ if __name__ == '__main__':
                 'should_transfer_files   = IF_NEEDED',
                 'when_to_transfer_output = ON_EXIT',
 
-                'requirements = (OpSysAndVer == "'+('CentOS7' if is_slc7_arch else 'SL6')+'")',
+                #'requirements = (OpSysAndVer == "'+('CentOS7' if is_slc7_arch else 'SL6')+'")',
 
-                ' RequestMemory  =  2000',
-                '+RequestRuntime = '+str(opts.RequestRuntime),
+                #' RequestMemory  =  2000',
+                #'+RequestRuntime = '+str(opts.RequestRuntime),
               ]
 
               if opts.JobFlavour is not None:
