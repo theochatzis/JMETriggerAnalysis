@@ -23,14 +23,25 @@ class JMETriggerAnalysisDriverRun3 : public JMETriggerAnalysisDriver {
 
   void fillHistograms_Jets_2DMaps(const std::string& dir, const fillHistoDataJets& fhDataJets1, const fillHistoDataJets& fhDataJets2, float const weight=1.f);
   void fillHistograms_MET_2DMaps(const std::string& dir, const fillHistoDataMET& fhDataMET1, const fillHistoDataMET& fhDataMET2, bool const fill1D=false, float const weight=1.f);
+  
+  void bookHistograms_METMHT(const std::string&);
+  void fillHistograms_METMHT(const std::string&, float const weight=1.f);
+
+  float getMET(std::string const&) const;
+  float getPFMHT(float const, float const) const;
+  float getPuppiMHT(float const, float const) const;
 
   std::map<std::string, std::map<std::string, std::string>> labelMap_jetAK4_;
   std::map<std::string, std::map<std::string, std::string>> labelMap_jetAK8_;
   std::map<std::string, std::map<std::string, std::string>> labelMap_MET_;
 
-  std::vector<std::string> l1tSeeds_1Jet_;
-  std::vector<std::string> l1tSeeds_HT_;
-  std::vector<std::string> l1tSeeds_MET_;
+  std::vector<std::string> jettriggers;
+  std::vector<std::string> httriggers;
+  std::vector<std::string> mettriggers;
+
+  bool hltJetTrigger(std::string const& key) const;
+  bool hltHTTrigger(std::string const& key) const;
+  bool hltMETTrigger(std::string const& key) const;
 };
 
 #endif
