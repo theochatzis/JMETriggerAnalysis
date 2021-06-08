@@ -569,7 +569,7 @@ if __name__ == '__main__':
           objLabel.SetTextFont(42)
           objLabel.SetTextSize(0.035)
           objLabel.SetBorderSize(0)
-          objLabel.AddText('PU (14 TeV)')
+          objLabel.AddText('14 TeV')
           objLabel.Draw('same') 
 
           if _tmpReco == 'MET':
