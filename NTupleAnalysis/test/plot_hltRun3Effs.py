@@ -573,9 +573,9 @@ if __name__ == '__main__':
           objLabel.Draw('same') 
 
           if _tmpReco == 'MET':
-            printlabel = 'Raw'
+            printlabel = 'Raw '+_tmpType
           else:
-            printlabel = 'Type-1'
+            printlabel = 'Type-1 '+_tmpType
 
           l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.70, 0.88, 'NDC')
           l1tRateLabel.SetFillColor(0)
