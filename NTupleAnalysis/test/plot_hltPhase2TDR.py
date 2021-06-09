@@ -2601,7 +2601,7 @@ if __name__ == '__main__':
       except: pass
       leg2.Draw('same')
 
-      h0.SetTitle(';'+_tmpRef+' Jet p_{T} [GeV];L1T+HLT Efficiency')
+      h0.SetTitle(';'+_tmpRef+' Jet p_{T} [GeV];L1+HLT Efficiency')
       h0.GetYaxis().SetTitleOffset(h0.GetYaxis().GetTitleOffset() * 1.0)
 
       canvas.SetLogy(0)
@@ -2742,7 +2742,7 @@ if __name__ == '__main__':
       except: pass
       leg2.Draw('same')
 
-      h0.SetTitle(';'+_tmpRef+' H_{T} [GeV];L1T+HLT Efficiency')
+      h0.SetTitle(';'+_tmpRef+' H_{T} [GeV];L1+HLT Efficiency')
       h0.GetYaxis().SetTitleOffset(h0.GetYaxis().GetTitleOffset() * 1.0)
 
       canvas.SetLogy(0)
@@ -2906,9 +2906,9 @@ if __name__ == '__main__':
         leg1.SetNColumns(1)
         leg1.SetTextFont(42)
         try:
-          leg1.AddEntry(effysMET['PU200']['120']['MET_L1T_wrt_'+_tmpRef], 'L1T', 'lepx')
+          leg1.AddEntry(effysMET['PU200']['120']['MET_L1T_wrt_'+_tmpRef], 'L1', 'lepx')
           leg1.AddEntry(effysMET['PU200']['120']['MET_HLT_wrt_'+_tmpRef], 'HLT', 'lepx')
-          leg1.AddEntry(effysMET['PU200']['120']['MET_L1TpHLT_wrt_'+_tmpRef], 'L1T+HLT', 'lepx')
+          leg1.AddEntry(effysMET['PU200']['120']['MET_L1TpHLT_wrt_'+_tmpRef], 'L1+HLT', 'lepx')
         except: pass
         leg1.Draw('same')
   
@@ -3013,9 +3013,9 @@ if __name__ == '__main__':
               leg1.SetNColumns(1)
               leg1.SetTextFont(42)
               try:
-                leg1.AddEntry(effysMET[_tmpPU][_tmpHLTthr][_tmpMET+'_L1T_wrt_'+_tmpRef], 'L1T', 'lepx')
+                leg1.AddEntry(effysMET[_tmpPU][_tmpHLTthr][_tmpMET+'_L1T_wrt_'+_tmpRef], 'L1', 'lepx')
                 leg1.AddEntry(effysMET[_tmpPU][_tmpHLTthr][_tmpMET+'_HLT_wrt_'+_tmpRef], 'HLT', 'lepx')
-                leg1.AddEntry(effysMET[_tmpPU][_tmpHLTthr][_tmpMET+'_L1TpHLT_wrt_'+_tmpRef], 'L1T+HLT', 'lepx')
+                leg1.AddEntry(effysMET[_tmpPU][_tmpHLTthr][_tmpMET+'_L1TpHLT_wrt_'+_tmpRef], 'L1+HLT', 'lepx')
               except: pass
               leg1.Draw('same')
 
@@ -3147,7 +3147,7 @@ if __name__ == '__main__':
               leg1.Draw('same')
   
               _tmpYaxis = 'Efficiency'
-              if _tmpEff == 'L1TpHLT': _tmpYaxis = 'L1T+HLT Efficiency'
+              if _tmpEff == 'L1TpHLT': _tmpYaxis = 'L1+HLT Efficiency'
               elif _tmpEff == 'HLT': _tmpYaxis = 'HLT Efficiency'
   
               h0.SetTitle(';'+_tmpRef+' p_{T}^{miss} [GeV];'+_tmpYaxis)
@@ -3256,12 +3256,12 @@ if __name__ == '__main__':
           leg1 = ROOT.TLegend(0.48, 0.20, 0.94, 0.45)
           leg1.SetNColumns(1)
           leg1.SetTextFont(42)
-          leg1.AddEntry(effysMET_2018['120']['METMHT_L1T_wrt_'+_tmpRef], '[L1T] Run-2 (2018)', 'lepx')
-          leg1.AddEntry(effysMET_2018['120']['METMHT_L1TpHLT_wrt_'+_tmpRef], '[L1T+HLT] Run-2 (2018), MET120 + MHT120', 'lepx')
+          leg1.AddEntry(effysMET_2018['120']['METMHT_L1T_wrt_'+_tmpRef], '[L1] Run-2 (2018)', 'lepx')
+          leg1.AddEntry(effysMET_2018['120']['METMHT_L1TpHLT_wrt_'+_tmpRef], '[L1+HLT] Run-2 (2018), MET120 + MHT120', 'lepx')
           try:
-            leg1.AddEntry(effysMET[_tmpPU][_thrMETTypeOne]['METTypeOne_L1T_wrt_'+_tmpRef], '[L1T] Phase-2, L1T MET118', 'lepx')
-            leg1.AddEntry(effysMET[_tmpPU][_thrMETTypeOne]['METTypeOne_L1TpHLT_wrt_'+_tmpRef], '[L1T+HLT] Phase-2, Type-1 MET'+_thrMETTypeOne, 'lepx')
-            leg1.AddEntry(effysMET[_tmpPU][_thrMETTypeOneMHT]['METTypeOneMHT30_L1TpHLT_wrt_'+_tmpRef], '[L1T+HLT] Phase-2, Type-1 MET'+_thrMETTypeOneMHT+' + MHT'+_thrMETTypeOneMHT, 'lepx')
+            leg1.AddEntry(effysMET[_tmpPU][_thrMETTypeOne]['METTypeOne_L1T_wrt_'+_tmpRef], '[L1] Phase-2, L1T MET118', 'lepx')
+            leg1.AddEntry(effysMET[_tmpPU][_thrMETTypeOne]['METTypeOne_L1TpHLT_wrt_'+_tmpRef], '[L1+HLT] Phase-2, Type-1 MET'+_thrMETTypeOne, 'lepx')
+            leg1.AddEntry(effysMET[_tmpPU][_thrMETTypeOneMHT]['METTypeOneMHT30_L1TpHLT_wrt_'+_tmpRef], '[L1+HLT] Phase-2, Type-1 MET'+_thrMETTypeOneMHT+' + MHT'+_thrMETTypeOneMHT, 'lepx')
             leg1.AddEntry(effysMET[_tmpPU][_thrMETTypeOneMHT]['METTypeOneMHT30_HLT_wrt_'+_tmpRef], '[HLT] Phase-2, Type-1 MET'+_thrMETTypeOneMHT+' + MHT'+_thrMETTypeOneMHT, 'lepx')
           except: pass
           leg1.Draw('same')
@@ -3435,7 +3435,7 @@ if __name__ == '__main__':
             leg2.Draw('same')
 
             _tmpYaxis = 'Efficiency'
-            if _tmpEff == 'L1TpHLT': _tmpYaxis = 'L1T+HLT Efficiency'
+            if _tmpEff == 'L1TpHLT': _tmpYaxis = 'L1+HLT Efficiency'
             elif _tmpEff == 'HLT': _tmpYaxis = 'HLT Efficiency'
 
             h0.SetTitle(';'+_tmpRef+' p_{T}^{miss} [GeV];'+_tmpYaxis)
@@ -3651,7 +3651,7 @@ if __name__ == '__main__':
         ['L1T_PFPuppiMET220off2', 'HLT_PFPuppiMETTypeOneMHT50_'+str(rateConfig[_puTag]['hltThresholdMETTypeOneMHT50'])],
       ]:
         print '-'*110
-        print '\033[1m{:10}\033[0m | \033[1m{:47}\033[0m | \033[1m{:47}\033[0m'.format('Rate [Hz]', '[L1T] '+_tmpL1T, '[L1T+HLT] '+_tmpHLT)
+        print '\033[1m{:10}\033[0m | \033[1m{:47}\033[0m | \033[1m{:47}\033[0m'.format('Rate [Hz]', '[L1] '+_tmpL1T, '[L1+HLT] '+_tmpHLT)
         print '-'*110
 
         for _tmp1 in sorted(rateGroup.keys()):
