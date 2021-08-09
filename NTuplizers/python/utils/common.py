@@ -168,7 +168,7 @@ def HTCondor_jobExecutables_old(username=None):
 
     return _condorq_jobExes
 
-def HTCondor_jobExecutables_2(username=None):
+def HTCondor_jobExecutables(username=None):
     if not username:
        if 'USER' in os.environ: username = os.environ['USER']
 
