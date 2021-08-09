@@ -133,7 +133,7 @@ def HTCondor_jobIDs(username=None):
 
     return _condorq_jobIDs
 
-def HTCondor_jobExecutables(username=None):
+def HTCondor_jobExecutables_old(username=None):
     if not username:
        if 'USER' in os.environ: username = os.environ['USER']
 
@@ -211,6 +211,51 @@ def HTCondor_executable_from_jobID(jobID):
     _exe_path = os.path.abspath(os.path.realpath(_exe_path))
 
     return _exe_path
+
+def slurm_jobExecutables(username=None, executable=None):
+    if not username:
+      if 'USER' in os.environ:
+        username = os.environ['USER']
+
+    if not username:
+      KILL('slurm_jobExecutables -- unspecified argument "username"')
+
+    _squeue_jobExes_dict = {}
+    _squeue_cmd = 'squeue -u {:} --format "%i %o"'.format(username)
+    _squeue_lines = get_output(_squeue_cmd, permissive=True)[0].split('\n')
+
+    _startJobParsing = False
+    for _i_squeue_line in _squeue_lines:
+      if not _i_squeue_line: continue
+      if _i_squeue_line == 'JOBID COMMAND':
+        _startJobParsing = True
+        continue
+      if not _startJobParsing: continue
+
+      _i_squeue_cmd_pieces = _i_squeue_line.split()
+      if executable is not None and _i_squeue_cmd_pieces[1] != executable: continue
+
+      _jobids = []
+      if _i_squeue_cmd_pieces[0].endswith(']'):
+        _jobid_blks = _i_squeue_cmd_pieces[0].split('[')
+        _jobid = _jobid_blks[0]
+        _taskids_str = _jobid_blks[1][:-1]
+        _taskids_strblks = _taskids_str.split(',')
+        for _taskids_strblk in _taskids_strblks:
+          _taskidsInBlk = []
+          if '-' in _taskids_strblk:
+            _taskidsInBlkMinMax = _taskids_strblk.split('-')
+            _taskidsInBlk += range(int(_taskidsInBlkMinMax[0]), int(_taskidsInBlkMinMax[1])+1)
+          else:
+            _taskidsInBlk.append(int(_taskids_strblk))
+          _jobids += [_jobid+str(_taskid) for _taskid in _taskidsInBlk]
+      else:
+        _jobids.append(_i_squeue_cmd_pieces[0])
+
+      for _jobid in _jobids:
+        _squeue_jobExes_dict[_jobid] = ' '.join(_i_squeue_cmd_pieces[1:])
+
+    return _squeue_jobExes_dict
 
 def hadd_rootfiles(output, inputs):
     if os.path.exists(output):
