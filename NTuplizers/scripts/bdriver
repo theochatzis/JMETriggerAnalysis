@@ -1,0 +1,579 @@
+#!/usr/bin/env python
+"""
+script to create area for submission of batch jobs
+(supported batch systems: HTCondor, SLURM)
+"""
+import argparse
+import os
+import stat
+import sys
+import math
+import json
+import datetime
+
+from JMETriggerAnalysis.NTuplizers.utils.common import *
+from JMETriggerAnalysis.NTuplizers.utils.das import load_dataset_data, skim_das_jsondump
+
+#### main
+if __name__ == '__main__':
+   ### args
+   parser = argparse.ArgumentParser(
+    prog='./'+os.path.basename(__file__),
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    description=__doc__)
+
+   parser.add_argument('-c', '--cfg', dest='cmsRun_cfg', action='store', default=None, required=True,
+                       help='path to cmsRun cfg file')
+
+   parser.add_argument('-d', '--dataset', dest='dataset', action='store', default=None, required=True,
+                       help='name of input data set in DAS')
+
+   parser.add_argument('-o', '--output', dest='output', action='store', default=None, required=True,
+                       help='path to output directory')
+
+   parser.add_argument('--customize-cfg', dest='customize_cfg', action='store_true', default=False,
+                       help='append minimal customization to cmsRun-cfg required by the driver')
+
+   parser.add_argument('-j', '--jobdirname', dest='jobdirname', action='store', default='job',
+                       help='prefix of batch-job sub-directories (example: [JOBDIRNAME]_[counter]/)')
+
+   parser.add_argument('-f', '--max-files', dest='max_files', action='store', type=int, default=-1,
+                       help='maximum number of input files to be processed (if integer is negative, all files will be processed)')
+
+   parser.add_argument('-m', '--max-events', dest='max_events', action='store', type=int, default=-1,
+                       help='maximum number of total input events to be processed (if integer is negative, all events will be processed)')
+
+   parser.add_argument('-n', '--n-events', dest='n_events', action='store', type=int, default=-1,
+                       help='maximum number of events per job')
+
+   parser.add_argument('-p', '--parentFiles-level', dest='parentFiles_level', action='store', type=int, default=2,
+                       help='level of parentFiles to be used as secondary input files (currently, anything other than 1 and 2 disables the usage of secondary input files)')
+
+   parser.add_argument('-b', '--batch-system', dest='batch_system', action='store', default='auto', choices=['auto', 'htc', 'slurm'],
+                       help='keyword to select batch system (default: "auto")"')
+
+   parser.add_argument('--cpus', dest='cpus', action='store', default='1',
+                       help='number of CPUs per job (HTCondor: "RequestCpus"; SLURM: "--cpus-per-task")')
+
+   parser.add_argument('--memory', dest='memory', action='store', default='50M',
+                       help='job max memory (HTCondor: "RequestMemory"; SLURM: "--mem")')
+
+   parser.add_argument('-t', '--time', dest='time', action='store', default='01:00:00',
+                       help='job runtime (HTCondor: "+RequestRuntime"; SLURM: "--time")')
+
+   parser.add_argument('-q', '--queue', dest='queue', action='store', default='standard',
+                       help='name of partition on the batch system (SLURM: "--partition")')
+
+   parser.add_argument('--JobFlavour', dest='JobFlavour', action='store', default=None,
+                       help='argument of HTCondor parameter "+JobFlavour" (disabled by default)')
+
+   parser.add_argument('--AccountingGroup', dest='AccountingGroup', action='store', default=None,
+                       help='argument of HTCondor parameter "+AccountingGroup" (disabled by default)')
+
+   parser.add_argument('--name', dest='job_name', action='store', default=None,
+                       help='name of batch job (HTCondor: "batch_name", SLURM: "--job-name") [default: basename of argument of "--output"]')
+
+   parser.add_argument('--customise-commands', dest='customise_commands', nargs='+', default=[],
+                       help='list of strings to be appended at the end of the final cmsRun configuration file')
+
+   parser.add_argument('--submit', dest='submit', action='store_true', default=False,
+                       help='submit job(s) on the batch system')
+
+   parser.add_argument('--export-LD-LIBRARY-PATH', dest='export_LD_LIBRARY_PATH', action='store_true', default=False,
+                       help='export explicitly the environment variable "LD_LIBRARY_PATH" in the batch-job executable')
+
+   parser.add_argument('--dry-run', dest='dry_run', action='store_true', default=False,
+                       help='enable dry-run mode')
+
+   parser.add_argument('-v', '--verbosity', dest='verbosity', nargs='?', type=int, default=0, const=1,
+                       help='level of verbosity (default: 0)')
+
+   opts, opts_unknown = parser.parse_known_args()
+   ### -------------------------
+
+   log_prx = os.path.basename(__file__)+' -- '
+
+   ### opts --------------------
+   if 'CMSSW_BASE' not in os.environ:
+     KILL(log_prx+'global variable CMSSW_BASE is not defined (set up CMSSW environment with "cmsenv" before submitting jobs)')
+
+   if not os.path.isfile(opts.cmsRun_cfg):
+     KILL(log_prx+'invalid path to cmsRun cfg file [-c]: '+str(opts.cmsRun_cfg))
+
+   if os.path.exists(opts.output):
+     KILL(log_prx+'target path to output directory already exists [-o]: '+str(opts.output))
+
+   OUTPUT_DIR = os.path.abspath(opts.output)
+
+   if opts.n_events == 0:
+     KILL(log_prx+'logic error: requesting zero events per job (use non-zero value for argument of option "-n")')
+
+   is_slc7_arch = False
+   if os.environ['SCRAM_ARCH'].startswith('slc7'): is_slc7_arch = True
+   elif os.environ['SCRAM_ARCH'].startswith('slc6'): pass
+   else:
+     KILL(log_prc+'could not infer architecture from environment variable "SCRAM_ARCH": '+str(os.environ['SCRAM_ARCH']))
+
+   if opts.max_events == 0:
+     KILL(log_prx+'logic error: requesting a maximum of zero input events (use non-zero value for argument of option --max-events/-m)')
+
+   if opts.max_files == 0:
+     KILL(log_prx+'logic error: requesting a maximum of zero input files (use non-zero value for argument of option --max-files/-f)')
+
+   if opts.batch_system == 'htc':
+     try: which('condor_q')
+     except: KILL(log_prx+'selected HTCondor batch system, but the executable "condor_q" is not available')
+   elif opts.batch_system == 'slurm':
+     try: which('squeue')
+     except: KILL(log_prx+'selected SLURM batch system, but the executable "squeue" is not available')
+   else:
+     try:
+       which('condor_q')
+       opts.batch_system = 'htc'
+     except:
+       try:
+         which('squeue')
+         opts.batch_system = 'slurm'
+       except:
+         KILL(log_prx+'automatic selection of batch system failed (HTCondor and SLURM are both unavailable)')
+
+   if opts.submit and (not opts.dry_run):
+     if opts.batch_system == 'htc': which('condor_submit')
+     elif opts.batch_system == 'slurm': which('sbatch')
+
+   ### unrecognized command-line arguments
+   ### -> used as additional command-line arguments to cmsRun
+   cmsRun_addopts = opts_unknown[:]
+
+   if opts.verbosity > 0 and len(cmsRun_addopts):
+     print '-'*50
+     print colored_text('additional cmsRun command-line arguments:', ['1'])
+     for _tmp in cmsRun_addopts: print ' '+str(_tmp)
+     print '-'*50
+
+   ### extract input-files information from data set name via dasgoclient
+   ### -> list of dictionaries, each containing DAS name, files, number of events per file, and parent files
+   input_dset = {}
+
+   if os.path.isfile(opts.dataset):
+      input_dset = skim_das_jsondump(file_path=opts.dataset, max_files=opts.max_files, max_events=opts.max_events, verbose=(opts.verbosity > 0))
+   else:
+      which('dasgoclient')
+      input_dset = load_dataset_data(das_name=opts.dataset, max_files=opts.max_files, max_events=opts.max_events, parentFiles_levels=opts.parentFiles_level, verbose=(opts.verbosity > 0))
+
+   ### total number of events and jobs
+   ### -> used to determine format of output-file name
+   nJobs, totEvents, breakLoop = 0, 0, False
+   for i_inpfdc in input_dset['files']:
+       i_nevents = i_inpfdc['nevents']
+       totEvents += i_nevents
+       if (opts.max_events > 0) and (totEvents >= opts.max_events):
+          i_nevents -= (totEvents - opts.max_events)
+          breakLoop = True
+       nJobs += int(math.ceil(float(i_nevents) / opts.n_events)) if (opts.n_events > 0) else 1
+       if breakLoop:
+          break
+   if nJobs == 0:
+      KILL(log_prx+'input error: expected number of batch jobs is zero (check input data set and number of events): '+opts.dataset)
+   jobIndex_nDigits = max(1, int(math.ceil(math.log10(nJobs))))
+   outputname_postfix_format = '_{:0'+str(jobIndex_nDigits)+'d}'
+   del nJobs, totEvents, breakLoop
+
+   ### voms proxy
+   voms_proxy_path = None
+
+   if 'X509_USER_PROXY' in os.environ:
+     voms_proxy_path = os.environ['X509_USER_PROXY']
+   else:
+     voms_proxy_path = '/tmp/x509up_u'+str(os.getuid())
+
+   if opts.batch_system == 'slurm':
+     if not (voms_proxy_path.startswith(os.environ['HOME']) or voms_proxy_path.startswith('/work/'+os.environ['USER'])):
+       KILL(log_prx+'invalid path to voms proxy (should be under ${HOME} or /work/${USER}): '+voms_proxy_path)
+
+   if not os.path.isfile(voms_proxy_path):
+     EXE('voms-proxy-init --voms cms', verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+
+   if not os.path.isfile(voms_proxy_path):
+     KILL(log_prx+'invalid path to voms proxy: '+voms_proxy_path)
+
+   if opts.batch_system == 'slurm':
+     OUTPUT_DIR_FINAL = OUTPUT_DIR
+     OUTPUT_DIR = '.tmp'
+     while os.path.exists(OUTPUT_DIR):
+       OUTPUT_DIR += 'x'
+
+   MKDIRP(OUTPUT_DIR, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+
+   if opts.batch_system == 'htc':
+     EXE('cp '+voms_proxy_path+' '+OUTPUT_DIR+'/X509_USER_PROXY', verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+
+   ### copy cmsRun-cfg into output directory
+   out_cmsRun_cfg = os.path.abspath(OUTPUT_DIR+'/cfg.py')
+   EXE('cp '+opts.cmsRun_cfg+' '+out_cmsRun_cfg, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+
+   if opts.customize_cfg:
+     with open(out_cmsRun_cfg, 'a') as cfg_file:
+       custom_str = """
+###
+### customization added by {:} [time-stamp: {:}]
+###
+import FWCore.ParameterSet.VarParsing as vpo
+opts = vpo.VarParsing('analysis')
+
+opts.register('skipEvents', 0,
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.int,
+              'number of events to be skipped')
+
+opts.register('output', 'out.root',
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.string,
+              'path to output file')
+
+opts.parseArguments()
+
+# max number of events to be processed
+process.maxEvents.input = opts.maxEvents
+
+# number of events to be skipped
+process.source.skipEvents = cms.untracked.uint32(opts.skipEvents)
+
+# input EDM files [primary]
+process.source.fileNames = opts.inputFiles
+
+# input EDM files [secondary]
+process.source.secondaryFileNames = opts.secondaryInputFiles
+
+## output [TFileService]
+#if hasattr(process, 'TFileService'):
+#  process.TFileService.fileName = opts.output
+"""
+       if opts.customise_commands: custom_str += '\n'+'\n'.join(opts.customise_commands)+'\n'
+       cfg_file.write(custom_str.format(os.path.basename(__file__), str(datetime.datetime.now())))
+
+   ### copy driver command
+   if not opts.dry_run:
+     with open(os.path.abspath(OUTPUT_DIR+'/cmdLog'), 'w') as file_cmdLog:
+       file_cmdLog.write((' '.join(sys.argv[:]))+'\n')
+
+   ### copy dataset information in .json format
+   if not opts.dry_run:
+     json.dump(input_dset, open(OUTPUT_DIR+'/dataset.json', 'w'), sort_keys=True, indent=2)
+
+   ### dump of python config
+   retcode = EXE('edmConfigDump '+out_cmsRun_cfg+' 2> '+OUTPUT_DIR+'/configDump.log > '+OUTPUT_DIR+'/configDump.py', suspend=False, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+   if retcode:
+     EXE('cat '+OUTPUT_DIR+'/configDump.log', verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+     raise SystemExit(retcode)
+   del retcode
+
+   ### condor submission file
+   if opts.batch_system == 'htc':
+
+     SUBFILE_ABSPATH = OUTPUT_DIR+'/condor.sub'
+
+     if os.path.exists(SUBFILE_ABSPATH):
+       KILL(log_prx+'target output file already exists (condor submission file): '+SUBFILE_ABSPATH)
+
+     SUBFILE_LINES = [
+       'BASEDIR = '+OUTPUT_DIR_FINAL,
+       'batch_name = '+(opts.job_name if opts.job_name is not None else '$Fn(BASEDIR)'),
+       'initialdir = $DIRNAME(QFILE)',
+       'executable = $(initialdir)/exe.sh',
+       'output = logs/out.$(Cluster).$(Process)',
+       'error  = logs/err.$(Cluster).$(Process)',
+       'log    = logs/log.$(Cluster).$(Process)',
+       '#arguments =',
+       '#transfer_executable = True',
+       '#transfer_input_files =',
+       'universe = vanilla',
+       'getenv = True',
+       'should_transfer_files = IF_NEEDED',
+       'when_to_transfer_output = ON_EXIT',
+       'requirements = (OpSysAndVer == "'+('CentOS7' if is_slc7_arch else 'SL6')+'")',
+       'RequestCpus = '+opts.cpus,
+       'RequestMemory = '+opts.memory,
+       '+RequestRuntime = '+opts.time,
+     ]
+
+     if opts.JobFlavour is not None:
+       JobFlavour = opts.JobFlavour
+       while JobFlavour.startswith("'") or JobFlavour.startswith('"'):
+         JobFlavour = JobFlavour[1:]
+       while JobFlavour.endswith("'") or JobFlavour.endswith('"'):
+         JobFlavour = JobFlavour[:-1]
+       SUBFILE_LINES += [
+         '+JobFlavour = "{:}"'.format(JobFlavour)
+       ]
+
+     if opts.AccountingGroup is not None:
+       AccountingGroup = opts.AccountingGroup
+       while AccountingGroup.startswith("'") or AccountingGroup.startswith('"'):
+         AccountingGroup = AccountingGroup[1:]
+       while AccountingGroup.endswith("'") or AccountingGroup.endswith('"'):
+         AccountingGroup = AccountingGroup[:-1]
+       SUBFILE_LINES += [
+         '+AccountingGroup = "{:}"'.format(AccountingGroup)
+       ]
+
+     SUBFILE_LINES += [
+       'x509userproxy = $(BASEDIR)/X509_USER_PROXY',
+       'queue QFILE matching files $(BASEDIR)/*/flag.queue',
+     ]
+
+     if not opts.dry_run:
+       with open(SUBFILE_ABSPATH, 'w') as f_subfile:
+         for _tmp in SUBFILE_LINES:
+           f_subfile.write(_tmp+'\n')
+
+   elif opts.batch_system == 'slurm':
+
+     jobName = opts.job_name if opts.job_name is not None else os.path.basename(OUTPUT_DIR_FINAL)
+
+     EXEFILE_LINES = [
+       '#!/bin/bash -e',
+       '#SBATCH --account=t3',
+       '#SBATCH --partition='+opts.queue,
+       '#SBATCH --job-name='+jobName,
+       '#SBATCH --cpus-per-task='+opts.cpus,
+       '#SBATCH --mem='+opts.memory,
+       '#SBATCH --time='+opts.time,
+       '#SBATCH --nodes=1',
+       '#SBATCH -o /work/%u/test/.slurm/%x_%A_%a.out',
+       '#SBATCH -e /work/%u/test/.slurm/%x_%A_%a.err',
+       '',
+       'echo "------------------------------------------------------------"',
+       'echo "[`date`] Job started"',
+       'echo "------------------------------------------------------------"',
+       'DATE_START=`date +%s`',
+       '',
+       'echo HOSTNAME: ${HOSTNAME}',
+       'echo HOME: ${HOME}',
+       'echo USER: ${USER}',
+       'echo X509_USER_PROXY: ${X509_USER_PROXY}',
+       'echo CMD-LINE ARGS: $@',
+       '',
+       'if [ -z ${SLURM_ARRAY_TASK_ID} ]; then',
+       '  printf "%s\\n" "Environment variable \\"SLURM_ARRAY_TASK_ID\\" is not defined. Job will be stopped." 1>&2',
+       '  exit 1',
+       'fi',
+       '',
+       '# define SLURM_JOB_NAME and SLURM_ARRAY_JOB_ID, if they are not defined already (e.g. if script is executed locally)',
+       '[ ! -z ${SLURM_JOB_NAME} ] || SLURM_JOB_NAME='+jobName,
+       '[ ! -z ${SLURM_ARRAY_JOB_ID} ] || SLURM_ARRAY_JOB_ID=local$(date +%y%m%d%H%M%S)',
+       '',
+       'echo SLURM_JOB_NAME: ${SLURM_JOB_NAME}',
+       'echo SLURM_JOB_ID: ${SLURM_JOB_ID}',
+       'echo SLURM_ARRAY_JOB_ID: ${SLURM_ARRAY_JOB_ID}',
+       'echo SLURM_ARRAY_TASK_ID: ${SLURM_ARRAY_TASK_ID}',
+       '',
+       'OUTPUT_DIR='+OUTPUT_DIR_FINAL+'/'+opts.jobdirname+'_$(printf "%0'+str(jobIndex_nDigits)+'d" ${SLURM_ARRAY_TASK_ID})',
+       'echo OUTPUT_DIR: ${OUTPUT_DIR}',
+       '',
+       '[ ! -f ${OUTPUT_DIR}/flag.done ] || exit 0',
+       '',
+       'if [ ! -f ${X509_USER_PROXY} ]; then',
+       '  printf "%s\\n" "Authentication failed, invalid path to grid-certificate proxy: ${X509_USER_PROXY}" 1>&2',
+       '  exit 1',
+       'fi',
+       '',
+       '# local /scratch dir to be used by the job',
+       'TMPDIR=/scratch/${USER}/slurm/${SLURM_JOB_NAME}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}',
+       'echo TMPDIR: ${TMPDIR}',
+       'mkdir -p ${TMPDIR}',
+       '',
+       'cd '+os.environ['CMSSW_BASE']+'/src',
+       'eval `scram runtime -sh`',
+     ]
+
+   ### create output batch scripts
+   jobCounter = 0
+   totEvents = 0
+   breakLoop = False
+
+   for i_inpfdc in input_dset['files']:
+
+     i_inputFile = i_inpfdc['file']
+     i_inputFile_nevents = i_inpfdc['nevents']
+
+     i_secondaryInputFiles = None
+     if opts.parentFiles_level == 2:
+       i_secondaryInputFiles = i_inpfdc['parentFiles_2']
+     elif opts.parentFiles_level == 1:
+       i_secondaryInputFiles = i_inpfdc['parentFiles_1']
+
+     if isinstance(i_secondaryInputFiles, list) and len(i_secondaryInputFiles) == 0:
+       KILL(log_prx+'list of secondary input files is empty (parentFiles_level = '+str(opts.parentFiles_level)+')')
+
+     # number of jobs for this set of input files
+     i_njobs = int(math.ceil(float(i_inputFile_nevents) / opts.n_events)) if (opts.n_events > 0) else 1
+     i_nevt_remainder = i_inputFile_nevents%opts.n_events if (opts.n_events > 0) else 0
+
+     for i_job in range(i_njobs):
+
+       # name of output sub-directory
+       i_OUTPUT_DIR = OUTPUT_DIR+'/'+opts.jobdirname+outputname_postfix_format.format(jobCounter)
+       i_OUTPUT_DIR_FINAL = OUTPUT_DIR_FINAL+'/'+opts.jobdirname+outputname_postfix_format.format(jobCounter)
+
+       # create logs/ directory for HTCondor log-files
+       MKDIRP(i_OUTPUT_DIR+'/logs', verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+
+       # number of events for this job
+       i_maxEvents = opts.n_events if (opts.n_events > 0) else i_inputFile_nevents
+       if (i_job == (i_njobs - 1)) and (i_nevt_remainder != 0):
+         i_maxEvents = i_nevt_remainder
+
+       totEvents += i_maxEvents
+       if (opts.max_events > 0) and (totEvents >= opts.max_events):
+         i_maxEvents -= (totEvents - opts.max_events)
+         breakLoop = True
+
+       # HTCondor
+       if opts.batch_system == 'htc':
+
+         # create (empty) queue-file to trigger job submission
+         EXE('touch '+i_OUTPUT_DIR+'/flag.queue', verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+
+         EXEFILE_ABSPATH = i_OUTPUT_DIR+'/exe.sh'
+
+         if os.path.exists(EXEFILE_ABSPATH):
+            KILL(log_prx+'target output file already exists (executable of batch job): '+EXEFILE_ABSPATH)
+
+         if not opts.dry_run:
+           with open(EXEFILE_ABSPATH, 'w') as f_exefile:
+             f_exefile.write('#!/bin/bash\n')
+
+             # export explicitly the environment variable LD_LIBRARY_PATH
+             if opts.export_LD_LIBRARY_PATH:
+                if 'LD_LIBRARY_PATH' in os.environ:
+                   f_exefile.write('\n'+'export LD_LIBRARY_PATH='+os.environ['LD_LIBRARY_PATH']+'\n')
+
+             # cmsRun arguments (cfg-file + options)
+             cmsRun_opts = os.path.relpath(out_cmsRun_cfg, i_OUTPUT_DIR)
+             cmsRun_opts += ' \\\n maxEvents='+str(i_maxEvents)
+             cmsRun_opts += ' \\\n skipEvents='+str(opts.n_events*i_job)
+             cmsRun_opts += ' \\\n inputFiles='+str(i_inputFile)
+             if i_secondaryInputFiles:
+               cmsRun_opts += ' \\\n secondaryInputFiles='+str(','.join(i_secondaryInputFiles))
+             cmsRun_opts += ' \\\n output=./out'+outputname_postfix_format.format(jobCounter)+'.root'
+
+             for _tmp in cmsRun_addopts:
+               cmsRun_opts += ' \\\n '+str(_tmp)
+
+             i_SHELL_COMMANDS = [
+              ['set -e'],
+              ['cd '+os.environ['CMSSW_BASE']+'/src'],
+              ['eval `scram runtime -sh`'],
+              ['cd '+i_OUTPUT_DIR],
+              ['[ ! -f flag.done ] || exit 0'],
+              ['cmsRun '+cmsRun_opts],
+              ['touch flag.done'],
+             ]
+
+             f_exefile.write('\n'+('\n\n'.join([' \\\n '.join(_tmp) for _tmp in i_SHELL_COMMANDS]))+'\n')
+
+         os.chmod(EXEFILE_ABSPATH, os.stat(EXEFILE_ABSPATH).st_mode | stat.S_IEXEC)
+
+         print colored_text('output:', ['1', '94']), os.path.relpath(EXEFILE_ABSPATH, os.environ['PWD'])
+
+         jobCounter += 1
+
+         if breakLoop:
+           break
+
+       # SLURM
+       elif opts.batch_system == 'slurm':
+
+         cmsRun_opts = [
+           'maxEvents='+str(i_maxEvents),
+           'skipEvents='+str(opts.n_events*i_job),
+           'inputFiles='+str(i_inputFile),
+         ]
+
+         if i_secondaryInputFiles:
+           cmsRun_opts += [
+             'secondaryInputFiles='+str(','.join(i_secondaryInputFiles)),
+           ]
+
+         cmsRun_opts += [
+           'output=${TMPDIR}/out'+outputname_postfix_format.format(jobCounter)+'.root',
+         ]
+
+         cmsRun_opts += cmsRun_addopts
+
+         EXEFILE_LINES += [
+           '',
+           'el'*(jobCounter > 0)+'if [ ${SLURM_ARRAY_TASK_ID} -eq '+str(jobCounter)+' ]; then',
+           '  cmsRun '+OUTPUT_DIR_FINAL+'/'+os.path.basename(out_cmsRun_cfg)+' \\\n  '.join(['']+cmsRun_opts),
+         ]
+
+         jobCounter += 1
+
+         if breakLoop:
+           break
+
+   del jobCounter, totEvents, breakLoop
+
+   if opts.batch_system == 'slurm':
+
+     EXEFILE_ABSPATH = OUTPUT_DIR+'/slurm_exe.sh'
+
+     if os.path.exists(EXEFILE_ABSPATH):
+       KILL(log_prx+'target output file already exists (SLURM job executable file): '+EXEFILE_ABSPATH)
+
+     EXEFILE_LINES += [
+       '',
+       'else',
+       '  printf "%s\\n" "Invalid value for SLURM_ARRAY_TASK_ID: ${SLURM_ARRAY_TASK_ID}"',
+       'fi',
+       '',
+       'touch ${TMPDIR}/flag.done',
+       '',
+       'if [ ! -d ${OUTPUT_DIR}/logs ]; then',
+       '  (',
+       '    (! command -v scram &> /dev/null) || eval `scram unsetenv -sh`',
+       '    gfal-mkdir -p root://t3dcachedb.psi.ch:1094/${OUTPUT_DIR}/logs',
+       '    sleep 5',
+       '  )',
+       'fi',
+       '',
+       'for tmpf in /work/${USER}/test/.slurm/${SLURM_JOB_NAME}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.{out,err}; do',
+       '  [ -f ${tmpf} ] || continue # stdout/err outputs not produced if running locally',
+       '  xrdcp -f -N ${tmpf} root://t3dcachedb.psi.ch:1094//${OUTPUT_DIR}/logs',
+       '  printf "%s\\n" "> output file copied: ${tmpf} -> ${OUTPUT_DIR}/logs"',
+       'done',
+       '',
+       'for tmpf in ${TMPDIR}/out_*.root ${TMPDIR}/flag.done; do',
+       '  xrdcp -f -N ${tmpf} root://t3dcachedb.psi.ch:1094//${OUTPUT_DIR}',
+       '  printf "%s\\n" "> output file copied: ${tmpf} -> ${OUTPUT_DIR}"',
+       'done',
+       '',
+       '# removal of temporary working dir when job is completed',
+       'rm -rf ${TMPDIR}',
+       '',
+       'echo "------------------------------------------------------------"',
+       'echo "[`date`] Job completed successfully"',
+       'DATE_END=`date +%s`',
+       'runtime=$((DATE_END-DATE_START))',
+       'echo "[`date`] Elapsed time: ${runtime} sec"',
+       'echo "------------------------------------------------------------"',
+     ]
+
+     if not opts.dry_run:
+       with open(EXEFILE_ABSPATH, 'w') as f_exefile:
+         for _tmp in EXEFILE_LINES: f_exefile.write(_tmp+'\n')
+       os.chmod(EXEFILE_ABSPATH, os.stat(EXEFILE_ABSPATH).st_mode | stat.S_IEXEC)
+
+   if opts.batch_system == 'slurm':
+     MKDIRP(os.path.dirname(OUTPUT_DIR_FINAL), verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+     EXE('mv '+OUTPUT_DIR+' '+OUTPUT_DIR_FINAL, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+     EXEFILE_ABSPATH = OUTPUT_DIR_FINAL+'/'+os.path.basename(EXEFILE_ABSPATH)
+     if not opts.dry_run:
+       print colored_text('output:', ['1', '94']), EXEFILE_ABSPATH
+
+   if opts.submit:
+     if opts.batch_system == 'htc':
+       EXE('condor_submit '+SUBFILE_ABSPATH, suspend=False, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+     elif opts.batch_system == 'slurm':
+       EXE('squeue ---array=0-'+str(jobCounter-1)+' '+EXEFILE_ABSPATH, suspend=False, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
