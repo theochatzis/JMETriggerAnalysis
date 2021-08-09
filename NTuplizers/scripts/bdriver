@@ -197,8 +197,8 @@ if __name__ == '__main__':
    if not os.path.isfile(voms_proxy_path):
      KILL(log_prx+'invalid path to voms proxy: '+voms_proxy_path)
 
+   OUTPUT_DIR_FINAL = OUTPUT_DIR
    if opts.batch_system == 'slurm':
-     OUTPUT_DIR_FINAL = OUTPUT_DIR
      OUTPUT_DIR = '.tmp'
      while os.path.exists(OUTPUT_DIR):
        OUTPUT_DIR += 'x'
