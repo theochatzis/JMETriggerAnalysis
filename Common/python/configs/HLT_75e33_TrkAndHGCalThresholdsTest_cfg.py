@@ -24933,100 +24933,100 @@ process.DQMStore = cms.Service("DQMStore",
 )
 
 
-process.FastTimerService = cms.Service("FastTimerService",
-    dqmLumiSectionsRange = cms.untracked.uint32(2500),
-    dqmMemoryRange = cms.untracked.double(1000000),
-    dqmMemoryResolution = cms.untracked.double(5000),
-    dqmModuleMemoryRange = cms.untracked.double(100000),
-    dqmModuleMemoryResolution = cms.untracked.double(500),
-    dqmModuleTimeRange = cms.untracked.double(4000.0),
-    dqmModuleTimeResolution = cms.untracked.double(0.2),
-    dqmPath = cms.untracked.string('HLT/TimerService'),
-    dqmPathMemoryRange = cms.untracked.double(1000000),
-    dqmPathMemoryResolution = cms.untracked.double(5000),
-    dqmPathTimeRange = cms.untracked.double(15000.0),
-    dqmPathTimeResolution = cms.untracked.double(0.5),
-    dqmTimeRange = cms.untracked.double(15000.0),
-    dqmTimeResolution = cms.untracked.double(1.0),
-    enableDQM = cms.untracked.bool(True),
-    enableDQMTransitions = cms.untracked.bool(False),
-    enableDQMbyLumiSection = cms.untracked.bool(False),
-    enableDQMbyModule = cms.untracked.bool(True),
-    enableDQMbyPath = cms.untracked.bool(True),
-    enableDQMbyProcesses = cms.untracked.bool(False),
-    highlightModules = cms.untracked.VPSet(),
-    jsonFileName = cms.untracked.string('resources.json'),
-    printEventSummary = cms.untracked.bool(False),
-    printJobSummary = cms.untracked.bool(True),
-    printRunSummary = cms.untracked.bool(False),
-    writeJSONSummary = cms.untracked.bool(True)
-)
+#process.FastTimerService = cms.Service("FastTimerService",
+#    dqmLumiSectionsRange = cms.untracked.uint32(2500),
+#    dqmMemoryRange = cms.untracked.double(1000000),
+#    dqmMemoryResolution = cms.untracked.double(5000),
+#    dqmModuleMemoryRange = cms.untracked.double(100000),
+#    dqmModuleMemoryResolution = cms.untracked.double(500),
+#    dqmModuleTimeRange = cms.untracked.double(4000.0),
+#    dqmModuleTimeResolution = cms.untracked.double(0.2),
+#    dqmPath = cms.untracked.string('HLT/TimerService'),
+#    dqmPathMemoryRange = cms.untracked.double(1000000),
+#    dqmPathMemoryResolution = cms.untracked.double(5000),
+#    dqmPathTimeRange = cms.untracked.double(15000.0),
+#    dqmPathTimeResolution = cms.untracked.double(0.5),
+#    dqmTimeRange = cms.untracked.double(15000.0),
+#    dqmTimeResolution = cms.untracked.double(1.0),
+#    enableDQM = cms.untracked.bool(True),
+#    enableDQMTransitions = cms.untracked.bool(False),
+#    enableDQMbyLumiSection = cms.untracked.bool(False),
+#    enableDQMbyModule = cms.untracked.bool(True),
+#    enableDQMbyPath = cms.untracked.bool(True),
+#    enableDQMbyProcesses = cms.untracked.bool(False),
+#    highlightModules = cms.untracked.VPSet(),
+#    jsonFileName = cms.untracked.string('resources.json'),
+#    printEventSummary = cms.untracked.bool(False),
+#    printJobSummary = cms.untracked.bool(True),
+#    printRunSummary = cms.untracked.bool(False),
+#    writeJSONSummary = cms.untracked.bool(True)
+#)
 
 
-process.MessageLogger = cms.Service("MessageLogger",
-    FrameworkJobReport = cms.untracked.PSet(
-        FwkJob = cms.untracked.PSet(
-            limit = cms.untracked.int32(10000000),
-            optionalPSet = cms.untracked.bool(True)
-        ),
-        default = cms.untracked.PSet(
-            limit = cms.untracked.int32(0)
-        ),
-        optionalPSet = cms.untracked.bool(True)
-    ),
-    categories = cms.untracked.vstring(
-        'FwkJob',
-        'FwkReport',
-        'FwkSummary',
-        'Root_NoDictionary',
-        'ThroughputService',
-        'FastReport'
-    ),
-    cerr = cms.untracked.PSet(
-        FwkJob = cms.untracked.PSet(
-            limit = cms.untracked.int32(0),
-            optionalPSet = cms.untracked.bool(True)
-        ),
-        FwkReport = cms.untracked.PSet(
-            limit = cms.untracked.int32(10000000),
-            reportEvery = cms.untracked.int32(1)
-        ),
-        FwkSummary = cms.untracked.PSet(
-            limit = cms.untracked.int32(10000000),
-            optionalPSet = cms.untracked.bool(True),
-            reportEvery = cms.untracked.int32(1)
-        ),
-        INFO = cms.untracked.PSet(
-            limit = cms.untracked.int32(0)
-        ),
-        Root_NoDictionary = cms.untracked.PSet(
-            limit = cms.untracked.int32(0),
-            optionalPSet = cms.untracked.bool(True)
-        ),
-        default = cms.untracked.PSet(
-            limit = cms.untracked.int32(10000000)
-        ),
-        noTimeStamps = cms.untracked.bool(False),
-        optionalPSet = cms.untracked.bool(True),
-        threshold = cms.untracked.string('INFO')
-    ),
-    cerr_stats = cms.untracked.PSet(
-        optionalPSet = cms.untracked.bool(True),
-        output = cms.untracked.string('cerr'),
-        threshold = cms.untracked.string('WARNING')
-    ),
-    debugModules = cms.untracked.vstring(),
-    default = cms.untracked.PSet(
-
-    ),
-    destinations = cms.untracked.vstring('cerr'),
-    fwkJobReports = cms.untracked.vstring('FrameworkJobReport'),
-    statistics = cms.untracked.vstring('cerr_stats'),
-    suppressDebug = cms.untracked.vstring(),
-    suppressError = cms.untracked.vstring(),
-    suppressInfo = cms.untracked.vstring(),
-    suppressWarning = cms.untracked.vstring('hltDeepInclusiveVertexFinderPF')
-)
+#process.MessageLogger = cms.Service("MessageLogger",
+#    FrameworkJobReport = cms.untracked.PSet(
+#        FwkJob = cms.untracked.PSet(
+#            limit = cms.untracked.int32(10000000),
+#            optionalPSet = cms.untracked.bool(True)
+#        ),
+#        default = cms.untracked.PSet(
+#            limit = cms.untracked.int32(0)
+#        ),
+#        optionalPSet = cms.untracked.bool(True)
+#    ),
+#    categories = cms.untracked.vstring(
+#        'FwkJob',
+#        'FwkReport',
+#        'FwkSummary',
+#        'Root_NoDictionary',
+#        'ThroughputService',
+#        'FastReport'
+#    ),
+#    cerr = cms.untracked.PSet(
+#        FwkJob = cms.untracked.PSet(
+#            limit = cms.untracked.int32(0),
+#            optionalPSet = cms.untracked.bool(True)
+#        ),
+#        FwkReport = cms.untracked.PSet(
+#            limit = cms.untracked.int32(10000000),
+#            reportEvery = cms.untracked.int32(1)
+#        ),
+#        FwkSummary = cms.untracked.PSet(
+#            limit = cms.untracked.int32(10000000),
+#            optionalPSet = cms.untracked.bool(True),
+#            reportEvery = cms.untracked.int32(1)
+#        ),
+#        INFO = cms.untracked.PSet(
+#            limit = cms.untracked.int32(0)
+#        ),
+#        Root_NoDictionary = cms.untracked.PSet(
+#            limit = cms.untracked.int32(0),
+#            optionalPSet = cms.untracked.bool(True)
+#        ),
+#        default = cms.untracked.PSet(
+#            limit = cms.untracked.int32(10000000)
+#        ),
+#        noTimeStamps = cms.untracked.bool(False),
+#        optionalPSet = cms.untracked.bool(True),
+#        threshold = cms.untracked.string('INFO')
+#    ),
+#    cerr_stats = cms.untracked.PSet(
+#        optionalPSet = cms.untracked.bool(True),
+#        output = cms.untracked.string('cerr'),
+#        threshold = cms.untracked.string('WARNING')
+#    ),
+#    debugModules = cms.untracked.vstring(),
+#    default = cms.untracked.PSet(
+#
+#    ),
+#    destinations = cms.untracked.vstring('cerr'),
+#    fwkJobReports = cms.untracked.vstring('FrameworkJobReport'),
+#    statistics = cms.untracked.vstring('cerr_stats'),
+#    suppressDebug = cms.untracked.vstring(),
+#    suppressError = cms.untracked.vstring(),
+#    suppressInfo = cms.untracked.vstring(),
+#    suppressWarning = cms.untracked.vstring('hltDeepInclusiveVertexFinderPF')
+#)
 
 
 process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
