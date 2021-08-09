@@ -90,6 +90,42 @@ opts.parseArguments()
 ### base configuration file
 ###
 
+# customisation to change min-pT threshold of tracks in HLT reco
+def customisePhase2TrackingPtThresholds(process, ptMin):
+  process.CkfBaseTrajectoryFilter_block.minPt = ptMin
+  process.HLTIter0Phase2L3FromL1TkMuonGroupedCkfTrajectoryFilterIT.minPt = ptMin
+  process.HLTPSetMuonCkfTrajectoryFilter.minPt = ptMin
+  process.TrajectoryFilterForConversions.minPt = ptMin
+  process.highPtTripletStepTrajectoryFilterBase.minPt = ptMin
+  process.highPtTripletStepTrajectoryFilterInOut.minPt = ptMin
+  process.hltPhase2L3MuonHighPtTripletStepTrajectoryBuilder.minPt = ptMin
+  process.hltPhase2L3MuonHighPtTripletStepTrajectoryFilterBase.minPt = ptMin
+  process.hltPhase2L3MuonHighPtTripletStepTrajectoryFilterInOut.minPt = ptMin
+  process.hltPhase2L3MuonInitialStepTrajectoryBuilder.minPt = ptMin
+  process.hltPhase2L3MuonInitialStepTrajectoryFilter.minPt = ptMin
+  process.initialStepTrajectoryFilter.minPt = ptMin
+  process.muonSeededTrajectoryFilterForInOut.minPt = ptMin
+  process.muonSeededTrajectoryFilterForOutIn.minPt = ptMin
+  process.muonSeededTrajectoryFilterForOutInDisplaced.minPt = ptMin
+  process.firstStepPrimaryVerticesUnsorted.TkFilterParameters.minPt = ptMin
+  process.generalTracks.MinPT = ptMin
+  process.highPtTripletStepTrackingRegions.RegionPSet.ptMin = ptMin
+  process.hltPhase2L3MuonGeneralTracks.MinPT = ptMin
+  process.hltPhase2L3MuonHighPtTripletStepTrackingRegions.RegionPSet.ptMin = ptMin
+  process.hltPhase2L3MuonPixelTrackFilterByKinematics.ptMin = ptMin
+  process.hltPhase2L3MuonPixelTracksFilter.ptMin = ptMin
+  process.hltPhase2L3MuonPixelTracksTrackingRegions.RegionPSet.ptMin = ptMin
+  process.pixelTrackFilterByKinematics.ptMin = ptMin
+  process.pixelTracksTrackingRegions.RegionPSet.ptMin = ptMin
+  process.trackWithVertexRefSelectorBeforeSorting.ptMin = ptMin
+  process.unsortedOfflinePrimaryVertices.TkFilterParameters.minPt = ptMin
+  return process
+
+# customisation to change min-E threshold of HGCal clusters in HLT reco
+def customisePhase2HGCalClusterEnergyThresholds(process, eMin):
+  process.hgcalLayerClusters.plugin.ecut = eMin
+  return process
+
 # flag: skim original collection of generalTracks (only tracks associated to first N pixel vertices)
 opt_skimTracks = False
 
@@ -136,6 +172,36 @@ elif opt_reco == 'HLT_TRKv07p2_TICL':
 
 elif opt_reco == 'HLT_75e33':
   from HLTrigger.Phase2.HLT_75e33_cfg import cms, process
+
+elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p00':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  thrScalingFactor = 1.00
+  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
+  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
+
+elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p25':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  thrScalingFactor = 1.25
+  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
+  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
+
+elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p50':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  thrScalingFactor = 1.50
+  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
+  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
+
+elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p75':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  thrScalingFactor = 1.75
+  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
+  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
+
+elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_2p00':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  thrScalingFactor = 2.00
+  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
+  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
 
 else:
   raise RuntimeError('invalid argument for option "reco": "'+opt_reco+'"')
