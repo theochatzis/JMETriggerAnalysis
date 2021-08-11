@@ -196,33 +196,39 @@ elif opt_reco == 'HLT_TRKv07p2_TICL':
 
 elif opt_reco == 'HLT_75e33':
   from HLTrigger.Phase2.HLT_75e33_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
 
 elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p00':
   from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
   thrScalingFactor = 1.00
   process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
   process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
 
 elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p25':
   from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
   thrScalingFactor = 1.25
   process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
   process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
 
 elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p50':
   from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
   thrScalingFactor = 1.50
   process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
   process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
 
 elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p75':
   from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
   thrScalingFactor = 1.75
   process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
   process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
 
 elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_2p00':
   from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
   thrScalingFactor = 2.00
   process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
   process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
