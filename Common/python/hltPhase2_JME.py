@@ -474,7 +474,8 @@ def customise_hltPhase2_JME(process):
 
     ## Sequence: PFPuppi Jets and MET
     process.HLTPFPuppiJMEReconstruction = cms.Sequence(
-        process.hltPFPuppiNoLep
+        process.goodOfflinePrimaryVertices
+      + process.hltPFPuppiNoLep
       + process.hltPFPuppiMET
       + process.hltPFPuppi
       + process.hltPFPuppiMETv0

@@ -1,0 +1,11 @@
+*~
+*.pyc
+*.root
+*.pdf
+*.png
+*.JPG
+*.jpeg
+*.tar
+*.tar.gz
+output_*
+old/

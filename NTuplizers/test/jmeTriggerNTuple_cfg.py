@@ -209,27 +209,31 @@ else:
 ###
 ### analysis sequence
 ###
-process.schedule_().append(process.MC_JME)
+if opt_reco != 'HLT_75e33':
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
-# JMETrigger NTuple
-from HLTrigger.JetMET.hltSiPixelClusterMultiplicityValueProducer_cfi import hltSiPixelClusterMultiplicityValueProducer as _nSiPixelClusters
-from HLTrigger.JetMET.hltSiPhase2TrackerClusterMultiplicityValueProducer_cfi import hltSiPhase2TrackerClusterMultiplicityValueProducer as _nSiOuterTrackerClusters
+## JMETrigger NTuple
+from HLTrigger.JetMET.hltSiPixelClusterMultiplicityValueProducer_cfi import hltSiPixelClusterMultiplicityValueProducer as _hltSiPixelClusterMultiplicityValueProducer
+from HLTrigger.JetMET.hltSiPhase2TrackerClusterMultiplicityValueProducer_cfi import hltSiPhase2TrackerClusterMultiplicityValueProducer as _hltSiPhase2TrackerClusterMultiplicityValueProducer
 
-from JMETriggerAnalysis.Common.trackMultiplicityValueProducer_cfi import trackMultiplicityValueProducer as _nTracks
-from JMETriggerAnalysis.Common.vertexMultiplicityValueProducer_cfi import vertexMultiplicityValueProducer as _nVertices
+from JMETriggerAnalysis.Common.hltTrackMultiplicityValueProducer_cfi import hltTrackMultiplicityValueProducer as _hltTrackMultiplicityValueProducer
+from JMETriggerAnalysis.Common.hltVertexMultiplicityValueProducer_cfi import hltVertexMultiplicityValueProducer as _hltVertexMultiplicityValueProducer
 
-process.hltPixelClustersMultiplicity = _nSiPixelClusters.clone(src = 'siPixelClusters', defaultValue = -1.)
+if not hasattr(process, 'hltPixelClustersMultiplicity'):
+  process.hltPixelClustersMultiplicity = _hltSiPixelClusterMultiplicityValueProducer.clone(src = 'siPixelClusters', defaultValue = -1.)
+
 if not hasattr(process, 'hltOuterTrackerClustersMultiplicity'):
-  process.hltOuterTrackerClustersMultiplicity = _nSiOuterTrackerClusters.clone(src = 'siPhase2Clusters', defaultValue = -1.)
+  process.hltOuterTrackerClustersMultiplicity = _hltSiPhase2TrackerClusterMultiplicityValueProducer.clone(src = 'siPhase2Clusters', defaultValue = -1.)
 
-process.hltPixelTracksMultiplicity = _nTracks.clone(src = 'pixelTracks', defaultValue = -1.)
-process.hltPixelTracksCleanerMultiplicity = _nTracks.clone(src = 'pixelTracksCleaner', defaultValue = -1.)
-process.hltPixelTracksMergerMultiplicity = _nTracks.clone(src = 'pixelTracksMerger', defaultValue = -1.)
-process.hltTracksMultiplicity = _nTracks.clone(src = 'generalTracks', defaultValue = -1.)
+process.hltPixelTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracks', defaultValue = -1.)
+process.hltPixelTracksCleanerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracksCleaner', defaultValue = -1.)
+process.hltPixelTracksMergerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracksMerger', defaultValue = -1.)
+process.hltTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'generalTracks', defaultValue = -1.)
 
-process.hltPixelVerticesMultiplicity = _nVertices.clone(src = 'pixelVertices', defaultValue = -1.)
-process.hltPrimaryVerticesMultiplicity = _nVertices.clone(src = 'offlinePrimaryVertices', defaultValue = -1.)
-process.offlinePrimaryVerticesMultiplicity = _nVertices.clone(src = 'offlineSlimmedPrimaryVertices', defaultValue = -1.)
+process.hltPixelVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'pixelVertices', defaultValue = -1.)
+process.hltPrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlinePrimaryVertices', defaultValue = -1.)
+process.offlinePrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlineSlimmedPrimaryVertices', defaultValue = -1.)
 
 from JMETriggerAnalysis.NTuplizers.qcdWeightProducer import qcdWeightProducer
 process.qcdWeightPU140 = qcdWeightProducer(BXFrequency = 30. * 1e6, PU = 140.)
@@ -251,6 +255,9 @@ process.jmeTriggerNTupleInputsSeq = cms.Sequence(
 
 process.jmeTriggerNTupleInputsPath = cms.Path(process.jmeTriggerNTupleInputsSeq)
 process.schedule_().append(process.jmeTriggerNTupleInputsPath)
+
+ak4jets_stringCut = '' #'pt > 20'
+ak8jets_stringCut = '' #'pt > 80'
 
 process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
@@ -354,10 +361,10 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoCaloJetCollections = cms.PSet(
 
-#   hltAK4CaloJets = cms.InputTag('hltAK4CaloJets'),
-#   hltAK8CaloJets = cms.InputTag('hltAK8CaloJets'),
+    hltAK4CaloJets = cms.InputTag('hltAK4CaloJets'),
+#    hltAK8CaloJets = cms.InputTag('hltAK8CaloJets'),
 
-#   l1tSlwPFPuppiJets = cms.InputTag('l1tSlwPFPuppiJets', 'UncalibratedPhase1L1TJetFromPfCandidates'),
+#    l1tSlwPFPuppiJets = cms.InputTag('l1tSlwPFPuppiJets', 'UncalibratedPhase1L1TJetFromPfCandidates'),
     l1tSlwPFPuppiJetsCorrected = cms.InputTag('l1tSlwPFPuppiJetsCorrected', 'Phase1L1TJetFromPfCandidates'),
   ),
 
@@ -373,8 +380,9 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 #    l1tAK4PFJets = cms.InputTag('ak4PFL1PF'),
 #    l1tAK4PFPuppiJets = cms.InputTag('ak4PFL1Puppi'),
 
-#    hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
+    hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
 #    hltAK4PFJetsCorrected = cms.InputTag('hltAK4PFJetsCorrected'),
+    hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
 #    hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
 #    hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
 #    hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
@@ -447,39 +455,39 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   stringCutObjectSelectors = cms.PSet(
     # GEN
-    ak4GenJetsNoNu = cms.string('pt > 15'),
-    ak8GenJetsNoNu = cms.string('pt > 50'),
+    ak4GenJetsNoNu = cms.string(''),
+    ak8GenJetsNoNu = cms.string(''),
 
     # L1T AK4
-    l1tAK4CaloJets = cms.string('pt > 20'),
-    l1tAK4PFJets = cms.string('pt > 20'),
-    l1tAK4PFPuppiJets = cms.string('pt > 20'),
-    l1tSlwPFPuppiJets = cms.string('pt > 20'),
+    l1tAK4CaloJets = cms.string(ak4jets_stringCut),
+    l1tAK4PFJets = cms.string(ak4jets_stringCut),
+    l1tAK4PFPuppiJets = cms.string(ak4jets_stringCut),
+    l1tSlwPFPuppiJets = cms.string(ak4jets_stringCut),
 
-    l1tAK4CaloJetsCorrected = cms.string('pt > 20'),
-    l1tAK4PFJetsCorrected = cms.string('pt > 20'),
-    l1tAK4PFPuppiJetsCorrected = cms.string('pt > 20'),
-    l1tSlwPFPuppiJetsCorrected = cms.string('pt > 20'),
+    l1tAK4CaloJetsCorrected = cms.string(ak4jets_stringCut),
+    l1tAK4PFJetsCorrected = cms.string(ak4jets_stringCut),
+    l1tAK4PFPuppiJetsCorrected = cms.string(ak4jets_stringCut),
+    l1tSlwPFPuppiJetsCorrected = cms.string(ak4jets_stringCut),
 
     # HLT AK4
-    hltAK4CaloJets = cms.string('pt > 20'),
-    hltAK4PFClusterJets = cms.string('pt > 20'),
-    hltAK4PFJets = cms.string('pt > 20'),
-    hltAK4PFJetsCorrected = cms.string('pt > 20'),
-    hltAK4PFCHSJetsCorrected = cms.string('pt > 20'),
-    hltAK4PFPuppiJetsCorrected = cms.string('pt > 20'),
+    hltAK4CaloJets = cms.string(ak4jets_stringCut),
+    hltAK4PFClusterJets = cms.string(ak4jets_stringCut),
+    hltAK4PFJets = cms.string(ak4jets_stringCut),
+    hltAK4PFJetsCorrected = cms.string(ak4jets_stringCut),
+    hltAK4PFCHSJetsCorrected = cms.string(ak4jets_stringCut),
+    hltAK4PFPuppiJetsCorrected = cms.string(ak4jets_stringCut),
 
     # HLT AK8
-    hltAK8CaloJets = cms.string('pt > 80'),
-    hltAK8PFClusterJets = cms.string('pt > 80'),
-    hltAK8PFJetsCorrected = cms.string('pt > 80'),
-    hltAK8PFCHSJetsCorrected = cms.string('pt > 80'),
-    hltAK8PFPuppiJetsCorrected = cms.string('pt > 80'),
+    hltAK8CaloJets = cms.string(ak8jets_stringCut),
+    hltAK8PFClusterJets = cms.string(ak8jets_stringCut),
+    hltAK8PFJetsCorrected = cms.string(ak8jets_stringCut),
+    hltAK8PFCHSJetsCorrected = cms.string(ak8jets_stringCut),
+    hltAK8PFPuppiJetsCorrected = cms.string(ak8jets_stringCut),
 
     # Offline
-    offlineAK4PFCHSJetsCorrected = cms.string('pt > 20'),
-    offlineAK4PFPuppiJetsCorrected = cms.string('pt > 20'),
-    offlineAK8PFPuppiJetsCorrected = cms.string('pt > 80'),
+    offlineAK4PFCHSJetsCorrected = cms.string(ak4jets_stringCut),
+    offlineAK4PFPuppiJetsCorrected = cms.string(ak4jets_stringCut),
+    offlineAK8PFPuppiJetsCorrected = cms.string(ak8jets_stringCut),
   ),
 
   outputBranchesToBeDropped = cms.vstring(
@@ -848,7 +856,7 @@ elif opts.inputFiles:
    process.source.secondaryFileNames = []
 else:
    process.source.fileNames = [
-     '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v2/280000/015FB6F1-59B4-304C-B540-2392A983A97D.root',
+     '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v2/280000/007CCF38-CBE4-6B4D-A97A-580FA0CA0850.root',
    ]
    process.source.secondaryFileNames = []
 
