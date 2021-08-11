@@ -255,8 +255,9 @@ def getJetEfficiencies(fpath, hltThreshold_SingleJet):
     _tmp_num = _tfile.Get('L1T_SinglePFPuppiJet230off2/ak4GenJetsNoNu_EtaIncl_MatchedTohltPFPuppiCorr_pt__vs__hltPFPuppiCorr_pt')
     _tmp_num = _tmp_num.ProjectionX(tmpName(), 0, -1)
 
-    _tmp_den = _tfile.Get('NoSelection/ak4GenJetsNoNu_EtaIncl_MatchedTohltPFPuppiCorr_pt__vs__hltPFPuppiCorr_pt')
-    _tmp_den = _tmp_den.ProjectionX(tmpName(), 0, -1)
+    _tmp_den = _tfile.Get('NoSelection/ak4GenJetsNoNu_EtaIncl_pt')
+#    _tmp_den = _tfile.Get('NoSelection/ak4GenJetsNoNu_EtaIncl_MatchedTohltPFPuppiCorr_pt__vs__hltPFPuppiCorr_pt')
+#    _tmp_den = _tmp_den.ProjectionX(tmpName(), 0, -1)
 
     ret['SingleJet_L1T_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
     ret['SingleJet_L1T_wrt_'+_tmpRef].SetName('SingleJet_L1T_wrt_'+_tmpRef)
@@ -265,8 +266,9 @@ def getJetEfficiencies(fpath, hltThreshold_SingleJet):
     _tmp_num = _tmp_num.ProjectionX(tmpName(), _tmp_num.GetYaxis().FindBin(hltThreshold_SingleJet), -1)
     _tmp_num = _tmp_num.Rebin(len(binEdges_pT)-1, tmpName(), binEdges_pT)
 
-    _tmp_den = _tfile.Get('NoSelection/ak4GenJetsNoNu_EtaIncl_MatchedTohltPFPuppiCorr_pt__vs__hltPFPuppiCorr_pt')
-    _tmp_den = _tmp_den.ProjectionX(tmpName(), 0, -1)
+    _tmp_den = _tfile.Get('NoSelection/ak4GenJetsNoNu_EtaIncl_pt')
+#    _tmp_den = _tfile.Get('NoSelection/ak4GenJetsNoNu_EtaIncl_MatchedTohltPFPuppiCorr_pt__vs__hltPFPuppiCorr_pt')
+#    _tmp_den = _tmp_den.ProjectionX(tmpName(), 0, -1)
     _tmp_den = _tmp_den.Rebin(len(binEdges_pT)-1, tmpName(), binEdges_pT)
 
     ret['SingleJet_HLT_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
@@ -276,8 +278,9 @@ def getJetEfficiencies(fpath, hltThreshold_SingleJet):
     _tmp_num = _tmp_num.ProjectionX(tmpName(), _tmp_num.GetYaxis().FindBin(hltThreshold_SingleJet), -1)
     _tmp_num = _tmp_num.Rebin(len(binEdges_pT)-1, tmpName(), binEdges_pT)
 
-    _tmp_den = _tfile.Get('NoSelection/ak4GenJetsNoNu_EtaIncl_MatchedTohltPFPuppiCorr_pt__vs__hltPFPuppiCorr_pt')
-    _tmp_den = _tmp_den.ProjectionX(tmpName(), 0, -1)
+    _tmp_den = _tfile.Get('NoSelection/ak4GenJetsNoNu_EtaIncl_pt')
+#    _tmp_den = _tfile.Get('NoSelection/ak4GenJetsNoNu_EtaIncl_MatchedTohltPFPuppiCorr_pt__vs__hltPFPuppiCorr_pt')
+#    _tmp_den = _tmp_den.ProjectionX(tmpName(), 0, -1)
     _tmp_den = _tmp_den.Rebin(len(binEdges_pT)-1, tmpName(), binEdges_pT)
 
     ret['SingleJet_L1TpHLT_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
