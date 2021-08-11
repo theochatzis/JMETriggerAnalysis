@@ -44,8 +44,12 @@ for recoKey in "${recoKeys[@]}"; do
       numEvents=2000000
     fi
 
-    bdriver -c .tmp_${recoKey}_cfg.py --customize-cfg -m ${numEvents} -n 250 --cpus 1 --mem 2G --time 03:00:00 ${opts} \
-      -d ${sampleName} -p 0 -o ${ODIR}/${recoKey}/${sampleKey}
+    bdriver -c .tmp_${recoKey}_cfg.py --customize-cfg -m ${numEvents} -n 250 --cpus 1 --mem 4000 --time 10800 ${opts} \
+      -d ${sampleName} -p 0 -o ${ODIR}/${recoKey}/${sampleKey} \
+      --customise-commands \
+       '# output [TFileService]' \
+       "if hasattr(process, 'TFileService'):" \
+       '  process.TFileService.fileName = opts.output'
 
     unset numEvents sampleName
   done
