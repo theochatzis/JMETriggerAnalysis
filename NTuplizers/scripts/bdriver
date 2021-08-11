@@ -59,7 +59,7 @@ if __name__ == '__main__':
                        help='job max memory (HTCondor: "RequestMemory"; SLURM: "--mem")')
 
    parser.add_argument('-t', '--time', dest='time', action='store', default='01:00:00',
-                       help='job runtime (HTCondor: "+RequestRuntime"; SLURM: "--time")')
+                       help='job runtime in number of seconds or HH:MM:SS format (HTCondor: "+RequestRuntime"; SLURM: "--time")')
 
    parser.add_argument('-q', '--queue', dest='queue', action='store', default='standard',
                        help='name of partition on the batch system (SLURM: "--partition")')
@@ -119,6 +119,20 @@ if __name__ == '__main__':
 
    if opts.max_files == 0:
      KILL(log_prx+'logic error: requesting a maximum of zero input files (use non-zero value for argument of option --max-files/-f)')
+
+   try:
+     time_mins, time_secs = divmod(int(opts.time), 60)
+     time_hours, time_mins = divmod(time_mins, 60)
+     TIME_STR_hhmmss = '{:d}:{:02d}:{:02d}'.format(time_hours,time_mins, time_secs)
+     TIME_STR_secs = opts.time
+   except:
+     try:
+       TIME_STR_blocks = opts.time.split(':')
+       assert (len(TIME_STR_blocks) == 3)
+       TIME_STR_hhmmss = opts.time
+       TIME_STR_secs = str(int(TIME_STR_blocks[0])*3600 + int(TIME_STR_blocks[1])*60 + int(TIME_STR_blocks[2]))
+     except:
+       KILL(log_prx+'invalid format for maximum runtime [--time/-t]: '+opts.time)
 
    if opts.batch_system == 'htc':
      try: which('condor_q')
@@ -244,10 +258,6 @@ process.source.fileNames = opts.inputFiles
 
 # input EDM files [secondary]
 process.source.secondaryFileNames = opts.secondaryInputFiles
-
-## output [TFileService]
-#if hasattr(process, 'TFileService'):
-#  process.TFileService.fileName = opts.output
 """
        if opts.customise_commands: custom_str += '\n'+'\n'.join(opts.customise_commands)+'\n'
        cfg_file.write(custom_str.format(os.path.basename(__file__), str(datetime.datetime.now())))
@@ -294,7 +304,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
        'requirements = (OpSysAndVer == "'+('CentOS7' if is_slc7_arch else 'SL6')+'")',
        'RequestCpus = '+opts.cpus,
        'RequestMemory = '+opts.memory,
-       '+RequestRuntime = '+opts.time,
+       '+RequestRuntime = '+TIME_STR_secs,
      ]
 
      if opts.JobFlavour is not None:
@@ -338,7 +348,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
        '#SBATCH --job-name='+jobName,
        '#SBATCH --cpus-per-task='+opts.cpus,
        '#SBATCH --mem='+opts.memory,
-       '#SBATCH --time='+opts.time,
+       '#SBATCH --time='+TIME_STR_hhmmss,
        '#SBATCH --nodes=1',
        '#SBATCH -o /work/%u/test/.slurm/%x_%A_%a.out',
        '#SBATCH -e /work/%u/test/.slurm/%x_%A_%a.err',
