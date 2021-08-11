@@ -131,44 +131,68 @@ opt_skimTracks = False
 
 opt_reco = opts.reco
 if opt_reco.endswith('_skimmedTracks'):
-   opt_reco = opt_reco[:-len('_skimmedTracks')]
-   opt_skimTracks = True
+  opt_reco = opt_reco[:-len('_skimmedTracks')]
+  opt_skimTracks = True
 
 if opt_reco == 'HLT_TRKv00':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv00_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv00_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv00_TICL_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv02':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv02_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv02_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv02_TICL_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv06':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv06_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06_TICL_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv06p1':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p1_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv06p1_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p1_TICL_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv06p3':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p3_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv06p3_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p3_TICL_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv07p2':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv07p2_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv07p2_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv07p2_TICL_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_75e33':
   from HLTrigger.Phase2.HLT_75e33_cfg import cms, process
@@ -209,9 +233,6 @@ else:
 ###
 ### analysis sequence
 ###
-if opt_reco != 'HLT_75e33':
-  process.schedule_().append(process.MC_JME)
-  process.schedule_().append(process.MC_JME_Others)
 
 ## JMETrigger NTuple
 from HLTrigger.JetMET.hltSiPixelClusterMultiplicityValueProducer_cfi import hltSiPixelClusterMultiplicityValueProducer as _hltSiPixelClusterMultiplicityValueProducer
