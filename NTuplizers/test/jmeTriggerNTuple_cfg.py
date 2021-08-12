@@ -90,52 +90,148 @@ opts.parseArguments()
 ### base configuration file
 ###
 
+# customisation to change min-pT threshold of tracks in HLT reco
+def customisePhase2TrackingPtThresholds(process, ptMin):
+  process.CkfBaseTrajectoryFilter_block.minPt = ptMin
+  process.HLTIter0Phase2L3FromL1TkMuonGroupedCkfTrajectoryFilterIT.minPt = ptMin
+  process.HLTPSetMuonCkfTrajectoryFilter.minPt = ptMin
+  process.TrajectoryFilterForConversions.minPt = ptMin
+  process.highPtTripletStepTrajectoryFilterBase.minPt = ptMin
+  process.highPtTripletStepTrajectoryFilterInOut.minPt = ptMin
+  process.hltPhase2L3MuonHighPtTripletStepTrajectoryBuilder.minPt = ptMin
+  process.hltPhase2L3MuonHighPtTripletStepTrajectoryFilterBase.minPt = ptMin
+  process.hltPhase2L3MuonHighPtTripletStepTrajectoryFilterInOut.minPt = ptMin
+  process.hltPhase2L3MuonInitialStepTrajectoryBuilder.minPt = ptMin
+  process.hltPhase2L3MuonInitialStepTrajectoryFilter.minPt = ptMin
+  process.initialStepTrajectoryFilter.minPt = ptMin
+  process.muonSeededTrajectoryFilterForInOut.minPt = ptMin
+  process.muonSeededTrajectoryFilterForOutIn.minPt = ptMin
+  process.muonSeededTrajectoryFilterForOutInDisplaced.minPt = ptMin
+  process.firstStepPrimaryVerticesUnsorted.TkFilterParameters.minPt = ptMin
+  process.generalTracks.MinPT = ptMin
+  process.highPtTripletStepTrackingRegions.RegionPSet.ptMin = ptMin
+  process.hltPhase2L3MuonGeneralTracks.MinPT = ptMin
+  process.hltPhase2L3MuonHighPtTripletStepTrackingRegions.RegionPSet.ptMin = ptMin
+  process.hltPhase2L3MuonPixelTrackFilterByKinematics.ptMin = ptMin
+  process.hltPhase2L3MuonPixelTracksFilter.ptMin = ptMin
+  process.hltPhase2L3MuonPixelTracksTrackingRegions.RegionPSet.ptMin = ptMin
+  process.pixelTrackFilterByKinematics.ptMin = ptMin
+  process.pixelTracksTrackingRegions.RegionPSet.ptMin = ptMin
+  process.trackWithVertexRefSelectorBeforeSorting.ptMin = ptMin
+  process.unsortedOfflinePrimaryVertices.TkFilterParameters.minPt = ptMin
+  return process
+
+# customisation to change min-E threshold of HGCal clusters in HLT reco
+def customisePhase2HGCalClusterEnergyThresholds(process, eMin):
+  process.hgcalLayerClusters.plugin.ecut = eMin
+  return process
+
 # flag: skim original collection of generalTracks (only tracks associated to first N pixel vertices)
 opt_skimTracks = False
 
 opt_reco = opts.reco
 if opt_reco.endswith('_skimmedTracks'):
-   opt_reco = opt_reco[:-len('_skimmedTracks')]
-   opt_skimTracks = True
+  opt_reco = opt_reco[:-len('_skimmedTracks')]
+  opt_skimTracks = True
 
 if opt_reco == 'HLT_TRKv00':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv00_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv00_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv00_TICL_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv02':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv02_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv02_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv02_TICL_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv06':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv06_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06_TICL_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv06p1':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p1_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv06p1_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p1_TICL_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv06p3':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p3_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv06p3_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p3_TICL_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv07p2':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv07p2_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv07p2_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv07p2_TICL_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_75e33':
   from HLTrigger.Phase2.HLT_75e33_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+
+elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p00':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  thrScalingFactor = 1.00
+  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
+  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
+
+elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p25':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  thrScalingFactor = 1.25
+  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
+  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
+
+elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p50':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  thrScalingFactor = 1.50
+  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
+  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
+
+elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p75':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  thrScalingFactor = 1.75
+  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
+  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
+
+elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_2p00':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  thrScalingFactor = 2.00
+  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
+  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
 
 else:
   raise RuntimeError('invalid argument for option "reco": "'+opt_reco+'"')
@@ -143,9 +239,6 @@ else:
 ###
 ### analysis sequence
 ###
-if opt_reco != 'HLT_75e33':
-  process.schedule_().append(process.MC_JME)
-  process.schedule_().append(process.MC_JME_Others)
 
 ## JMETrigger NTuple
 from HLTrigger.JetMET.hltSiPixelClusterMultiplicityValueProducer_cfi import hltSiPixelClusterMultiplicityValueProducer as _hltSiPixelClusterMultiplicityValueProducer
@@ -154,7 +247,9 @@ from HLTrigger.JetMET.hltSiPhase2TrackerClusterMultiplicityValueProducer_cfi imp
 from JMETriggerAnalysis.Common.hltTrackMultiplicityValueProducer_cfi import hltTrackMultiplicityValueProducer as _hltTrackMultiplicityValueProducer
 from JMETriggerAnalysis.Common.hltVertexMultiplicityValueProducer_cfi import hltVertexMultiplicityValueProducer as _hltVertexMultiplicityValueProducer
 
-process.hltPixelClustersMultiplicity = _hltSiPixelClusterMultiplicityValueProducer.clone(src = 'siPixelClusters', defaultValue = -1.)
+if not hasattr(process, 'hltPixelClustersMultiplicity'):
+  process.hltPixelClustersMultiplicity = _hltSiPixelClusterMultiplicityValueProducer.clone(src = 'siPixelClusters', defaultValue = -1.)
+
 if not hasattr(process, 'hltOuterTrackerClustersMultiplicity'):
   process.hltOuterTrackerClustersMultiplicity = _hltSiPhase2TrackerClusterMultiplicityValueProducer.clone(src = 'siPhase2Clusters', defaultValue = -1.)
 
