@@ -299,7 +299,7 @@ if __name__ == '__main__':
                   effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kGreen+1)
                   effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(1)
                   effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
-  
+
                   effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p25'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
                   effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p25'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
                   effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p25'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kBlue)
