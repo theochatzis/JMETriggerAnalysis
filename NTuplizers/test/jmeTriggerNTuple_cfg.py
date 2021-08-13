@@ -126,6 +126,13 @@ def customisePhase2HGCalClusterEnergyThresholds(process, eMin):
   process.hgcalLayerClusters.plugin.ecut = eMin
   return process
 
+def loadProcess_HLT_75e33_TrkPtX_HGCEnX(thrScalingFactor_trk, thrScalingFactor_hgc):
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
+  process.schedule_().append(process.MC_JME)
+  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor_trk)
+  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor_hgc)
+  return cms, process
+
 # flag: skim original collection of generalTracks (only tracks associated to first N pixel vertices)
 opt_skimTracks = False
 
@@ -198,40 +205,18 @@ elif opt_reco == 'HLT_75e33':
   from HLTrigger.Phase2.HLT_75e33_cfg import cms, process
   process.schedule_().append(process.MC_JME)
 
-elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p00':
-  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
-  process.schedule_().append(process.MC_JME)
-  thrScalingFactor = 1.00
-  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
-  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
-
-elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p25':
-  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
-  process.schedule_().append(process.MC_JME)
-  thrScalingFactor = 1.25
-  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
-  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
-
-elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p50':
-  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
-  process.schedule_().append(process.MC_JME)
-  thrScalingFactor = 1.50
-  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
-  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
-
-elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_1p75':
-  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
-  process.schedule_().append(process.MC_JME)
-  thrScalingFactor = 1.75
-  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
-  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
-
-elif opt_reco == 'HLT_75e33_TrkAndHGCalThresholdsTest_2p00':
-  from JMETriggerAnalysis.Common.configs.HLT_75e33_TrkAndHGCalThresholdsTest_cfg import cms, process
-  process.schedule_().append(process.MC_JME)
-  thrScalingFactor = 2.00
-  process = customisePhase2TrackingPtThresholds(process, 0.9 * thrScalingFactor)
-  process = customisePhase2HGCalClusterEnergyThresholds(process, 3.0 * thrScalingFactor)
+elif opt_reco == 'HLT_75e33_TrkPtX1p00_HGCEnX1p00': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.00, 1.00)
+elif opt_reco == 'HLT_75e33_TrkPtX1p25_HGCEnX1p25': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.25, 1.25)
+elif opt_reco == 'HLT_75e33_TrkPtX1p50_HGCEnX1p50': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.50, 1.50)
+elif opt_reco == 'HLT_75e33_TrkPtX1p75_HGCEnX1p75': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.75, 1.75)
+elif opt_reco == 'HLT_75e33_TrkPtX2p00_HGCEnX2p00': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(2.00, 2.00)
+elif opt_reco == 'HLT_75e33_TrkPtX1p50_HGCEnX1p00': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.50, 1.00)
+elif opt_reco == 'HLT_75e33_TrkPtX2p00_HGCEnX1p00': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(2.00, 1.00)
+elif opt_reco == 'HLT_75e33_TrkPtX1p00_HGCEnX1p50': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.00, 1.50)
+elif opt_reco == 'HLT_75e33_TrkPtX1p00_HGCEnX2p00': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.00, 2.00)
+elif opt_reco == 'HLT_75e33_TrkPtX9p99_HGCEnX9p99': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(9.99, 9.99)
+elif opt_reco == 'HLT_75e33_TrkPtX9p99_HGCEnX1p00': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(9.99, 1.00)
+elif opt_reco == 'HLT_75e33_TrkPtX1p00_HGCEnX9p99': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.00, 9.99)
 
 else:
   raise RuntimeError('invalid argument for option "reco": "'+opt_reco+'"')

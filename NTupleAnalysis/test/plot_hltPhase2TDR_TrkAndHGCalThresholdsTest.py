@@ -203,6 +203,13 @@ if __name__ == '__main__':
     'HLT_75e33_TrkAndHGCalThresholdsTest_1p50',
     'HLT_75e33_TrkAndHGCalThresholdsTest_1p75',
     'HLT_75e33_TrkAndHGCalThresholdsTest_2p00',
+    'HLT_75e33_TrkPtX1p00_HGCEnX1p50',
+    'HLT_75e33_TrkPtX1p00_HGCEnX2p00',
+    'HLT_75e33_TrkPtX1p00_HGCEnX9p99',
+    'HLT_75e33_TrkPtX1p50_HGCEnX1p00',
+    'HLT_75e33_TrkPtX2p00_HGCEnX1p00',
+    'HLT_75e33_TrkPtX9p99_HGCEnX1p00',
+    'HLT_75e33_TrkPtX9p99_HGCEnX9p99',
   ]
 
   recoLabels = {
@@ -212,6 +219,13 @@ if __name__ == '__main__':
     'HLT_75e33_TrkAndHGCalThresholdsTest_1p50': 'HLT (F=1.50)',
     'HLT_75e33_TrkAndHGCalThresholdsTest_1p75': 'HLT (F=1.75)',
     'HLT_75e33_TrkAndHGCalThresholdsTest_2p00': 'HLT (F=2.00)',
+    'HLT_75e33_TrkPtX1p00_HGCEnX1p50': 'HLT (Ftrk=1.00, Fhgc=1.50)',
+    'HLT_75e33_TrkPtX1p00_HGCEnX2p00': 'HLT (Ftrk=1.00, Fhgc=2.00)',
+    'HLT_75e33_TrkPtX1p00_HGCEnX9p99': 'HLT (Ftrk=1.00, Fhgc=9.99)',
+    'HLT_75e33_TrkPtX1p50_HGCEnX1p00': 'HLT (Ftrk=1.50, Fhgc=1.00)',
+    'HLT_75e33_TrkPtX2p00_HGCEnX1p00': 'HLT (Ftrk=2.00, Fhgc=1.00)',
+    'HLT_75e33_TrkPtX9p99_HGCEnX1p00': 'HLT (Ftrk=9.99, Fhgc=1.00)',
+    'HLT_75e33_TrkPtX9p99_HGCEnX9p99': 'HLT (Ftrk=9.99, Fhgc=9.99)',
   }
 
   outputDir = opts.output
@@ -280,6 +294,11 @@ if __name__ == '__main__':
                 'HLT',
                 'L1TpHLT',
               ]:
+                titleY = 'Efficiency'
+                if _tmpTrgType == 'HLT': titleY = 'HLT Efficiency'
+                elif _tmpTrgType == 'L1TpHLT': titleY = 'L1T+HLT Efficiency'
+
+                # plot #1
                 canvas = ROOT.TCanvas(tmpName(), tmpName(False))
                 canvas.cd()
 
@@ -313,7 +332,7 @@ if __name__ == '__main__':
                   effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p50'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kViolet)
                   effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p50'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(1)
                   effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p50'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
-  
+
                   effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p75'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
                   effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p75'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
                   effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p75'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kBlack)
@@ -375,14 +394,366 @@ if __name__ == '__main__':
                 leg1.SetNColumns(1)
                 leg1.SetTextFont(42)
                 try:
-                  for _tmpReco in recoKeys:
+                  for _tmpReco in [
+                    'HLT_TRKv06p1_TICL',
+                    'HLT_75e33_TrkAndHGCalThresholdsTest_1p00',
+                    'HLT_75e33_TrkAndHGCalThresholdsTest_1p25',
+                    'HLT_75e33_TrkAndHGCalThresholdsTest_1p50',
+                    'HLT_75e33_TrkAndHGCalThresholdsTest_1p75',
+                    'HLT_75e33_TrkAndHGCalThresholdsTest_2p00',
+                  ]:
                     leg1.AddEntry(effysMET[_tmpPU][_tmpHLTthr][_tmpReco][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef], recoLabels[_tmpReco], 'lepx')
                 except:
                   print 'error in TLegend of '+outputFileName
 
                 leg1.Draw('same')
 
-                h0.SetTitle(';'+_tmpRef+' p_{T}^{miss} [GeV];Efficiency')
+                h0.SetTitle(';'+_tmpRef+' p_{T}^{miss} [GeV];'+titleY)
+                h0.GetYaxis().SetTitleOffset(h0.GetYaxis().GetTitleOffset() * 1.0)
+
+                canvas.SetLogy(0)
+                canvas.SetGrid(1, 1)
+
+                for _tmpExt in EXTS:
+                  canvas.SaveAs(outputFileName+'.'+_tmpExt)
+
+                canvas.Close()
+
+                print '\033[1m'+outputFileName+'\033[0m'
+
+                # plot #2
+                canvas = ROOT.TCanvas(tmpName(), tmpName(False))
+                canvas.cd()
+
+                h0 = canvas.DrawFrame(0, 0.0001, 500, 1.19)
+
+                try:
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kGray)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kGray)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kGreen+1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kGreen+1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX9p99'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX9p99'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX9p99'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kOrange+1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX9p99'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kOrange+1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX9p99'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX9p99'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX9p99_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX9p99_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX9p99_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kPink+2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX9p99_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kPink+2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX9p99_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX9p99_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX9p99_HGCEnX9p99'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX9p99_HGCEnX9p99'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX9p99_HGCEnX9p99'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kAzure+5)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX9p99_HGCEnX9p99'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kAzure+5)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX9p99_HGCEnX9p99'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX9p99_HGCEnX9p99'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+                except: pass
+
+                topLabel = ROOT.TPaveText(0.11, 0.93, 0.95, 0.98, 'NDC')
+                topLabel.SetFillColor(0)
+                topLabel.SetFillStyle(1001)
+                topLabel.SetTextColor(ROOT.kBlack)
+                topLabel.SetTextAlign(12)
+                topLabel.SetTextFont(42)
+                topLabel.SetTextSize(0.035)
+                topLabel.SetBorderSize(0)
+                topLabel.AddText('#font[52]{Phase-2 Simulation}')#('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
+                topLabel.Draw('same')
+
+                objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
+                objLabel.SetFillColor(0)
+                objLabel.SetFillStyle(1001)
+                objLabel.SetTextColor(ROOT.kBlack)
+                objLabel.SetTextAlign(32)
+                objLabel.SetTextFont(42)
+                objLabel.SetTextSize(0.035)
+                objLabel.SetBorderSize(0)
+                objLabel.AddText(_tmpPU+' (14 TeV)')
+                objLabel.Draw('same')
+
+                if 'MHT' in _tmpMET:
+                  l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.92, 0.88, 'NDC')
+                  l1tRateLabel.AddText('HLT : PF+PUPPI Type-1 p_{T}^{miss} & MHT > '+_tmpHLTthr+' GeV')
+                elif 'TypeOne' in _tmpMET:
+                  l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.65, 0.88, 'NDC')
+                  l1tRateLabel.AddText('HLT : PF+PUPPI Type-1 p_{T}^{miss} > '+_tmpHLTthr+' GeV')
+                else:
+                  l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.65, 0.88, 'NDC')
+                  l1tRateLabel.AddText('HLT : PF+PUPPI Raw p_{T}^{miss} > '+_tmpHLTthr+' GeV')
+                l1tRateLabel.SetFillColor(0)
+                l1tRateLabel.SetFillStyle(1001)
+                l1tRateLabel.SetTextColor(ROOT.kBlack)
+                l1tRateLabel.SetTextAlign(12)
+                l1tRateLabel.SetTextFont(42)
+                l1tRateLabel.SetTextSize(0.035)
+                l1tRateLabel.SetBorderSize(0)
+                l1tRateLabel.Draw('same')
+
+                outputFileName = outputDir+'/triggerEff_'+_tmpTrgType+'_'+_tmpMET+'_wrt'+_tmpRef+'_'+_tmpPU+'_'+_tmpHLTthr+'_'+_tmpMC+'_comp2'
+
+                leg1 = ROOT.TLegend(0.70, 0.20, 0.94, 0.50)
+                leg1.SetNColumns(1)
+                leg1.SetTextFont(42)
+                try:
+                  for _tmpReco in [
+                    'HLT_TRKv06p1_TICL',
+                    'HLT_75e33_TrkAndHGCalThresholdsTest_1p00',
+                    'HLT_75e33_TrkPtX1p00_HGCEnX9p99',
+                    'HLT_75e33_TrkPtX9p99_HGCEnX1p00',
+                    'HLT_75e33_TrkPtX9p99_HGCEnX9p99',
+                  ]:
+                    leg1.AddEntry(effysMET[_tmpPU][_tmpHLTthr][_tmpReco][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef], recoLabels[_tmpReco], 'lepx')
+                except:
+                  print 'error in TLegend of '+outputFileName
+
+                leg1.Draw('same')
+
+                h0.SetTitle(';'+_tmpRef+' p_{T}^{miss} [GeV];'+titleY)
+                h0.GetYaxis().SetTitleOffset(h0.GetYaxis().GetTitleOffset() * 1.0)
+
+                canvas.SetLogy(0)
+                canvas.SetGrid(1, 1)
+
+                for _tmpExt in EXTS:
+                  canvas.SaveAs(outputFileName+'.'+_tmpExt)
+
+                canvas.Close()
+
+                print '\033[1m'+outputFileName+'\033[0m'
+
+                # plot #3
+                canvas = ROOT.TCanvas(tmpName(), tmpName(False))
+                canvas.cd()
+
+                h0 = canvas.DrawFrame(0, 0.0001, 500, 1.19)
+
+                try:
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kGray)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kGray)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kGreen+1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kGreen+1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p50_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p50_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p50_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kPink+2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p50_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kPink+2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p50_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p50_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX2p00_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX2p00_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX2p00_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kAzure+5)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX2p00_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kAzure+5)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX2p00_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX2p00_HGCEnX1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kRed)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kRed)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+                except: pass
+
+                topLabel = ROOT.TPaveText(0.11, 0.93, 0.95, 0.98, 'NDC')
+                topLabel.SetFillColor(0)
+                topLabel.SetFillStyle(1001)
+                topLabel.SetTextColor(ROOT.kBlack)
+                topLabel.SetTextAlign(12)
+                topLabel.SetTextFont(42)
+                topLabel.SetTextSize(0.035)
+                topLabel.SetBorderSize(0)
+                topLabel.AddText('#font[52]{Phase-2 Simulation}')#('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
+                topLabel.Draw('same')
+
+                objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
+                objLabel.SetFillColor(0)
+                objLabel.SetFillStyle(1001)
+                objLabel.SetTextColor(ROOT.kBlack)
+                objLabel.SetTextAlign(32)
+                objLabel.SetTextFont(42)
+                objLabel.SetTextSize(0.035)
+                objLabel.SetBorderSize(0)
+                objLabel.AddText(_tmpPU+' (14 TeV)')
+                objLabel.Draw('same')
+
+                if 'MHT' in _tmpMET:
+                  l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.92, 0.88, 'NDC')
+                  l1tRateLabel.AddText('HLT : PF+PUPPI Type-1 p_{T}^{miss} & MHT > '+_tmpHLTthr+' GeV')
+                elif 'TypeOne' in _tmpMET:
+                  l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.65, 0.88, 'NDC')
+                  l1tRateLabel.AddText('HLT : PF+PUPPI Type-1 p_{T}^{miss} > '+_tmpHLTthr+' GeV')
+                else:
+                  l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.65, 0.88, 'NDC')
+                  l1tRateLabel.AddText('HLT : PF+PUPPI Raw p_{T}^{miss} > '+_tmpHLTthr+' GeV')
+                l1tRateLabel.SetFillColor(0)
+                l1tRateLabel.SetFillStyle(1001)
+                l1tRateLabel.SetTextColor(ROOT.kBlack)
+                l1tRateLabel.SetTextAlign(12)
+                l1tRateLabel.SetTextFont(42)
+                l1tRateLabel.SetTextSize(0.035)
+                l1tRateLabel.SetBorderSize(0)
+                l1tRateLabel.Draw('same')
+
+                outputFileName = outputDir+'/triggerEff_'+_tmpTrgType+'_'+_tmpMET+'_wrt'+_tmpRef+'_'+_tmpPU+'_'+_tmpHLTthr+'_'+_tmpMC+'_comp3'
+
+                leg1 = ROOT.TLegend(0.70, 0.20, 0.94, 0.50)
+                leg1.SetNColumns(1)
+                leg1.SetTextFont(42)
+                try:
+                  for _tmpReco in [
+                    'HLT_TRKv06p1_TICL',
+                    'HLT_75e33_TrkAndHGCalThresholdsTest_1p00',
+                    'HLT_75e33_TrkPtX1p50_HGCEnX1p00',
+                    'HLT_75e33_TrkPtX2p00_HGCEnX1p00',
+                    'HLT_75e33_TrkAndHGCalThresholdsTest_2p00',
+                  ]:
+                    leg1.AddEntry(effysMET[_tmpPU][_tmpHLTthr][_tmpReco][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef], recoLabels[_tmpReco], 'lepx')
+                except:
+                  print 'error in TLegend of '+outputFileName
+
+                leg1.Draw('same')
+
+                h0.SetTitle(';'+_tmpRef+' p_{T}^{miss} [GeV];'+titleY)
+                h0.GetYaxis().SetTitleOffset(h0.GetYaxis().GetTitleOffset() * 1.0)
+
+                canvas.SetLogy(0)
+                canvas.SetGrid(1, 1)
+
+                for _tmpExt in EXTS:
+                  canvas.SaveAs(outputFileName+'.'+_tmpExt)
+
+                canvas.Close()
+
+                print '\033[1m'+outputFileName+'\033[0m'
+
+                # plot #4
+                canvas = ROOT.TCanvas(tmpName(), tmpName(False))
+                canvas.cd()
+
+                h0 = canvas.DrawFrame(0, 0.0001, 500, 1.19)
+
+                try:
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kGray)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kGray)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_TRKv06p1_TICL'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kGreen+1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kGreen+1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_1p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX1p50'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX1p50'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX1p50'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kOrange-4)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX1p50'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kOrange-4)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX1p50'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX1p50'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kBlue-9)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kBlue-9)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkPtX1p00_HGCEnX2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerSize(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineWidth(2)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetMarkerColor(ROOT.kRed)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineColor(ROOT.kRed)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].SetLineStyle(1)
+                  effysMET[_tmpPU][_tmpHLTthr]['HLT_75e33_TrkAndHGCalThresholdsTest_2p00'][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef].Draw('lepz')
+                except: pass
+
+                topLabel = ROOT.TPaveText(0.11, 0.93, 0.95, 0.98, 'NDC')
+                topLabel.SetFillColor(0)
+                topLabel.SetFillStyle(1001)
+                topLabel.SetTextColor(ROOT.kBlack)
+                topLabel.SetTextAlign(12)
+                topLabel.SetTextFont(42)
+                topLabel.SetTextSize(0.035)
+                topLabel.SetBorderSize(0)
+                topLabel.AddText('#font[52]{Phase-2 Simulation}')#('#font[61]{CMS} #font[52]{Phase-2 Simulation}')
+                topLabel.Draw('same')
+
+                objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
+                objLabel.SetFillColor(0)
+                objLabel.SetFillStyle(1001)
+                objLabel.SetTextColor(ROOT.kBlack)
+                objLabel.SetTextAlign(32)
+                objLabel.SetTextFont(42)
+                objLabel.SetTextSize(0.035)
+                objLabel.SetBorderSize(0)
+                objLabel.AddText(_tmpPU+' (14 TeV)')
+                objLabel.Draw('same')
+
+                if 'MHT' in _tmpMET:
+                  l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.92, 0.88, 'NDC')
+                  l1tRateLabel.AddText('HLT : PF+PUPPI Type-1 p_{T}^{miss} & MHT > '+_tmpHLTthr+' GeV')
+                elif 'TypeOne' in _tmpMET:
+                  l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.65, 0.88, 'NDC')
+                  l1tRateLabel.AddText('HLT : PF+PUPPI Type-1 p_{T}^{miss} > '+_tmpHLTthr+' GeV')
+                else:
+                  l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.65, 0.88, 'NDC')
+                  l1tRateLabel.AddText('HLT : PF+PUPPI Raw p_{T}^{miss} > '+_tmpHLTthr+' GeV')
+                l1tRateLabel.SetFillColor(0)
+                l1tRateLabel.SetFillStyle(1001)
+                l1tRateLabel.SetTextColor(ROOT.kBlack)
+                l1tRateLabel.SetTextAlign(12)
+                l1tRateLabel.SetTextFont(42)
+                l1tRateLabel.SetTextSize(0.035)
+                l1tRateLabel.SetBorderSize(0)
+                l1tRateLabel.Draw('same')
+
+                outputFileName = outputDir+'/triggerEff_'+_tmpTrgType+'_'+_tmpMET+'_wrt'+_tmpRef+'_'+_tmpPU+'_'+_tmpHLTthr+'_'+_tmpMC+'_comp4'
+
+                leg1 = ROOT.TLegend(0.70, 0.20, 0.94, 0.50)
+                leg1.SetNColumns(1)
+                leg1.SetTextFont(42)
+                try:
+                  for _tmpReco in [
+                    'HLT_TRKv06p1_TICL',
+                    'HLT_75e33_TrkAndHGCalThresholdsTest_1p00',
+                    'HLT_75e33_TrkPtX1p00_HGCEnX1p50',
+                    'HLT_75e33_TrkPtX1p00_HGCEnX2p00',
+                    'HLT_75e33_TrkAndHGCalThresholdsTest_2p00',
+                  ]:
+                    leg1.AddEntry(effysMET[_tmpPU][_tmpHLTthr][_tmpReco][_tmpMET+'_'+_tmpTrgType+'_wrt_'+_tmpRef], recoLabels[_tmpReco], 'lepx')
+                except:
+                  print 'error in TLegend of '+outputFileName
+
+                leg1.Draw('same')
+
+                h0.SetTitle(';'+_tmpRef+' p_{T}^{miss} [GeV];'+titleY)
                 h0.GetYaxis().SetTitleOffset(h0.GetYaxis().GetTitleOffset() * 1.0)
 
                 canvas.SetLogy(0)

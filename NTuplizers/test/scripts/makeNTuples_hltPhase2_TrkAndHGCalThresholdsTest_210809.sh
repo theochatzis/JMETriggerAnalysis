@@ -22,14 +22,21 @@ samplesMap["Phase2HLTTDR_VBF_HToInvisible_14TeV_PU200"]="/VBF_HToInvisible_M125_
 
 recoKeys=(
   HLT_TRKv06p1_TICL
-  HLT_75e33_TrkAndHGCalThresholdsTest_1p00
-  HLT_75e33_TrkAndHGCalThresholdsTest_1p25
-  HLT_75e33_TrkAndHGCalThresholdsTest_1p50
-  HLT_75e33_TrkAndHGCalThresholdsTest_1p75
-  HLT_75e33_TrkAndHGCalThresholdsTest_2p00
+  HLT_75e33_TrkPtX1p00_HGCEnX1p00
+  HLT_75e33_TrkPtX1p25_HGCEnX1p25
+  HLT_75e33_TrkPtX1p50_HGCEnX1p50
+  HLT_75e33_TrkPtX1p75_HGCEnX1p75
+  HLT_75e33_TrkPtX2p00_HGCEnX2p00
+  HLT_75e33_TrkPtX1p50_HGCEnX1p00
+  HLT_75e33_TrkPtX2p00_HGCEnX1p00
+  HLT_75e33_TrkPtX1p00_HGCEnX1p50
+  HLT_75e33_TrkPtX1p00_HGCEnX2p00
+  HLT_75e33_TrkPtX9p99_HGCEnX9p99
+  HLT_75e33_TrkPtX9p99_HGCEnX1p00
+  HLT_75e33_TrkPtX1p00_HGCEnX9p99
 )
 
-# options (JobFlavour and AccountingGroup)
+# additional options for bdriver
 opts=""
 
 for recoKey in "${recoKeys[@]}"; do
