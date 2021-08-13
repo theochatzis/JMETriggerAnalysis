@@ -31,6 +31,9 @@ recoKeys=(
   HLT_75e33_TrkPtX2p00_HGCEnX1p00
   HLT_75e33_TrkPtX1p00_HGCEnX1p50
   HLT_75e33_TrkPtX1p00_HGCEnX2p00
+  HLT_75e33_TrkPtX9p99_HGCEnX9p99
+  HLT_75e33_TrkPtX9p99_HGCEnX1p00
+  HLT_75e33_TrkPtX1p00_HGCEnX9p99
 )
 
 # additional options for bdriver
