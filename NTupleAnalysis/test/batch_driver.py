@@ -14,7 +14,7 @@ if __name__ == '__main__':
    ### args -----------
    parser = argparse.ArgumentParser(description=__doc__)
 
-   parser.add_argument('-s', '--script', dest='script', action='store', default=os.path.dirname(__file__)+'run.py',
+   parser.add_argument('-s', '--script', dest='script', action='store', default=os.path.dirname(__file__)+'/run.py',
                        help='path to python script executed in each batch job')
 
    parser.add_argument('-i', '--inputs', dest='inputs', required=True, nargs='+', default=[],

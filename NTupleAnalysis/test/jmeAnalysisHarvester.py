@@ -362,7 +362,8 @@ if __name__ == '__main__':
               tmp_effname = hkey_i_num.replace(opts.separator_2d, '_')+'_eff'
    
               if tmp_effname in histograms: KILL(log_prx+'CCC2 '+tmp_effname)
-   
+  
+              print tmp_effname
               histograms[tmp_effname] = get_efficiency_graph(tmp_hnum0, tmp_hden0)
 
               del tmp_hnum0

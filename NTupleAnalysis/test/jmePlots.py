@@ -1191,7 +1191,10 @@ def getPlotConfig(key, keyword, inputList):
        if key.endswith('_pt_eff'):
           cfg.xMin, cfg.xMax = 0., 300.
 
-       cfg.legXY = [0.55, 0.60, 0.95, 0.90]
+       if key.endswith('_eff'):
+          cfg.legXY = [0.55, 0.30, 0.95, 0.50]
+       else:
+          cfg.legXY = [0.55, 0.60, 0.95, 0.80]
 
        ## MET
        if 'hltCaloMET_' in key:
@@ -1248,7 +1251,11 @@ def getPlotConfig(key, keyword, inputList):
        if key.endswith('_pt_eff'):
           cfg.xMin, cfg.xMax = 0., 300.
 
-       cfg.legXY = [0.55, 0.60, 0.95, 0.90]
+#       cfg.legXY = [0.55, 0.60, 0.95, 0.90]
+       if key.endswith('_eff'):
+          cfg.legXY = [0.55, 0.30, 0.95, 0.50]
+       else:
+          cfg.legXY = [0.55, 0.60, 0.95, 0.80]
 
        ## MET
        if 'hltPFMET_' in key:

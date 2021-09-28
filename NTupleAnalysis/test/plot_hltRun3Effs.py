@@ -52,12 +52,12 @@ def getJetEfficiencies(fpath, hltThreshold_SingleJet):
     ret['Puppi_SingleJet_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
     ret['Puppi_SingleJet_wrt_'+_tmpRef].SetName('Puppi_SingleJet_wrt_'+_tmpRef)
 
-#    _tmp_num = _tfile.Get('HLT_PFJet'+hltThreshold_SingleJet+'/offlineAK4PFJetsCorrected_EtaIncl_MatchedToHLT_pt')
-#
-#    _tmp_den = _tfile.Get('NoSelection/offlineAK4PFJetsCorrected_EtaIncl_MatchedToHLT_pt')
-#
-#    ret['PF_SingleJet_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
-#    ret['PF_SingleJet_wrt_'+_tmpRef].SetName('PF_SingleJet_wrt_'+_tmpRef)
+    _tmp_num = _tfile.Get('HLT_PFJet'+hltThreshold_SingleJet+'/offlineAK4PFCHSJetsCorrected_EtaIncl_MatchedToHLT_pt')
+
+    _tmp_den = _tfile.Get('NoSelection/offlineAK4PFCHSJetsCorrected_EtaIncl_MatchedToHLT_pt')
+
+    ret['PF_SingleJet_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
+    ret['PF_SingleJet_wrt_'+_tmpRef].SetName('PF_SingleJet_wrt_'+_tmpRef)
 
   _tfile.Close()
 
@@ -87,12 +87,12 @@ def getHTEfficiencies(fpath, hltThreshold_HT):
     ret['Puppi_HT_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
     ret['Puppi_HT_wrt_'+_tmpRef].SetName('Puppi_HT_wrt_'+_tmpRef)
 
-#    _tmp_num = _tfile.Get('HLT_PFHT'+hltThreshold_HT+'/offlineAK4PFJetsCorrected_Eta2p5_HT')
-#
-#    _tmp_den = _tfile.Get('NoSelection/offlineAK4PFJetsCorrected_Eta2p5_HT')
-#
-#    ret['PF_HT_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
-#    ret['PF_HT_wrt_'+_tmpRef].SetName('PF_HT_wrt_'+_tmpRef)
+    _tmp_num = _tfile.Get('HLT_PFHT'+hltThreshold_HT+'/offlineAK4PFCHSJetsCorrected_Eta2p5_HT')
+
+    _tmp_den = _tfile.Get('NoSelection/offlineAK4PFCHSJetsCorrected_Eta2p5_HT')
+
+    ret['PF_HT_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
+    ret['PF_HT_wrt_'+_tmpRef].SetName('PF_HT_wrt_'+_tmpRef)
 
   _tfile.Close()
 
@@ -116,12 +116,18 @@ def getMETEfficiencies(fpath, hltThreshold_MET):
 
     _tmp_den = _tfile.Get('NoSelection/offlinePFPuppiMET_Raw_pt')
 
+#    _tmp_num = _tfile.Get('20to40_HLT/offlinePFPuppiMET_Raw_pt')
+#    _tmp_den = _tfile.Get('20to40/offlinePFPuppiMET_Raw_pt')
+
     ret['PuppiMET_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
     ret['PuppiMET_wrt_'+_tmpRef].SetName('PuppiMET_wrt_'+_tmpRef)
 
     _tmp_num = _tfile.Get('HLT_PFMET'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight'+'/offlinePFMET_Raw_pt')
 
     _tmp_den = _tfile.Get('NoSelection/offlinePFMET_Raw_pt')
+
+#    _tmp_num = _tfile.Get('20to40_HLT/offlinePFMET_Raw_pt')
+#    _tmp_den = _tfile.Get('20to40/offlinePFMET_Raw_pt')
 
     ret['PFMET_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
     ret['PFMET_wrt_'+_tmpRef].SetName('PFMET_wrt_'+_tmpRef)
@@ -130,12 +136,18 @@ def getMETEfficiencies(fpath, hltThreshold_MET):
 
     _tmp_den = _tfile.Get('NoSelection/offlinePFPuppiMET_Type1_pt')
 
+#    _tmp_num = _tfile.Get('20to40_HLT_TypeOne/offlinePFPuppiMET_Raw_pt')
+#    _tmp_den = _tfile.Get('20to40/offlinePFPuppiMET_Raw_pt')
+
     ret['PuppiMETTypeOne_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
     ret['PuppiMETTypeOne_wrt_'+_tmpRef].SetName('PuppiMETTypeOne_wrt_'+_tmpRef)
 
     _tmp_num = _tfile.Get('HLT_PFMETTypeOne'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight'+'/offlinePFMET_Type1_pt')
 
     _tmp_den = _tfile.Get('NoSelection/offlinePFMET_Type1_pt')
+
+#    _tmp_num = _tfile.Get('20to40_HLT_TypeOne/offlinePFMET_Raw_pt')
+#    _tmp_den = _tfile.Get('20to40/offlinePFMET_Raw_pt')
 
     ret['PFMETTypeOne_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
     ret['PFMETTypeOne_wrt_'+_tmpRef].SetName('PFMETTypeOne_wrt_'+_tmpRef)
@@ -193,7 +205,7 @@ if __name__ == '__main__':
   inputDir = opts.inputDir
 
   recoKeys = [
-    '07June',
+    '25June_withoutThreshold',
   ]
 
   outputDir = opts.output
@@ -454,6 +466,17 @@ if __name__ == '__main__':
         objLabel.SetBorderSize(0)
         objLabel.AddText('14 TeV')
         objLabel.Draw('same')
+
+        l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.70, 0.88, 'NDC')
+        l1tRateLabel.SetFillColor(0)
+        l1tRateLabel.SetFillStyle(1001)
+        l1tRateLabel.SetTextColor(ROOT.kBlack)
+        l1tRateLabel.SetTextAlign(12)
+        l1tRateLabel.SetTextFont(42)
+        l1tRateLabel.SetTextSize(0.035)
+        l1tRateLabel.SetBorderSize(0)
+        l1tRateLabel.AddText('Offline Jet |#eta| < 2.5')
+        l1tRateLabel.Draw('same')
 
         leg1 = ROOT.TLegend(0.60, 0.20, 0.94, 0.44)
         leg1.SetNColumns(1)

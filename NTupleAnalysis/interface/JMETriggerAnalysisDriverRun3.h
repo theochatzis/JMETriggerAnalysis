@@ -38,10 +38,12 @@ class JMETriggerAnalysisDriverRun3 : public JMETriggerAnalysisDriver {
   std::vector<std::string> jettriggers;
   std::vector<std::string> httriggers;
   std::vector<std::string> mettriggers;
+  std::vector<std::string> puintervals;
 
   bool hltJetTrigger(std::string const& key) const;
   bool hltHTTrigger(std::string const& key) const;
   bool hltMETTrigger(std::string const& key) const;
+  bool pileupintervals(std::string const& key) const;
 };
 
 #endif

@@ -40,20 +40,34 @@ void JMETriggerAnalysisDriverRun3::init(){
 
   labelMap_jetAK4_.clear();
   labelMap_jetAK4_ = {
+    {"ak4GenJetsNoNu",{
+           {"hltCaloCorr", "hltAK4CaloJetsCorrected"},
+           {"hltPFClusterCorr", "hltAK4PFClusterJetsCorrected"},
+           {"hltPFCorr", "hltAK4PFJetsCorrected"},
+           {"offlPFCorr", "offlineAK4PFCHSJetsCorrected"},
+           {"hltPFPuppiCorr", "hltAK4PFPuppiJetsCorrected"},
+           {"offlPFPuppiCorr", "offlineAK4PFPuppiJetsCorrected"}}},
     {"hltAK4CaloJets"              , {{"GEN", "ak4GenJetsNoNu"}}},
     {"hltAK4CaloJetsCorrected"     , {{"GEN", "ak4GenJetsNoNu"}}},
     {"hltAK4PFClusterJets"         , {{"GEN", "ak4GenJetsNoNu"}}},
     {"hltAK4PFClusterJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}}},
     {"hltAK4PFJets"                , {{"GEN", "ak4GenJetsNoNu"}}},
-    {"hltAK4PFJetsCorrected"       , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFJetsCorrected"}}},
+    {"hltAK4PFJetsCorrected"       , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFCHSJetsCorrected"}}},
     {"hltAK4PFPuppiJets"           , {{"GEN", "ak4GenJetsNoNu"}}},
     {"hltAK4PFPuppiJetsCorrected"  , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
-    {"offlineAK4PFJetsCorrected"   , {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
-    {"offlineAK4PFPuppiJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFPuppiJetsCorrected"}}},
+    {"offlineAK4PFCHSJetsCorrected"   , {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
+    {"offlineAK4PFPuppiJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
   };
 
   labelMap_jetAK8_.clear();
   labelMap_jetAK8_ = {
+    {"ak8GenJetsNoNu",{
+           {"hltCaloCorr", "hltAK8CaloJetsCorrected"},
+           {"hltPFClusterCorr", "hltAK8PFClusterJetsCorrected"},
+           {"hltPFCorr", "hltAK8PFJetsCorrected"},
+           {"offlPFCorr", "offlineAK8PFJetsCorrected"},
+           {"hltPFPuppiCorr", "hltAK8PFPuppiJetsCorrected"},
+           {"offlPFPuppiCorr", "offlineAK8PFPuppiJetsCorrected"}}},
     {"hltAK8CaloJets"              , {{"GEN", "ak8GenJetsNoNu"}}},
     {"hltAK8CaloJetsCorrected"     , {{"GEN", "ak8GenJetsNoNu"}}},
     {"hltAK8PFClusterJets"         , {{"GEN", "ak8GenJetsNoNu"}}},
@@ -91,7 +105,7 @@ void JMETriggerAnalysisDriverRun3::init(){
       bookHistograms_Jets(selLabel, jetLabel.first, utils::mapKeys(jetLabel.second));
     }
 
-    bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFJetsCorrected", "offlineAK4PFJetsCorrected");
+    bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFJetsCorrected", "offlineAK4PFCHSJetsCorrected");
     bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFPuppiJetsCorrected", "offlineAK4PFPuppiJetsCorrected");
 
     // histograms: AK8 Jets
@@ -129,7 +143,7 @@ void JMETriggerAnalysisDriverRun3::init(){
     for(auto const& jetLabel : labelMap_jetAK4_){
       bookHistograms_Jets(selLabel, jetLabel.first, utils::mapKeys(jetLabel.second));
     }
-    bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFJetsCorrected", "offlineAK4PFJetsCorrected");
+    bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFJetsCorrected", "offlineAK4PFCHSJetsCorrected");
     bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFPuppiJetsCorrected", "offlineAK4PFPuppiJetsCorrected");
   }
 
@@ -146,6 +160,25 @@ void JMETriggerAnalysisDriverRun3::init(){
     }
     bookHistograms_METMHT(selLabel);
   }
+
+  puintervals = {
+  "PU0to20",
+  "PU20to40",
+  "PUgt40",
+  "PU0to20_HLT",
+  "PU20to40_HLT",
+  "PUgt40_HLT",
+  "PU0to20_HLT_TypeOne",
+  "PU20to40_HLT_TypeOne",
+  "PUgt40_HLT_TypeOne",
+  };
+
+  for(auto const& selLabel : puintervals){
+    for(auto const& metLabel : labelMap_MET_){
+      bookHistograms_MET(selLabel, metLabel.first, utils::mapKeys(metLabel.second));
+    }
+  }
+
 }
 
 void JMETriggerAnalysisDriverRun3::analyze(){
@@ -181,8 +214,14 @@ void JMETriggerAnalysisDriverRun3::analyze(){
       if(not hltTrig){
         continue;
       }
+      auto fhDataAK4JetsNew = fhDataAK4Jets;
+      for(auto& match : fhDataAK4JetsNew.matches){
+        if(match.label == "HLT" && selLabel == "HLT_PFJet140") match.jetPtMin = 140.;
+        else if(match.label == "HLT" && selLabel == "HLT_PFJet320") match.jetPtMin = 320.;
+        else if(match.label == "HLT" && selLabel == "HLT_PFJet500") match.jetPtMin = 500.;
+      }
 
-      fillHistograms_Jets(selLabel, fhDataAK4Jets, wgt);
+      fillHistograms_Jets(selLabel, fhDataAK4JetsNew, wgt);
     }
 
     if(isGENJets) continue;
@@ -206,7 +245,9 @@ void JMETriggerAnalysisDriverRun3::analyze(){
     fhDataHLTAK4Jets.jetAbsEtaMax = 5.0;
 
     fillHistoDataJets fhDataOffAK4Jets;
-    fhDataOffAK4Jets.jetCollection = "offlineAK4"+jetType+"JetsCorrected";
+    if(jetType == "PF") fhDataOffAK4Jets.jetCollection = "offlineAK4PFCHSJetsCorrected";
+    else if(jetType == "PFPuppi") fhDataOffAK4Jets.jetCollection = "offlineAK4PFPuppiJetsCorrected";
+    //fhDataOffAK4Jets.jetCollection = "offlineAK4"+jetType+"JetsCorrected";
     fhDataOffAK4Jets.jetPtMin = minAK4JetPt;
     fhDataOffAK4Jets.jetAbsEtaMax = 5.0;
 
@@ -265,6 +306,13 @@ void JMETriggerAnalysisDriverRun3::analyze(){
         fillHistograms_MET(selLabel, fhDataMET, wgt);
       }
     }
+
+    for(auto const& selLabel : puintervals){
+      auto const puInt = hasTTreeReaderValue("pileupInfo_BX0_numPUInteractions") ? pileupintervals(selLabel) : false;
+      if(puInt){
+        fillHistograms_MET(selLabel, fhDataMET, wgt);
+      }
+    }
   }
 
   // MET+MHT
@@ -303,6 +351,22 @@ bool JMETriggerAnalysisDriverRun3::hltMETTrigger(std::string const& key) const {
   else if(key == "HLT_PFMETTypeOne120_PFMHT120_IDTight") return value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight");
   else if(key == "HLT_PFMET140_PFMHT140_IDTight") return value<bool>("HLT_PFMET140_PFMHT140_IDTight");
   else if(key == "HLT_PFMETTypeOne140_PFMHT140_IDTight") return value<bool>("HLT_PFMETTypeOne140_PFMHT140_IDTight");
+  else
+    throw std::runtime_error("JMETriggerAnalysisDriverRun3::hltMETTrigger(\""+key+"\") -- invalid key");
+
+  return false;
+}
+
+bool JMETriggerAnalysisDriverRun3::pileupintervals(std::string const& key) const {
+  if(key == "PU0to20") return (value<int>("pileupInfo_BX0_numPUInteractions") > 0 && value<int>("pileupInfo_BX0_numPUInteractions") <= 20);
+  if(key == "PU20to40") return (value<int>("pileupInfo_BX0_numPUInteractions") > 20 && value<int>("pileupInfo_BX0_numPUInteractions") <= 40);
+  if(key == "PUgt40") return (value<int>("pileupInfo_BX0_numPUInteractions") > 40);
+  if(key == "PU0to20_HLT") return (value<int>("pileupInfo_BX0_numPUInteractions") > 0 && value<int>("pileupInfo_BX0_numPUInteractions") <= 20 && value<bool>("HLT_PFMET120_PFMHT120_IDTight"));
+  if(key == "PU20to40_HLT") return (value<int>("pileupInfo_BX0_numPUInteractions") > 20 && value<int>("pileupInfo_BX0_numPUInteractions") <= 40 && value<bool>("HLT_PFMET120_PFMHT120_IDTight"));
+  if(key == "PUgt40_HLT") return(value<int>("pileupInfo_BX0_numPUInteractions") > 40 && value<bool>("HLT_PFMET120_PFMHT120_IDTight"));
+  if(key == "PU0to20_HLT_TypeOne") return (value<int>("pileupInfo_BX0_numPUInteractions") > 0 && value<int>("pileupInfo_BX0_numPUInteractions") <= 20 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));
+  if(key == "PU20to40_HLT_TypeOne") return (value<int>("pileupInfo_BX0_numPUInteractions") > 20 && value<int>("pileupInfo_BX0_numPUInteractions") <= 40 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));
+  if(key == "PUgt40_HLT_TypeOne") return(value<int>("pileupInfo_BX0_numPUInteractions") > 40 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));
   else
     throw std::runtime_error("JMETriggerAnalysisDriverRun3::hltMETTrigger(\""+key+"\") -- invalid key");
 
