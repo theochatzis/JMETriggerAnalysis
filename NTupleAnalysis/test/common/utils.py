@@ -1,14 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os, subprocess
 
 def KILL(log):
     raise SystemExit('\n '+'\033[1m'+'@@@ '+'\033[91m'+'FATAL'  +'\033[0m'+' -- '+log+'\n')
 
 def WARNING(log):
-    print '\n '+'\033[1m'+'@@@ '+'\033[93m'+'WARNING'+'\033[0m'+' -- '+log+'\n'
+    print ('\n '+'\033[1m'+'@@@ '+'\033[93m'+'WARNING'+'\033[0m'+' -- '+log+'\n')
 
 def MKDIRP(dirpath, verbose=False, dry_run=False):
-    if verbose: print '\033[1m'+'>'+'\033[0m'+' os.mkdirs("'+dirpath+'")'
+    if verbose: print ('\033[1m'+'>'+'\033[0m'+' os.mkdirs("'+dirpath+'")')
     if dry_run: return
     try:
       os.makedirs(dirpath)
@@ -17,7 +17,7 @@ def MKDIRP(dirpath, verbose=False, dry_run=False):
         raise
 
 def EXE(cmd, suspend=True, verbose=False, dry_run=False):
-    if verbose: print '\033[1m'+'>'+'\033[0m'+' '+cmd
+    if verbose: print ('\033[1m'+'>'+'\033[0m'+' '+cmd)
     if dry_run: return
 
     _exitcode = os.system(cmd)
@@ -180,7 +180,7 @@ def HTCondor_jobExecutables_2(username=None):
 
     _condorq_cmd = 'condor_q {:} -format "%d." ClusterId -format "%d " ProcId -format "%s\\n" Cmd'.format(username)
 
-    _condorq_lines = get_output(_condorq_cmd, permissive=True)[0].split('\n')
+    _condorq_lines = get_output(_condorq_cmd, permissive=True)[0].split(b'\n')
 
     for _i_condorq_line in _condorq_lines:
 
@@ -249,4 +249,4 @@ def hadd_rootfiles(output, inputs):
 
     if not _ret: KILL('hadd_rootfiles -- call to TFileMerger::Merge() failed: output='+output)
 
-    print colored_text('[output='+output_file+']', ['93']), 'merging completed {0}, {1:.2f} MB'.format(output_file, os.path.getsize(output_file)/1024.0/1024.0)
+    print (colored_text('[output='+output_file+']', ['93']), 'merging completed {0}, {1:.2f} MB'.format(output_file, os.path.getsize(output_file)/1024.0/1024.0))
