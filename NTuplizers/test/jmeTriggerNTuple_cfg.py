@@ -85,8 +85,10 @@ elif opts.reco == 'HLT_GRun':
 elif opts.reco == 'HLT_Run3TRK':
   # (a) Run-3 tracking: standard
   from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_1_0_GRun_configDump import cms, process
-  from HLTrigger.Configuration.customizeHLTforRun3Tracking import customizeHLTforRun3Tracking
-  process = customizeHLTforRun3Tracking(process)
+  #from HLTrigger.Configuration.customizeHLTforRun3Tracking import customizeHLTforRun3Tracking
+  #process = customizeHLTforRun3Tracking(process)
+  from HLTrigger.Configuration.customizeHLTforRun3 import *
+  process = TRK_newTracking(process)
   update_jmeCalibs = True
   update_jmeCalibs = True
 
