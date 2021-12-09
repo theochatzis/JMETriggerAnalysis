@@ -76,7 +76,7 @@ if __name__ == '__main__':
    parser.add_argument('--customise-commands', dest='customise_commands', nargs='+', default=[],
                        help='list of strings to be appended at the end of the final cmsRun configuration file')
 
-   parser.add_argument('--submit', dest='submit', action='store_true', default=False,
+   parser.add_argument('--submit', dest='submit', action='store_true', default=True,
                        help='submit job(s) on the batch system')
 
    parser.add_argument('--export-LD-LIBRARY-PATH', dest='export_LD_LIBRARY_PATH', action='store_true', default=False,
@@ -466,7 +466,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
              cmsRun_opts += ' \\\n inputFiles='+str(i_inputFile)
              if i_secondaryInputFiles:
                cmsRun_opts += ' \\\n secondaryInputFiles='+str(','.join(i_secondaryInputFiles))
-             cmsRun_opts += ' \\\n output=./out'+outputname_postfix_format.format(jobCounter)+'.root'
+             cmsRun_opts += ' \\\n output=/eos/cms/store/group/phys_jetmet/pdas/Phase2/ntuples/out'+outputname_postfix_format.format(jobCounter)+'.root'     ##############
 
              for _tmp in cmsRun_addopts:
                cmsRun_opts += ' \\\n '+str(_tmp)
@@ -507,7 +507,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
            ]
 
          cmsRun_opts += [
-           'output=${TMPDIR}/out'+outputname_postfix_format.format(jobCounter)+'.root',
+           'output=/eos/cms/store/group/phys_jetmet/pdas/Phase2/ntuples/out'+outputname_postfix_format.format(jobCounter)+'.root',
          ]
 
          cmsRun_opts += cmsRun_addopts
