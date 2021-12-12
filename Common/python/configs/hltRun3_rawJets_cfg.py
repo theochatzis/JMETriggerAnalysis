@@ -57,14 +57,14 @@ for _modname in process.outputModules_():
     _mod = getattr(process, _modname)
     if type(_mod) == cms.OutputModule:
        process.__delattr__(_modname)
-       print '> removed cms.OutputModule:', _modname
+       print('> removed cms.OutputModule:', _modname)
 
 # remove cms.EndPath objects from HLT config-dump
 for _modname in process.endpaths_():
     _mod = getattr(process, _modname)
     if type(_mod) == cms.EndPath:
        process.__delattr__(_modname)
-       print '> removed cms.EndPath:', _modname
+       print('> removed cms.EndPath:', _modname)
 
 # remove selected cms.Path objects from HLT config-dump
 for _modname in process.paths_():
@@ -73,7 +73,7 @@ for _modname in process.paths_():
     _mod = getattr(process, _modname)
     if type(_mod) == cms.Path:
        process.__delattr__(_modname)
-       print '> removed cms.Path:', _modname
+       print('> removed cms.Path:', _modname)
 
 # delete process.MessaggeLogger from HLT config
 if hasattr(process, 'MessageLogger'):

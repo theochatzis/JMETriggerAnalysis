@@ -19,26 +19,27 @@ please ignore this `readme`, and follow the instructions in the dedicated `readm
 ### Tests on HLT Tracking for Run-3
 
 ```
-cmsrel CMSSW_12_0_0_pre4
-cd CMSSW_12_0_0_pre4/src
+cmsrel CMSSW_12_2_0_pre2
+cd CMSSW_12_2_0_pre2/src
 cmsenv
-git cms-merge-topic missirol:devel_hltRun3TRK_1200pre4
+git cms-init --ssh
+git cms-merge-topic silviodonato:customizeHLTforRun3_v2
 
-git clone https://github.com/missirol/JMETriggerAnalysis.git -o missirol -b run3_devel
+git clone https://github.com/missirol/JMETriggerAnalysis.git -o missirol -b run3
 git clone https://github.com/missirol/JetMETAnalysis.git -o missirol -b devel_hlt2
 
 # external data
 mkdir -p ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/data
 
 # PFHC: preliminary HLT-PFHC for Run-3
-cp /afs/cern.ch/work/m/missirol/public/run3/PFHC/PFHC_Run3Winter20_HLT_v01.db \
-   ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/data/PFHC_Run3Winter20_HLT_v01.db
+scp missirol@lxplus.cern.ch:/afs/cern.ch/work/m/missirol/public/run3/PFHC/PFHC_Run3Winter20_HLT_v01.db \
+  ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/data/PFHC_Run3Winter20_HLT_v01.db
 
 # JESC: preliminary HLT-JESCs for Run-3
-cp /afs/cern.ch/work/m/missirol/public/run3/JESC/Run3Winter20_V2_MC/Run3Winter20_V2_MC.db \
-   ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/data/JESC_Run3Winter20_V2_MC.db
+scp missirol@lxplus.cern.ch:/afs/cern.ch/work/m/missirol/public/run3/JESC/Run3Winter20_V2_MC/Run3Winter20_V2_MC.db \
+  ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/data/JESC_Run3Winter20_V2_MC.db
 
-scram b -j 12
+scram b -j 8
 ```
 
 The baseline HLT menu for Run-3 in 11_2_X can be found in
