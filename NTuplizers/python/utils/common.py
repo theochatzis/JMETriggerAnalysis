@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os
 import subprocess
 
@@ -15,10 +15,10 @@ def KILL(log):
     raise RuntimeError('\n '+colored_text('@@@ FATAL', ['1','91'])+' -- '+log+'\n')
 
 def WARNING(log):
-    print '\n '+colored_text('@@@ WARNING', ['1','93'])+' -- '+log+'\n'
+    print('\n '+colored_text('@@@ WARNING', ['1','93'])+' -- '+log+'\n')
 
 def MKDIRP(dirpath, verbose=False, dry_run=False):
-    if verbose: print '\033[1m'+'>'+'\033[0m'+' os.mkdirs("'+dirpath+'")'
+    if verbose: print('\033[1m'+'>'+'\033[0m'+' os.mkdirs("'+dirpath+'")')
     if dry_run: return
     try:
       os.makedirs(dirpath)
@@ -28,7 +28,7 @@ def MKDIRP(dirpath, verbose=False, dry_run=False):
     return
 
 def EXE(cmd, suspend=True, verbose=False, dry_run=False):
-    if verbose: print '\033[1m'+'>'+'\033[0m'+' '+cmd
+    if verbose: print('\033[1m'+'>'+'\033[0m'+' '+cmd)
     if dry_run: return
 
     _exitcode = os.system(cmd)
@@ -294,4 +294,4 @@ def hadd_rootfiles(output, inputs):
     if not _ret:
        KILL('hadd_rootfiles -- call to TFileMerger::Merge() failed: output='+output)
 
-    print colored_text('[output='+output_file+']', ['93']), 'merging completed {0}, {1:.2f} MB'.format(output_file, os.path.getsize(output_file)/1024.0/1024.0)
+    print(colored_text('[output='+output_file+']', ['93']), 'merging completed {0}, {1:.2f} MB'.format(output_file, os.path.getsize(output_file)/1024.0/1024.0))
