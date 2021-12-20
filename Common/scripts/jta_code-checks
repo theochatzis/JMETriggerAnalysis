@@ -1,0 +1,18 @@
+#!/bin/bash
+
+CLANGTIDY_INPUT_DIR=${CMSSW_BASE}/src/JMETriggerAnalysis
+
+if ! [ -d ${CLANGTIDY_INPUT_DIR} ]; then
+  printf "%s\n" "ERROR -- target directory does not exist: ${CLANGTIDY_INPUT_DIR}"
+  exit 1
+fi
+
+if [ -z "${ROOT_INCLUDE_PATH}" ]; then
+  printf "%s\n" "ERROR -- environment variable ROOT_INCLUDE_PATH is empty"
+  exit 1
+fi
+
+for file_i in $(ls ${CLANGTIDY_INPUT_DIR}/*/*/*.{h,hpp,cc,cpp,cu} 2> /dev/null); do
+  clang-tidy -fix-errors ${file_i} -- -x c++ -std=c++2a -I${ROOT_INCLUDE_PATH//:/ -I}
+done
+unset file_i CLANGTIDY_INPUT_DIR

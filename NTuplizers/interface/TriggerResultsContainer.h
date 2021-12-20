@@ -9,8 +9,7 @@
 #include <vector>
 
 class TriggerResultsContainer {
-
- public:
+public:
   explicit TriggerResultsContainer(const std::vector<std::string>&, const std::string&, const edm::EDGetToken&);
   virtual ~TriggerResultsContainer() {}
 
@@ -21,8 +20,7 @@ class TriggerResultsContainer {
   const edm::EDGetToken& token() const { return token_; }
 
   class Entry {
-
-   public:
+  public:
     explicit Entry(const std::string& name, const bool res) : name(name), accept(res) {}
     virtual ~Entry() {}
 
@@ -32,7 +30,7 @@ class TriggerResultsContainer {
 
   const std::vector<Entry>& entries() { return entries_; }
 
- protected:
+protected:
   std::vector<Entry> entries_;
   const std::string inputTagLabel_;
   const edm::EDGetToken token_;

@@ -1,0 +1,71 @@
+#!/usr/bin/env python
+"""
+printTTree -- print numerical values in a TTree to a text file, or to stdout
+"""
+import argparse
+import os
+import ROOT
+
+#### main
+if __name__ == '__main__':
+   ### args
+   parser = argparse.ArgumentParser(
+     prog='./'+os.path.basename(__file__),
+     formatter_class=argparse.RawDescriptionHelpFormatter,
+     description=__doc__)
+
+   parser.add_argument('-i', '--input', dest='input', action='store', default='', required=True,
+                       help='path to input .root file')
+
+   parser.add_argument('-o', '--output', dest='output', action='store', default='', required=False,
+                       help='path to output text file')
+
+   parser.add_argument('-t', '--tree', dest='tree_key', action='store', default='JMETriggerNTuple/Events', required=False,
+                       help='name of TTree in input file')
+
+   opts, opts_unknown = parser.parse_known_args()
+
+   ### configuration
+   log_prx = os.path.basename(__file__)+' -- '
+
+   VERBOSE = False
+
+   if not os.path.isfile(opts.input):
+      raise RuntimeError(log_prx+'invalid path to input file [-i]: '+opts.input)
+
+   if opts.output != '':
+      if os.path.exists(opts.output):
+         raise RuntimeError(log_prx+'target path to output file already exists [-o]: '+opts.output)
+   else:
+      VERBOSE = True
+
+   ### implementation
+   input_tfile = ROOT.TFile.Open(opts.input)
+   if (not input_tfile) or input_tfile.IsZombie() or input_tfile.TestBit(ROOT.TFile.kRecovered):
+      raise SystemExit(1)
+
+   input_ttree = input_tfile.Get(opts.tree_key)
+   if not (input_ttree and input_ttree.InheritsFrom('TTree')):
+      raise RuntimeError(log_prx+'input error: TTree key "'+opts.tree_key+'" not found in input file')
+
+   branchNames = []
+   for _tmp in input_ttree.GetListOfBranches():
+       branchNames.append(_tmp.GetName())
+   branchNames = sorted(list(set(branchNames)))
+
+   output_strs = []
+   output_strs += ['TTree['+opts.tree_key+']::GetEntries() = '+str(input_ttree.GetEntries())]
+   output_strs += ['-'*50]
+   for evt in input_ttree:
+       for branchName in branchNames:
+           output_strs += [branchName+' : '+str(getattr(evt, branchName))]
+       output_strs += ['-'*50]
+
+   ### output
+   if opts.output != '':
+      with open(opts.output, 'w') as out_file:
+           for _tmp in output_strs:
+               if _tmp != None: out_file.write(_tmp+'\n')
+   elif VERBOSE:
+      for _tmp in output_strs:
+          if _tmp is not None: print _tmp

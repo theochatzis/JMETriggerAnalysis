@@ -1,0 +1,15 @@
+<library name="JMETriggerAnalysisPFHadronCalibrationPlugins" file="*.cc">
+  <flags EDM_PLUGIN="1"/>
+  <use name="JMETriggerAnalysis/NTuplizers"/>
+  <use name="CommonTools/UtilAlgos"/>
+  <use name="DataFormats/HepMCCandidate"/>
+  <use name="DataFormats/Math"/>
+  <use name="DataFormats/ParticleFlowCandidate"/>
+  <use name="DataFormats/ParticleFlowReco"/>
+  <use name="FWCore/Framework"/>
+  <use name="FWCore/MessageLogger"/>
+  <use name="FWCore/ServiceRegistry"/>
+  <use name="SimDataFormats/GeneratorProducts"/>
+  <use name="rootmath"/>
+  <use name="root"/>
+</library>

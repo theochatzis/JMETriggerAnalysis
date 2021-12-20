@@ -1,0 +1,9 @@
+<lcgdict>
+  <class name="AnalysisDriverBase"/>
+  <class name="JMETriggerAnalysisDriver"/>
+  <class name="JMETriggerAnalysisDriverRun2"/>
+  <class name="JMETriggerAnalysisDriverRun3"/>
+  <class name="JMETriggerAnalysisDriverPhase2"/>
+  <class name="JMETriggerAnalysisDriverPhase2MET"/>
+  <class name="JMETriggerAnalysisDriverJES"/>
+</lcgdict>

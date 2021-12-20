@@ -1,0 +1,35 @@
+{
+  "DAS": "/EphemeralHLTPhysics1/Run2018D-v1/RAW",
+  "files": [
+    {
+      "file": "/store/data/Run2018D/EphemeralHLTPhysics1/RAW/v1/000/323/775/00000/65EA98C3-88C1-5A43-8152-824F3169174E.root",
+      "nevents": 3324,
+      "parentFiles_1": [],
+      "parentFiles_2": []
+    },
+    {
+      "file": "/store/data/Run2018D/EphemeralHLTPhysics1/RAW/v1/000/323/775/00000/8F75E00C-8209-1A48-AEE8-F37A59D46FFB.root",
+      "nevents": 3347,
+      "parentFiles_1": [],
+      "parentFiles_2": []
+    },
+    {
+      "file": "/store/data/Run2018D/EphemeralHLTPhysics1/RAW/v1/000/323/775/00000/9B8F48E7-8EB9-CA4E-B545-DDF63D28E4DB.root",
+      "nevents": 3276,
+      "parentFiles_1": [],
+      "parentFiles_2": []
+    },
+    {
+      "file": "/store/data/Run2018D/EphemeralHLTPhysics1/RAW/v1/000/323/775/00000/A27DFA33-8FCB-BE42-A2D2-1A396EEE2B6E.root",
+      "nevents": 3375,
+      "parentFiles_1": [],
+      "parentFiles_2": []
+    },
+    {
+      "file": "/store/data/Run2018D/EphemeralHLTPhysics1/RAW/v1/000/323/775/00000/B26AAAB6-F701-0C44-860E-CAB8EDC85876.root",
+      "nevents": 3409,
+      "parentFiles_1": [],
+      "parentFiles_2": []
+    }
+  ]
+}

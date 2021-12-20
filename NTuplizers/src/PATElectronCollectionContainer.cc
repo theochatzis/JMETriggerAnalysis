@@ -1,12 +1,13 @@
 #include <JMETriggerAnalysis/NTuplizers/interface/PATElectronCollectionContainer.h>
 
-PATElectronCollectionContainer::PATElectronCollectionContainer(
-  const std::string& name, const std::string& inputTagLabel, const edm::EDGetToken& token, const std::string& strCut, const bool orderByHighestPt
-) : VRecoCandidateCollectionContainer(name, inputTagLabel, token, strCut, orderByHighestPt) {
-}
+PATElectronCollectionContainer::PATElectronCollectionContainer(const std::string& name,
+                                                               const std::string& inputTagLabel,
+                                                               const edm::EDGetToken& token,
+                                                               const std::string& strCut,
+                                                               const bool orderByHighestPt)
+    : VRecoCandidateCollectionContainer(name, inputTagLabel, token, strCut, orderByHighestPt) {}
 
-void PATElectronCollectionContainer::clear(){
-
+void PATElectronCollectionContainer::clear() {
   pdgId_.clear();
   pt_.clear();
   eta_.clear();
@@ -22,8 +23,7 @@ void PATElectronCollectionContainer::clear(){
   etaSC_.clear();
 }
 
-void PATElectronCollectionContainer::reserve(const size_t vec_size){
-
+void PATElectronCollectionContainer::reserve(const size_t vec_size) {
   pdgId_.reserve(vec_size);
   pt_.reserve(vec_size);
   eta_.reserve(vec_size);
@@ -39,8 +39,7 @@ void PATElectronCollectionContainer::reserve(const size_t vec_size){
   etaSC_.reserve(vec_size);
 }
 
-void PATElectronCollectionContainer::emplace_back(const pat::Electron& obj){
-
+void PATElectronCollectionContainer::emplace_back(const pat::Electron& obj) {
   pdgId_.emplace_back(obj.pdgId());
   pt_.emplace_back(obj.pt());
   eta_.emplace_back(obj.eta());
@@ -54,12 +53,24 @@ void PATElectronCollectionContainer::emplace_back(const pat::Electron& obj){
   dzPV_.emplace_back(obj.hasUserFloat("dzPV") ? obj.userFloat("dzPV") : -9999.);
 
   uint obj_id(0);
-  if(obj.hasUserInt("IDCutBasedVeto") && (obj.userInt("IDCutBasedVeto") > 0)){ obj_id |= (1u << 0); }
-  if(obj.hasUserInt("IDCutBasedLoose") && (obj.userInt("IDCutBasedLoose") > 0)){ obj_id |= (1u << 1); }
-  if(obj.hasUserInt("IDCutBasedMedium") && (obj.userInt("IDCutBasedMedium") > 0)){ obj_id |= (1u << 2); }
-  if(obj.hasUserInt("IDCutBasedTight") && (obj.userInt("IDCutBasedTight") > 0)){ obj_id |= (1u << 3); }
-  if(obj.hasUserInt("IDMVAIsoWP80") && (obj.userInt("IDMVAIsoWP80") > 0)){ obj_id |= (1u << 4); }
-  if(obj.hasUserInt("IDMVAIsoWP90") && (obj.userInt("IDMVAIsoWP90") > 0)){ obj_id |= (1u << 5); }
+  if (obj.hasUserInt("IDCutBasedVeto") && (obj.userInt("IDCutBasedVeto") > 0)) {
+    obj_id |= (1u << 0);
+  }
+  if (obj.hasUserInt("IDCutBasedLoose") && (obj.userInt("IDCutBasedLoose") > 0)) {
+    obj_id |= (1u << 1);
+  }
+  if (obj.hasUserInt("IDCutBasedMedium") && (obj.userInt("IDCutBasedMedium") > 0)) {
+    obj_id |= (1u << 2);
+  }
+  if (obj.hasUserInt("IDCutBasedTight") && (obj.userInt("IDCutBasedTight") > 0)) {
+    obj_id |= (1u << 3);
+  }
+  if (obj.hasUserInt("IDMVAIsoWP80") && (obj.userInt("IDMVAIsoWP80") > 0)) {
+    obj_id |= (1u << 4);
+  }
+  if (obj.hasUserInt("IDMVAIsoWP90") && (obj.userInt("IDMVAIsoWP90") > 0)) {
+    obj_id |= (1u << 5);
+  }
   id_.emplace_back(obj_id);
 
   pfIso_.emplace_back(obj.hasUserFloat("pfIso") ? obj.userFloat("pfIso") : -9999.);

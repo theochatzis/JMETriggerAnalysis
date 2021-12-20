@@ -1,0 +1,76 @@
+executable            = fitJESCs
+getenv                = True
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+transfer_output_files = dec_jescs_5M_htc
+
+arguments             =  -o dec_jescs_5M_htc -n 5000000  -b -j ak4caloHLT
+output                = htc_out/ak4caloHLT_dec_jescs_5m.out
+error                 = htc_out/ak4caloHLT_dec_jescs_5m.err
+log                   = htc_out/ak4caloHLT_dec_jescs_5m.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o dec_jescs_5M_htc -n 5000000  -b -j ak4pfclusterHLT
+output                = htc_out/ak4pfclusterHLT_dec_jescs_5M.out
+error                 = htc_out/ak4pfclusterHLT_dec_jescs_5M.err
+log                   = htc_out/ak4pfclusterHLT_dec_jescs_5M.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o dec_jescs_5M_htc -n 5000000  -b -j ak4pfHLT
+output                = htc_out/ak4pfHLT_dec_jescs_5M.out
+error                 = htc_out/ak4pfHLT_dec_jescs_5M.err
+log                   = htc_out/ak4pfHLT_dec_jescs_5M.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o dec_jescs_5M_htc -n 5000000  -b -j ak4pfchsHLT
+output                = htc_out/ak4pfchsHLT_dec_jescs_5M.out
+error                 = htc_out/ak4pfchsHLT_dec_jescs_5M.err
+log                   = htc_out/ak4pfchsHLT_dec_jescs_5M.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o dec_jescs_5M_htc -n 5000000  -b -j ak4pfpuppiHLT
+output                = htc_out/ak4pfpuppiHLT_dec_jescs_5M.out
+error                 = htc_out/ak4pfpuppiHLT_dec_jescs_5M.err
+log                   = htc_out/ak4pfpuppiHLT_dec_jescs_5M.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o dec_jescs_5M_htc -n 5000000  -b -j ak8caloHLT
+output                = htc_out/ak8caloHLT_dec_jescs_5M.out
+error                 = htc_out/ak8caloHLT_dec_jescs_5M.err
+log                   = htc_out/ak8caloHLT_dec_jescs_5M.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o dec_jescs_5M_htc -n 5000000  -b -j ak8pfclusterHLT
+output                = htc_out/ak8pfclusterHLT_dec_jescs_5M.out
+error                 = htc_out/ak8pfclusterHLT_dec_jescs_5M.err
+log                   = htc_out/ak8pfclusterHLT_dec_jescs_5M.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o dec_jescs_5M_htc -n 5000000  -b -j ak8pfHLT
+output                = htc_out/ak8pfHLT_dec_jescs_5M.out
+error                 = htc_out/ak8pfHLT_dec_jescs_5M.err
+log                   = htc_out/ak8pfHLT_dec_jescs_5M.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o dec_jescs_5M_htc -n 5000000  -b -j ak8pfchsHLT
+output                = htc_out/ak8pfchsHLT_dec_jescs_5M.out
+error                 = htc_out/ak8pfchsHLT_dec_jescs_5M.err
+log                   = htc_out/ak8pfchsHLT_dec_jescs_5M.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o dec_jescs_5M_htc -n 5000000  -b -j ak8pfpuppiHLT
+output                = htc_out/ak8pfpuppiHLT_dec_jescs_5M.out
+error                 = htc_out/ak8pfpuppiHLT_dec_jescs_5M.err
+log                   = htc_out/ak8pfpuppiHLT_dec_jescs_5M.log
++JobFlavour           = "workday"
+queue
+

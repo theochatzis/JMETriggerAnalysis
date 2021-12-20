@@ -1,56 +1,61 @@
-JMETriggerAnalysis
-==================
+----------
+----------
 
-CMSSW Packages for JetMET Trigger Studies
+**Note**: for instructions on HLT PF-Hadron calibrations and Jet Energy Scale Corrections,
+please ignore this `readme`, and follow the instructions in the dedicated `readme` files:
 
-### Setup
+ * [`readme` for HLT PF-Hadron Calibrations](https://github.com/pallabidas/JMETriggerAnalysis/blob/run3/PFHadronCalibration/readme.md)
+ * [`readme` for HLT Jet Energy Scale Corrections](https://github.com/pallabidas/JMETriggerAnalysis/blob/run3/JESCorrections/readme.md)
 
-Set up CMSSW area:
+----------
+----------
 
-```shell
-cmsrel CMSSW_10_6_1_patch3
-cd CMSSW_10_6_1_patch3/src
+### Tools for JME studies on the Run-3 HLT reconstruction
+
+* [Tests on HLT Tracking for Run-3](#tests-on-hlt-tracking-for-run-3)
+
+----------
+
+### Tests on HLT Tracking for Run-3
+
+```
+cmsrel CMSSW_12_0_1
+cd CMSSW_12_0_1/src
 cmsenv
-#git cms-merge-topic cms-egamma:EgammaPostRecoTools
-git cms-addpkg HLTrigger/Configuration
-git clone https://missirol@github.com/missirol/JMETriggerAnalysis.git -o missirol
-scram b
+git cms-merge-topic pallabidas:test_HLT_12_0_1
+
+git clone https://github.com/pallabidas/JMETriggerAnalysis.git -o pallabi -b run3
+
+# external data
+mkdir -p ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/data
+
+# PFHC: preliminary HLT-PFHC for Run-3
+cp /afs/cern.ch/work/p/pdas/public/run3/PFHC_Run3Winter20_HLT_v01.db \
+   ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/data/PFHC_Run3Winter20_HLT_v01.db
+
+# JESC: preliminary HLT-JESCs for Run-3
+cp /afs/cern.ch/work/p/pdas/public/run3/JESC_Run3Winter20_V2_MC.db \
+   ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/data/JESC_Run3Winter20_V2_MC.db
+
+scram b -j 12
 ```
 
-Set up crab3 and VOMS proxy:
+The baseline HLT menu for Run-3 in 12_0_X can be found in
+[Common/python/configs/HLT_dev_CMSSW_12_0_0_GRun_V6_configDump.py](https://github.com/pallabidas/JMETriggerAnalysis/blob/run3/Common/python/configs/HLT_dev_CMSSW_12_0_0_GRun_V6_configDump.py).
 
-```shell
-source /cvmfs/cms.cern.ch/crab3/crab.sh
-voms-proxy-init --voms cms
+It was created with `hltGetConfiguration` via the commands listed in
+[`Common/test/dumpHLTMenus_mcRun3.sh`](https://github.com/pallabidas/JMETriggerAnalysis/blob/run3/Common/test/dumpHLTMenus_mcRun3.sh).
+
+An example of how to enable the different tracking customisations can be found in
+[`NTuplizers/test/jmeTriggerNTuple_cfg.py`](https://github.com/pallabidas/JMETriggerAnalysis/blob/run3/NTuplizers/test/jmeTriggerNTuple_cfg.py)
+(see option `reco`).
+Test commands:
+```
+# (a) Run-3 tracking: standard
+cmsRun jmeTriggerNTuple_cfg.py maxEvents=1 reco=HLT_Run3TRK output=out_HLT_Run3TRK.root
+
+# (b) Run-3 tracking: all pixel vertices
+cmsRun jmeTriggerNTuple_cfg.py maxEvents=1 reco=HLT_Run3TRKWithPU output=out_HLT_Run3TRKWithPU.root
 ```
 
-Create configuration file to run customized HLT menu on RAW
-
-```shell
-cd JMETriggerAnalysis/NTuplizers/test
-./create_HLT_JetMETPFlowWithoutPreselV4_cfg.py
-```
-
-### Notes
-
-* Golden JSON for 2018 (PromptReco):
-```shell
-/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PromptReco/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt
-```
-
-* Golden JSON for 2018 (ABC-ReReco + D-PromptReco):
-```shell
-/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt
-```
-
-* Data Samples:
-```shell
-dasgoclient --query="file dataset=/SingleMuon/Run2018D-v1/RAW"
-dasgoclient --query="file dataset=/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
-hltInfo root://cms-xrd-global.cern.ch//store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/12952201-BFB3-4142-B24C-983B753A4300.root
-```
-
-* MC Samples (special TSG samples in CMSSW_10_2_X):
-```shell
-dasgoclient --query="dataset dataset=/*/*102X_upgrade2018_realistic_v15*/GEN-SIM-RAW"
-```
+----------

@@ -5,30 +5,33 @@
 #include <DataFormats/PatCandidates/interface/Electron.h>
 
 class PATElectronCollectionContainer : public VRecoCandidateCollectionContainer<pat::Electron> {
+public:
+  explicit PATElectronCollectionContainer(const std::string&,
+                                          const std::string&,
+                                          const edm::EDGetToken&,
+                                          const std::string& strCut = "",
+                                          const bool orderByHighestPt = false);
+  ~PATElectronCollectionContainer() override {}
 
- public:
-  explicit PATElectronCollectionContainer(const std::string&, const std::string&, const edm::EDGetToken&, const std::string& strCut="", const bool orderByHighestPt=false);
-  virtual ~PATElectronCollectionContainer() {}
+  void clear() override;
+  void reserve(const size_t) override;
+  void emplace_back(const pat::Electron&) override;
 
-  void clear();
-  void reserve(const size_t);
-  void emplace_back(const pat::Electron&);
+  std::vector<int>& vec_pdgId() { return pdgId_; }
+  std::vector<float>& vec_pt() { return pt_; }
+  std::vector<float>& vec_eta() { return eta_; }
+  std::vector<float>& vec_phi() { return phi_; }
+  std::vector<float>& vec_mass() { return mass_; }
+  std::vector<float>& vec_vx() { return vx_; }
+  std::vector<float>& vec_vy() { return vy_; }
+  std::vector<float>& vec_vz() { return vz_; }
+  std::vector<float>& vec_dxyPV() { return dxyPV_; }
+  std::vector<float>& vec_dzPV() { return dzPV_; }
+  std::vector<uint>& vec_id() { return id_; }
+  std::vector<float>& vec_pfIso() { return pfIso_; }
+  std::vector<float>& vec_etaSC() { return etaSC_; }
 
-  std::vector<int>& vec_pdgId(){ return pdgId_; }
-  std::vector<float>& vec_pt(){ return pt_; }
-  std::vector<float>& vec_eta(){ return eta_; }
-  std::vector<float>& vec_phi(){ return phi_; }
-  std::vector<float>& vec_mass(){ return mass_; }
-  std::vector<float>& vec_vx(){ return vx_; }
-  std::vector<float>& vec_vy(){ return vy_; }
-  std::vector<float>& vec_vz(){ return vz_; }
-  std::vector<float>& vec_dxyPV(){ return dxyPV_; }
-  std::vector<float>& vec_dzPV(){ return dzPV_; }
-  std::vector<uint>& vec_id(){ return id_; }
-  std::vector<float>& vec_pfIso(){ return pfIso_; }
-  std::vector<float>& vec_etaSC(){ return etaSC_; }
-
- protected:
+protected:
   std::vector<int> pdgId_;
   std::vector<float> pt_;
   std::vector<float> eta_;

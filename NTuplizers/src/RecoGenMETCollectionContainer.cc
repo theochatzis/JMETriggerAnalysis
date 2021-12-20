@@ -1,12 +1,13 @@
 #include <JMETriggerAnalysis/NTuplizers/interface/RecoGenMETCollectionContainer.h>
 
-RecoGenMETCollectionContainer::RecoGenMETCollectionContainer(
-  const std::string& name, const std::string& inputTagLabel, const edm::EDGetToken& token, const std::string& strCut, const bool orderByHighestPt
-) : VRecoCandidateCollectionContainer(name, inputTagLabel, token, strCut, orderByHighestPt) {
-}
+RecoGenMETCollectionContainer::RecoGenMETCollectionContainer(const std::string& name,
+                                                             const std::string& inputTagLabel,
+                                                             const edm::EDGetToken& token,
+                                                             const std::string& strCut,
+                                                             const bool orderByHighestPt)
+    : VRecoCandidateCollectionContainer(name, inputTagLabel, token, strCut, orderByHighestPt) {}
 
-void RecoGenMETCollectionContainer::clear(){
-
+void RecoGenMETCollectionContainer::clear() {
   pt_.clear();
   phi_.clear();
   sumEt_.clear();
@@ -18,8 +19,7 @@ void RecoGenMETCollectionContainer::clear(){
   InvisibleEtFraction_.clear();
 }
 
-void RecoGenMETCollectionContainer::reserve(const size_t vec_size){
-
+void RecoGenMETCollectionContainer::reserve(const size_t vec_size) {
   pt_.reserve(vec_size);
   phi_.reserve(vec_size);
   sumEt_.reserve(vec_size);
@@ -31,8 +31,7 @@ void RecoGenMETCollectionContainer::reserve(const size_t vec_size){
   InvisibleEtFraction_.reserve(vec_size);
 }
 
-void RecoGenMETCollectionContainer::emplace_back(const reco::GenMET& obj){
-
+void RecoGenMETCollectionContainer::emplace_back(const reco::GenMET& obj) {
   pt_.emplace_back(obj.pt());
   phi_.emplace_back(obj.phi());
   sumEt_.emplace_back(obj.sumEt());

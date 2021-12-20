@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+"""
+script to dump information on a CMS data set to a .json file
+"""
+import argparse
+import os
+import json
+
+from JMETriggerAnalysis.NTuplizers.utils.common import *
+from JMETriggerAnalysis.NTuplizers.utils.das import load_dataset_data
+
+#### main
+if __name__ == '__main__':
+    ### args
+    parser = argparse.ArgumentParser(
+     prog='./'+os.path.basename(__file__),
+     formatter_class=argparse.RawDescriptionHelpFormatter,
+     description=__doc__)
+
+    parser.add_argument('-d', '--dataset', dest='dataset', action='store', default=None, required=True,
+                        help='name of input data set in DAS')
+
+    parser.add_argument('-o', '--output', dest='output', action='store', default=None, required=True,
+                        help='path to output .json file')
+
+    parser.add_argument('-f', '--max-files', dest='max_files', action='store', type=int, default=-1,
+                        help='maximum number of input files to be processed (if integer is negative, all files will be processed)')
+
+    parser.add_argument('-m', '--max-events', dest='max_events', action='store', type=int, default=-1,
+                        help='maximum number of total input events to be processed (if integer is negative, all events will be processed)')
+
+    parser.add_argument('-p', '--parentFiles-levels', dest='parentFiles_levels', action='store', type=int, default=2,
+                        help='levels of parentFiles included in the query')
+
+    parser.add_argument('--prefix', dest='prefix', action='store', default='',
+                        help='prefix to path of EDM files')
+
+    parser.add_argument('--dry-run', dest='dry_run', action='store_true', default=False,
+                        help='enable dry-run mode')
+
+    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', default=False,
+                        help='enable verbose mode')
+
+    opts, opts_unknown = parser.parse_known_args()
+    ### -------------------------
+
+    log_prx = os.path.basename(__file__)+' -- '
+
+    ### opts --------------------
+    if os.path.exists(opts.output):
+       KILL(log_prx+'target path to output .json file already exists [-o]: '+str(opts.output))
+
+    if opts.max_events == 0:
+       KILL(log_prx+'logic error: requesting a maximum of zero input events (use non-zero value for argument of option --max-events/-m)')
+
+    if opts.max_files == 0:
+       KILL(log_prx+'logic error: requesting a maximum of zero input files (use non-zero value for argument of option --max-files/-f)')
+
+    ### unrecognized command-line arguments
+    ### -> used as additional command-line arguments to cmsRun
+    if len(opts_unknown):
+       KILL(log_prx+'detected invalid command-line arguments: '+str(opts_unknown))
+
+    ### extract input-files information from data set name via dasgoclient
+    ### -> list of dictionaries, each containing DAS name, files, number of events per file, and parent files
+    which('dasgoclient')
+
+    input_dset = load_dataset_data(das_name=opts.dataset, max_files=opts.max_files, max_events=opts.max_events, parentFiles_levels=opts.parentFiles_levels, files_prefix=opts.prefix, verbose=opts.verbose)
+
+    ### copy dataset information in .json format
+    if not opts.dry_run:
+       json.dump(input_dset, open(opts.output, 'w'), sort_keys=True, indent=2)

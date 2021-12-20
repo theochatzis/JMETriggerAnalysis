@@ -3,3 +3,4 @@
 *.root
 *.pyc
 __init__.py
+data/
