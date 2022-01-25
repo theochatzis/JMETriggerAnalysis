@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """merge outputs of batch jobs"""
 from __future__ import print_function
 import os
