@@ -4,7 +4,7 @@
 **Note**: for instructions on HLT PF-Hadron calibrations and Jet Energy Scale Corrections,
 please ignore this `readme`, and follow the instructions in the dedicated `readme` files:
 
- * [`readme` for HLT PF-Hadron Calibrations](https://github.com/missirol/JMETriggerAnalysis/blob/run3/PFHadronCalibration/readme.md)
+ * [`readme` for HLT PF-Hadron Calibrations](https://github.com/pallabidas/JMETriggerAnalysis/blob/run3_12_3_X/PFHadronCalibration/readme.md)
  * [`readme` for HLT Jet Energy Scale Corrections](https://github.com/missirol/JMETriggerAnalysis/blob/run3/JESCorrections/readme.md)
 
 ----------
@@ -16,7 +16,7 @@ please ignore this `readme`, and follow the instructions in the dedicated `readm
 cmsrel CMSSW_12_3_0_pre4
 cd CMSSW_12_3_0_pre4/src
 cmsenv
-git clone https://github.com/pallabidas/JMETriggerAnalysis.git -b run3_12_3_X
+git clone https://github.com/pallabidas/JMETriggerAnalysis.git -o pallabidas -b run3_12_3_X
 
 # PFHC: preliminary HLT-PFHC for Run-3
 cp /afs/cern.ch/work/p/pdas/public/run3/PFHC_Run3Winter21_HLT_V3.db ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/
