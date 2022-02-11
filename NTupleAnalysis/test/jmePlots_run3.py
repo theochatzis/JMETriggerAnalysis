@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import argparse
 import os
 import ROOT
@@ -90,7 +90,7 @@ def updateDictionary(dictionary, TDirectory, prefix='', verbose=False):
            dictionary[out_key].SetDirectory(0)
 
            if verbose:
-              print colored_text('[input]', ['1','92']), out_key
+              print (colored_text('[input]', ['1','92']), out_key)
 
     return dictionary
 
@@ -375,7 +375,7 @@ def plot(canvas, output_extensions, stickers, output, templates, title, legXY=[]
         out_file = output_basename_woExt+'.'+i_ext
         canvas.SaveAs(out_file)
 
-        print colored_text('[file]', ['1','95']), os.path.relpath(out_file)
+        print colored_text('[file]', ['1','95']), os.path.relpath(out_file))
 
     canvas.Close()
 
