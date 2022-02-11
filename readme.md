@@ -5,7 +5,7 @@
 please ignore this `readme`, and follow the instructions in the dedicated `readme` files:
 
  * [`readme` for HLT PF-Hadron Calibrations](https://github.com/pallabidas/JMETriggerAnalysis/blob/run3_12_3_X/PFHadronCalibration/readme.md)
- * [`readme` for HLT Jet Energy Scale Corrections](https://github.com/sparedes/JMETriggerAnalysis/blob/run3/JESCorrections/readme.md)
+ * [`readme` for HLT Jet Energy Scale Corrections](https://github.com/sparedes/JMETriggerAnalysis/blob/run3_12_3_X/JESCorrections/readme.md)
 
 ----------
 ----------
