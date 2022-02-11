@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import ROOT
 import math
 import ctypes
 
-from th1 import *
+from common.th1 import *
 
 def get_efficiency(hP, hT):
     hP1, hT1 = hP.Clone(), hT.Clone()

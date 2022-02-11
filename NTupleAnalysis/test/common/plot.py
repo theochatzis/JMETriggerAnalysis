@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import ROOT
 import ctypes
 
-from utils import *
+#from utils import *
 
 def color(hexc):
     return ROOT.TColor.GetColor(hexc)

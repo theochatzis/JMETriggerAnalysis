@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 utilities related to the CMS Data Aggregation System (DAS)
 """
