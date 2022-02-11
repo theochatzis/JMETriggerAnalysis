@@ -41,11 +41,6 @@ opts.register('wantSummary', False,
 #              vpo.VarParsing.varType.string,
 #              'argument of process.GlobalTag.globaltag')
 
-opts.register('reco', 'HLT_Run3TRK',
-              vpo.VarParsing.multiplicity.singleton,
-              vpo.VarParsing.varType.string,
-              'keyword to define HLT reconstruction')
-
 opts.register('output', 'out.root',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
@@ -61,23 +56,8 @@ opts.parseArguments()
 ###
 ### HLT configuration
 ###
-if opts.reco == 'HLT_GRun':
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_0_0_GRun_V6_configDump import cms, process
 
-elif opts.reco == 'HLT_Run3TRK':
-  # (a) Run-3 tracking: standard
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_0_0_GRun_V6_configDump import cms, process
-  from HLTrigger.Configuration.customizeHLTforRun3Tracking import customizeHLTforRun3Tracking
-  process = customizeHLTforRun3Tracking(process)
-
-elif opts.reco == 'HLT_Run3TRKWithPU':
-  # (b) Run-3 tracking: all pixel vertices
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_0_0_GRun_V6_configDump import cms, process
-  from HLTrigger.Configuration.customizeHLTforRun3Tracking import customizeHLTforRun3TrackingAllPixelVertices
-  process = customizeHLTforRun3TrackingAllPixelVertices(process)
-
-else:
-  raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
+from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_3_0_GRun_configDump import cms, process
 
 # remove cms.OutputModule objects from HLT config-dump
 for _modname in process.outputModules_():
