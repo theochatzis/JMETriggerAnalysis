@@ -26,7 +26,8 @@ public:
   std::vector<float>& vec_vy() { return vy_; }
   std::vector<float>& vec_vz() { return vz_; }
   std::vector<int>& vec_fromPV() { return fromPV_; }
-
+  std::vector<float>& vec_time() { return time_; }
+  std::vector<float>& vec_timeError() { return timeError_; }
 protected:
   std::vector<int> pdgId_;
   std::vector<float> pt_;
@@ -37,6 +38,8 @@ protected:
   std::vector<float> vy_;
   std::vector<float> vz_;
   std::vector<int> fromPV_;
+  std::vector<float> time_;
+  std::vector<float> timeError_;
 };
 
 #endif

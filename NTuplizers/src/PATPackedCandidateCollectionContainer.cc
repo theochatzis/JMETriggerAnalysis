@@ -17,6 +17,9 @@ void PATPackedCandidateCollectionContainer::clear() {
   vy_.clear();
   vz_.clear();
   fromPV_.clear();
+  time_.clear();
+  timeError_.clear();
+
 }
 
 void PATPackedCandidateCollectionContainer::reserve(const size_t vec_size) {
@@ -29,6 +32,8 @@ void PATPackedCandidateCollectionContainer::reserve(const size_t vec_size) {
   vy_.reserve(vec_size);
   vz_.reserve(vec_size);
   fromPV_.reserve(vec_size);
+  time_.reserve(vec_size);
+  timeError_.reserve(vec_size);
 }
 
 void PATPackedCandidateCollectionContainer::emplace_back(const pat::PackedCandidate& obj) {
@@ -41,4 +46,6 @@ void PATPackedCandidateCollectionContainer::emplace_back(const pat::PackedCandid
   vy_.emplace_back(obj.vy());
   vz_.emplace_back(obj.vz());
   fromPV_.emplace_back(obj.fromPV());
+  time_.emplace_back(obj.time());
+  timeError_.emplace_back(obj.timeError());
 }
