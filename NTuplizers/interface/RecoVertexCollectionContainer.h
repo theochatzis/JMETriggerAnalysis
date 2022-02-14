@@ -26,6 +26,8 @@ public:
   std::vector<float>& vec_xError() { return xError_; }
   std::vector<float>& vec_yError() { return yError_; }
   std::vector<float>& vec_zError() { return zError_; }
+  std::vector<float>& vec_t() { return t_; }
+  std::vector<float>& vec_tError() { return tError_; }
 
 protected:
   std::vector<uint> tracksSize_;
@@ -38,6 +40,8 @@ protected:
   std::vector<float> xError_;
   std::vector<float> yError_;
   std::vector<float> zError_;
+  std::vector<float> t_;
+  std::vector<float> tError_;
 };
 
 #endif

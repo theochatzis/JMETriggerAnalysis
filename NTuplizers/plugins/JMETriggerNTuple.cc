@@ -476,8 +476,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   }
 
   for (auto& recoVertexCollectionContainer_i : v_recoVertexCollectionContainer_) {
-    this->addBranch(recoVertexCollectionContainer_i.name() + "_tracksSize",
-                    &recoVertexCollectionContainer_i.vec_tracksSize());
+    this->addBranch(recoVertexCollectionContainer_i.name() + "_tracksSize", &recoVertexCollectionContainer_i.vec_tracksSize());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_isFake", &recoVertexCollectionContainer_i.vec_isFake());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_chi2", &recoVertexCollectionContainer_i.vec_chi2());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_ndof", &recoVertexCollectionContainer_i.vec_ndof());
@@ -487,6 +486,11 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
     this->addBranch(recoVertexCollectionContainer_i.name() + "_xError", &recoVertexCollectionContainer_i.vec_xError());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_yError", &recoVertexCollectionContainer_i.vec_yError());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_zError", &recoVertexCollectionContainer_i.vec_zError());
+    if(recoVertexCollectionContainer_i.name().find("4D") != std::string::npos){
+      this->addBranch(recoVertexCollectionContainer_i.name() + "_t", &recoVertexCollectionContainer_i.vec_t());
+      this->addBranch(recoVertexCollectionContainer_i.name() + "_tError", &recoVertexCollectionContainer_i.vec_tError());
+    }
+    
   }
 
   for (auto& l1tPFCandidateCollectionContainer_i : v_l1tPFCandidateCollectionContainer_) {

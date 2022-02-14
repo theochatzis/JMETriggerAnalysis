@@ -341,9 +341,11 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoVertexCollections = cms.PSet(
 
-#   hltPixelVertices = cms.InputTag('pixelVertices'),
-#   hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
-#   offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+   hltPixelVertices = cms.InputTag('pixelVertices'),
+   hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
+   offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+   #offlinePrimaryVertices4D = cms.InputTag('offlinePrimaryVertices4D'), 
+   offlineSlimmedPrimaryVertices4D = cms.InputTag('offlineSlimmedPrimaryVertices4D'),
   ),
 
   l1tPFCandidateCollections = cms.PSet(
@@ -875,8 +877,10 @@ elif opts.inputFiles:
    process.source.secondaryFileNames = []
 else:
    process.source.fileNames = [
-#     '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v2/280000/007CCF38-CBE4-6B4D-A97A-580FA0CA0850.root',
+#    '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v2/280000/007CCF38-CBE4-6B4D-A97A-580FA0CA0850.root',
      '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/VBF_HToInvisible_M125_14TeV_powheg_pythia8_TuneCP5/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v1/120000/FC63C96F-0685-B846-BD3C-F60F85AFFB4B.root',
+#     '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/QCD_Pt_300to470_TuneCP5_14TeV_pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_111X_mcRun4_realistic_T15_v1-v1/280000/02543B6A-EF49-9D4C-8D62-624DDE5D051E.root'    
+
    ]
    process.source.secondaryFileNames = []
 
@@ -896,6 +900,8 @@ if opt_skimTracks:
      hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
      hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
      offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+     #offlinePrimaryVertices4D = cms.InputTag('offlinePrimaryVertices4D'), 
+     offlineSlimmedPrimaryVertices4D = cms.InputTag('offlineSlimmedPrimaryVertices4D'), 
    )
 
    process.JMETriggerNTuple.outputBranchesToBeDropped += [

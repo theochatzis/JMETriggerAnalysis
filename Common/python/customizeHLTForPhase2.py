@@ -214,6 +214,20 @@ def customise_hltPhase2_common(process):
       'keep *_slimmedJetsAK8*_*_RECO',
       'keep *_slimmedMETs__RECO',
       'keep *_slimmedMETsPuppi__RECO',
+
+      #'keep *_offlineSlimmedPrimaryVertices4D__RECO',
+
+      'keep *_offlinePrimaryVertices4D_*_*', 
+      'keep *_offlinePrimaryVertices4DWithBS_*_*', 
+      'keep *_trackTimeValueMapProducer_*_*',
+      'keep *_offlinePrimaryVertices4DnoPID_*_*', 
+      'keep *_offlinePrimaryVertices4DnoPIDWithBS_*_*', 
+      
+      
+      'keep *_offlineSlimmedPrimaryVertices4D_*_*',
+
+      'keep *_trackExtenderWithMTD_*_*', 
+      'keep *_mtdTrackQualityMVA_*_*',
     ])
 
     return process
