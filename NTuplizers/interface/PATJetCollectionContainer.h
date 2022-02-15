@@ -37,6 +37,10 @@ public:
   std::vector<int>& vec_electronMultiplicity() { return electronMultiplicity_; }
   std::vector<int>& vec_photonMultiplicity() { return photonMultiplicity_; }
   std::vector<int>& vec_muonMultiplicity() { return muonMultiplicity_; }
+  
+  std::vector<float>& vec_CandidatePt() { return CandidatePt_; }
+  std::vector<float>& vec_CandidateEta() { return CandidateEta_; }
+  std::vector<float>& vec_CandidateTime() { return CandidateTime_; }
 
 protected:
   std::vector<float> pt_;
@@ -59,6 +63,10 @@ protected:
   std::vector<int> electronMultiplicity_;
   std::vector<int> photonMultiplicity_;
   std::vector<int> muonMultiplicity_;
+
+  std::vector<float> CandidatePt_;
+  std::vector<float> CandidateEta_;
+  std::vector<float> CandidateTime_;
 };
 
 #endif

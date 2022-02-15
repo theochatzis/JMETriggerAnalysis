@@ -415,9 +415,9 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   patJetCollections = cms.PSet(
 
-#    offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
-    offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
-    offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
+    offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
+#   offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
+#   offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
   ),
 
   recoGenMETCollections = cms.PSet(

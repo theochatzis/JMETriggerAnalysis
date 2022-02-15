@@ -1,4 +1,5 @@
 #include <JMETriggerAnalysis/NTuplizers/interface/PATJetCollectionContainer.h>
+#include <DataFormats/PatCandidates/interface/PackedCandidate.h>
 
 PATJetCollectionContainer::PATJetCollectionContainer(const std::string& name,
                                                      const std::string& inputTagLabel,
@@ -28,6 +29,10 @@ void PATJetCollectionContainer::clear() {
   electronMultiplicity_.clear();
   photonMultiplicity_.clear();
   muonMultiplicity_.clear();
+
+  CandidatePt_.clear();
+  CandidateEta_.clear();
+  CandidateTime_.clear();
 }
 
 void PATJetCollectionContainer::reserve(const size_t vec_size) {
@@ -75,4 +80,15 @@ void PATJetCollectionContainer::emplace_back(const pat::Jet& obj) {
   electronMultiplicity_.emplace_back(obj.isPFJet() ? obj.electronMultiplicity() : -1);
   photonMultiplicity_.emplace_back(obj.isPFJet() ? obj.photonMultiplicity() : -1);
   muonMultiplicity_.emplace_back(obj.isPFJet() ? obj.muonMultiplicity() : -1);
+  
+  // get info for candidates of jet
+  for(unsigned int iCandidate=0; iCandidate < obj.numberOfDaughters(); iCandidate++){
+    // jet daughters are reco::Candidate so use dynamic cast to change to "daughter class" pat::PackedCandidate
+    // pat::PackedCandidate objects have the time(),timeError() attributes
+    const pat::PackedCandidate *JetCand = dynamic_cast<const pat::PackedCandidate*>(obj.daughter(iCandidate)); 
+    CandidatePt_.emplace_back((JetCand->p4()).pt());
+    CandidateEta_.emplace_back((JetCand->p4()).eta());
+    CandidateTime_.emplace_back(JetCand->time());
+
+  } // loop over jet daughter particles
 }
