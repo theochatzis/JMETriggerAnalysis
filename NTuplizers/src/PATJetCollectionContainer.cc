@@ -33,6 +33,10 @@ void PATJetCollectionContainer::clear() {
   CandidatePt_.clear();
   CandidateEta_.clear();
   CandidateTime_.clear();
+  CandidateTimeError_.clear();
+  CandidateVx_.clear();
+  CandidateVy_.clear();
+  CandidateVz_.clear();
 }
 
 void PATJetCollectionContainer::reserve(const size_t vec_size) {
@@ -89,6 +93,9 @@ void PATJetCollectionContainer::emplace_back(const pat::Jet& obj) {
     CandidatePt_.emplace_back((JetCand->p4()).pt());
     CandidateEta_.emplace_back((JetCand->p4()).eta());
     CandidateTime_.emplace_back(JetCand->time());
-
+    CandidateTimeError_.emplace_back(JetCand->timeError());
+    CandidateVx_.emplace_back(JetCand->vx());
+    CandidateVy_.emplace_back(JetCand->vy());
+    CandidateVz_.emplace_back(JetCand->vz());
   } // loop over jet daughter particles
 }

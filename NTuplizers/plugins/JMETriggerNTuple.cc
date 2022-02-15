@@ -684,7 +684,15 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
     this->addBranch(patJetCollectionContainer_i.name() + "_CandidateEta",
                     &patJetCollectionContainer_i.vec_CandidateEta());
     this->addBranch(patJetCollectionContainer_i.name() + "_CandidateTime",
-                    &patJetCollectionContainer_i.vec_CandidateTime());                                
+                    &patJetCollectionContainer_i.vec_CandidateTime());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateTimeError",
+                    &patJetCollectionContainer_i.vec_CandidateTimeError()); 
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateVx",
+                    &patJetCollectionContainer_i.vec_CandidateVx());         
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateVy",
+                    &patJetCollectionContainer_i.vec_CandidateVy());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateVz",
+                    &patJetCollectionContainer_i.vec_CandidateVz());                      
   }
 
   for (auto& recoGenMETCollectionContainer_i : v_recoGenMETCollectionContainer_) {

@@ -41,6 +41,10 @@ public:
   std::vector<float>& vec_CandidatePt() { return CandidatePt_; }
   std::vector<float>& vec_CandidateEta() { return CandidateEta_; }
   std::vector<float>& vec_CandidateTime() { return CandidateTime_; }
+  std::vector<float>& vec_CandidateTimeError() { return CandidateTimeError_; }
+  std::vector<float>& vec_CandidateVx() { return CandidateVx_; }
+  std::vector<float>& vec_CandidateVy() { return CandidateVy_; }
+  std::vector<float>& vec_CandidateVz() { return CandidateVz_; }
 
 protected:
   std::vector<float> pt_;
@@ -67,6 +71,10 @@ protected:
   std::vector<float> CandidatePt_;
   std::vector<float> CandidateEta_;
   std::vector<float> CandidateTime_;
+  std::vector<float> CandidateTimeError_;
+  std::vector<float> CandidateVx_;
+  std::vector<float> CandidateVy_;
+  std::vector<float> CandidateVz_;
 };
 
 #endif
