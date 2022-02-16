@@ -30,6 +30,9 @@ if __name__ == '__main__':
 
    parser.add_argument('-o', '--output', dest='output', action='store', default=None, required=True,
                        help='path to output directory')
+   
+   parser.add_argument('-fo', '--final-output', dest='final_output', action='store', default='./', required=False,
+                       help='path to final output directory i.e. directory with the NTuples')
 
    parser.add_argument('--customize-cfg', dest='customize_cfg', action='store_true', default=False,
                        help='append minimal customization to cmsRun-cfg required by the driver')
@@ -481,7 +484,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
              cmsRun_opts += ' \\\n inputFiles='+str(i_inputFile)
              if i_secondaryInputFiles:
                cmsRun_opts += ' \\\n secondaryInputFiles='+str(','.join(i_secondaryInputFiles))
-             cmsRun_opts += ' \\\n output=/eos/user/t/tchatzis/MTDtiming_samples/out'+outputname_postfix_format.format(jobCounter)+'.root'     ##############
+             cmsRun_opts += ' \\\n output='+opts.final_output+'/out'+outputname_postfix_format.format(jobCounter)+'.root'     ##############
 
              for _tmp in cmsRun_addopts:
                cmsRun_opts += ' \\\n '+str(_tmp)
@@ -522,7 +525,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
            ]
 
          cmsRun_opts += [
-           'output=${TMPDIR}/out'+outputname_postfix_format.format(jobCounter)+'.root',
+           'output='+opts.final_output+'/out'+outputname_postfix_format.format(jobCounter)+'.root',
          ]
 
          cmsRun_opts += cmsRun_addopts

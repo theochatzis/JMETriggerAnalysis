@@ -679,10 +679,15 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                     &patJetCollectionContainer_i.vec_photonMultiplicity());
     this->addBranch(patJetCollectionContainer_i.name() + "_muonMultiplicity",
                     &patJetCollectionContainer_i.vec_muonMultiplicity());
+
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateEnergy",
+                    &patJetCollectionContainer_i.vec_CandidateEnergy());
     this->addBranch(patJetCollectionContainer_i.name() + "_CandidatePt",
                     &patJetCollectionContainer_i.vec_CandidatePt());
     this->addBranch(patJetCollectionContainer_i.name() + "_CandidateEta",
                     &patJetCollectionContainer_i.vec_CandidateEta());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidatePhi",
+                    &patJetCollectionContainer_i.vec_CandidatePhi());
     this->addBranch(patJetCollectionContainer_i.name() + "_CandidateTime",
                     &patJetCollectionContainer_i.vec_CandidateTime());
     this->addBranch(patJetCollectionContainer_i.name() + "_CandidateTimeError",
@@ -692,7 +697,11 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
     this->addBranch(patJetCollectionContainer_i.name() + "_CandidateVy",
                     &patJetCollectionContainer_i.vec_CandidateVy());
     this->addBranch(patJetCollectionContainer_i.name() + "_CandidateVz",
-                    &patJetCollectionContainer_i.vec_CandidateVz());                      
+                    &patJetCollectionContainer_i.vec_CandidateVz());
+    
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateBelongsToJet",
+                    &patJetCollectionContainer_i.vec_CandidateBelongsToJet());
+                
   }
 
   for (auto& recoGenMETCollectionContainer_i : v_recoGenMETCollectionContainer_) {

@@ -29,14 +29,18 @@ void PATJetCollectionContainer::clear() {
   electronMultiplicity_.clear();
   photonMultiplicity_.clear();
   muonMultiplicity_.clear();
-
+  
+  CandidateEnergy_.clear();
   CandidatePt_.clear();
   CandidateEta_.clear();
+  CandidatePhi_.clear();
   CandidateTime_.clear();
   CandidateTimeError_.clear();
   CandidateVx_.clear();
   CandidateVy_.clear();
   CandidateVz_.clear();
+
+  JetIndex = 0;
 }
 
 void PATJetCollectionContainer::reserve(const size_t vec_size) {
@@ -90,12 +94,17 @@ void PATJetCollectionContainer::emplace_back(const pat::Jet& obj) {
     // jet daughters are reco::Candidate so use dynamic cast to change to "daughter class" pat::PackedCandidate
     // pat::PackedCandidate objects have the time(),timeError() attributes
     const pat::PackedCandidate *JetCand = dynamic_cast<const pat::PackedCandidate*>(obj.daughter(iCandidate)); 
+    CandidateEnergy_.emplace_back((JetCand->p4()).energy());
     CandidatePt_.emplace_back((JetCand->p4()).pt());
     CandidateEta_.emplace_back((JetCand->p4()).eta());
+    CandidatePhi_.emplace_back((JetCand->p4()).phi());
     CandidateTime_.emplace_back(JetCand->time());
     CandidateTimeError_.emplace_back(JetCand->timeError());
     CandidateVx_.emplace_back(JetCand->vx());
     CandidateVy_.emplace_back(JetCand->vy());
     CandidateVz_.emplace_back(JetCand->vz());
+    CandidateBelongsToJet_.emplace_back(JetIndex);
   } // loop over jet daughter particles
+
+  JetIndex+=1;
 }

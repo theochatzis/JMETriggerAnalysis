@@ -5,7 +5,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-NEVT=10
+NEVT=1000
 ODIR=${1}
 
 if [ -d ${ODIR} ]; then
@@ -40,8 +40,9 @@ for recoKey in "${recoKeys[@]}"; do
     fi
     
     # Note: You can automatically run the jobs after creating them by using --submit option of bdriver
-    bdriver -c .tmp_${recoKey}_cfg.py --customize-cfg -m ${numEvents} -n 10 --cpus 1 --memory 2G --time 01:00:00 ${opts} --batch-system htc \
-      -d ${sampleName} -p 1 -o ${ODIR}/${recoKey}/${sampleKey} \
+    bdriver -c .tmp_${recoKey}_cfg.py --customize-cfg -m ${numEvents} -n 1000 --cpus 1 --memory 2G --time 01:00:00 ${opts} --batch-system htc \
+      -d ${sampleName} -p 0 -o ${ODIR}/${recoKey}/${sampleKey} \
+      --final-output /eos/user/t/tchatzis/MTDtiming_samples/${recoKey}/${sampleKey} \
       --customise-commands \
        '# output [TFileService]' \
        "if hasattr(process, 'TFileService'):" \
