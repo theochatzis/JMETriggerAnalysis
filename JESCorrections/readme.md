@@ -10,7 +10,7 @@ cmsrel CMSSW_12_3_0_pre4
 cd CMSSW_12_3_0_pre4/src
 cmsenv
 git clone git@github.com:sparedes/JMETriggerAnalysis.git -o sparedes -b run3_12_3_X
-git clone https://github.com/missirol/JetMETAnalysis.git -o missirol -b devel_hlt2
+git clone git@github.com:sparedes/JetMETAnalysis.git -o sparedes -b dev_run3
 
 # PFHC: preliminary HLT-PFHC for Run-3
 cp /afs/cern.ch/work/p/pdas/public/run3/PFHC_Run3Winter21_HLT_V3.db JMETriggerAnalysis/NTuplizers/test/
