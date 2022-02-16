@@ -43,7 +43,7 @@ for _txtFile in sorted(textFiles):
   _basename_woext = os.path.basename(_txtFile)[:-4]
   _basename_woext_split = _basename_woext.split('_')
   if len(_basename_woext_split) < 3:
-    print 'invalid input file (unsupported name format): '+_txtFile
+    print('invalid input file (unsupported name format): '+_txtFile)
     continue
   _algo = _basename_woext_split[-1]
   _level = _basename_woext_split[-2]
@@ -54,10 +54,10 @@ for _txtFile in sorted(textFiles):
     raise RuntimeError('logic error: attempt to overwrite directory for (era = "'+_era+'", algo = "'+_algo+'"): '+relDirPath)
   algosPerEraDict[_era][_algo] = relDirPath
 
-if len(algosPerEraDict.keys()) == 0:
+if len(list(algosPerEraDict.keys())) == 0:
   raise RuntimeError('no valid input files found')
-elif len(algosPerEraDict.keys()) != 1:
-  raise RuntimeError('handling of multiple eras is not currently supported: eras='+str(algosPerEraDict.keys()))
+elif len(list(algosPerEraDict.keys())) != 1:
+  raise RuntimeError('handling of multiple eras is not currently supported: eras='+str(list(algosPerEraDict.keys())))
 
 process = cms.Process('jecdb')
 process.source = cms.Source('EmptySource')

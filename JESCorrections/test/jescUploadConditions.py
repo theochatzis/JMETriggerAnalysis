@@ -47,10 +47,10 @@ if __name__ == '__main__':
 
   if args.db == 'prod':
     database = 'oracle://cms_orcon_prod/CMS_CONDITIONS'
-    print '-'*100+'\n'+'>>> '+('would upload' if args.dry_run else 'uploading')+' to production database: '+database+'\n'+'-'*100
+    print('-'*100+'\n'+'>>> '+('would upload' if args.dry_run else 'uploading')+' to production database: '+database+'\n'+'-'*100)
   elif args.db == 'prep':
     database = 'oracle://cms_orcoff_prep/CMS_CONDITIONS'
-    print '-'*100+'\n'+'>>> '+('would upload' if args.dry_run else 'uploading')+' to development database (prep): '+database+'\n'+'-'*100
+    print('-'*100+'\n'+'>>> '+('would upload' if args.dry_run else 'uploading')+' to development database (prep): '+database+'\n'+'-'*100)
 
   if not args.dry_run:
     try:
@@ -80,20 +80,20 @@ if __name__ == '__main__':
       'userText': args.txt,
     }
 
-    print '\n'+'*'*100
-    print '.db  :', tag_file_db
-    print '.txt :', tag_file_txt
-    print json.dumps(metadata, sort_keys=True, indent=4)
-    print '*'*100
+    print('\n'+'*'*100)
+    print('.db  :', tag_file_db)
+    print('.txt :', tag_file_txt)
+    print(json.dumps(metadata, sort_keys=True, indent=4))
+    print('*'*100)
 
     if not args.dry_run:
       json.dump(metadata, open(tag_file_txt, 'w'))
 
-  print '\n'+'-'*100
-  print '>', upload_cmd
-  print '-'*100
+  print('\n'+'-'*100)
+  print('>', upload_cmd)
+  print('-'*100)
 
   if not args.dry_run:
-    print '\n>>> will upload in 10 sec'
+    print('\n>>> will upload in 10 sec')
     time.sleep(10)
     subprocess.Popen(upload_cmd.split()).communicate()

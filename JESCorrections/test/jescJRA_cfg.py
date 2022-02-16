@@ -113,7 +113,7 @@ if hasattr(process, 'MessageLogger'):
 ###
 
 ## customised JME collections
-from JMETriggerAnalysis.Common.customise_hlt import *
+from JMETriggerAnalysis.Common.customise_hlt import addPaths_MC_JMEPFCluster, addPaths_MC_JMEPFCHS, addPaths_MC_JMEPFPuppi
 process = addPaths_MC_JMEPFCluster(process)
 process = addPaths_MC_JMEPFCHS(process)
 process = addPaths_MC_JMEPFPuppi(process)
@@ -123,7 +123,7 @@ import os
 
 from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
 process.pfhcESSource = cms.ESSource('PoolDBESSource',
-  _CondDB.clone(connect = 'sqlite_file:PFHC_Run3Winter21_E2to500.db'),
+  _CondDB.clone(connect = 'sqlite_file:PFHC_Run3Winter21_HLT_V3.db'),
   #_CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/data/PFHC_Run3Winter21_E2to500.db'),
   toGet = cms.VPSet(
     cms.PSet(
@@ -142,14 +142,14 @@ process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
 from jescJRA_utils import addJRAPath
 
 addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4caloHLT'     , recoJets = 'hltAK4CaloJets'     , rho = 'hltFixedGridRhoFastjetAllCalo')
-addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfclusterHLT', recoJets = 'hltAK4PFClusterJets', rho = 'hltFixedGridRhoFastjetAllPFCluster')
 addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfHLT'       , recoJets = 'hltAK4PFJets'       , rho = 'hltFixedGridRhoFastjetAll')
+addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfclusterHLT', recoJets = 'hltAK4PFClusterJets', rho = 'hltFixedGridRhoFastjetAllPFCluster')
 addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfchsHLT'    , recoJets = 'hltAK4PFCHSJets'    , rho = 'hltFixedGridRhoFastjetAll')
 addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfpuppiHLT'  , recoJets = 'hltAK4PFPuppiJets'  , rho = 'hltFixedGridRhoFastjetAll')
 
 addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8caloHLT'     , recoJets = 'hltAK8CaloJets'     , rho = 'hltFixedGridRhoFastjetAllCalo')
-addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfclusterHLT', recoJets = 'hltAK8PFClusterJets', rho = 'hltFixedGridRhoFastjetAllPFCluster')
 addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfHLT'       , recoJets = 'hltAK8PFJets'       , rho = 'hltFixedGridRhoFastjetAll')
+addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfclusterHLT', recoJets = 'hltAK8PFClusterJets', rho = 'hltFixedGridRhoFastjetAllPFCluster')
 addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfchsHLT'    , recoJets = 'hltAK8PFCHSJets'    , rho = 'hltFixedGridRhoFastjetAll')
 addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfpuppiHLT'  , recoJets = 'hltAK8PFPuppiJets'  , rho = 'hltFixedGridRhoFastjetAll')
 
@@ -188,8 +188,8 @@ if opts.inputFiles:
    process.source.fileNames = opts.inputFiles
 else:
    process.source.fileNames = [
-     #'/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/280000/05c52296-cc48-4c07-8444-ed00163e44de.root',
-     '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/NoPUFEVT_castor_112X_mcRun3_2021_realistic_v16-v2/280000/001b3535-4919-4301-bd5b-c05a1261fbd2.root',
+     #'',
+     '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/NoPUFEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/0afdabe6-1c24-4e1a-bba2-26ba586e9b3e.root'
    ]
 
 # input EDM files [secondary]
