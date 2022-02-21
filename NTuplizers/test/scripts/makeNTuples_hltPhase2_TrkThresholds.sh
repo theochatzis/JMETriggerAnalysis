@@ -25,7 +25,7 @@ recoKeys=(
 )
 
 # additional options for bdriver
-opts=""
+opts="--submit"
 
 for recoKey in "${recoKeys[@]}"; do
   python jmeTriggerNTuple_cfg.py dumpPython=.tmp_${recoKey}_cfg.py numThreads=1 reco=${recoKey} trkdqm=1 pvdqm=1 pfdqm=1
@@ -39,13 +39,13 @@ for recoKey in "${recoKeys[@]}"; do
       numEvents=2000000
     fi
 
-    bdriver -c .tmp_${recoKey}_cfg.py --customize-cfg -m ${numEvents} -n 250 --cpus 1 --mem 4000 --time 10800 ${opts} --batch-system htc \
-      --cfg jmeTriggerNTuple_cfg.py \
-      -d ${sampleName} -p 0 -o ${ODIR}/${recoKey}/${sampleKey} \
-      --customise-commands \
-       '# output [TFileService]' \
-       "if hasattr(process, 'TFileService'):" \
-       '  process.TFileService.fileName = opts.output'
+    bdriver -c .tmp_${recoKey}_cfg.py --customize-cfg -m ${numEvents} -n 250 --cpus 1 --memory 4G --time 03:00:00 ${opts} --batch-system htc \
+    -d ${sampleName} -p 0 -o ${ODIR}/${recoKey}/${sampleKey} \
+    --final-output '/eos/cms/store/group/phys_jetmet/pdas/Phase2/ntuples' \
+    --customise-commands \
+    '# output [TFileService]' \
+    "if hasattr(process, 'TFileService'):" \
+    '  process.TFileService.fileName = opts.output' 
 
     unset numEvents sampleName
   done
