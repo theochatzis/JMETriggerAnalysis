@@ -16,7 +16,7 @@ public:
   void clear() override;
   void reserve(const size_t) override;
   void emplace_back(const pat::Jet&) override;
-
+  
   std::vector<float>& vec_pt() { return pt_; }
   std::vector<float>& vec_eta() { return eta_; }
   std::vector<float>& vec_phi() { return phi_; }
@@ -47,21 +47,10 @@ public:
   std::vector<float>& vec_CandidateVx() { return CandidateVx_; }
   std::vector<float>& vec_CandidateVy() { return CandidateVy_; }
   std::vector<float>& vec_CandidateVz() { return CandidateVz_; }
+  std::vector<float>& vec_CandidatePuppiWeight() {return CandidatePuppiWeight_; } // full puppi weight
+  std::vector<float>& vec_CandidatePuppiWeightNoLep() {return CandidatePuppiWeightNoLep_; } // puppi weight without leptons
   
   std::vector<int>& vec_CandidateBelongsToJet() { return CandidateBelongsToJet_; }
-  /*
-  std::vector<uint>& vec_CandidateBelongsToJet() { 
-    
-    CandidateBelongsToJet_.clear();
-
-    for(unsigned int iJet=0;iJet< pt_.size(); iJet++){
-      for(unsigned int iCandidate=0;iCandidate<numberOfDaughters_[iJet];iCandidate++){
-        CandidateBelongsToJet_.emplace_back(iJet);
-      }//  loop over candidates 
-    }//  loop over jets
-    
-    return CandidateBelongsToJet_; 
-  }*/
 
 protected:
   std::vector<float> pt_;
@@ -94,10 +83,12 @@ protected:
   std::vector<float> CandidateVx_;
   std::vector<float> CandidateVy_;
   std::vector<float> CandidateVz_;
-  
+  std::vector<float> CandidatePuppiWeight_;
+  std::vector<float> CandidatePuppiWeightNoLep_;
+
   std::vector<int> CandidateBelongsToJet_;
 
-  int JetIndex;
+  int JetIndex_;
 
 };
 

@@ -214,7 +214,8 @@ def customise_hltPhase2_common(process):
       'keep *_slimmedJetsAK8*_*_RECO',
       'keep *_slimmedMETs__RECO',
       'keep *_slimmedMETsPuppi__RECO',
-
+      
+      'keep *_slimmedGenJets__RECO',
       #'keep *_offlineSlimmedPrimaryVertices4D__RECO',
 
       'keep *_offlinePrimaryVertices4D_*_*', 

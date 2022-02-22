@@ -339,7 +339,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   initCollectionContainer<PATJetCollectionContainer, pat::Jet>(
       iConfig, v_patJetCollectionContainer_, "patJetCollections", "pat::JetCollection", stringCutObjectSelectors_map_);
   for (auto& cc_i : v_patJetCollectionContainer_) {
-    cc_i.orderByHighestPt(true);
+    cc_i.orderByHighestPt(false);
   }
 
   // reco::GenMETCollection
@@ -534,28 +534,29 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   }
 
   for (auto& patPackedCandidateCollectionContainer_i : v_patPackedCandidateCollectionContainer_) {
-    this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_pdgId",
+      this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_pdgId",
                     &patPackedCandidateCollectionContainer_i.vec_pdgId());
-    this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_pt",
+      this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_pt",
                     &patPackedCandidateCollectionContainer_i.vec_pt());
-    this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_eta",
+      this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_eta",
                     &patPackedCandidateCollectionContainer_i.vec_eta());
-    this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_phi",
+      this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_phi",
                     &patPackedCandidateCollectionContainer_i.vec_phi());
-    this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_mass",
+      this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_mass",
                     &patPackedCandidateCollectionContainer_i.vec_mass());
-    this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_vx",
+      this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_vx",
                     &patPackedCandidateCollectionContainer_i.vec_vx());
-    this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_vy",
+      this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_vy",
                     &patPackedCandidateCollectionContainer_i.vec_vy());
-    this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_vz",
+      this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_vz",
                     &patPackedCandidateCollectionContainer_i.vec_vz());
-    this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_fromPV",
+      this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_fromPV",
                     &patPackedCandidateCollectionContainer_i.vec_fromPV());
-    this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_time",
+      this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_time",
                     &patPackedCandidateCollectionContainer_i.vec_time());
-    this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_timeError",
-                    &patPackedCandidateCollectionContainer_i.vec_timeError());                
+      this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_timeError",
+                    &patPackedCandidateCollectionContainer_i.vec_timeError());
+                 
   }
 
   for (auto& recoGenJetCollectionContainer_i : v_recoGenJetCollectionContainer_) {
@@ -698,7 +699,11 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                     &patJetCollectionContainer_i.vec_CandidateVy());
     this->addBranch(patJetCollectionContainer_i.name() + "_CandidateVz",
                     &patJetCollectionContainer_i.vec_CandidateVz());
-    
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidatePuppiWeight",
+                    &patJetCollectionContainer_i.vec_CandidatePuppiWeight());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidatePuppiWeightNoLep",
+                    &patJetCollectionContainer_i.vec_CandidatePuppiWeightNoLep());
+
     this->addBranch(patJetCollectionContainer_i.name() + "_CandidateBelongsToJet",
                     &patJetCollectionContainer_i.vec_CandidateBelongsToJet());
                 

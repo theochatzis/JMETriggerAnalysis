@@ -39,8 +39,12 @@ void PATJetCollectionContainer::clear() {
   CandidateVx_.clear();
   CandidateVy_.clear();
   CandidateVz_.clear();
+  CandidatePuppiWeight_.clear();
+  CandidatePuppiWeightNoLep_.clear();
 
-  JetIndex = 0;
+  CandidateBelongsToJet_.clear();
+
+  JetIndex_ = 0;
 }
 
 void PATJetCollectionContainer::reserve(const size_t vec_size) {
@@ -103,8 +107,10 @@ void PATJetCollectionContainer::emplace_back(const pat::Jet& obj) {
     CandidateVx_.emplace_back(JetCand->vx());
     CandidateVy_.emplace_back(JetCand->vy());
     CandidateVz_.emplace_back(JetCand->vz());
-    CandidateBelongsToJet_.emplace_back(JetIndex);
+    CandidatePuppiWeight_.emplace_back(JetCand->puppiWeight());
+    CandidatePuppiWeightNoLep_.emplace_back(JetCand->puppiWeightNoLep());
+    CandidateBelongsToJet_.emplace_back(JetIndex_);
   } // loop over jet daughter particles
 
-  JetIndex+=1;
+  JetIndex_+=1;
 }
