@@ -245,7 +245,7 @@ if update_jmeCalibs:
 else:
   ## ES modules for HLT JECs
   process.jescESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/data/JESC_Run3Winter21_V2_MC.db'),
+    _CondDB.clone(connect = 'sqlite_file:JESC_Run3Winter21_V2_MC.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
@@ -427,6 +427,13 @@ if opts.keepPFPuppi:
 process.analysisNTupleEndPath = cms.EndPath(process.JMETriggerNTuple)
 process.schedule.append(process.analysisNTupleEndPath)
 
+###
+### updating Phase 0 HCAL thresholds
+###
+
+process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].name = "PFRecHitQTestHCALThresholdVsDepth"
+del process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].threshold
+
 #if opts.printSummaries:
 #   process.FastTimerService.printEventSummary = False
 #   process.FastTimerService.printRunSummary = False
@@ -444,7 +451,7 @@ process.maxEvents.input = opts.maxEvents
 process.source.skipEvents = cms.untracked.uint32(opts.skipEvents)
 
 # multi-threading settings
-process.options.numberOfThreads = max(opts.numThreads, 1)
+process.options.numberOfThreads = max(opts.numThreads, 8)
 process.options.numberOfStreams = max(opts.numStreams, 0)
 
 # show cmsRun summary at job completion
@@ -465,7 +472,8 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/MINIAODSIM/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/18be7762-7893-4377-8d9d-894bf6d90db3.root',
+#    '/store/mc/Run3Summer21MiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/MINIAODSIM/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v5-v1/30000/76dfad7c-52eb-4207-96cf-e74c5c6509d0.root',
+    '/store/mc/Run3Summer21MiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/MINIAODSIM/120X_mcRun3_2021_realistic_v5-v2/2550000/1028cea6-2e14-4526-b247-d13f0636a8fe.root',
   ]
 
 # input EDM files [secondary]
@@ -476,44 +484,29 @@ if opts.secondaryInputFiles:
   process.source.secondaryFileNames = opts.secondaryInputFiles
 else:
   process.source.secondaryFileNames = [
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/01a06ce0-a218-423f-a576-587debd69c63.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/15ee5715-96ca-4819-9b18-949a5752c90d.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/2cfce011-a30f-419c-903d-fdd41ce8c1f0.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/3cbd20a3-06d1-464f-8a2a-67c6c60bf151.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/409520bf-dfd4-4108-8d2e-1861f049f6ce.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/4f6866bb-d4ff-4b8e-853f-7357921c3064.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/57385ecf-9dec-4ea4-8c57-9f4c4de9f920.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/5c871cca-7a7a-4976-a6af-4ba17b6b6f1a.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/6bdd048a-954d-4917-8dca-bb1e1f1a8a3e.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/6c97e4ca-ea32-4fa0-8dfa-9a4e108f2d83.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/6e03ebce-5504-4011-84e6-d057cec7569f.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/7626b901-2f75-4913-bf20-d2b80b9660cc.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/80028765-7aec-4f9c-afda-acbfa2f96bfc.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/8314a3c1-0f30-433a-838a-f036275b98d5.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/84976616-69d1-4fd7-94c1-ef6d973bbe8d.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/8e894e4c-05b0-4d56-b5b9-427306223d1c.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/9172a5f8-a646-4b41-95ee-5d1c2c53d571.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/91a6c4ec-0b9e-4b46-bba9-4fe4809e4933.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/9796b84e-cfe9-46e0-a8c8-d93899328a0a.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/9c99637f-6087-4789-942f-852fcb34ab78.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/aa470337-aacc-49bf-a4d4-b2b0d5c266b0.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/b8066a49-08dc-4a0f-bc42-3f9ec58dc1ff.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/bb4c3ead-4459-4834-8437-7d4400851152.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/c1e8de24-7c5e-45e8-9994-711ef3b8c2c6.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/c202c929-abbe-46eb-9378-c0ba3a00d53b.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/c7e472c0-b760-4456-9834-47028653abc3.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/cfd7e233-9f49-425c-a085-d814ee65c7e9.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/d0842e2b-6a4f-4afd-a936-ddfb0e5e774d.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/d12b875f-73b9-4caa-89c1-bb21a765ad40.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/db4a260c-ee50-496e-b6aa-a18444934496.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/dbdde510-f144-40df-b2a2-cfc2fd60794a.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/e7ebc304-d1d3-48fa-b09b-b739cbabf1ec.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/e89eec44-3a35-4149-a39b-f18ece491b92.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/f037b249-5b4b-4529-9727-984d36d1ab27.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/f21e5c21-0baf-4838-a096-a4d6a525f623.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/f7366241-0bc7-45e2-9a59-5e15d688ff93.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/f8b44d67-1ab7-4cc7-b485-6938c7172b7e.root',
-    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/fbe46a79-528e-42ef-bae8-4eff8ff68c2e.root',
+#    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/5a423664-f0f4-432a-9573-601f608ffd61.root',
+#    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/76845592-a3ca-4ba0-88d6-62a7783903d7.root',
+#    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/a825d603-efb0-4ec8-aa97-64c1d1668be4.root',
+#    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/00169f6c-2bd0-4419-9de0-f9dff5f6e909.root',
+#    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/4489ddce-a7e0-4a36-b924-7ec6de3b6bab.root',
+#    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/b66444c2-1e9e-4f10-8f75-6e9099fa7d6e.root',
+#    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/d73315f5-4981-4a87-a48d-465ab24e203e.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/141d8d98-3271-429f-9fd0-c78e6e0db93e.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/1c44e0f3-01bb-41aa-a676-2fbcfda6e409.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/715cb464-ab15-4fe6-a9a2-c976f33a7398.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/90f917a4-f48c-4718-9dd3-4eed7dec4fa5.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/c6ce4ddc-d57e-4389-ba29-52d36e4d3617.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/5fa84df6-e4b2-4313-9f13-56eee4a36e6e.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/7669b8d9-07f8-4381-b1f1-50023104651d.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/7a192aaf-7578-4e02-a850-a969414a028d.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/e8aafeff-508a-47fb-b4e4-a6e40c259884.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/fa12328e-e272-405e-a47c-33990ef804ae.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/3a20d772-b0eb-481e-b4c3-5fa44ed11f31.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/a13ca715-7abe-4113-916c-340f270ec5f0.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/b08c3c0f-c835-4cb7-8c0a-2094a4193c92.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/b0ac068d-d03d-41ea-af73-975e53567265.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/f0baf87e-ad3f-4916-baff-156ce74a8e7d.root',
+    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/f440062e-85d6-40ce-ba87-3d9035dbe663.root',
   ]
 
 # dump content of cms.Process to python file
