@@ -13,8 +13,8 @@ please ignore this `readme`, and follow the instructions in the dedicated `readm
 ### Tools for JME studies on the Run-3 HLT reconstruction
 
 ```
-cmsrel CMSSW_12_3_0_pre4
-cd CMSSW_12_3_0_pre4/src
+cmsrel CMSSW_12_3_0_pre6
+cd CMSSW_12_3_0_pre6/src
 cmsenv
 git clone https://github.com/pallabidas/JMETriggerAnalysis.git -o pallabidas -b run3_12_3_X
 
