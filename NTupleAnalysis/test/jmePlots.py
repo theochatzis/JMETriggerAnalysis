@@ -457,7 +457,7 @@ def getPlotLabels(key, isProfile, isEfficiency, keyword):
     elif '_MatchedTohltPFCHSCorr'    in key: _objLabel += ' [Matched to PFCHSCorr]'
     elif '_MatchedTohltPFPuppi'      in key: _objLabel += ' [Matched to PFPuppi]'
     elif '_MatchedTohltPFPuppiCorr'  in key: _objLabel += ' [Matched to PFPuppiCorr]'
-    elif '_MatchedToofflPFPuppiCorr' in key: _objLabel += ' [Matched to Offline]'
+    elif '_MatchedToOffline'         in key: _objLabel += ' [Matched to Offline]'
 
     ## axes' titles
     _titleX, _titleY = key, ''
