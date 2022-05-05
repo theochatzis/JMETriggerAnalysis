@@ -1,3 +1,4 @@
+/*  ------ this ElectronPATUserData -- does not seem to be used --> TO_CHECK ------
 #include <FWCore/Framework/interface/Frameworkfwd.h>
 #include <FWCore/Framework/interface/EDProducer.h>
 #include <FWCore/Framework/interface/Event.h>
@@ -278,3 +279,4 @@ void ElectronPATUserData::fillDescriptions(edm::ConfigurationDescriptions& descr
 }
 
 DEFINE_FWK_MODULE(ElectronPATUserData);
+*/

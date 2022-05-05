@@ -177,9 +177,10 @@ elif opt_reco == 'HLT_TRKv06p1':
   process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv06p1_TICL':
-  from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p1_TICL_cfg import cms, process
-  process.schedule_().append(process.MC_JME)
-  process.schedule_().append(process.MC_JME_Others)
+  #from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p1_TICL_cfg import cms, process
+  from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p1_TICL_cfg_test import cms, process
+  #process.schedule_().append(process.MC_JME)
+  #process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_TRKv06p3':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p3_cfg import cms, process
@@ -254,9 +255,13 @@ process.hltPixelVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone
 process.hltPrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlinePrimaryVertices', defaultValue = -1.)
 process.offlinePrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlineSlimmedPrimaryVertices', defaultValue = -1.)
 
-from JMETriggerAnalysis.NTuplizers.qcdWeightProducer import qcdWeightProducer
-process.qcdWeightPU140 = qcdWeightProducer(BXFrequency = 30. * 1e6, PU = 140.)
-process.qcdWeightPU200 = qcdWeightProducer(BXFrequency = 30. * 1e6, PU = 200.)
+# removed because of non existing HLTrigger.mcStitching anymore which contained a stitchingWeight_cfi
+# must do this to work :
+#mkdir -p HLTrigger
+#git clone https://github.com/veelken/mcStitching.git HLTrigger/mcStitching
+#from JMETriggerAnalysis.NTuplizers.qcdWeightProducer import qcdWeightProducer
+#process.qcdWeightPU140 = qcdWeightProducer(BXFrequency = 30. * 1e6, PU = 140.)
+#process.qcdWeightPU200 = qcdWeightProducer(BXFrequency = 30. * 1e6, PU = 200.)
 
 process.jmeTriggerNTupleInputsSeq = cms.Sequence(
     process.hltPixelClustersMultiplicity
@@ -268,8 +273,8 @@ process.jmeTriggerNTupleInputsSeq = cms.Sequence(
   + process.hltPixelVerticesMultiplicity
   + process.hltPrimaryVerticesMultiplicity
   + process.offlinePrimaryVerticesMultiplicity
-  + process.qcdWeightPU140
-  + process.qcdWeightPU200
+  #+ process.qcdWeightPU140 # see above mcStitching
+  #+ process.qcdWeightPU200
 )
 
 process.jmeTriggerNTupleInputsPath = cms.Path(process.jmeTriggerNTupleInputsSeq)
@@ -875,8 +880,11 @@ elif opts.inputFiles:
    process.source.secondaryFileNames = []
 else:
    process.source.fileNames = [
-#     '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v2/280000/007CCF38-CBE4-6B4D-A97A-580FA0CA0850.root',
-     '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/VBF_HToInvisible_M125_14TeV_powheg_pythia8_TuneCP5/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v1/120000/FC63C96F-0685-B846-BD3C-F60F85AFFB4B.root',
+#    '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v2/280000/007CCF38-CBE4-6B4D-A97A-580FA0CA0850.root',
+#    '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/VBF_HToInvisible_M125_14TeV_powheg_pythia8_TuneCP5/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v1/120000/FC63C96F-0685-B846-BD3C-F60F85AFFB4B.root',
+#    '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/QCD_Pt-15to3000_TuneCP5_Flat_14TeV-pythia8/FEVT/PU200_castor_111X_mcRun4_realistic_T15_v1-v1/100000/005010D5-6DF5-5E4A-89A3-30FEE02E40F8.root'
+#     '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/QCD_Pt-15to3000_TuneCP5_Flat_14TeV-pythia8/FEVT/PU200_castor_111X_mcRun4_realistic_T15_v1-v1/100000/005010D5-6DF5-5E4A-89A3-30FEE02E40F8.root'
+    '/store/group/phys_egamma/sobhatta/egamma_timing_studies/samples/QCD_Pt-15to3000_TuneCP5_Flat_14TeV-pythia8_Phase2HLTTDRWinter20DIGI-PU200_castor_110X_mcRun4_realistic_v3-v2_GEN-SIM-DIGI-RAW_2021-12-06_23-04-36/output_1.root'
    ]
    process.source.secondaryFileNames = []
 
@@ -916,16 +924,16 @@ if opts.dumpPython is not None:
 
 # print-outs
 if opts.verbosity > 0:
-   print '--- jmeTriggerNTuple_cfg.py ---'
-   print ''
-   print 'option: output =', opts.output
-   print 'option: reco =', opts.reco, '(skimTracks = '+str(opt_skimTracks)+')'
-   print 'option: trkdqm =', opts.trkdqm
-   print 'option: pfdqm =', opts.pfdqm
-   print 'option: dumpPython =', opts.dumpPython
-   print ''
-   print 'process.GlobalTag =', process.GlobalTag.dumpPython()
-   print 'process.source =', process.source.dumpPython()
-   print 'process.maxEvents =', process.maxEvents.dumpPython()
-   print 'process.options =', process.options.dumpPython()
-   print '-------------------------------'
+   print('--- jmeTriggerNTuple_cfg.py ---')
+   print('')
+   print('option: output =', opts.output)
+   print('option: reco =', opts.reco, '(skimTracks = '+str(opt_skimTracks)+')')
+   print('option: trkdqm =', opts.trkdqm)
+   print('option: pfdqm =', opts.pfdqm)
+   print('option: dumpPython =', opts.dumpPython)
+   print('')
+   print('process.GlobalTag =', process.GlobalTag.dumpPython())
+   print('process.source =', process.source.dumpPython())
+   print('process.maxEvents =', process.maxEvents.dumpPython())
+   print('process.options =', process.options.dumpPython())
+   print('-------------------------------')

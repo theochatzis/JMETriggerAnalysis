@@ -4,7 +4,7 @@ from JMETriggerAnalysis.Common.hltPhase2_L1T import customise_hltPhase2_L1T
 from JMETriggerAnalysis.Common.hltPhase2_TRKv00 import customise_hltPhase2_TRKv00
 from JMETriggerAnalysis.Common.hltPhase2_TRKv02 import customise_hltPhase2_TRKv02
 from JMETriggerAnalysis.Common.hltPhase2_TRKv06 import customise_hltPhase2_TRKv06
-from JMETriggerAnalysis.Common.hltPhase2_TRKv06p1 import customise_hltPhase2_TRKv06p1
+from JMETriggerAnalysis.Common.hltPhase2_TRKv06p1_test import customise_hltPhase2_TRKv06p1
 from JMETriggerAnalysis.Common.hltPhase2_TRKv06p3 import customise_hltPhase2_TRKv06p3
 from JMETriggerAnalysis.Common.hltPhase2_TRKv07p2 import customise_hltPhase2_TRKv07p2
 from JMETriggerAnalysis.Common.hltPhase2_PF import customise_hltPhase2_PF
@@ -13,6 +13,9 @@ from JMETriggerAnalysis.Common.hltPhase2_JME import customise_hltPhase2_JME
 from HLTrigger.Configuration.common import producers_by_type
 from HLTrigger.JetMET.hltSiPixelClusterMultiplicityValueProducer_cfi import hltSiPixelClusterMultiplicityValueProducer as _hltSiPixelClusterMultiplicityValueProducer
 
+"""
+# this 'injectTICLintoPF' does not exist in this version
+# temporarily removed all the TICL  --> TO_CHECK
 from RecoHGCal.TICL.iterativeTICL_cff import injectTICLintoPF
 
 def customise_hltPhase2_enableTICLInHGCalReconstruction(process):
@@ -30,6 +33,7 @@ def customise_hltPhase2_enableTICLInHGCalReconstruction(process):
     process = injectTICLintoPF(process)
 
     return process
+"""
 
 def customise_hltPhase2_disableMTDReconstruction(process):
     for _tmp1 in [
@@ -45,7 +49,7 @@ def customise_hltPhase2_disableMTDReconstruction(process):
             process.__delattr__(_tmp2)
         process.__delattr__(_tmp1)
 
-    for _tmp in process.__dict__.keys():
+    for _tmp in list(process.__dict__):
       if ('Vertices4D' in _tmp) or ('Sorting4D' in _tmp):
         process.__delattr__(_tmp)
 
@@ -125,7 +129,16 @@ def customise_hltPhase2_redefineReconstructionSequencesCommon(process):
           if hasattr(process, _tmp2):
             process.__delattr__(_tmp2)
         process.__delattr__(_tmp1)
+    
+    ###### 
+    ### 
+    #process.globalrecoTask = cms.Task(process.caloTowersRecTask, process.ecalClustersTask, process.egammaGlobalRecoTask, process.globalreco_trackingTask, process.iterTICLTask, process.jetGlobalRecoTask, process.muonGlobalRecoTask, process.muoncosmicrecoTask, process.particleFlowClusterTask, process.pfTrackingGlobalRecoTask)
 
+    #process.globalreco = cms.Sequence(process.globalrecoTask)
+
+    ###
+    ## Note: Some modules are not like in the above. (TO_CHECK)
+    
     process.globalreco = cms.Sequence(
         process.caloTowersRec
       + process.ecalClusters
@@ -150,7 +163,7 @@ def customise_hltPhase2_redefineReconstructionSequencesCommon(process):
       + process.particleFlowCluster
 #     + process.pfTrackingGlobalReco
     )
-
+    
     if hasattr(process, 'hltAK4CaloJets'):
        process.globalreco += process.hltAK4CaloJets
        # modify CaloJets input to muons1stStep
@@ -218,7 +231,7 @@ def customise_hltPhase2_common(process):
 
     return process
 
-def customise_hltPhase2_redefineReconstructionSequences(process, useL1T=True, TRK='v06p1', useTICL=True, useMTD=False):
+def customise_hltPhase2_redefineReconstructionSequences(process, useL1T=False, TRK='v06p1', useTICL=False, useMTD=False): # all except tracking set to false -> TO_CHECK
     # reset schedule
     process.setSchedule_(cms.Schedule())
 
@@ -242,8 +255,9 @@ def customise_hltPhase2_redefineReconstructionSequences(process, useL1T=True, TR
     if not useMTD:
        process = customise_hltPhase2_disableMTDReconstruction(process)
 
-    if useTICL:
-       process = customise_hltPhase2_enableTICLInHGCalReconstruction(process)
+    # TO_CHECK
+    #if useTICL:
+    #   process = customise_hltPhase2_enableTICLInHGCalReconstruction(process)
 
     process = customise_hltPhase2_common(process)
 
@@ -596,8 +610,8 @@ def customise_hltPhase2_scheduleJMETriggers(process):
 
     # schedule
     process.schedule_().extend([
-#      process.MC_JME,
-#      process.MC_JME_Others,
+      process.MC_JME,
+      process.MC_JME_Others,
 
       process.L1T_SinglePFPuppiJet230off,
 #      process.HLT_AK4PFJet520,

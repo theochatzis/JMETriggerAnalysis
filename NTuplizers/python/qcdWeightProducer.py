@@ -92,8 +92,8 @@ def qcdWeightProducer(BXFrequency, PU):
   else:
     raise RuntimeError('getQCDWeightProducer -- invalid PU value: '+str(PU))
 
-  print '>> WARNING -- getQCDWeightProducer(PU='+str(PU)+'):',
-  print 'weight depends on hard-coded values of cross sections and #events of various MC samples',
-  print '(it will not be valid otherwise)'
+  print('>> WARNING -- getQCDWeightProducer(PU='+str(PU)+'):')
+  print('weight depends on hard-coded values of cross sections and #events of various MC samples')
+  print('(it will not be valid otherwise)')
 
   return retMod
