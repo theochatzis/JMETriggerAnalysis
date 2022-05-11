@@ -12,7 +12,7 @@
 
 ```shell
 cmsrel CMSSW_12_4_0_pre3
-cd CMSSW_11_1_8/src
+cd CMSSW_12_4_0_pre3/src
 
 # latest update for HLT
 git cms-merge-topic cms-sw:37162
