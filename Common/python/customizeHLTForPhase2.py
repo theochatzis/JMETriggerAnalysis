@@ -58,8 +58,9 @@ def customise_hltPhase2_disableMTDReconstruction(process):
        del process.simPFProducer.trackTimeValueMap
 
     # remove MTD element from PFBlock inputs
-    process.particleFlowBlock.elementImporters = [
-      _tmp for _tmp in process.particleFlowBlock.elementImporters if _tmp.importerName != 'TrackTimingImporter'
+    ### issue with particleFlowBlock -> calls a non-existent plugin. TO_CHECK
+    process.hltParticleFlowBlock.elementImporters = [
+      _tmp for _tmp in process.hltParticleFlowBlock.elementImporters if _tmp.importerName != 'TrackTimingImporter'
     ]
 
     return process
@@ -231,7 +232,7 @@ def customise_hltPhase2_common(process):
 
     return process
 
-def customise_hltPhase2_redefineReconstructionSequences(process, useL1T=False, TRK='v06p1', useTICL=False, useMTD=False): # all except tracking set to false -> TO_CHECK
+def customise_hltPhase2_redefineReconstructionSequences(process, useL1T=False, TRK='v06p1', useTICL=False, useMTD=True): # all except tracking set to false -> TO_CHECK
     # reset schedule
     process.setSchedule_(cms.Schedule())
 

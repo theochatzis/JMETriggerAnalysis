@@ -1,5 +1,4 @@
 ### Tools for JME studies on the Phase-2 HLT reconstruction
-
 * [Setup](#setup)
 * [Instructions to generate configuration files for HLT Phase-2 reconstruction](#instructions-to-generate-configuration-files-for-hlt-phase-2-reconstruction)
 * [Configuration with JME trigger paths for testing](#configuration-with-jme-trigger-paths-for-testing)
@@ -9,7 +8,19 @@
 ----------
 
 ### Setup
+### Test setup 
 
+```shell
+cmsrel CMSSW_12_4_0_pre3
+cd CMSSW_11_1_8/src
+
+# latest update for HLT
+git cms-merge-topic cms-sw:37162
+
+git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b phase2_12_4_test
+scram b -j 12
+```
+### Previous setup
 ```shell
 scramv1 project CMSSW CMSSW_11_1_8
 cd CMSSW_11_1_8/src
