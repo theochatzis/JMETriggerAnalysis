@@ -35,6 +35,7 @@ def customise_hltPhase2_enableTICLInHGCalReconstruction(process):
     return process
 """
 
+"""
 def customise_hltPhase2_disableMTDReconstruction(process):
     for _tmp1 in [
       'fastTimingLocalReco',
@@ -64,6 +65,7 @@ def customise_hltPhase2_disableMTDReconstruction(process):
     ]
 
     return process
+"""
 
 def customise_hltPhase2_redefineReconstructionSequencesCommon(process):
     if not hasattr(process, 'reconstruction'):
@@ -232,7 +234,7 @@ def customise_hltPhase2_common(process):
 
     return process
 
-def customise_hltPhase2_redefineReconstructionSequences(process, useL1T=False, TRK='v06p1', useTICL=False, useMTD=True): # all except tracking set to false -> TO_CHECK
+def customise_hltPhase2_redefineReconstructionSequences(process, useL1T=False, TRK='v06p1', useTICL=False, useMTD=False): # all except tracking set to false -> TO_CHECK
     # reset schedule
     process.setSchedule_(cms.Schedule())
 
@@ -252,9 +254,10 @@ def customise_hltPhase2_redefineReconstructionSequences(process, useL1T=False, T
     process = customise_hltPhase2_PF(process)
     process = customise_hltPhase2_JME(process)
     process = customise_hltPhase2_redefineReconstructionSequencesCommon(process)
-
+    """ TO_CHECK
     if not useMTD:
        process = customise_hltPhase2_disableMTDReconstruction(process)
+    """
 
     # TO_CHECK
     #if useTICL:

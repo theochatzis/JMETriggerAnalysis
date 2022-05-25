@@ -2,12 +2,12 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: step3 --geometry Extended2026D77 --era Phase2C11I13M9 --conditions auto:phase2_realistic_T21 --processName HLTX --step RAW2DIGI,RECO --eventcontent RECO --datatier RECO --filein /store/relval/CMSSW_12_3_0_pre3/RelValTTbar_14TeV/GEN-SIM-RECO/123X_mcRun4_realistic_v3_2026D77noPU-v1/2580000/1f4f72e0-0933-4e78-818a-1b22db93d8b4.root --mc --nThreads 4 --nStreams 4 --no_exec -n 10 --customise SLHCUpgradeSimulations/Configuration/aging.customise_aging_1000,Configuration/DataProcessing/Utils.addMonitoring --customise JMETriggerAnalysis/Common/customizeHLTForPhase2.customise_hltPhase2_scheduleJMETriggers_TRKv06p1_TICL --customise_commands process.prune()\n --python_filename /afs/cern.ch/work/t/tchatzis/private/phase2_upgrade_test/new_test/CMSSW_12_4_0_pre3/src/JMETriggerAnalysis/Common/python/configs/hltPhase2_TRKv06p1_TICL_cfg_test.py
+# with command line options: step3 --geometry Extended2026D88 --era Phase2C17I13M9 --conditions auto:phase2_realistic_T21 --processName HLTX --step RAW2DIGI,RECO --eventcontent RECO --datatier RECO --filein /store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-RECO/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/01b3b6fd-4e69-4d27-ad97-d889c9ca1f54.root --mc --nThreads 4 --nStreams 4 --no_exec -n 10 --customise SLHCUpgradeSimulations/Configuration/aging.customise_aging_1000,Configuration/DataProcessing/Utils.addMonitoring --customise_commands process.prune()\n --python_filename /afs/cern.ch/work/t/tchatzis/private/phase2_upgrade_test/new_test/CMSSW_12_4_0_pre3/src/JMETriggerAnalysis/Common/python/configs/offline_cfg_test.py
 import FWCore.ParameterSet.Config as cms
 
-from Configuration.Eras.Era_Phase2C11I13M9_cff import Phase2C11I13M9
+from Configuration.Eras.Era_Phase2C17I13M9_cff import Phase2C17I13M9
 
-process = cms.Process('HLTX',Phase2C11I13M9)
+process = cms.Process('HLTX',Phase2C17I13M9)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -15,7 +15,7 @@ process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
-process.load('Configuration.Geometry.GeometryExtended2026D77Reco_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D88Reco_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.RawToDigi_cff')
 process.load('Configuration.StandardSequences.Reconstruction_cff')
@@ -29,7 +29,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('/store/relval/CMSSW_12_3_0_pre3/RelValTTbar_14TeV/GEN-SIM-RECO/123X_mcRun4_realistic_v3_2026D77noPU-v1/2580000/1f4f72e0-0933-4e78-818a-1b22db93d8b4.root'),
+    fileNames = cms.untracked.vstring('/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-RECO/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/01b3b6fd-4e69-4d27-ad97-d889c9ca1f54.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -71,7 +71,6 @@ process.configurationMetadata = cms.untracked.PSet(
 )
 
 # Output definition
-
 """
 process.RECOoutput = cms.OutputModule("PoolOutputModule",
     dataset = cms.untracked.PSet(
@@ -83,7 +82,6 @@ process.RECOoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0)
 )
 """
-
 # Additional output definition
 
 # Other statements
@@ -119,18 +117,16 @@ from Configuration.DataProcessing.Utils import addMonitoring
 #call to customisation function addMonitoring imported from Configuration.DataProcessing.Utils
 process = addMonitoring(process)
 
-# Automatic addition of the customisation function from JMETriggerAnalysis.Common.customizeHLTForPhase2
-from JMETriggerAnalysis.Common.customizeHLTForPhase2 import customise_hltPhase2_scheduleJMETriggers_TRKv06p1_TICL 
-
-#call to customisation function customise_hltPhase2_scheduleJMETriggers_TRKv06p1_TICL imported from JMETriggerAnalysis.Common.customizeHLTForPhase2
-process = customise_hltPhase2_scheduleJMETriggers_TRKv06p1_TICL(process)
-
 # End of customisation functions
 
 
 # Customisation from command line
 
 process.prune()
+
+#Have logErrorHarvester wait for the same EDProducers to finish as those providing data for the OutputModule
+from FWCore.Modules.logErrorHarvester_cff import customiseLogErrorHarvesterUsingOutputCommands
+process = customiseLogErrorHarvesterUsingOutputCommands(process)
 
 # Add early deletion of temporary data products to reduce peak memory need
 #from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete
