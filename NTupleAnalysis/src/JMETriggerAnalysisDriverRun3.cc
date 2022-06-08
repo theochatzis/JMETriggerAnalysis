@@ -52,7 +52,7 @@ void JMETriggerAnalysisDriverRun3::init(){
     {"hltAK4PFClusterJets"         , {{"GEN", "ak4GenJetsNoNu"}}},
     {"hltAK4PFClusterJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}}},
     {"hltAK4PFJets"                , {{"GEN", "ak4GenJetsNoNu"}}},
-    {"hltAK4PFJetsCorrected"       , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFCHSJetsCorrected"}}},
+    {"hltAK4PFJetsCorrected"       , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
     {"hltAK4PFPuppiJets"           , {{"GEN", "ak4GenJetsNoNu"}}},
     {"hltAK4PFPuppiJetsCorrected"  , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
     {"offlineAK4PFCHSJetsCorrected"   , {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
