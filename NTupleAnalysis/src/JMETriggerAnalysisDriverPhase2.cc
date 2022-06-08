@@ -17,7 +17,8 @@ JMETriggerAnalysisDriverPhase2::JMETriggerAnalysisDriverPhase2(const std::string
                                                                const std::string& outputFileMode)
     : JMETriggerAnalysisDriver(outputFilePath, outputFileMode) {}
 
-bool JMETriggerAnalysisDriverPhase2::jetBelongsToCategory(const std::string& categLabel,
+bool JMETriggerAnalysisDriverPhase2::jetBelongsToCategory(const std::string& jetCollection,
+                                                          const std::string& categLabel,
                                                           const float jetPt,
                                                           const float jetAbsEta) const {
   bool ret(false);

@@ -508,6 +508,8 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   }
 
   for (auto& recoPFCandidateCollectionContainer_i : v_recoPFCandidateCollectionContainer_) {
+    this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_charge",
+                    &recoPFCandidateCollectionContainer_i.vec_charge());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_pdgId",
                     &recoPFCandidateCollectionContainer_i.vec_pdgId());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_pt",
@@ -518,6 +520,8 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                     &recoPFCandidateCollectionContainer_i.vec_phi());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_mass",
                     &recoPFCandidateCollectionContainer_i.vec_mass());
+    this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_energy",
+                    &recoPFCandidateCollectionContainer_i.vec_energy());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_rawEcalEnergy",
                     &recoPFCandidateCollectionContainer_i.vec_rawEcalEnergy());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_rawHcalEnergy",
