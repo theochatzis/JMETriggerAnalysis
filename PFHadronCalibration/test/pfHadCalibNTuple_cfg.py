@@ -179,7 +179,9 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
-    '/store/mc/Run3Winter21DRMiniAOD/SinglePion_PT0to200/GEN-SIM-DIGI-RAW/NoPUFEVT_112X_mcRun3_2021_realistic_v16-v2/140000/53fc39b0-c12c-419f-ba73-78c4d032ff3e.root',
+    #'/store/mc/Run3Winter21DRMiniAOD/SinglePion_PT0to200/GEN-SIM-DIGI-RAW/NoPUFEVT_112X_mcRun3_2021_realistic_v16-v2/140000/53fc39b0-c12c-419f-ba73-78c4d032ff3e.root',
+		#'/store/mc/Run3Summer21DR/Single_Pion_gun_E_2to200_14TeV_pythia8/GEN-SIM-RAW/NoPURAWRECO_120X_mcRun3_2021_realistic_v6-v2/270000/49a1fc5f-af28-4189-9842-399295b12d9e.root',
+		'/store/mc/Run3Winter20DRMiniAOD/SinglePion_PT0to200/GEN-SIM-RAW/NoPU_110X_mcRun3_2021_realistic_v6-v3/10000/037D66E6-1789-3741-9DC4-669B2EDDA263.root',
   ]
 
 # output file
