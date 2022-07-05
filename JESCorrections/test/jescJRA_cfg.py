@@ -118,17 +118,35 @@ process = addPaths_MC_JMEPFCluster(process)
 process = addPaths_MC_JMEPFCHS(process)
 process = addPaths_MC_JMEPFPuppi(process)
 
+###
+### updating Phase 0 HCAL thresholds
+###
+
+process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].name = "PFRecHitQTestHCALThresholdVsDepth"
+del process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].threshold
+
+## ECAL UL calibrations
+process.GlobalTag.toGet = cms.VPSet(
+ cms.PSet(record = cms.string("EcalLaserAlphasRcd"),
+ tag = cms.string("EcalLaserAlphas_UL_Run1_Run2_2018_lastIOV_movedTo1"),
+ connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
+ ),
+ cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
+ tag = cms.string("EcalIntercalibConstants_UL_Run1_Run2_2018_lastIOV_movedTo1"),
+ connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
+ ),)
+
 ## ES modules for PF-Hadron Calibrations
 import os
 
 from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
 process.pfhcESSource = cms.ESSource('PoolDBESSource',
-  _CondDB.clone(connect = 'sqlite_file:PFHC_Run3Winter21_HLT_V3.db'),
-  #_CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/data/PFHC_Run3Winter21_E2to500.db'),
+  _CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
+  #_CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/JESCorrections/test/PFCalibration.db'),
   toGet = cms.VPSet(
     cms.PSet(
       record = cms.string('PFCalibrationRcd'),
-      tag = cms.string('PFCalibration_CMSSW_12_0_1_HLT_120X_mcRun3_2021'),
+      tag = cms.string('PFCalibration_CMSSW_12_4_0_pre3_HLT_112X_mcRun3_2022'),
       label = cms.untracked.string('HLT'),
     ),
   ),
