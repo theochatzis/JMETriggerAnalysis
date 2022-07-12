@@ -28,12 +28,14 @@ def customise_hltPhase2_PF(process):
                 DPtOverPtCuts_byTrackAlgo = cms.vdouble(10.0, 10.0, 10.0, 10.0, 10.0, 5.0),
                 NHitCuts_byTrackAlgo = cms.vuint32(3, 3, 3, 3, 3, 3),
                 cleanBadConvertedBrems = cms.bool(True),
-                importerName = cms.string('GeneralTracksImporterWithVeto'),
+                #importerName = cms.string('GeneralTracksImporterWithVeto'), # modification: changed this to GeneralTracksImporter also with this remove veto (see bellow)
+                importerName = cms.string('GeneralTracksImporter'),
                 maxDPtOPt = cms.double(1.0),
                 muonSrc = cms.InputTag("muons1stStep"),
                 source = cms.InputTag("pfTrack"),
                 useIterativeTracking = cms.bool(True),
-                veto = cms.InputTag("hgcalTrackCollection","TracksInHGCal")
+                #veto = cms.InputTag("hgcalTrackCollection","TracksInHGCal") # changed veto to vetoEndcap
+                vetoEndcap = cms.bool(False) # changed veto to vetoEndcap
             ),
             cms.PSet(
                 BCtoPFCMap = cms.InputTag("particleFlowSuperClusterECAL","PFClusterAssociationEBEE"),

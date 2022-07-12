@@ -251,7 +251,7 @@ def customise_hltPhase2_redefineReconstructionSequences(process, useL1T=False, T
     }
     process = _trkCustomFuncDict[TRK](process)
 
-    process = customise_hltPhase2_PF(process)
+    #process = customise_hltPhase2_PF(process) --> changed this to use the default release particleFlowBlock
     process = customise_hltPhase2_JME(process)
     process = customise_hltPhase2_redefineReconstructionSequencesCommon(process)
     """ TO_CHECK
