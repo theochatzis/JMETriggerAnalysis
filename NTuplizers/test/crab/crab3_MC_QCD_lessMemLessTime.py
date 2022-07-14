@@ -3,14 +3,14 @@ from CRABClient.UserUtilities import config
 config = config()
 
 #config.General.workArea = 'OldJEC_Run3TRK_test'
-config.General.requestName = 'QCD_Pt-15to7000_TuneCP5_Flat_14TeV_pythia8'
+config.General.requestName = 'QCD_Pt-15to7000_lessMemLessTime'
 config.General.transferOutputs = True
 config.General.transferLogs = True
 
 config.JobType.allowUndistributedCMSSW = True
-config.JobType.maxJobRuntimeMin = 300
+config.JobType.maxJobRuntimeMin = 200
 config.JobType.numCores = 8
-config.JobType.maxMemoryMB = 9000
+config.JobType.maxMemoryMB = 8000
 config.JobType.psetName = '/afs/cern.ch/work/s/saparede/private/jet_stuff/hlt_runIII_jescs_jul22/CMSSW_12_4_0_pre3/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple_cfg.py'
 config.JobType.pluginName = 'Analysis'
 config.JobType.inputFiles = ['PFCalibration.db','Run3Summer21_MC.db']
