@@ -246,13 +246,13 @@ if not hasattr(process, 'hltPixelClustersMultiplicity'):
 if not hasattr(process, 'hltOuterTrackerClustersMultiplicity'):
   process.hltOuterTrackerClustersMultiplicity = _hltSiPhase2TrackerClusterMultiplicityValueProducer.clone(src = 'siPhase2Clusters', defaultValue = -1.)
 
-process.hltPixelTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracks', defaultValue = -1.)
-process.hltPixelTracksCleanerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracksCleaner', defaultValue = -1.)
-process.hltPixelTracksMergerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracksMerger', defaultValue = -1.)
-process.hltTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'generalTracks', defaultValue = -1.)
+process.hltPixelTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'hltPhase2PixelTracks', defaultValue = -1.)
+process.hltPixelTracksCleanerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'hltPhase2PixelTracksCleaner', defaultValue = -1.)
+process.hltPixelTracksMergerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'hltPhase2PixelTracksMerger', defaultValue = -1.)
+process.hltTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'hltPhase2GeneralTracks', defaultValue = -1.)
 
-process.hltPixelVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'pixelVertices', defaultValue = -1.)
-process.hltPrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlinePrimaryVertices', defaultValue = -1.)
+process.hltPixelVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'hltPhase2PixelVertices', defaultValue = -1.)
+process.hltPrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'hltPhase2OfflinePrimaryVertices', defaultValue = -1.)
 process.offlinePrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlineSlimmedPrimaryVertices', defaultValue = -1.)
 
 # removed because of non existing HLTrigger.mcStitching anymore which contained a stitchingWeight_cfi
@@ -347,8 +347,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoVertexCollections = cms.PSet(
 
-#   hltPixelVertices = cms.InputTag('pixelVertices'),
-#   hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
+#   hltPixelVertices = cms.InputTag('hltPhase2PixelVertices'),
+#   hltPrimaryVertices = cms.InputTag('hltPhase2OfflinePrimaryVertices'),
 #   offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
   ),
 
@@ -607,9 +607,9 @@ if opts.trkdqm > 0:
       process.schedule_().extend([process.reconstruction_pixelTrackingOnly_step])
 
    from JMETriggerAnalysis.Common.trackHistogrammer_cfi import trackHistogrammer
-   process.TrackHistograms_hltPixelTracks = trackHistogrammer.clone(src = 'pixelTracks')
-   process.TrackHistograms_hltInitialStepTracks = trackHistogrammer.clone(src = 'initialStepTracks')
-   process.TrackHistograms_hltGeneralTracks = trackHistogrammer.clone(src = 'generalTracks')
+   process.TrackHistograms_hltPixelTracks = trackHistogrammer.clone(src = 'hltPhase2PixelTracks')
+   process.TrackHistograms_hltInitialStepTracks = trackHistogrammer.clone(src = 'hltPhase2InitialStepTracks')
+   process.TrackHistograms_hltGeneralTracks = trackHistogrammer.clone(src = 'hltPhase2GeneralTracks')
 
    process.trkMonitoringSeq = cms.Sequence(
        process.TrackHistograms_hltPixelTracks
@@ -628,9 +628,9 @@ if opts.trkdqm > 0:
 if opts.pvdqm > 0:
 
    from JMETriggerAnalysis.Common.vertexHistogrammer_cfi import vertexHistogrammer
-   process.VertexHistograms_hltPixelVertices = vertexHistogrammer.clone(src = 'pixelVertices')
-   process.VertexHistograms_hltTrimmedPixelVertices = vertexHistogrammer.clone(src = 'trimmedPixelVertices')
-   process.VertexHistograms_hltPrimaryVertices = vertexHistogrammer.clone(src = 'offlinePrimaryVertices')
+   process.VertexHistograms_hltPixelVertices = vertexHistogrammer.clone(src = 'hltPhase2PixelVertices')
+   #process.VertexHistograms_hltTrimmedPixelVertices = vertexHistogrammer.clone(src = 'trimmedPixelVertices')
+   process.VertexHistograms_hltPrimaryVertices = vertexHistogrammer.clone(src = 'hltPhase2OfflinePrimaryVertices')
    process.VertexHistograms_offlinePrimaryVertices = vertexHistogrammer.clone(src = 'offlineSlimmedPrimaryVertices')
 
    process.pvMonitoringSeq = cms.Sequence(
@@ -669,7 +669,8 @@ if opts.pvdqm > 0:
       process.trkTruthInfoPath = cms.Path(process.trkTruthInfoSeq)
       process.schedule_().extend([process.trkTruthInfoPath])
 
-      if hasattr(process, 'pixelVertices') or hasattr(process, 'trimmedPixelVertices'):
+      #if hasattr(process, 'pixelVertices') or hasattr(process, 'trimmedPixelVertices'):
+      if hasattr(process, 'hltPhase2PixelVertices'):
          process.pvAnalyzer1 = cms.EDAnalyzer('PrimaryVertexAnalyzer4PU',
            info = cms.untracked.string(opts.reco),
            f4D = cms.untracked.bool(False),
@@ -678,7 +679,7 @@ if opts.pvdqm > 0:
            outputFile = cms.untracked.string('pv_hltPixelVertices.root'),
            verbose = cms.untracked.bool(False),
            veryverbose = cms.untracked.bool(False),
-           recoTrackProducer = cms.untracked.string('pixelTracks'),
+           recoTrackProducer = cms.untracked.string('hltPhase2PixelTracks'),
            minNDOF = cms.untracked.double(-1),
            zmatch = cms.untracked.double(0.05),
            autodump = cms.untracked.int32(0),
@@ -708,13 +709,16 @@ if opts.pvdqm > 0:
            vertexRecoCollections = cms.VInputTag(),
          )
 
-         for _tmp in ['pixelVertices', 'trimmedPixelVertices']:
+         #for _tmp in ['pixelVertices', 'trimmedPixelVertices']:
+         #  if hasattr(process, _tmp):
+         #    process.pvAnalyzer1.vertexRecoCollections += [_tmp]
+         for _tmp in ['hltPhase2PixelVertices']:
            if hasattr(process, _tmp):
              process.pvAnalyzer1.vertexRecoCollections += [_tmp]
 
          process.pvMonitoringSeq += process.pvAnalyzer1
 
-      if hasattr(process, 'offlinePrimaryVertices'):
+      if hasattr(process, 'hltPhase2OfflinePrimaryVertices'):
          process.pvAnalyzer2 = cms.EDAnalyzer('PrimaryVertexAnalyzer4PU',
            info = cms.untracked.string(opts.reco),
            f4D = cms.untracked.bool(False),
@@ -723,7 +727,7 @@ if opts.pvdqm > 0:
            outputFile = cms.untracked.string('pv_hltPrimaryVertices.root'),
            verbose = cms.untracked.bool(False),
            veryverbose = cms.untracked.bool(False),
-           recoTrackProducer = cms.untracked.string('generalTracks'),
+           recoTrackProducer = cms.untracked.string('hltPhase2GeneralTracks'),
            minNDOF = cms.untracked.double(4.0),
            zmatch = cms.untracked.double(0.05),
            autodump = cms.untracked.int32(0),
@@ -869,7 +873,7 @@ if opts.logs:
    if opt_skimTracks:
       process.MessageLogger.debugModules += [
         'hltTrimmedPixelVertices',
-        'generalTracks',
+        'hltPhase2GeneralTracks',
       ]
 
 # EDM Input Files
@@ -882,12 +886,24 @@ elif opts.inputFiles:
 else:
    process.source.fileNames = [
 #    '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v2/280000/007CCF38-CBE4-6B4D-A97A-580FA0CA0850.root',
-    '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/VBF_HToInvisible_M125_14TeV_powheg_pythia8_TuneCP5/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v1/120000/FC63C96F-0685-B846-BD3C-F60F85AFFB4B.root',
+#    '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/VBF_HToInvisible_M125_14TeV_powheg_pythia8_TuneCP5/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v1/120000/FC63C96F-0685-B846-BD3C-F60F85AFFB4B.root',
 #    '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/QCD_Pt-15to3000_TuneCP5_Flat_14TeV-pythia8/FEVT/PU200_castor_111X_mcRun4_realistic_T15_v1-v1/100000/005010D5-6DF5-5E4A-89A3-30FEE02E40F8.root'
 #     '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/QCD_Pt-15to3000_TuneCP5_Flat_14TeV-pythia8/FEVT/PU200_castor_111X_mcRun4_realistic_T15_v1-v1/100000/005010D5-6DF5-5E4A-89A3-30FEE02E40F8.root'
 #    '/store/group/phys_egamma/sobhatta/egamma_timing_studies/samples/QCD_Pt-15to3000_TuneCP5_Flat_14TeV-pythia8_Phase2HLTTDRWinter20DIGI-PU200_castor_110X_mcRun4_realistic_v3-v2_GEN-SIM-DIGI-RAW_2021-12-06_23-04-36/output_1.root'
+     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/MINIAODSIM/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/c354eb33-0710-4697-959d-6ae6ffa27946.root'
    ]
-   process.source.secondaryFileNames = []
+   process.source.secondaryFileNames = [
+     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/03a1db66-fb19-4832-8825-f98f0a6122c1.root',
+     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/06b322e5-89de-4d9f-967a-a4843fff6eba.root',
+     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/1049741a-5b18-4bd7-925a-543324c86499.root',
+     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/7282fafb-31e8-4072-af96-402e7a889c9a.root',
+     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/7b600534-2724-4c34-a970-903f5675f135.root',
+     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/87b1cb2c-39d8-46d5-9f5d-36bead06ad6c.root',
+     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/8ea05f50-b5ef-47b5-a9a9-6b79752cd4bc.root',
+     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/b2136d4b-7bb9-4674-9cf5-689757fbdff6.root',
+     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/d6f15a85-a6e8-4366-9826-34836a28f4d4.root',
+     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/f8c1743e-94af-4707-a02f-be1b74001178.root'
+   ]
 
 # skimming of tracks
 if opt_skimTracks:
@@ -901,9 +917,10 @@ if opt_skimTracks:
 
    # add PV collections to JMETriggerNTuple
    process.JMETriggerNTuple.recoVertexCollections = cms.PSet(
-     hltPixelVertices = cms.InputTag('pixelVertices'),
+     hltPixelVertices = cms.InputTag('hltPhase2PixelVertices'),
      hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
-     hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
+     #hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
+     hltPrimaryVertices = cms.InputTag('hltPhase2OfflinePrimaryVertices'),
      offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
    )
 

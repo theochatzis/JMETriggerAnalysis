@@ -22,7 +22,9 @@ def customise_hltPhase2_JME(process):
     if not hasattr(process, _particleFlowCands):
        raise RuntimeError('process has no member named "'+_particleFlowCands+'"')
 
-    _primaryVertices = 'offlinePrimaryVertices'
+    #_primaryVertices = 'offlinePrimaryVertices' # changed to : 
+    _primaryVertices = 'hltPhase2OfflinePrimaryVertices'
+    
     if not hasattr(process, _primaryVertices):
        raise RuntimeError('process has no member named "'+_primaryVertices+'"')
 

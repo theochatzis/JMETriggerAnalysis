@@ -17,11 +17,11 @@ def customize_hltPhase2_skimmedTracks(process):
        raise RuntimeError('process has no member named "globalreco_tracking"')
 
     # check if generalTracks module exists
-    if not hasattr(process, 'generalTracks'):
+    if not hasattr(process, 'hltPhase2GeneralTracks'):
        raise RuntimeError('process has no member named "generalTracks"')
 
     # check if pixelVertices module exists
-    if not hasattr(process, 'pixelVertices'):
+    if not hasattr(process, 'hltPhase2PixelVertices'):
        raise RuntimeError('process has no member named "pixelVertices"')
 
     # check if generalTracksOriginal module exists
@@ -39,7 +39,7 @@ def customize_hltPhase2_skimmedTracks(process):
     # to what was done at HLT in Run-2 (see hltTrimmedPrimaryVertices in 2018 HLT Menu)
     process.hltTrimmedPixelVertices = cms.EDProducer('PixelVerticesSelector',
 
-      src = cms.InputTag('pixelVertices'),
+      src = cms.InputTag('hltPhase2PixelVertices'),
 
       minSumPt2 = cms.double( 0.0 ),
       minSumPt2FractionWrtMax = cms.double( 0.3 ),
