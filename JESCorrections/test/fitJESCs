@@ -6,28 +6,26 @@ set -euo pipefail
 ## -------------------------
 JESC_BASE=${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test
 
-JRANTuple_NoPU=root://cms-xrd-global.cern.ch//store/group/phys_jetmet/saparede/runIII_hlt_jec/jra_ntuples/jescs_dec_PFHC_E2to500_noPU.root
-JRANTuple_PU=root://cms-xrd-global.cern.ch//store/group/phys_jetmet/saparede/runIII_hlt_jec/jra_ntuples/jecs_dec_PFHC_E2to500_flatPU.root
+#JRANTuple_NoPU=root://cms-xrd-global.cern.ch//store/group/phys_jetmet/saparede/runIII_hlt_jec/jra_ntuples/jescs_jul_2022_noPU/part_noPU_Run3Summer120X_CMSSW_12_4_0_pre3.root
+JRANTuple_NoPU=root://cms-xrd-global.cern.ch//store/group/phys_jetmet/saparede/runIII_hlt_jec/jra_ntuples/jescs_jul_2022_noPU/bigger_part_noPU_Run3Summer120X_CMSSW_12_4_0_pre3.root
+JRANTuple_PU=root://cms-xrd-global.cern.ch//store/group/phys_jetmet/saparede/runIII_hlt_jec/jra_ntuples/jescs_jul_2022_flatPU/part_flatPU_Run3Summer120X_CMSSW_12_4_0_pre3.root
 
-ERA=Run3Winter20_V2_MC
+ERA=Run3Summer21_MC
 
 #JET_TYPES=(
-#  ak4caloHLT
-#  ak4pfclusterHLT
 #  ak4pfHLT
-#  ak4pfchsHLT
-#  ak4pfpuppiHLT
-#  ak8caloHLT
-#  ak8pfclusterHLT
 #  ak8pfHLT
-#  ak8pfchsHLT
+#  ak4caloHLT
+#  ak8caloHLT
+#  ak4pfpuppiHLT
 #  ak8pfpuppiHLT
+#  ak4pfchsHLT
+#  ak8pfchsHLT
+#  ak4pfclusterHLT
+#  ak8pfclusterHLT
 #)
 JET_TYPES=(
-  ak8pfclusterHLT
-  ak8pfHLT
-  ak8pfchsHLT
-  ak8pfpuppiHLT
+  ak4pfHLT
 )
 ### -------------------------
 
@@ -196,7 +194,7 @@ runJECWorflowForOneAlgo(){
     CMD_STEP="jet_l2_correction_x -algs ${jetType} -era ${ERA} -l2l3 true"
     CMD_STEP+=" -input plots_${stepNameOld}/histogram_${jetType}l1_${stepNameOld}.root -outputDir ./ -output l2p3.root"
     CMD_STEP+=" -makeCanvasVariable AbsCorVsJetPt:JetEta -batch true -histMet median -l2pffit standard+gaussian -maxFitIter 50"
-    CMD_STEP+=" -ptclipfit true"
+    CMD_STEP+=" -ptclipfit true -ptclip 10.0"
     stepCmd "mkdir -p plots_${stepName}\n\n${CMD_STEP}" ${stepName}
   fi
 
@@ -215,7 +213,8 @@ runJECWorflowForOneAlgo(){
   stepNameOld=${stepName} && ((++stepN)) && stepName="step"$(printf "%02d" ${stepN})
   if [ ! -f ${stepName}.done ]; then
     CMD_STEP="jet_draw_closure_x -path plots_${stepNameOld} -filename Closure_${jetType} -histMet median -outputDir plots_${stepName}"
-    CMD_STEP+=" -draw_guidelines true -doPt true -doEta true -doRatioPt false -doRatioEta false"
+    CMD_STEP+=" -draw_guidelines true -doPt true -doEta true -doRatioPt false -doRatioEta false; "
+    CMD_STEP+="jet_draw_corrections_x -algs ${jetType} -outputDir plots_${stepNameOld} -era ${ERA} -useL1FasCor true -useL2Cor true"
     stepCmd "mkdir -p plots_${stepName}\n\n${CMD_STEP}" ${stepName}
   fi
 
