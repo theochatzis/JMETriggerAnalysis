@@ -620,8 +620,10 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_pt", &recoPFJetCollectionContainer_i.vec_pt());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_eta", &recoPFJetCollectionContainer_i.vec_eta());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_phi", &recoPFJetCollectionContainer_i.vec_phi());
+    
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_mass", &recoPFJetCollectionContainer_i.vec_mass());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_jesc", &recoPFJetCollectionContainer_i.vec_jesc());
+    /*
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_jetArea", &recoPFJetCollectionContainer_i.vec_jetArea());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_numberOfDaughters",
                     &recoPFJetCollectionContainer_i.vec_numberOfDaughters());
@@ -669,7 +671,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
 
 
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_CandidateBelongsToJet",
-                    &recoPFJetCollectionContainer_i.vec_CandidateBelongsToJet());
+                    &recoPFJetCollectionContainer_i.vec_CandidateBelongsToJet());*/
   }
 
   for (auto& patJetCollectionContainer_i : v_patJetCollectionContainer_) {
@@ -678,6 +680,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
     this->addBranch(patJetCollectionContainer_i.name() + "_phi", &patJetCollectionContainer_i.vec_phi());
     this->addBranch(patJetCollectionContainer_i.name() + "_mass", &patJetCollectionContainer_i.vec_mass());
     this->addBranch(patJetCollectionContainer_i.name() + "_jesc", &patJetCollectionContainer_i.vec_jesc());
+    /*
     this->addBranch(patJetCollectionContainer_i.name() + "_jetArea", &patJetCollectionContainer_i.vec_jetArea());
     this->addBranch(patJetCollectionContainer_i.name() + "_numberOfDaughters",
                     &patJetCollectionContainer_i.vec_numberOfDaughters());
@@ -733,6 +736,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
 
     this->addBranch(patJetCollectionContainer_i.name() + "_CandidateBelongsToJet",
                     &patJetCollectionContainer_i.vec_CandidateBelongsToJet());
+    */
   }
 
   for (auto& recoGenMETCollectionContainer_i : v_recoGenMETCollectionContainer_) {

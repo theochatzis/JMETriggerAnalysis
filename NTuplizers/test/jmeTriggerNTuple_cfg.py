@@ -285,6 +285,123 @@ process.schedule_().append(process.jmeTriggerNTupleInputsPath)
 ak4jets_stringCut = '' #'pt > 20'
 ak8jets_stringCut = '' #'pt > 80'
 
+
+
+## add offline puppi ------------------------------------------------------------
+#from CommonTools.PileupAlgos.Puppi_cff import puppi as _puppi, puppiNoLep as _puppiNoLep
+from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJetsPuppi as _ak4PFJetsPuppi
+
+#process.offlinePFPuppi = _puppi.clone(
+#  candName = 'packedPFCandidates'
+#)
+
+process.offlinePFPuppi = cms.EDProducer("PuppiProducer",
+    DeltaZCut = cms.double(0.1),
+    DeltaZCutForChargedFromPUVtxs = cms.double(0.2),
+    EtaMaxCharged = cms.double(99999),
+    EtaMaxPhotons = cms.double(2.5),
+    EtaMinUseDeltaZ = cms.double(4.0),
+    MinPuppiWeight = cms.double(0.01),
+    NumOfPUVtxsForCharged = cms.uint32(2),
+    PUProxyValue = cms.InputTag(""),
+    PtMaxCharged = cms.double(20.0),
+    PtMaxNeutrals = cms.double(200),
+    PtMaxNeutralsStartSlope = cms.double(20.0),
+    PtMaxPhotons = cms.double(-1),
+    UseDeltaZCut = cms.bool(True),
+    UseDeltaZCutForPileup = cms.bool(False),
+    UseFromPVLooseTight = cms.bool(False),
+    algos = cms.VPSet(
+        cms.PSet(
+            etaMin = cms.vdouble(0.,  2.5),
+            etaMax = cms.vdouble(2.5, 3.5),
+            ptMin  = cms.vdouble(0.,  0.), #Normally 0
+            MinNeutralPt   = cms.vdouble(0.2, 0.2),
+            MinNeutralPtSlope   = cms.vdouble(0.015, 0.030),
+            RMSEtaSF = cms.vdouble(1.0, 1.0),
+            MedEtaSF = cms.vdouble(1.0, 1.0),
+            EtaMaxExtrap = cms.double(2.0),
+            puppiAlgos = cms.VPSet(cms.PSet(
+                algoId = cms.int32(5),
+                applyLowPUCorr = cms.bool(True),
+                combOpt = cms.int32(0),
+                cone = cms.double(0.4),
+                rmsPtMin = cms.double(0.1),
+                rmsScaleFactor = cms.double(1.0),
+                useCharged = cms.bool(True)
+            ))
+        ),
+        cms.PSet(
+            etaMin = cms.vdouble( 3.5),
+            etaMax = cms.vdouble(10.0),
+            ptMin = cms.vdouble( 0.), #Normally 0
+            MinNeutralPt = cms.vdouble( 2.0),
+            MinNeutralPtSlope = cms.vdouble(0.08),
+            RMSEtaSF = cms.vdouble(1.0 ),
+            MedEtaSF = cms.vdouble(0.75),
+            EtaMaxExtrap = cms.double( 2.0),
+            puppiAlgos = cms.VPSet(cms.PSet(
+                algoId = cms.int32(5),
+                applyLowPUCorr = cms.bool(True),
+                combOpt = cms.int32(0),
+                cone = cms.double(0.4),
+                rmsPtMin = cms.double(0.5),
+                rmsScaleFactor = cms.double(1.0),
+                useCharged = cms.bool(False)
+            ))
+        )
+    ),
+    applyCHS = cms.bool(True),
+    candName = cms.InputTag("packedPFCandidates"), # can use also "particleFlow" (see also the jet definition bellow)
+    clonePackedCands = cms.bool(False),
+    invertPuppi = cms.bool(False),
+    mightGet = cms.optional.untracked.vstring,
+    puppiDiagnostics = cms.bool(False),
+    puppiNoLep = cms.bool(False),
+    useExistingWeights = cms.bool(False),
+    useExp = cms.bool(False),
+    usePUProxyValue = cms.bool(False),
+    useVertexAssociation = cms.bool(False),
+    vertexAssociation = cms.InputTag(""),
+    vertexAssociationQuality = cms.int32(0),
+    #vertexName = cms.InputTag("offlinePrimaryVertices"),
+    vertexName = cms.InputTag("offlineSlimmedPrimaryVertices4D"),
+    vtxNdofCut = cms.int32(4),
+    vtxZCut = cms.double(24)
+)
+
+
+#process.offlineAK4PFPuppiJets  = _ak4PFJetsPuppi.clone( 
+#    src = "particleFlow", # if use the "particleFlow" (the default in the _ak4PFJetsPuppi) then error if the file doesnt have it
+#    applyWeight = True,
+#    srcWeights = cms.InputTag("offlinePFPuppi")
+#)
+
+
+process.offlineAK4PFPuppiJets  = _ak4PFJetsPuppi.clone(
+    src = "offlinePFPuppi",
+    applyWeight = cms.bool(False) # don't apply weight, to avoid applying weight 2 times
+)
+
+
+process.offlinePFPuppiSequence = cms.Sequence(
+  process.offlinePFPuppi
+  + process.offlineAK4PFPuppiJets
+  # add corrections for the jets here #
+)
+
+process.offlinePFPuppiPath = cms.Path(
+  process.offlinePFPuppiSequence
+)
+
+process.schedule_().append(process.offlinePFPuppiPath)
+## ------------------------------------------------------------------------------
+
+
+
+
+
+
 process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   TTreeName = cms.string('Events'),
@@ -421,16 +538,19 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 #    hltAK8PFJets = hltAK4PFCHSJets('hltAK4PFCHSJets'),
     hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
 #    hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
-#    hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
+    hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
     hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
 #    hltAK8PFPuppiJets = cms.InputTag('hltAK8PFPuppiJets'),
 #    hltAK8PFPuppiJetsCorrected = cms.InputTag('hltAK8PFPuppiJetsCorrected'),
+     offlineAK4PFPuppiJets = cms.InputTag('offlineAK4PFPuppiJets')
+    
   ),
 
   patJetCollections = cms.PSet(
 
     offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
     offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
+    
 #    offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
   ),
 
@@ -900,25 +1020,63 @@ else:
 #    '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/QCD_Pt-15to3000_TuneCP5_Flat_14TeV-pythia8/FEVT/PU200_castor_111X_mcRun4_realistic_T15_v1-v1/100000/005010D5-6DF5-5E4A-89A3-30FEE02E40F8.root'
 #     '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/QCD_Pt-15to3000_TuneCP5_Flat_14TeV-pythia8/FEVT/PU200_castor_111X_mcRun4_realistic_T15_v1-v1/100000/005010D5-6DF5-5E4A-89A3-30FEE02E40F8.root'
 #    '/store/group/phys_egamma/sobhatta/egamma_timing_studies/samples/QCD_Pt-15to3000_TuneCP5_Flat_14TeV-pythia8_Phase2HLTTDRWinter20DIGI-PU200_castor_110X_mcRun4_realistic_v3-v2_GEN-SIM-DIGI-RAW_2021-12-06_23-04-36/output_1.root'
-     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/MINIAODSIM/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/c354eb33-0710-4697-959d-6ae6ffa27946.root'
+#     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/MINIAODSIM/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/c354eb33-0710-4697-959d-6ae6ffa27946.root'
 #     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-RECO/123X_mcRun4_realistic_v11_2026D88noPU-v1/2580000/4cb86d46-f780-4ce7-94df-9e0039e1953b.root'
-#   '/store/mc/PhaseIISpring22DRMiniAOD/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_castor_123X_mcRun4_realistic_v11-v1/40000/009871c5-babe-40aa-9e82-7d91f772b3e4.root'
+   '/store/mc/PhaseIISpring22DRMiniAOD/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_castor_123X_mcRun4_realistic_v11-v1/40000/009871c5-babe-40aa-9e82-7d91f772b3e4.root'
 #    '/store/mc/PhaseIISpring22DRMiniAOD/VBFHToInvisible_M-125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_123X_mcRun4_realistic_v11-v1/2560000/00ba7c93-a3e4-4560-8cbe-2385624e0437.root'
 #    "/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-RECO/123X_mcRun4_realistic_v11_2026D88noPU-v1/2580000/4cb86d46-f780-4ce7-94df-9e0039e1953b.root"
+   
+#    '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/MINIAODSIM/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/40f1abc8-1d86-4dae-8e5f-a42f0e700b02.root'
    ]
    process.source.secondaryFileNames = [
-           '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/03a1db66-fb19-4832-8825-f98f0a6122c1.root',
-           '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/06b322e5-89de-4d9f-967a-a4843fff6eba.root',
-           '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/1049741a-5b18-4bd7-925a-543324c86499.root',
-           '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/7282fafb-31e8-4072-af96-402e7a889c9a.root',
-           '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/7b600534-2724-4c34-a970-903f5675f135.root',
-           '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/87b1cb2c-39d8-46d5-9f5d-36bead06ad6c.root',
-           '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/8ea05f50-b5ef-47b5-a9a9-6b79752cd4bc.root',
-           '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/b2136d4b-7bb9-4674-9cf5-689757fbdff6.root',
-           '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/d6f15a85-a6e8-4366-9826-34836a28f4d4.root',
-           '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/f8c1743e-94af-4707-a02f-be1b74001178.root'
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/03a1db66-fb19-4832-8825-f98f0a6122c1.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/06b322e5-89de-4d9f-967a-a4843fff6eba.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/1049741a-5b18-4bd7-925a-543324c86499.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/7282fafb-31e8-4072-af96-402e7a889c9a.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/7b600534-2724-4c34-a970-903f5675f135.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/87b1cb2c-39d8-46d5-9f5d-36bead06ad6c.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/8ea05f50-b5ef-47b5-a9a9-6b79752cd4bc.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/b2136d4b-7bb9-4674-9cf5-689757fbdff6.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/d6f15a85-a6e8-4366-9826-34836a28f4d4.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/f8c1743e-94af-4707-a02f-be1b74001178.root'
    
 #        '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/123X_mcRun4_realistic_v11_2026D88noPU-v1/2580000/3c7da83f-5893-4e4d-b48f-ecf16025e65f.root'
+   
+
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/00582df6-3bb5-4a55-bf29-80daf63a2746.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/0adec3b3-8880-41ac-825b-e3b4d598fa7f.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/0b985c97-6d34-4799-8e5e-346e9047c9e4.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/1c518713-024c-411a-9640-cacde51e1360.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/1f4b64e5-5ebb-4a43-8e11-b4ecb9a380df.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/23718601-316d-485b-b7e8-57989aa37c8c.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/25b8b014-b275-4b45-95aa-a7bf40cb4047.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/273d16a5-00b0-4842-add2-5de731b93308.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/28665e55-4b68-4f56-b092-0d5960ae42b6.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/2babef46-08a6-493d-9988-e131b046094f.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/2bb05f23-68f0-4cde-bc89-cdd0881ac515.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/30469c20-ee40-45ec-a293-3235c9f55f25.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/328ee71c-1dc2-4a91-b06d-d940f31b94af.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/3b463a25-d70e-40ae-a76c-b6ac463078cd.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/43f84565-e31f-45df-ba89-c4e6b789fdd6.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/59d54666-447c-4fa2-9c57-ecbf6f8d2245.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/5cd4c639-cc3c-41c7-acd3-b9e856bcdb29.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/5e9391d3-a558-4628-a2de-c883c30da4b6.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/6e72ecb3-352b-467f-b997-3a90788012f0.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/6ebc18d1-889b-4999-86ee-91bff8e6eb6d.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/7606e56d-d2d1-4fcc-b8ec-e1697c7d3395.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/8b2e1ac3-1e6b-480f-9dc3-7281909498f1.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/971f2041-739a-4306-80da-863e48cd43d0.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/b3f90577-c454-4a79-9e5e-0857fbe19121.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/b6a4027f-2a4b-4fbb-a93b-0630a13b8333.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/c0d87ae7-aca6-4c8a-8cfb-f0d8bbce274b.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/c897ccde-3d56-479c-8b62-5189b67406ff.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/df8b9e32-c809-4f81-8145-24e500b96baf.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/e1a56266-bf8e-4f27-99b5-bb195267a2ce.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/e3320602-4396-4f8f-8b32-4326355e8e6f.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/e98ce788-51b6-49fb-b987-ef15a78f5b31.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/f5dc0974-ac02-4b95-9749-05a40667974c.root'
+  
+  
    ]
 
 # skimming of tracks
