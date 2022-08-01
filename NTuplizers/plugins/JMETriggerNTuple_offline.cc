@@ -340,7 +340,7 @@ JMETriggerNTuple_offline::JMETriggerNTuple_offline(const edm::ParameterSet& iCon
   initCollectionContainer<PATJetCollectionContainer, pat::Jet>(
       iConfig, v_patJetCollectionContainer_, "patJetCollections", "pat::JetCollection", stringCutObjectSelectors_map_);
   for (auto& cc_i : v_patJetCollectionContainer_) {
-    cc_i.orderByHighestPt(true);
+    cc_i.orderByHighestPt(false);
   }
 
   // reco::GenMETCollection
@@ -488,6 +488,10 @@ JMETriggerNTuple_offline::JMETriggerNTuple_offline(const edm::ParameterSet& iCon
     this->addBranch(recoVertexCollectionContainer_i.name() + "_xError", &recoVertexCollectionContainer_i.vec_xError());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_yError", &recoVertexCollectionContainer_i.vec_yError());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_zError", &recoVertexCollectionContainer_i.vec_zError());
+    if(recoVertexCollectionContainer_i.name().find("4D") != std::string::npos){
+      this->addBranch(recoVertexCollectionContainer_i.name() + "_t", &recoVertexCollectionContainer_i.vec_t());
+      this->addBranch(recoVertexCollectionContainer_i.name() + "_tError", &recoVertexCollectionContainer_i.vec_tError());
+    }
   }
 
   for (auto& l1tPFCandidateCollectionContainer_i : v_l1tPFCandidateCollectionContainer_) {
@@ -648,6 +652,7 @@ JMETriggerNTuple_offline::JMETriggerNTuple_offline(const edm::ParameterSet& iCon
   }
 
   for (auto& patJetCollectionContainer_i : v_patJetCollectionContainer_) {
+    this->addBranch(patJetCollectionContainer_i.name() + "_energy", &patJetCollectionContainer_i.vec_energy());
     this->addBranch(patJetCollectionContainer_i.name() + "_pt", &patJetCollectionContainer_i.vec_pt());
     this->addBranch(patJetCollectionContainer_i.name() + "_eta", &patJetCollectionContainer_i.vec_eta());
     this->addBranch(patJetCollectionContainer_i.name() + "_phi", &patJetCollectionContainer_i.vec_phi());
@@ -676,6 +681,38 @@ JMETriggerNTuple_offline::JMETriggerNTuple_offline(const edm::ParameterSet& iCon
                     &patJetCollectionContainer_i.vec_photonMultiplicity());
     this->addBranch(patJetCollectionContainer_i.name() + "_muonMultiplicity",
                     &patJetCollectionContainer_i.vec_muonMultiplicity());
+    
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateEnergy",
+                    &patJetCollectionContainer_i.vec_CandidateEnergy());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidatePt",
+                    &patJetCollectionContainer_i.vec_CandidatePt());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateEta",
+                    &patJetCollectionContainer_i.vec_CandidateEta());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidatePhi",
+                    &patJetCollectionContainer_i.vec_CandidatePhi());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateCharge",
+                    &patJetCollectionContainer_i.vec_CandidateCharge());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateTime",
+                    &patJetCollectionContainer_i.vec_CandidateTime());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateTimeError",
+                    &patJetCollectionContainer_i.vec_CandidateTimeError()); 
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateDtime",
+                    &patJetCollectionContainer_i.vec_CandidateDtime());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateDz",
+                    &patJetCollectionContainer_i.vec_CandidateDz());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateVx",
+                    &patJetCollectionContainer_i.vec_CandidateVx());         
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateVy",
+                    &patJetCollectionContainer_i.vec_CandidateVy());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateVz",
+                    &patJetCollectionContainer_i.vec_CandidateVz());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidatePuppiWeight",
+                    &patJetCollectionContainer_i.vec_CandidatePuppiWeight());
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidatePuppiWeightNoLep",
+                    &patJetCollectionContainer_i.vec_CandidatePuppiWeightNoLep());
+
+    this->addBranch(patJetCollectionContainer_i.name() + "_CandidateBelongsToJet",
+                    &patJetCollectionContainer_i.vec_CandidateBelongsToJet());
   }
 
   for (auto& recoGenMETCollectionContainer_i : v_recoGenMETCollectionContainer_) {

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 script to create area for submission of batch jobs
 (supported batch systems: HTCondor, SLURM)
@@ -178,10 +178,10 @@ if __name__ == '__main__':
    cmsRun_addopts = opts_unknown[:]
 
    if opts.verbosity > 0 and len(cmsRun_addopts):
-     print '-'*50
-     print colored_text('additional cmsRun command-line arguments:', ['1'])
-     for _tmp in cmsRun_addopts: print ' '+str(_tmp)
-     print '-'*50
+     print('-'*50)
+     print(colored_text('additional cmsRun command-line arguments:', ['1']))
+     for _tmp in cmsRun_addopts: print(' '+str(_tmp))
+     print('-'*50)
 
    ### extract input-files information from data set name via dasgoclient
    ### -> list of dictionaries, each containing DAS name, files, number of events per file, and parent files
@@ -503,7 +503,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
 
          os.chmod(EXEFILE_ABSPATH, os.stat(EXEFILE_ABSPATH).st_mode | stat.S_IEXEC)
 
-         print colored_text('output:', ['1', '94']), os.path.relpath(EXEFILE_ABSPATH, os.environ['PWD'])
+         print(colored_text('output:', ['1', '94']), os.path.relpath(EXEFILE_ABSPATH, os.environ['PWD']))
 
          jobCounter += 1
 
@@ -598,7 +598,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
      EXE('mv '+OUTPUT_DIR+' '+OUTPUT_DIR_FINAL, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
      EXEFILE_ABSPATH = OUTPUT_DIR_FINAL+'/'+os.path.basename(EXEFILE_ABSPATH)
      if not opts.dry_run:
-       print colored_text('output:', ['1', '94']), EXEFILE_ABSPATH
+       print(colored_text('output:', ['1', '94']), EXEFILE_ABSPATH)
 
    if opts.submit:
      if opts.batch_system == 'htc':

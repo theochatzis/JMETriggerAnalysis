@@ -417,7 +417,9 @@ if __name__ == '__main__':
 
        i_inptfile.Close()
 
-       for _tmp in histograms.keys():
+       #for _tmp in histograms.keys():
+       #  del histograms[_tmp]
+      for _tmp in list(histograms):
          del histograms[_tmp]
 
        print colored_text('[output]', ['1','92']), os.path.relpath(output_file)
