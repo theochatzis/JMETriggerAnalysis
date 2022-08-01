@@ -38,6 +38,20 @@ public:
   std::vector<int>& vec_photonMultiplicity() { return photonMultiplicity_; }
   std::vector<int>& vec_muonMultiplicity() { return muonMultiplicity_; }
 
+  std::vector<float>& vec_CandidateEnergy() { return CandidateEnergy_; }
+  std::vector<float>& vec_CandidatePt() { return CandidatePt_; }
+  std::vector<float>& vec_CandidateEta() { return CandidateEta_; }
+  std::vector<float>& vec_CandidatePhi() { return CandidatePhi_; }
+  std::vector<int>& vec_CandidateCharge() { return CandidateCharge_; }
+  std::vector<float>& vec_CandidateTime() { return CandidateTime_; }
+  std::vector<float>& vec_CandidateTimeError() { return CandidateTimeError_; }
+  std::vector<float>& vec_CandidateVx() { return CandidateVx_; }
+  std::vector<float>& vec_CandidateVy() { return CandidateVy_; }
+  std::vector<float>& vec_CandidateVz() { return CandidateVz_; }
+  
+  std::vector<int>& vec_CandidateBelongsToJet() { return CandidateBelongsToJet_; }
+
+
 protected:
   std::vector<float> pt_;
   std::vector<float> eta_;
@@ -59,6 +73,21 @@ protected:
   std::vector<int> electronMultiplicity_;
   std::vector<int> photonMultiplicity_;
   std::vector<int> muonMultiplicity_;
+
+  std::vector<float> CandidateEnergy_;
+  std::vector<float> CandidatePt_;
+  std::vector<float> CandidateEta_;
+  std::vector<float> CandidatePhi_;
+  std::vector<int> CandidateCharge_;
+  std::vector<float> CandidateTime_;
+  std::vector<float> CandidateTimeError_;
+  std::vector<float> CandidateVx_;
+  std::vector<float> CandidateVy_;
+  std::vector<float> CandidateVz_;
+
+  std::vector<int> CandidateBelongsToJet_;
+
+  int JetIndex_;
 };
 
 #endif

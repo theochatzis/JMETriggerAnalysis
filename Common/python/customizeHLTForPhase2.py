@@ -234,7 +234,7 @@ def customise_hltPhase2_common(process):
 
     return process
 
-def customise_hltPhase2_redefineReconstructionSequences(process, useL1T=False, TRK='v06p1', useTICL=False, useMTD=False): # all except tracking set to false -> TO_CHECK
+def customise_hltPhase2_redefineReconstructionSequences(process, useL1T=True, TRK='v06p1', useTICL=False, useMTD=False): # all except tracking set to false -> TO_CHECK
     # reset schedule
     process.setSchedule_(cms.Schedule())
 
@@ -359,6 +359,7 @@ def customise_hltPhase2_scheduleJMETriggers(process):
     )
 
     ## Single-Jet producers+filters
+    # --- removed this filter --> does not find the inputTag collections
     process.l1tSinglePFPuppiJet230off = cms.EDFilter('L1TJetFilter',
       inputTag = cms.InputTag('l1tSlwPFPuppiJetsCorrected', 'Phase1L1TJetFromPfCandidates'),
       Scalings = cms.PSet(

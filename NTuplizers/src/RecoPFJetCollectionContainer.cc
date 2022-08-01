@@ -1,4 +1,5 @@
 #include <JMETriggerAnalysis/NTuplizers/interface/RecoPFJetCollectionContainer.h>
+#include <DataFormats/ParticleFlowCandidate/interface/PFCandidate.h>
 
 RecoPFJetCollectionContainer::RecoPFJetCollectionContainer(const std::string& name,
                                                            const std::string& inputTagLabel,
@@ -52,6 +53,22 @@ void RecoPFJetCollectionContainer::reserve(const size_t vec_size) {
   electronMultiplicity_.reserve(vec_size);
   photonMultiplicity_.reserve(vec_size);
   muonMultiplicity_.reserve(vec_size);
+
+  CandidateEnergy_.clear();
+  CandidatePt_.clear();
+  CandidateEta_.clear();
+  CandidatePhi_.clear();
+  CandidateCharge_.clear();
+  CandidateTime_.clear();
+  CandidateTimeError_.clear();
+  CandidateVx_.clear();
+  CandidateVy_.clear();
+  CandidateVz_.clear();
+
+
+  CandidateBelongsToJet_.clear();
+
+  JetIndex_ = 0;
 }
 
 void RecoPFJetCollectionContainer::emplace_back(const reco::PFJet& obj) {
@@ -81,4 +98,25 @@ void RecoPFJetCollectionContainer::emplace_back(const reco::PFJet& obj) {
   electronMultiplicity_.emplace_back(obj.electronMultiplicity());
   photonMultiplicity_.emplace_back(obj.photonMultiplicity());
   muonMultiplicity_.emplace_back(obj.muonMultiplicity());
+
+
+  // get info for candidates of jet
+  for(unsigned int iCandidate=0; iCandidate < obj.numberOfDaughters(); iCandidate++){
+    // jet daughters are reco::Candidate so use dynamic cast to change to "mother class" reco::PFCandidate
+    // reco::PFCandidate objects have the time(),timeError() attributes
+    const reco::PFCandidate *JetCand = dynamic_cast<const reco::PFCandidate*>(obj.daughter(iCandidate)); 
+    CandidateEnergy_.emplace_back((JetCand->p4()).energy());
+    CandidatePt_.emplace_back((JetCand->p4()).pt());
+    CandidateEta_.emplace_back((JetCand->p4()).eta());
+    CandidatePhi_.emplace_back((JetCand->p4()).phi());
+    CandidateCharge_.emplace_back(JetCand->charge());
+    CandidateTime_.emplace_back(JetCand->time());
+    CandidateTimeError_.emplace_back(JetCand->timeError());
+    CandidateVx_.emplace_back(JetCand->vx());
+    CandidateVy_.emplace_back(JetCand->vy());
+    CandidateVz_.emplace_back(JetCand->vz());
+    CandidateBelongsToJet_.emplace_back(JetIndex_);
+  } // loop over jet daughter particles
+  
+  JetIndex_+=1;
 }
