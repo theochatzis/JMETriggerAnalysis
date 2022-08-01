@@ -256,6 +256,31 @@ def customise_hltPhase2_TRKv06p1(process):
         track_pt_min = cms.double(1.0)
     )
 
+    process.hltPhase2PixelTracksClean = cms.EDProducer("RecoTrackViewRefSelector",
+        algorithm = cms.vstring(),
+        algorithmMaskContains = cms.vstring(),
+        beamSpot = cms.InputTag("offlineBeamSpot"),
+        invertRapidityCut = cms.bool(False), # cmssw_11_1
+        lip = cms.double(300.0),
+        maxChi2 = cms.double(100.0),
+        maxPhi = cms.double(3.2),
+        maxRapidity = cms.double(4.5),
+        min3DLayer = cms.int32(0),
+        minHit = cms.int32(0),
+        minLayer = cms.int32(2),
+        minPhi = cms.double(-3.2),
+        minPixelHit = cms.int32(0), maxPixelHit = cms.int32(99),
+        minRapidity = cms.double(-4.5),
+        minPixelLayer = cms.int32(0),
+        originalAlgorithm = cms.vstring(),
+        ptMin = cms.double(1.2), # previous 0.1
+        quality = cms.vstring('any'),
+        src = cms.InputTag("hltPhase2PixelTracks"),
+        tip = cms.double(120),
+        usePV = cms.bool(False),
+        vertexTag = cms.InputTag("")#hltPhase2PixelVertices") #("hltPhase2OfflinePrimaryVertices")
+    )
+
     process.hltPhase2PixelVertices = cms.EDProducer( "PixelVertexProducer",
         WtAverage = cms.bool( True ),
         Method2 = cms.bool( True ),
@@ -394,30 +419,7 @@ def customise_hltPhase2_TRKv06p1(process):
     )
     
 
-    process.hltPhase2PixelTracksClean = cms.EDProducer("RecoTrackViewRefSelector",
-        algorithm = cms.vstring(),
-        algorithmMaskContains = cms.vstring(),
-        beamSpot = cms.InputTag("offlineBeamSpot"),
-        invertRapidityCut = cms.bool(False), # cmssw_11_1
-        lip = cms.double(300.0),
-        maxChi2 = cms.double(100.0),
-        maxPhi = cms.double(3.2),
-        maxRapidity = cms.double(4.5),
-        min3DLayer = cms.int32(0),
-        minHit = cms.int32(0),
-        minLayer = cms.int32(2),
-        minPhi = cms.double(-3.2),
-        minPixelHit = cms.int32(0), maxPixelHit = cms.int32(99),
-        minRapidity = cms.double(-4.5),
-        minPixelLayer = cms.int32(0),
-        originalAlgorithm = cms.vstring(),
-        ptMin = cms.double(1.2), # previous 0.1
-        quality = cms.vstring('any'),
-        src = cms.InputTag("hltPhase2PixelTracks"),
-        tip = cms.double(120),
-        usePV = cms.bool(False),
-        vertexTag = cms.InputTag("")#hltPhase2PixelVertices") #("hltPhase2OfflinePrimaryVertices")
-    )
+    
 
     process.hltPhase2PixelTracksMerger = cms.EDProducer("TrackListMerger",
         Epsilon = cms.double(-0.001),

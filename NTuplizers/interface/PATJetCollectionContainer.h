@@ -16,7 +16,8 @@ public:
   void clear() override;
   void reserve(const size_t) override;
   void emplace_back(const pat::Jet&) override;
-
+  
+  std::vector<float>& vec_energy() { return energy_; }
   std::vector<float>& vec_pt() { return pt_; }
   std::vector<float>& vec_eta() { return eta_; }
   std::vector<float>& vec_phi() { return phi_; }
@@ -38,7 +39,26 @@ public:
   std::vector<int>& vec_photonMultiplicity() { return photonMultiplicity_; }
   std::vector<int>& vec_muonMultiplicity() { return muonMultiplicity_; }
 
+  std::vector<float>& vec_CandidateEnergy() { return CandidateEnergy_; }
+  std::vector<float>& vec_CandidatePt() { return CandidatePt_; }
+  std::vector<float>& vec_CandidateEta() { return CandidateEta_; }
+  std::vector<float>& vec_CandidatePhi() { return CandidatePhi_; }
+  std::vector<int>& vec_CandidateCharge() { return CandidateCharge_; }
+  std::vector<float>& vec_CandidateTime() { return CandidateTime_; }
+  std::vector<float>& vec_CandidateTimeError() { return CandidateTimeError_; }
+  std::vector<float>& vec_CandidateDtime() { return CandidateDtime_; }
+  std::vector<float>& vec_CandidateDz() { return CandidateDz_; }
+  std::vector<float>& vec_CandidateVx() { return CandidateVx_; }
+  std::vector<float>& vec_CandidateVy() { return CandidateVy_; }
+  std::vector<float>& vec_CandidateVz() { return CandidateVz_; }
+  std::vector<float>& vec_CandidatePuppiWeight() {return CandidatePuppiWeight_; } // full puppi weight
+  std::vector<float>& vec_CandidatePuppiWeightNoLep() {return CandidatePuppiWeightNoLep_; } // puppi weight without leptons
+  
+  std::vector<int>& vec_CandidateBelongsToJet() { return CandidateBelongsToJet_; }
+
+
 protected:
+  std::vector<float> energy_;
   std::vector<float> pt_;
   std::vector<float> eta_;
   std::vector<float> phi_;
@@ -59,6 +79,25 @@ protected:
   std::vector<int> electronMultiplicity_;
   std::vector<int> photonMultiplicity_;
   std::vector<int> muonMultiplicity_;
+
+  std::vector<float> CandidateEnergy_;
+  std::vector<float> CandidatePt_;
+  std::vector<float> CandidateEta_;
+  std::vector<float> CandidatePhi_;
+  std::vector<int> CandidateCharge_;
+  std::vector<float> CandidateTime_;
+  std::vector<float> CandidateTimeError_;
+  std::vector<float> CandidateDtime_;
+  std::vector<float> CandidateDz_;
+  std::vector<float> CandidateVx_;
+  std::vector<float> CandidateVy_;
+  std::vector<float> CandidateVz_;
+  std::vector<float> CandidatePuppiWeight_;
+  std::vector<float> CandidatePuppiWeightNoLep_;
+
+  std::vector<int> CandidateBelongsToJet_;
+
+  int JetIndex_;
 };
 
 #endif
