@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import argparse
 import os
 import fnmatch
@@ -55,7 +55,7 @@ def updateDictionary(dictionary, TDirectory, prefix='', matches=[], skip=[], ver
               dictionary[out_key].SetDirectory(0)
 
            if verbose:
-              print colored_text('[input]', ['1','92']), out_key
+              print(colored_text('[input]', ['1','92']), out_key)
 
     return dictionary
 
@@ -366,7 +366,7 @@ def plot(histograms, outputs, title, labels, legXY=[], ratio=False, ratioPadFrac
         canvas.SetName(os.path.splitext(output_file)[0])
         canvas.SaveAs(output_file)
 
-        print colored_text('[output]', ['1', '92']), os.path.relpath(output_file)
+        print(colored_text('[output]', ['1', '92']), os.path.relpath(output_file))
 
     canvas.Close()
 
@@ -1722,7 +1722,7 @@ if __name__ == '__main__':
    for _input in opts.inputs:
        _input_pieces = _input.split(':')
        if len(_input_pieces) >= 3:
-          print 'reading..', os.path.relpath(_input_pieces[0])
+          print('reading..', os.path.relpath(_input_pieces[0]))
           _tmp = {}
           _tmp['TH1s'] = getTH1sFromTFile(_input_pieces[0], matches=MATCHES, skip=SKIP, verbose=(opts.verbosity > 20))
           th1Keys += _tmp['TH1s'].keys()

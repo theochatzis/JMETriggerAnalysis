@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
  driver to set up batch jobs
 """
@@ -279,7 +279,7 @@ if __name__ == '__main__':
 
                  o_file.close()
 
-              print '\033[1m'+'\033[94m'+'output:'+'\033[0m', os.path.relpath(OUTEXE_PATH)
+              print('\033[1m'+'\033[94m'+'output:'+'\033[0m', os.path.relpath(OUTEXE_PATH))
 
               EXE('chmod u+x '+OUTEXE_ABSPATH, verbose=opts.verbose, dry_run=opts.dry_run)
 
@@ -319,7 +319,7 @@ if __name__ == '__main__':
 
               EXE('chmod u+x '+OUTEXE_ABSPATH, verbose=opts.verbose, dry_run=opts.dry_run)
 
-              print '\033[1m'+'\033[94m'+'output:'+'\033[0m', os.path.relpath(OUTEXE_PATH)
+              print('\033[1m'+'\033[94m'+'output:'+'\033[0m', os.path.relpath(OUTEXE_PATH))
 
               if opts.submit:
                  EXE('qsub '+OUTEXE_ABSPATH, verbose=opts.verbose, dry_run=opts.dry_run)

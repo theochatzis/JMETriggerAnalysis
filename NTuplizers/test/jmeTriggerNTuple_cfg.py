@@ -29,6 +29,11 @@ opts.register('lumis', None,
               vpo.VarParsing.varType.string,
               'path to .json with list of luminosity sections')
 
+opts.register('rerunPUPPI', True,
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.bool,
+              'create offline puppi configurations with latest tune note: needs to be updated with developments in puppi')
+
 opts.register('logs', False,
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.bool,
@@ -288,113 +293,114 @@ ak8jets_stringCut = '' #'pt > 80'
 
 
 ## add offline puppi ------------------------------------------------------------
-#from CommonTools.PileupAlgos.Puppi_cff import puppi as _puppi, puppiNoLep as _puppiNoLep
-from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJetsPuppi as _ak4PFJetsPuppi
+if opts.rerunPUPPI:
+  #from CommonTools.PileupAlgos.Puppi_cff import puppi as _puppi, puppiNoLep as _puppiNoLep
+  from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJetsPuppi as _ak4PFJetsPuppi
 
-#process.offlinePFPuppi = _puppi.clone(
-#  candName = 'packedPFCandidates'
-#)
+  #process.offlinePFPuppi = _puppi.clone(
+  #  candName = 'packedPFCandidates'
+  #)
 
-process.offlinePFPuppi = cms.EDProducer("PuppiProducer",
-    DeltaZCut = cms.double(0.1),
-    DeltaZCutForChargedFromPUVtxs = cms.double(0.2),
-    EtaMaxCharged = cms.double(99999),
-    EtaMaxPhotons = cms.double(2.5),
-    EtaMinUseDeltaZ = cms.double(4.0),
-    MinPuppiWeight = cms.double(0.01),
-    NumOfPUVtxsForCharged = cms.uint32(2),
-    PUProxyValue = cms.InputTag(""),
-    PtMaxCharged = cms.double(20.0),
-    PtMaxNeutrals = cms.double(200),
-    PtMaxNeutralsStartSlope = cms.double(20.0),
-    PtMaxPhotons = cms.double(-1),
-    UseDeltaZCut = cms.bool(True),
-    UseDeltaZCutForPileup = cms.bool(False),
-    UseFromPVLooseTight = cms.bool(False),
-    algos = cms.VPSet(
-        cms.PSet(
-            etaMin = cms.vdouble(0.,  2.5),
-            etaMax = cms.vdouble(2.5, 3.5),
-            ptMin  = cms.vdouble(0.,  0.), #Normally 0
-            MinNeutralPt   = cms.vdouble(0.2, 0.2),
-            MinNeutralPtSlope   = cms.vdouble(0.015, 0.030),
-            RMSEtaSF = cms.vdouble(1.0, 1.0),
-            MedEtaSF = cms.vdouble(1.0, 1.0),
-            EtaMaxExtrap = cms.double(2.0),
-            puppiAlgos = cms.VPSet(cms.PSet(
-                algoId = cms.int32(5),
-                applyLowPUCorr = cms.bool(True),
-                combOpt = cms.int32(0),
-                cone = cms.double(0.4),
-                rmsPtMin = cms.double(0.1),
-                rmsScaleFactor = cms.double(1.0),
-                useCharged = cms.bool(True)
-            ))
-        ),
-        cms.PSet(
-            etaMin = cms.vdouble( 3.5),
-            etaMax = cms.vdouble(10.0),
-            ptMin = cms.vdouble( 0.), #Normally 0
-            MinNeutralPt = cms.vdouble( 2.0),
-            MinNeutralPtSlope = cms.vdouble(0.08),
-            RMSEtaSF = cms.vdouble(1.0 ),
-            MedEtaSF = cms.vdouble(0.75),
-            EtaMaxExtrap = cms.double( 2.0),
-            puppiAlgos = cms.VPSet(cms.PSet(
-                algoId = cms.int32(5),
-                applyLowPUCorr = cms.bool(True),
-                combOpt = cms.int32(0),
-                cone = cms.double(0.4),
-                rmsPtMin = cms.double(0.5),
-                rmsScaleFactor = cms.double(1.0),
-                useCharged = cms.bool(False)
-            ))
-        )
-    ),
-    applyCHS = cms.bool(True),
-    candName = cms.InputTag("packedPFCandidates"), # can use also "particleFlow" (see also the jet definition bellow)
-    clonePackedCands = cms.bool(False),
-    invertPuppi = cms.bool(False),
-    mightGet = cms.optional.untracked.vstring,
-    puppiDiagnostics = cms.bool(False),
-    puppiNoLep = cms.bool(False),
-    useExistingWeights = cms.bool(False),
-    useExp = cms.bool(False),
-    usePUProxyValue = cms.bool(False),
-    useVertexAssociation = cms.bool(False),
-    vertexAssociation = cms.InputTag(""),
-    vertexAssociationQuality = cms.int32(0),
-    #vertexName = cms.InputTag("offlinePrimaryVertices"),
-    vertexName = cms.InputTag("offlineSlimmedPrimaryVertices4D"),
-    vtxNdofCut = cms.int32(4),
-    vtxZCut = cms.double(24)
-)
-
-
-#process.offlineAK4PFPuppiJets  = _ak4PFJetsPuppi.clone( 
-#    src = "particleFlow", # if use the "particleFlow" (the default in the _ak4PFJetsPuppi) then error if the file doesnt have it
-#    applyWeight = True,
-#    srcWeights = cms.InputTag("offlinePFPuppi")
-#)
+  process.offlinePFPuppi = cms.EDProducer("PuppiProducer",
+      DeltaZCut = cms.double(0.1),
+      DeltaZCutForChargedFromPUVtxs = cms.double(0.2),
+      EtaMaxCharged = cms.double(99999),
+      EtaMaxPhotons = cms.double(2.5),
+      EtaMinUseDeltaZ = cms.double(4.0),
+      MinPuppiWeight = cms.double(0.01),
+      NumOfPUVtxsForCharged = cms.uint32(2),
+      PUProxyValue = cms.InputTag(""),
+      PtMaxCharged = cms.double(20.0),
+      PtMaxNeutrals = cms.double(200),
+      PtMaxNeutralsStartSlope = cms.double(20.0),
+      PtMaxPhotons = cms.double(-1),
+      UseDeltaZCut = cms.bool(True),
+      UseDeltaZCutForPileup = cms.bool(False),
+      UseFromPVLooseTight = cms.bool(False),
+      algos = cms.VPSet(
+          cms.PSet(
+              etaMin = cms.vdouble(0.,  2.5),
+              etaMax = cms.vdouble(2.5, 3.5),
+              ptMin  = cms.vdouble(0.,  0.), #Normally 0
+              MinNeutralPt   = cms.vdouble(0.2, 0.2),
+              MinNeutralPtSlope   = cms.vdouble(0.015, 0.030),
+              RMSEtaSF = cms.vdouble(1.0, 1.0),
+              MedEtaSF = cms.vdouble(1.0, 1.0),
+              EtaMaxExtrap = cms.double(2.0),
+              puppiAlgos = cms.VPSet(cms.PSet(
+                  algoId = cms.int32(5),
+                  applyLowPUCorr = cms.bool(True),
+                  combOpt = cms.int32(0),
+                  cone = cms.double(0.4),
+                  rmsPtMin = cms.double(0.1),
+                  rmsScaleFactor = cms.double(1.0),
+                  useCharged = cms.bool(True)
+              ))
+          ),
+          cms.PSet(
+              etaMin = cms.vdouble( 3.5),
+              etaMax = cms.vdouble(10.0),
+              ptMin = cms.vdouble( 0.), #Normally 0
+              MinNeutralPt = cms.vdouble( 2.0),
+              MinNeutralPtSlope = cms.vdouble(0.08),
+              RMSEtaSF = cms.vdouble(1.0 ),
+              MedEtaSF = cms.vdouble(0.75),
+              EtaMaxExtrap = cms.double( 2.0),
+              puppiAlgos = cms.VPSet(cms.PSet(
+                  algoId = cms.int32(5),
+                  applyLowPUCorr = cms.bool(True),
+                  combOpt = cms.int32(0),
+                  cone = cms.double(0.4),
+                  rmsPtMin = cms.double(0.5),
+                  rmsScaleFactor = cms.double(1.0),
+                  useCharged = cms.bool(False)
+              ))
+          )
+      ),
+      applyCHS = cms.bool(True),
+      candName = cms.InputTag("packedPFCandidates"), # can use also "particleFlow" (see also the jet definition bellow)
+      clonePackedCands = cms.bool(False),
+      invertPuppi = cms.bool(False),
+      mightGet = cms.optional.untracked.vstring,
+      puppiDiagnostics = cms.bool(False),
+      puppiNoLep = cms.bool(False),
+      useExistingWeights = cms.bool(False),
+      useExp = cms.bool(False),
+      usePUProxyValue = cms.bool(False),
+      useVertexAssociation = cms.bool(False),
+      vertexAssociation = cms.InputTag(""),
+      vertexAssociationQuality = cms.int32(0),
+      #vertexName = cms.InputTag("offlinePrimaryVertices"),
+      vertexName = cms.InputTag("offlineSlimmedPrimaryVertices4D"),
+      vtxNdofCut = cms.int32(4),
+      vtxZCut = cms.double(24)
+  )
 
 
-process.offlineAK4PFPuppiJets  = _ak4PFJetsPuppi.clone(
-    src = "offlinePFPuppi",
-    applyWeight = cms.bool(False) # don't apply weight, to avoid applying weight 2 times
-)
+  #process.offlineAK4PFPuppiJets  = _ak4PFJetsPuppi.clone( 
+  #    src = "particleFlow", # if use the "particleFlow" (the default in the _ak4PFJetsPuppi) then error if the file doesnt have it
+  #    applyWeight = True,
+  #    srcWeights = cms.InputTag("offlinePFPuppi")
+  #)
 
 
-process.offlinePFPuppiSequence = cms.Sequence(
-  process.offlinePFPuppi
-  + process.offlineAK4PFPuppiJets
-  # add corrections for the jets here #
-)
+  process.offlineAK4PFPuppiJets  = _ak4PFJetsPuppi.clone(
+      src = "offlinePFPuppi",
+      applyWeight = cms.bool(False) # don't apply weight, to avoid applying weight 2 times
+  )
 
-process.offlinePFPuppiPath = cms.Path(
-  process.offlinePFPuppiSequence
-)
 
-process.schedule_().append(process.offlinePFPuppiPath)
+  process.offlinePFPuppiSequence = cms.Sequence(
+    process.offlinePFPuppi
+    + process.offlineAK4PFPuppiJets
+    # add corrections for the jets here #
+  )
+
+  process.offlinePFPuppiPath = cms.Path(
+    process.offlinePFPuppiSequence
+  )
+
+  process.schedule_().append(process.offlinePFPuppiPath)
 ## ------------------------------------------------------------------------------
 
 
@@ -532,18 +538,17 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 #    l1tAK4PFPuppiJets = cms.InputTag('ak4PFL1Puppi'),
 
 #    hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
-    hltAK4PFJetsCorrected = cms.InputTag('hltAK4PFJetsCorrected'),
+##    hltAK4PFJetsCorrected = cms.InputTag('hltAK4PFJetsCorrected'),
 #    hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
 #    hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
 #    hltAK8PFJets = hltAK4PFCHSJets('hltAK4PFCHSJets'),
-    hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
+##    hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
 #    hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
     hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
-    hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
+##    hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
 #    hltAK8PFPuppiJets = cms.InputTag('hltAK8PFPuppiJets'),
 #    hltAK8PFPuppiJetsCorrected = cms.InputTag('hltAK8PFPuppiJetsCorrected'),
-     offlineAK4PFPuppiJets = cms.InputTag('offlineAK4PFPuppiJets')
-    
+     offlineAK4PFPuppiJets = cms.InputTag('offlineAK4PFPuppiJets') # with rerunPUPPI option
   ),
 
   patJetCollections = cms.PSet(

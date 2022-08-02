@@ -60,8 +60,8 @@ for sampleKey in ${!samplesMap[@]}; do
   fi 
 
   # Note: You can automatically run the jobs after creating them by using --submit option of bdriver
-  bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 100 --cpus 1 --memory 2G --time 00:45:00 ${opts} --batch-system htc \
-  -d ${sampleName} -p 1 -o ${ODIR}/${sampleKey} \
+  bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 200 --cpus 1 --memory 2G --time 00:20:00 ${opts} --batch-system htc \
+  -d ${sampleName} -p 0 -o ${ODIR}/${sampleKey} \
   --final-output ${FINAL_OUTPUT_DIR} \
   --customise-commands \
   '# output [TFileService]' \

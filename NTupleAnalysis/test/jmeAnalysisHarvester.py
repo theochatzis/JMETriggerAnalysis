@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """add harvesting products (e.g. profiles, efficiencies)"""
 import os
 import argparse
@@ -35,7 +35,7 @@ def updateDictionary(dictionary, TDirectory, prefix=''):
 #           dictionary[out_key].SetDirectory(0)
 
            if opts.verbose:
-              print colored_text('[input]', ['1', '92']), out_key
+              print(colored_text('[input]', ['1', '92']), out_key)
 
     return dictionary
 
@@ -422,5 +422,5 @@ if __name__ == '__main__':
       for _tmp in list(histograms):
          del histograms[_tmp]
 
-       print colored_text('[output]', ['1','92']), os.path.relpath(output_file)
+       print(colored_text('[output]', ['1','92']), os.path.relpath(output_file))
        ### -------------------
