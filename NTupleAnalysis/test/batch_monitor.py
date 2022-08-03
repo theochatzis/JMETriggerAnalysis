@@ -50,7 +50,7 @@ def monitor(options, log='', local=False):
        ADD_OPTIONS += ['-append \'+JobFlavour = "'+str(options.jobflavour)+'"\'']
 
     if len(ADD_OPTIONS) > 0:
-       print(' > additional options to "'+BATCH_RESUB_EXE+'":', str(ADD_OPTIONS))
+       print (' > additional options to "'+BATCH_RESUB_EXE+'":', str(ADD_OPTIONS))
 
     EXT_INP = 'htc' if BATCH_HTC else 'sh'
     EXT_OUT = 'completed'
@@ -128,7 +128,7 @@ def monitor(options, log='', local=False):
 
                 for i_runn_exepath in running_jobExes:
 
-                    i_runn_htcpath = os.path.splitext(i_runn_exepath)[0]+'.'+EXT_INP
+                    i_runn_htcpath = os.path.splitext(i_runn_exepath)[0]+bytes('.',encoding='utf8')+bytes(EXT_INP,encoding='utf8')
 
                     if i_runn_htcpath in FILES_INPUT:
                        RUNNG_FILES += [os.path.abspath(i_runn_htcpath)]
@@ -170,7 +170,7 @@ def monitor(options, log='', local=False):
 
            if os.path.exists(output_file):
 
-#              if options.verbose: print(output_file)
+#              if options.verbose: print output_file
 
               # check stderr stream (if non-empty, resubmit)
               if options.check_err:
@@ -232,7 +232,7 @@ def monitor(options, log='', local=False):
 
                        continue
 
-                    if options.verbose: print('output ROOT file is valid:', os.path.relpath(output_file_root))
+                    if options.verbose: print ('output ROOT file is valid:', os.path.relpath(output_file_root))
 
                     output_tfile_root.Close()
 
@@ -269,11 +269,11 @@ def monitor(options, log='', local=False):
                  if local:
                     resub_exe = os.path.splitext(resub_file_abspath)[0]+'.sh'
                     if os.path.isfile(resub_exe):
-                       print(colored_text('> executing', ['93']), colored_text(os.path.relpath(resub_exe), ['1', '93']))
+                       print (colored_text('> executing', ['93']), colored_text(os.path.relpath(resub_exe), ['1', '93']))
                        EXE(resub_exe, verbose=options.verbose, dry_run=options.dry_run)
                        counter_completed += 1
                  else:
-                    print(colored_text('> resubmitting', ['93']), colored_text(os.path.relpath(resub_file), ['1', '93']))
+                    print (colored_text('> resubmitting', ['93']), colored_text(os.path.relpath(resub_file), ['1', '93']))
 
                     resub_addopt = (' '+(' '.join(ADD_OPTIONS)) if (len(ADD_OPTIONS) > 0) else '')
                     EXE(BATCH_RESUB_EXE+' '+resub_file_abspath+resub_addopt, verbose=options.verbose, dry_run=options.dry_run)
@@ -285,23 +285,23 @@ def monitor(options, log='', local=False):
                  counter_toResubmit += 1
 
            else:
-              print(colored_text('> job to be resubmitted', ['93']), colored_text(os.path.relpath(resub_file), ['1', '93']))
+              print (colored_text('> job to be resubmitted', ['93']), colored_text(os.path.relpath(resub_file), ['1', '93']))
               counter_toResubmit += 1
 
     counter_format = '{:>'+str(1+int(math.log10(counter_input)))+'}' if counter_input > 0 else '{:>1}'
 
-    print('')
-    print('-'*51)
-    print('')
-    print(' Number of input  files found : '+colored_text(counter_format.format(counter_input), ['1']))
-    print(' Number of output files found : '+colored_text(counter_format.format(counter_completed), ['1', '92']))
-    print(' Number of resubmitted jobs   : '+colored_text(counter_format.format(counter_resubmitted), ['1', '93']))
-    print(' Number of jobs to resubmit   : '+colored_text(counter_format.format(counter_toResubmit), ['1', '93']))
-    print('')
-    print(' Number of jobs still running : '+counter_format.format(counter_running))
-    print('')
-    print('-'*51)
-    print('')
+    print ('')
+    print ('-'*51)
+    print ('')
+    print (' Number of input  files found : '+colored_text(counter_format.format(counter_input), ['1']))
+    print (' Number of output files found : '+colored_text(counter_format.format(counter_completed), ['1', '92']))
+    print (' Number of resubmitted jobs   : '+colored_text(counter_format.format(counter_resubmitted), ['1', '93']))
+    print (' Number of jobs to resubmit   : '+colored_text(counter_format.format(counter_toResubmit), ['1', '93']))
+    print ('')
+    print (' Number of jobs still running : '+counter_format.format(counter_running))
+    print ('')
+    print ('-'*51)
+    print ('')
 
     return bool(counter_input == counter_completed)
 

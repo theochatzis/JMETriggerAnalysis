@@ -29,7 +29,10 @@ if __name__ == '__main__':
    parser.add_argument('-o', '--output', dest='output', required=True, action='store', default=None,
                        help='path to output directory')
 
-   parser.add_argument('-n', '--nperjob', dest='nperjob', type=long, action='store', default=5000, #default=None, required=True,
+   parser.add_argument('-od', '--outputdir', dest='outputdir', required=True, action='store', default=None,
+                       help='path to output directory in eos')
+
+   parser.add_argument('-n', '--nperjob', dest='nperjob', type=int, action='store', default=5000, #default=None, required=True,
                        help='number of events per job')
 
    parser.add_argument('--time', '--RequestRuntime', dest='RequestRuntime', action='store', default='10800',
@@ -91,6 +94,7 @@ if __name__ == '__main__':
       KILL(log_prx+'target path to output directory already exists and it is not a directory [-o]: '+opts.output)
 
    OUT_DIR = os.path.abspath(opts.output)
+   OUTPUT_DIR = os.path.abspath(opts.outputdir)
 
    BATCH_HTC = bool(opts.batch == 'htc')
 
@@ -133,7 +137,7 @@ if __name__ == '__main__':
        if i_evtN == 0:
           minmax_evts = [ [0,0] ]
        else:
-          minmax_evts = [ [long(_tmp * opts.nperjob), min(long(i_evtN-1), long(((_tmp+1) * opts.nperjob)-1))] for _tmp in range(long(math.ceil(float(i_evtN)/opts.nperjob)))]
+          minmax_evts = [ [int(_tmp * opts.nperjob), min(int(i_evtN-1), int(((_tmp+1) * opts.nperjob)-1))] for _tmp in range(int(math.ceil(float(i_evtN)/opts.nperjob)))]
 
        input_subdirs = []
        input_dirname = os.path.dirname(i_inpf)
@@ -143,14 +147,15 @@ if __name__ == '__main__':
        del input_dirname
 
        OUTDIR_PATH = OUT_DIR+'/'+('/'.join(input_subdirs)) if len(input_subdirs) else OUT_DIR
+       OUTPUTDIR_PATH = OUTPUT_DIR
 
        for j_minmax_evt in range(len(minmax_evts)):
 
            OUTEXE_NAME = os.path.splitext(os.path.basename(i_inpf))[0]+'__'+str(j_minmax_evt)
 
            OUTEXE_PATH     = OUTDIR_PATH+'/'+OUTEXE_NAME+'.sh'
-           OUTPUT_PATH_TMP = OUTDIR_PATH+'/'+OUTEXE_NAME+'.root.tmp'
-           OUTPUT_PATH     = OUTDIR_PATH+'/'+OUTEXE_NAME+'.root'
+           OUTPUT_PATH_TMP = OUTPUTDIR_PATH+'/'+OUTEXE_NAME+'.root.tmp'
+           OUTPUT_PATH     = OUTPUTDIR_PATH+'/'+OUTEXE_NAME+'.root'
 
            OUTEXE_ABSPATH     = os.path.abspath(os.path.realpath(OUTEXE_PATH))
            OUTPUT_ABSPATH_TMP = os.path.abspath(os.path.realpath(OUTPUT_PATH_TMP))
@@ -279,7 +284,7 @@ if __name__ == '__main__':
 
                  o_file.close()
 
-              print('\033[1m'+'\033[94m'+'output:'+'\033[0m', os.path.relpath(OUTEXE_PATH))
+              print ('\033[1m'+'\033[94m'+'output:'+'\033[0m', OUTEXE_PATH if OUTEXE_PATH.startswith('/') else os.path.relpath(OUTEXE_PATH))
 
               EXE('chmod u+x '+OUTEXE_ABSPATH, verbose=opts.verbose, dry_run=opts.dry_run)
 
@@ -319,7 +324,7 @@ if __name__ == '__main__':
 
               EXE('chmod u+x '+OUTEXE_ABSPATH, verbose=opts.verbose, dry_run=opts.dry_run)
 
-              print('\033[1m'+'\033[94m'+'output:'+'\033[0m', os.path.relpath(OUTEXE_PATH))
+              print ('\033[1m'+'\033[94m'+'output:'+'\033[0m', OUTEXE_PATH if OUTEXE_PATH.startswith('/') else os.path.relpath(OUTEXE_PATH))
 
               if opts.submit:
                  EXE('qsub '+OUTEXE_ABSPATH, verbose=opts.verbose, dry_run=opts.dry_run)

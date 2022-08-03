@@ -35,7 +35,7 @@ def updateDictionary(dictionary, TDirectory, prefix=''):
 #           dictionary[out_key].SetDirectory(0)
 
            if opts.verbose:
-              print(colored_text('[input]', ['1', '92']), out_key)
+              print (colored_text('[input]', ['1', '92']), out_key)
 
     return dictionary
 
@@ -132,9 +132,13 @@ if __name__ == '__main__':
    
               key_varX = key_vars_split[0]
               key_varY = key_vars_split[1]
-   
-              if not (key_varX.endswith('GEN') or key_varX.endswith('Offline')):
+              
+              # modification start
+              #if not (key_varX.endswith('GEN') or key_varX.endswith('Offline')):
+              #   continue
+              if not (key_varX.endswith('GEN') or key_varX.endswith('Offline') or ('njets' in key_varX)):
                  continue
+              # modification end
 
               tmp_h2 = histograms[i_h2_key]
 
@@ -254,8 +258,12 @@ if __name__ == '__main__':
    
               if (opts.separator_2d in hkey_i_basename) and (not hkey_i_basename.endswith('_eta__vs__pt')):
                  continue
-              elif not (hkey_i_basename.endswith('_pt') or hkey_i_basename.endswith('_eta') or hkey_i_basename.endswith('_phi')):
+              # modification start
+              #elif not (hkey_i_basename.endswith('_pt') or hkey_i_basename.endswith('_eta') or hkey_i_basename.endswith('_phi')):
+              #   continue
+              elif not (hkey_i_basename.endswith('_pt') or hkey_i_basename.endswith('_eta') or hkey_i_basename.endswith('_phi') or hkey_i_basename.endswith('_simNPU')):
                  continue
+              # modification end
    
               hkey_i_num, hkey_i_den = hkey_i_dirname+hkey_i_basename, None
               if '_MatchedTo' in hkey_i_basename:
@@ -362,7 +370,8 @@ if __name__ == '__main__':
               tmp_effname = hkey_i_num.replace(opts.separator_2d, '_')+'_eff'
    
               if tmp_effname in histograms: KILL(log_prx+'CCC2 '+tmp_effname)
-   
+  
+              print (tmp_effname)
               histograms[tmp_effname] = get_efficiency_graph(tmp_hnum0, tmp_hden0)
 
               del tmp_hnum0
@@ -419,8 +428,8 @@ if __name__ == '__main__':
 
        #for _tmp in histograms.keys():
        #  del histograms[_tmp]
-      for _tmp in list(histograms):
+       for _tmp in list(histograms):
          del histograms[_tmp]
 
-       print(colored_text('[output]', ['1','92']), os.path.relpath(output_file))
+       print (colored_text('[output]', ['1','92']), os.path.relpath(output_file))
        ### -------------------

@@ -12,12 +12,12 @@
 
 ```shell
 cmsrel CMSSW_12_4_0_pre3
-cd CMSSW_12_4_0/src
+cd CMSSW_12_4_0_pre3/src
 
 # latest update for HLT
 git cms-merge-topic cms-sw:37162
 
-git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b phase2_12_4_test
+git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b phase2_12_4_test_new
 scram b -j 12
 ```
 ### Previous setup
