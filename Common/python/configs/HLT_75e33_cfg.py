@@ -22296,20 +22296,20 @@ process.hltAK4PFPuppiJetCorrector = cms.EDProducer("ChainedJetCorrectorProducer"
 
 
 process.hltAK4PFPuppiJetCorrectorL1 = cms.EDProducer("L1FastjetCorrectorProducer",
-    algorithm = cms.string('AK4PFPuppi'),
+    algorithm = cms.string('AK4PFPuppiHLT'),
     level = cms.string('L1FastJet'),
     srcRho = cms.InputTag("fixedGridRhoFastjetAllTmp")
 )
 
 
 process.hltAK4PFPuppiJetCorrectorL2 = cms.EDProducer("LXXXCorrectorProducer",
-    algorithm = cms.string('AK4PFPuppi'),
+    algorithm = cms.string('AK4PFPuppiHLT'),
     level = cms.string('L2Relative')
 )
 
 
 process.hltAK4PFPuppiJetCorrectorL3 = cms.EDProducer("LXXXCorrectorProducer",
-    algorithm = cms.string('AK4PFPuppi'),
+    algorithm = cms.string('AK4PFPuppiHLT'),
     level = cms.string('L3Absolute')
 )
 
@@ -22513,20 +22513,20 @@ process.hltAK8PFPuppiJetCorrector = cms.EDProducer("ChainedJetCorrectorProducer"
 
 
 process.hltAK8PFPuppiJetCorrectorL1 = cms.EDProducer("L1FastjetCorrectorProducer",
-    algorithm = cms.string('AK8PFPuppi'),
+    algorithm = cms.string('AK8PFPuppiHLT'),
     level = cms.string('L1FastJet'),
     srcRho = cms.InputTag("fixedGridRhoFastjetAllTmp")
 )
 
 
 process.hltAK8PFPuppiJetCorrectorL2 = cms.EDProducer("LXXXCorrectorProducer",
-    algorithm = cms.string('AK8PFPuppi'),
+    algorithm = cms.string('AK8PFPuppiHLT'),
     level = cms.string('L2Relative')
 )
 
 
 process.hltAK8PFPuppiJetCorrectorL3 = cms.EDProducer("LXXXCorrectorProducer",
-    algorithm = cms.string('AK8PFPuppi'),
+    algorithm = cms.string('AK8PFPuppiHLT'),
     level = cms.string('L3Absolute')
 )
 
@@ -26665,6 +26665,12 @@ process.hltPFPuppi = cms.EDProducer("PuppiProducer",
     useExistingWeights = cms.bool(False),
     useExp = cms.bool(False),
     usePUProxyValue = cms.bool(True),
+    # vertexName = cms.InputTag("goodOfflinePrimaryVertices"),
+    # vtxNdofCut = cms.int32(4),
+    # vtxZCut = cms.double(24)
+    useVertexAssociation = cms.bool(False),
+    vertexAssociation = cms.InputTag(""),
+    vertexAssociationQuality = cms.int32(0),
     vertexName = cms.InputTag("goodOfflinePrimaryVertices"),
     vtxNdofCut = cms.int32(4),
     vtxZCut = cms.double(24)
@@ -26698,6 +26704,19 @@ process.hltPFPuppiMET = cms.EDProducer("PFMETProducer",
     src = cms.InputTag("particleFlowTmp"),
     srcWeights = cms.InputTag("hltPFPuppiNoLep")
 )
+
+##--- adding the CHS MET for test
+
+process.hltParticleFlowCHS = cms.EDProducer('FwdPtrRecoPFCandidateConverter',
+  src = process.hltAK4PFCHSJets.src,
+)
+process.hltPFCHSMET = cms.EDProducer( 'PFMETProducer',
+  src = cms.InputTag( 'hltParticleFlowCHS' ),
+  globalThreshold = cms.double( 0.0 ),
+  calculateSignificance = cms.bool( False ),
+)
+
+# ----------------------------------
 
 
 process.hltPFPuppiMETTypeOne = cms.EDProducer("CorrectedPFMETProducer",
@@ -26755,7 +26774,7 @@ process.hltPFPuppiNoLep = cms.EDProducer("PuppiProducer",
     PtMaxCharged = cms.double(-1.0),
     PtMaxNeutrals = cms.double(200.0),
     PtMaxNeutralsStartSlope = cms.double(0.0),
-    PtMaxPhotons = cms.double(20.0),
+    PtMaxPhotons = cms.double(-1.0),
     UseDeltaZCut = cms.bool(True),
     UseFromPVLooseTight = cms.bool(False),
     algos = cms.VPSet(
@@ -26807,7 +26826,7 @@ process.hltPFPuppiNoLep = cms.EDProducer("PuppiProducer",
     useExistingWeights = cms.bool(False),
     useExp = cms.bool(False),
     usePUProxyValue = cms.bool(True),
-    vertexName = cms.InputTag("goodOfflinePrimaryVertices"),
+    vertexName = cms.InputTag("pixelVertices"),
     vtxNdofCut = cms.int32(4),
     vtxZCut = cms.double(24)
 )
@@ -32713,7 +32732,7 @@ process.particleFlowClusterHBHE = cms.EDProducer("PFClusterProducer",
 process.particleFlowClusterHCAL = cms.EDProducer("PFMultiDepthClusterProducer",
     clustersSource = cms.InputTag("particleFlowClusterHBHE"),
     energyCorrector = cms.PSet(
-
+    
     ),
     pfClusterBuilder = cms.PSet(
         algoName = cms.string('PFMultiDepthClusterizer'),
@@ -33406,10 +33425,12 @@ process.particleFlowSuperClusterECAL = cms.EDProducer("PFECALSuperClusterProduce
     PFSuperClusterCollectionEndcap = cms.string('particleFlowSuperClusterECALEndcap'),
     PFSuperClusterCollectionEndcapWithPreshower = cms.string('particleFlowSuperClusterECALEndcapWithPreshower'),
     applyCrackCorrections = cms.bool(False),
-    barrelRecHits = cms.InputTag("ecalRecHit","EcalRecHitsEE"),
+    #barrelRecHits = cms.InputTag("ecalRecHit","EcalRecHitsEE"), # probbaly error should be the opposite? (see also bellow)
+    barrelRecHits = cms.InputTag("ecalRecHit","EcalRecHitsEB"), 
     doSatelliteClusterMerge = cms.bool(False),
     dropUnseedable = cms.bool(False),
-    endcapRecHits = cms.InputTag("ecalRecHit","EcalRecHitsEB"),
+    #endcapRecHits = cms.InputTag("ecalRecHit","EcalRecHitsEB"),  # probbaly error should be the opposite?
+    endcapRecHits = cms.InputTag("ecalRecHit","EcalRecHitsEE"),  
     etawidth_SuperClusterBarrel = cms.double(0.04),
     etawidth_SuperClusterEndcap = cms.double(0.04),
     isOOTCollection = cms.bool(False),
@@ -34115,6 +34136,10 @@ process.siPixelClusters = cms.EDProducer("SiPixelClusterProducer",
     src = cms.InputTag("simSiPixelDigis","Pixel")
 )
 
+# changed values 
+process.siPixelClusters.ElectronPerADCGain = cms.double(1500.0)
+process.siPixelClusters.Phase2DigiBaseline = cms.double(1000.0)
+process.siPixelClusters.Phase2ReadoutMode = cms.int32(3)
 
 process.siPixelRecHits = cms.EDProducer("SiPixelRecHitConverter",
     CPE = cms.string('PixelCPEGeneric'),
@@ -46606,14 +46631,18 @@ process.HLTPFClusteringForEgammaUnseeded = cms.Sequence(process.HLTPFClusteringF
 
 process.HLTPFHcalClusteringForEgamma = cms.Sequence(process.HLTPFHcalClusteringForEgammaTask)
 
+## --- for CHS MET
+process.HLTPFCHSMETReconstruction = cms.Sequence( process.hltParticleFlowCHS + process.hltPFCHSMET)
+## ----
 
-process.HLTPFJetsCHSReconstruction = cms.Sequence(process.particleFlowPtrs+process.goodOfflinePrimaryVertices+process.pfPileUpJME+process.pfNoPileUpJME+process.hltAK4PFCHSJets+process.hltAK4PFCHSJetCorrectorL1+process.hltAK4PFCHSJetCorrectorL2+process.hltAK4PFCHSJetCorrectorL3+process.hltAK4PFCHSJetCorrector+process.hltAK4PFCHSJetsCorrected+process.hltAK8PFCHSJets+process.hltAK8PFCHSJetCorrectorL1+process.hltAK8PFCHSJetCorrectorL2+process.hltAK8PFCHSJetCorrectorL3+process.hltAK8PFCHSJetCorrector+process.hltAK8PFCHSJetsCorrected)
+process.HLTPFJetsCHSReconstruction = cms.Sequence(process.particleFlowPtrs+process.goodOfflinePrimaryVertices+process.pfPileUpJME+process.pfNoPileUpJME+process.hltAK4PFCHSJets+process.hltAK4PFCHSJetCorrectorL1+process.hltAK4PFCHSJetCorrectorL2+process.hltAK4PFCHSJetCorrectorL3+process.hltAK4PFCHSJetCorrector+process.hltAK4PFCHSJetsCorrected+process.hltAK8PFCHSJets+process.hltAK8PFCHSJetCorrectorL1+process.hltAK8PFCHSJetCorrectorL2+process.hltAK8PFCHSJetCorrectorL3+process.hltAK8PFCHSJetCorrector+process.hltAK8PFCHSJetsCorrected+process.HLTPFCHSMETReconstruction)
 
 
 process.HLTPFMETsReconstruction = cms.Sequence(process.hltPFMET+process.hltPFMETJetCorrectorL1+process.hltPFMETJetCorrectorL2+process.hltPFMETJetCorrectorL3+process.hltPFMETJetCorrector+process.hltPFMETTypeOneCorrector+process.hltPFMETTypeOne)
 
 
 process.HLTPFPuppiJMEReconstruction = cms.Sequence(process.hltPixelClustersMultiplicity+process.hltPFPuppiNoLep+process.hltPFPuppiMET+process.hltPixelClustersMultiplicity+process.hltPFPuppi+process.hltPFPuppiMETv0+process.hltAK4PFPuppiJets+process.hltAK4PFPuppiJetCorrectorL1+process.hltAK4PFPuppiJetCorrectorL2+process.hltAK4PFPuppiJetCorrectorL3+process.hltAK4PFPuppiJetCorrector+process.hltAK4PFPuppiJetsCorrected+process.hltPFPuppiMETTypeOneCorrector+process.hltPFPuppiMETTypeOne+process.hltAK8PFPuppiJets+process.hltAK8PFPuppiJetCorrectorL1+process.hltAK8PFPuppiJetCorrectorL2+process.hltAK8PFPuppiJetCorrectorL3+process.hltAK8PFPuppiJetCorrector+process.hltAK8PFPuppiJetsCorrected)
+
 
 
 process.HLTPFPuppiMETReconstruction = cms.Sequence(process.goodOfflinePrimaryVertices+process.hltPixelClustersMultiplicity+process.hltPFPuppiNoLep+process.hltPFPuppiMET)
@@ -46990,7 +47019,6 @@ process.simSiStripDigis = cms.EDAlias(
 )
 
 
-
 process.schedule = cms.Schedule(*[
   process.l1tReconstructionPath,
   process.L1T_SinglePFPuppiJet230off,
@@ -47001,40 +47029,40 @@ process.schedule = cms.Schedule(*[
   process.HLT_PFPuppiMETTypeOne140_PFPuppiMHT140,
   process.L1T_PFHT400PT30_QuadPFPuppiJet_70_55_40_40_2p4,
   process.L1T_DoublePFPuppiJets112_2p4_DEta1p6,
-  #process.HLT_PFHT330PT30_QuadPFPuppiJet_75_60_45_40_TriplePFPuppiBTagDeepCSV_2p4,
+  process.HLT_PFHT330PT30_QuadPFPuppiJet_75_60_45_40_TriplePFPuppiBTagDeepCSV_2p4,
   #process.HLT_PFHT200PT30_QuadPFPuppiJet_70_40_30_30_TriplePFPuppiBTagDeepCSV_2p4,
   #process.HLT_DoublePFPuppiJets128_DoublePFPuppiBTagDeepCSV_2p4,
   #process.HLT_PFHT330PT30_QuadPFPuppiJet_75_60_45_40_TriplePFPuppiBTagDeepFlavour_2p4,
   #process.HLT_PFHT200PT30_QuadPFPuppiJet_70_40_30_30_TriplePFPuppiBTagDeepFlavour_2p4,
   #process.HLT_DoublePFPuppiJets128_DoublePFPuppiBTagDeepFlavour_2p4,
-#   process.L1T_SingleTkMuon_22, process.L1T_DoubleTkMuon_15_7,
-#   process.L1T_TripleTkMuon_5_3_3,
-#   process.HLT_Mu50_FromL1TkMuon,
-#   process.HLT_IsoMu24_FromL1TkMuon,
-#   process.HLT_Mu37_Mu27_FromL1TkMuon,
-#   process.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_FromL1TkMuon,
-   process.HLT_TriMu_10_5_5_DZ_FromL1TkMuon,
-#   process.L1T_TkEm51,
-#   process.L1T_TkEle36,
-#   process.L1T_TkIsoEm36,
-#   process.L1T_TkIsoEle28,
-#   process.L1T_TkEm37TkEm24,
-#   process.L1T_TkEle25TkEle12,
-#   process.L1T_TkIsoEm22TkIsoEm12,
-#   process.L1T_TkIsoEle22TkEm12,
+  process.L1T_SingleTkMuon_22, process.L1T_DoubleTkMuon_15_7,
+  process.L1T_TripleTkMuon_5_3_3,
+  process.HLT_Mu50_FromL1TkMuon,
+  process.HLT_IsoMu24_FromL1TkMuon,
+  process.HLT_Mu37_Mu27_FromL1TkMuon,
+  process.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_FromL1TkMuon,
+  process.HLT_TriMu_10_5_5_DZ_FromL1TkMuon,
+  process.L1T_TkEm51,
+  process.L1T_TkEle36,
+  process.L1T_TkIsoEm36,
+  process.L1T_TkIsoEle28,
+  process.L1T_TkEm37TkEm24,
+  process.L1T_TkEle25TkEle12,
+  process.L1T_TkIsoEm22TkIsoEm12,
+  process.L1T_TkIsoEle22TkEm12,
   #process.HLT_Ele32_WPTight_Unseeded,
   #process.HLT_Ele26_WP70_Unseeded,
   #process.HLT_Photon108EB_TightID_TightIso_Unseeded,
   #process.HLT_Photon187_Unseeded,
   #process.HLT_DoubleEle25_CaloIdL_PMS2_Unseeded,
   #process.HLT_Diphoton30_23_IsoCaloId_Unseeded,
-#   process.HLT_Ele32_WPTight_L1Seeded,
-#   process.HLT_Ele26_WP70_L1Seeded,
-#   process.HLT_Photon108EB_TightID_TightIso_L1Seeded,
-#   process.HLT_Photon187_L1Seeded,
-#   process.HLT_DoubleEle25_CaloIdL_PMS2_L1Seeded,
-#   process.HLT_DoubleEle23_12_Iso_L1Seeded,
-#   process.HLT_Diphoton30_23_IsoCaloId_L1Seeded,
+  process.HLT_Ele32_WPTight_L1Seeded,
+  process.HLT_Ele26_WP70_L1Seeded,
+  process.HLT_Photon108EB_TightID_TightIso_L1Seeded,
+  process.HLT_Photon187_L1Seeded,
+  process.HLT_DoubleEle25_CaloIdL_PMS2_L1Seeded,
+  process.HLT_DoubleEle23_12_Iso_L1Seeded,
+  process.HLT_Diphoton30_23_IsoCaloId_L1Seeded,
   process.MC_JME,
   #process.MC_BTV,
   #process.MC_Ele5_Open_Unseeded,
@@ -47050,4 +47078,7 @@ process.schedule = cms.Schedule(*[
   #process.endjob_step,
   #process.FEVTDEBUGHLToutput_step #drop this so it does not save the Phase2_HLT.root
   ],tasks=[process.patAlgosToolsTask])
+
+
+
 
