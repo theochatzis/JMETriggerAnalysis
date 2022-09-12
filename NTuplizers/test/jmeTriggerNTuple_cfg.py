@@ -1,6 +1,11 @@
+import os
+from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
+
+
 ###
 ### command-line arguments
 ###
+
 import FWCore.ParameterSet.VarParsing as vpo
 opts = vpo.VarParsing('analysis')
 
@@ -49,10 +54,10 @@ opts.register('addTimingDQM', False,
               vpo.VarParsing.varType.bool,
               'print results of FastTimerService, and produce corresponding DQM output file')
 
-#opts.register('globalTag', None,
-#              vpo.VarParsing.multiplicity.singleton,
-#              vpo.VarParsing.varType.string,
-#              'argument of process.GlobalTag.globaltag')
+opts.register('globalTag', None,
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.string,
+              'argument of process.GlobalTag.globaltag')
 
 opts.register('reco', 'HLT_75e33',
               vpo.VarParsing.multiplicity.singleton,
@@ -208,9 +213,11 @@ elif opt_reco == 'HLT_TRKv07p2_TICL':
   process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_75e33':
-  #from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg_test import cms, process
   from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg import cms, process
   #process.schedule_().append(process.MC_JME)
+
+elif opt_reco == 'HLT_75e33_time':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg_time import cms, process
 
 elif opt_reco == 'HLT_75e33_TrkPtX1p00_HGCEnX1p00': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.00, 1.00)
 elif opt_reco == 'HLT_75e33_TrkPtX1p25_HGCEnX1p25': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.25, 1.25)
@@ -258,7 +265,7 @@ process.hltPixelTracksMergerMultiplicity = _hltTrackMultiplicityValueProducer.cl
 process.hltTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'generalTracks', defaultValue = -1.)
 
 process.hltPixelVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'pixelVertices', defaultValue = -1.)
-process.hltPrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlinePrimaryVertices', defaultValue = -1.)
+process.hltPrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'goodOfflinePrimaryVertices', defaultValue = -1.)
 process.offlinePrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlineSlimmedPrimaryVertices', defaultValue = -1.)
 
 # removed because of non existing HLTrigger.mcStitching anymore which contained a stitchingWeight_cfi
@@ -293,14 +300,18 @@ ak8jets_stringCut = '' #'pt > 80'
 
 
 ## add offline puppi ------------------------------------------------------------
+
 if opts.rerunPUPPI:
   #from CommonTools.PileupAlgos.Puppi_cff import puppi as _puppi, puppiNoLep as _puppiNoLep
   from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJetsPuppi as _ak4PFJetsPuppi
-
+  
+  
   #process.offlinePFPuppi = _puppi.clone(
-  #  candName = 'packedPFCandidates'
+  #  candName = 'packedPFCandidates',
+  #  vertexName = cms.InputTag("offlineSlimmedPrimaryVertices4D")
   #)
-
+  
+  
   process.offlinePFPuppi = cms.EDProducer("PuppiProducer",
       DeltaZCut = cms.double(0.1),
       DeltaZCutForChargedFromPUVtxs = cms.double(0.2),
@@ -370,11 +381,12 @@ if opts.rerunPUPPI:
       useVertexAssociation = cms.bool(False),
       vertexAssociation = cms.InputTag(""),
       vertexAssociationQuality = cms.int32(0),
-      #vertexName = cms.InputTag("offlinePrimaryVertices"),
-      vertexName = cms.InputTag("offlineSlimmedPrimaryVertices4D"),
+      vertexName = cms.InputTag("offlineSlimmedPrimaryVertices"),
+      #vertexName = cms.InputTag("offlineSlimmedPrimaryVertices4D"),
       vtxNdofCut = cms.int32(4),
       vtxZCut = cms.double(24)
   )
+  
 
 
   #process.offlineAK4PFPuppiJets  = _ak4PFJetsPuppi.clone( 
@@ -389,11 +401,45 @@ if opts.rerunPUPPI:
       applyWeight = cms.bool(False) # don't apply weight, to avoid applying weight 2 times
   )
 
+  
+  ## JECs
+  # -- L1 -- 
+  process.offlineAK4PFPuppiJetCorrectorL1 = cms.EDProducer("L1FastjetCorrectorProducer",
+    algorithm = cms.string('AK4PFPuppi'),
+    level = cms.string('L1FastJet'),
+    srcRho = cms.InputTag("fixedGridRhoFastjetAllTmp")
+  )
+
+  # -- L2L3 -- 
+  process.offlineAK4PFPuppiJetCorrectorL2 = cms.EDProducer("LXXXCorrectorProducer",
+    algorithm = cms.string('AK4PFPuppi'),
+    level = cms.string('L2Relative')
+  )
+  process.offlineAK4PFPuppiJetCorrectorL3 = cms.EDProducer("LXXXCorrectorProducer",
+    algorithm = cms.string('AK4PFPuppi'),
+    level = cms.string('L3Absolute')
+  )
+
+  process.offlineAK4PFPuppiJetCorrector = cms.EDProducer("ChainedJetCorrectorProducer",
+    correctors = cms.VInputTag("offlineAK4PFPuppiJetCorrectorL1", "offlineAK4PFPuppiJetCorrectorL2", "offlineAK4PFPuppiJetCorrectorL3")
+  )
+
+  process.offlineAK4PFPuppiJetsCorrected = cms.EDProducer("CorrectedPFJetProducer",
+    correctors = cms.VInputTag("offlineAK4PFPuppiJetCorrector"),
+    src = cms.InputTag("offlineAK4PFPuppiJets")
+  )
 
   process.offlinePFPuppiSequence = cms.Sequence(
+    # calculate particles weights with puppi
     process.offlinePFPuppi
+    # make jets with puppi particles
     + process.offlineAK4PFPuppiJets
-    # add corrections for the jets here #
+    # add corrections for the jets
+    + process.offlineAK4PFPuppiJetCorrectorL1
+    + process.offlineAK4PFPuppiJetCorrectorL2
+    + process.offlineAK4PFPuppiJetCorrectorL3
+    + process.offlineAK4PFPuppiJetCorrector
+    + process.offlineAK4PFPuppiJetsCorrected
   )
 
   process.offlinePFPuppiPath = cms.Path(
@@ -406,6 +452,24 @@ if opts.rerunPUPPI:
 
 
 
+## ---- updated JECs from local db file ------------------------------------------
+process.jescESSource = cms.ESSource('PoolDBESSource',
+  _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/JESC_Phase2Spring22_MC.db'),
+  toGet = cms.VPSet(
+    cms.PSet(
+      record = cms.string('JetCorrectionsRecord'),
+      tag = cms.string('JetCorrectorParametersCollection_Phase2Spring22_MC_AK4PFPuppiHLT'),
+      label = cms.untracked.string('AK4PFPuppiHLT'),
+    ),
+    #cms.PSet(
+    #  record = cms.string('JetCorrectionsRecord'),
+    #  tag = cms.string('JetCorrectorParametersCollection_Phase2HLTTDR_V5_MC_AK8PFPuppiHLT'),
+    #  label = cms.untracked.string('AK8PFPuppiHLT'),
+    #),
+  ),
+)
+process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
+# ---------------------------------------------------------------------------------
 
 
 process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
@@ -421,9 +485,9 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   TriggerResultsCollections = cms.vstring(
     'MC_JME',
-    'process.HLT_AK4PFPuppiJet520',
-    'process.HLT_PFPuppiHT1070',
-    'process.HLT_PFPuppiMETTypeOne140_PFPuppiMHT140',
+    'HLT_AK4PFPuppiJet520',
+    'HLT_PFPuppiHT1070',
+    'HLT_PFPuppiMETTypeOne140_PFPuppiMHT140',
     #'L1T_SinglePFPuppiJet200off',
     #'HLT_AK4PFJet520',
     #'HLT_AK4PFCHSJet520',
@@ -446,7 +510,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   HepMCProduct = cms.InputTag('generatorSmeared'),
   GenEventInfoProduct = cms.InputTag('generator'),
   PileupSummaryInfo = cms.InputTag('addPileupInfo'),
-
+  
   doubles = cms.PSet(
 
     #qcdWeightPU140 = cms.InputTag('qcdWeightPU140'),
@@ -475,11 +539,11 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoVertexCollections = cms.PSet(
 
-    hltPixelVertices = cms.InputTag('pixelVertices'),
-    hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
-#    hltPrimaryVertices4D = cms.InputTag('offlinePrimaryVertices4D'),
+#    hltPixelVertices = cms.InputTag('pixelVertices'),
+#    hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
+    hltPrimaryVertices4D = cms.InputTag('offlinePrimaryVertices4D'),
 #    hltUnsortedPrimaryVertices4D = cms.InputTag('unsortedOfflinePrimaryVertices4D'),
-#   offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+#    offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
     offlineSlimmedPrimaryVertices4D = cms.InputTag('offlineSlimmedPrimaryVertices4D'),
 
   ),
@@ -493,7 +557,9 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
 #    hltPFSim = cms.InputTag('simPFProducer'),
 #    hltPFTICL = cms.InputTag('pfTICL'),
-#    hltParticleFlow = cms.InputTag('particleFlowTmp'),
+#     hltParticleFlow = cms.InputTag('particleFlowTmp'),
+#     hltParticleFlowBarrel = cms.InputTag('particleFlowTmpBarrel'), # all PF without the pfTICL (that means + forward > 3.0 etas)
+#     hltPfTICL = cms.InputTag('pfTICL'), # HGCal particles 1.5 < |eta| < 3.0
 #    hltPFPuppi = cms.InputTag('hltPFPuppi'),
 #    hltPFPuppiNoLep = cms.InputTag('hltPFPuppiNoLep'),
   ),
@@ -501,6 +567,9 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   patPackedCandidateCollections = cms.PSet(
 
 #    offlinePFCandidates = cms.InputTag('packedPFCandidates'),
+  ),
+  patPackedGenParticleCollections = cms.PSet(
+#     genParticles = cms.InputTag("packedGenParticles")
   ),
 
   recoGenJetCollections = cms.PSet(
@@ -537,7 +606,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 #    l1tAK4PFJets = cms.InputTag('ak4PFL1PF'),
 #    l1tAK4PFPuppiJets = cms.InputTag('ak4PFL1Puppi'),
 
-#    hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
+    hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
 ##    hltAK4PFJetsCorrected = cms.InputTag('hltAK4PFJetsCorrected'),
 #    hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
 #    hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
@@ -545,16 +614,17 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 ##    hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
 #    hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
     hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
-##    hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
+    hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
 #    hltAK8PFPuppiJets = cms.InputTag('hltAK8PFPuppiJets'),
 #    hltAK8PFPuppiJetsCorrected = cms.InputTag('hltAK8PFPuppiJetsCorrected'),
-     offlineAK4PFPuppiJets = cms.InputTag('offlineAK4PFPuppiJets') # with rerunPUPPI option
+     offlineAK4PFPuppiJets = cms.InputTag('offlineAK4PFPuppiJets'), # with rerunPUPPI option
+     offlineAK4PFPuppiJetsCorrected = cms.InputTag('offlineAK4PFPuppiJetsCorrected') # with rerunPUPPI option
   ),
 
   patJetCollections = cms.PSet(
 
-    offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
-    offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
+#    offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
+    offlineAK4PFPuppiJetsCorrectedPAT = cms.InputTag('slimmedJetsPuppi'),
     
 #    offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
   ),
@@ -562,7 +632,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   recoGenMETCollections = cms.PSet(
 
     #genMETCalo = cms.InputTag('genMetCalo::HLT'),
-    #genMETTrue = cms.InputTag('genMetTrue::HLT'),
+    genMETTrue = cms.InputTag('genMetTrue::HLT'),
   ),
 
   recoMETCollections = cms.PSet(
@@ -588,12 +658,12 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     #l1tPFMET = cms.InputTag('l1PFMetPF'),
     #l1tPFPuppiMET = cms.InputTag('l1PFMetPuppi'),
 
-    #hltPFMET = cms.InputTag('hltPFMET'),
+    hltPFMET = cms.InputTag('hltPFMET'),
     #hltPFMETTypeOne = cms.InputTag('hltPFMETTypeOne'),
-    ##hltPFCHSMET = cms.InputTag('hltPFCHSMET'),
+    #hltPFCHSMET = cms.InputTag('hltPFCHSMET'),
     #hltPFSoftKillerMET = cms.InputTag('hltPFSoftKillerMET'),
-    #hltPFPuppiMET = cms.InputTag('hltPFPuppiMET'),
-    #hltPFPuppiMETTypeOne = cms.InputTag('hltPFPuppiMETTypeOne'),
+    hltPFPuppiMET = cms.InputTag('hltPFPuppiMET'),
+    hltPFPuppiMETTypeOne = cms.InputTag('hltPFPuppiMETTypeOne'),
     #hltPFPuppiMETv0 = cms.InputTag('hltPFPuppiMETv0'),
   ),
 
@@ -679,6 +749,7 @@ if opts.onlyTriggerResultsInNTuple:
    process.JMETriggerNTuple.l1tPFCandidateCollections = cms.PSet()
    process.JMETriggerNTuple.recoPFCandidateCollections = cms.PSet()
    process.JMETriggerNTuple.patPackedCandidateCollections = cms.PSet()
+   process.JMETriggerNTuple.patPackedGenParticleCollections = cms.PSet()
    process.JMETriggerNTuple.recoGenJetCollections = cms.PSet()
    process.JMETriggerNTuple.l1tPFJetCollections = cms.PSet()
    process.JMETriggerNTuple.recoCaloJetCollections = cms.PSet()
@@ -690,8 +761,8 @@ if opts.onlyTriggerResultsInNTuple:
    process.JMETriggerNTuple.recoPFClusterMETCollections = cms.PSet()
    process.JMETriggerNTuple.recoPFMETCollections = cms.PSet()
    process.JMETriggerNTuple.patMETCollections = cms.PSet()
-   process.JMETriggerNTuple.patMuonCollections = cms.PSet()
-   process.JMETriggerNTuple.patElectronCollections = cms.PSet()
+   #process.JMETriggerNTuple.patMuonCollections = cms.PSet()
+   #process.JMETriggerNTuple.patElectronCollections = cms.PSet()
 
 # FastTimerService
 if opts.addTimingDQM:
@@ -708,10 +779,11 @@ if opts.addTimingDQM:
    process.FastTimerService.dqmModuleTimeResolution =     1.
 
 ## update process.GlobalTag.globaltag
-#if opts.globalTag is not None:
-#   raise RuntimeError('command-line argument "globalTag='+opts.globalTag+'" will overwrite process.GlobalTag (previous customizations of it will be lost)')
-#   from Configuration.AlCa.GlobalTag import GlobalTag
-#   process.GlobalTag = GlobalTag(process.GlobalTag, opts.globalTag, '')
+if opts.globalTag is not None:
+   #raise RuntimeError('command-line argument "globalTag='+opts.globalTag+'" will overwrite process.GlobalTag (previous customizations of it will be lost)')
+   #from Configuration.AlCa.GlobalTag import GlobalTag
+   #process.GlobalTag = GlobalTag(process.GlobalTag, opts.globalTag, '')
+   process.GlobalTag.globaltag = cms.string('123X_mcRun4_realistic_v10')
 
 # max number of events to be processed
 process.maxEvents.input = opts.maxEvents
