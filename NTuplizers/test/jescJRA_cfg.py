@@ -44,7 +44,7 @@ opts.register('wantSummary', False,
 #              vpo.VarParsing.varType.string,
 #              'argument of process.GlobalTag.globaltag')
 
-opts.register('reco', 'HLT_TRKv06p1_TICL',
+opts.register('reco', 'HLT_75e33',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
               'keyword defining reconstruction methods for JME inputs')
@@ -68,20 +68,25 @@ if opts.reco == 'HLT_TRKv06p1':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p1_cfg import cms, process
 elif opts.reco == 'HLT_TRKv06p1_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p1_TICL_cfg import cms, process
+elif opts.reco == 'HLT_75e33':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg import cms, process
+  #from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg_JECS import cms, process
 else:
    raise RuntimeError('invalid argument for option "reco": "'+opts.reco+'"')
 
 # use only the cms.Path with the full HLT reconstruction (no specific trigger paths)
-process.setSchedule_(cms.Schedule(process.MC_JME))
+#process.setSchedule_(cms.Schedule(process.MC_JME))
 
 ###
 ### Jet Response Analyzer (JRA) NTuple
 ###
-import JetMETAnalysis.JetAnalyzers.DefaultsHLT_cff as Defaults
+#import JetMETAnalysis.JetAnalyzers.DefaultsHLT_cff as Defaults
+import JetMETAnalysis.JetAnalyzers.Defaults_cff as Defaults
 from JetMETAnalysis.JetAnalyzers.addAlgorithmHLT import addAlgorithm
+
 for algorithm in [
-  'ak4puppiHLT',
-  'ak8puppiHLT',
+  'ak4pfpuppiHLT',
+  #'ak8pfpuppiHLT',
 ]:
   addAlgorithm(process, algorithm, Defaults)
   getattr(process, algorithm).srcRho = 'fixedGridRhoFastjetAllTmp'
@@ -165,7 +170,8 @@ if opts.inputFiles:
    process.source.fileNames = opts.inputFiles
 else:
    process.source.fileNames = [
-     '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v2/280000/015FB6F1-59B4-304C-B540-2392A983A97D.root',
+     #'/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v2/280000/015FB6F1-59B4-304C-B540-2392A983A97D.root',
+     '/store/mc/PhaseIISpring22DRMiniAOD/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_castor_123X_mcRun4_realistic_v11-v1/40000/009871c5-babe-40aa-9e82-7d91f772b3e4.root',
    ]
 
 # dump content of cms.Process to python file
@@ -174,14 +180,14 @@ if opts.dumpPython is not None:
 
 # print-outs
 if opts.verbosity > 0:
-   print '--- hltJRA_mcRun4_cfg.py ---'
-   print ''
-   print 'option: output =', opts.output
-   print 'option: reco =', opts.reco
-   print 'option: dumpPython =', opts.dumpPython
-   print ''
-   print 'process.GlobalTag =', process.GlobalTag.dumpPython()
-   print 'process.source =', process.source.dumpPython()
-   print 'process.maxEvents =', process.maxEvents.dumpPython()
-   print 'process.options =', process.options.dumpPython()
-   print '-------------------------------'
+   print('--- hltJRA_mcRun4_cfg.py ---')
+   print('')
+   print('option: output =', opts.output)
+   print('option: reco =', opts.reco)
+   print('option: dumpPython =', opts.dumpPython)
+   print('')
+   print('process.GlobalTag =', process.GlobalTag.dumpPython())
+   print('process.source =', process.source.dumpPython())
+   print('process.maxEvents =', process.maxEvents.dumpPython())
+   print('process.options =', process.options.dumpPython())
+   print('-------------------------------')
