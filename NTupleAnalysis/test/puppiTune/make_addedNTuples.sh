@@ -7,6 +7,27 @@ fi
 
 IDIR=${1}
 
+TUNE_VALUES=(
+  0.1
+  0.2
+  0.3
+  0.4
+  0.5
+  0.6
+  0.7
+  0.8
+  0.9
+  1.0
+  10.0
+)
+# TUNE_VALUES=(
+#   0.1
+#   0.2
+#   0.3
+#   0.5
+#   100.0
+# )
+
 # set the environment
 #source ../env.sh
 
@@ -26,30 +47,35 @@ samplesMap["Phase2HLTTDR_QCD_Flat_Pt-15to3000_14TeV_PU200"]="/QCD_Pt-15to3000_Tu
 #samplesMap["Phase2HLTTDR_VBF_HToInvisible_14TeV_PU200"]="/VBF_HToInvisible_M125_14TeV_powheg_pythia8_TuneCP5/Phase2HLTTDRSummer20ReRECOMiniAOD-PU200_111X_mcRun4_realistic_T15_v1-v1/FEVT"
 
 #samplesMap["Phase2HLTTDR_VBF_HToInvisible_14TeV_PU200"]="/VBFHToInvisible_M-125_TuneCP5_14TeV-powheg-pythia8/PhaseIISpring22DRMiniAOD-PU200_123X_mcRun4_realistic_v11-v1/GEN-SIM-DIGI-RAW-MINIAOD"
-
-for sampleKey in ${!samplesMap[@]}; do
-  sampleName=${samplesMap[${sampleKey}]}
+for VALUE in ${TUNE_VALUES[@]}; do
+  for sampleKey in ${!samplesMap[@]}; do
+    sampleName=${samplesMap[${sampleKey}]}
+      
+    INPUT_DIR=/eos/user/t/tchatzis/MTDtiming_samples/${IDIR}/${sampleKey}/value_${VALUE}
     
-  INPUT_DIR=/eos/user/t/tchatzis/MTDtiming_samples/${IDIR}/${sampleKey}
+    #echo ${INPUT_DIR}
+    # clear all files that are not filled (smaller than 5kilobyte size)
+    find ${INPUT_DIR} -name "*.root" -type 'f' -size -10k -delete
+    # add the NTuples in the directory
+    ../hadd_ntuples.py -i ${INPUT_DIR} -o ${INPUT_DIR} -l 0
+    # after finishing with that remove the output files of multiple jobs
+    #rm ${INPUT_DIR}/out_*.root 
+    unset sampleName
 
-  # clear all files that are not filled (smaller than 5kilobyte size)
-  find ${INPUT_DIR} -name "*.root" -type 'f' -size -5k -delete
-  # add the NTuples in the directory
-  ../hadd_ntuples.py -i ${INPUT_DIR} -o ${INPUT_DIR} -l 0
-  # after finishing with that remove the output files of multiple jobs
-  #rm ${INPUT_DIR}/out_*.root 
-  unset sampleName
+    # remove the folder with the jobs settings in NTuplizers
+    # save the cfg for validation before removing
+    #cp ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/scripts/${IDIR}/${sampleKey}/value_${VALUE}/cfg.py ${INPUT_DIR}
 
-  cp ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/scripts/${IDIR}/${sampleKey}/cfg.py /eos/user/t/tchatzis/MTDtiming_samples/${IDIR}/${sampleKey}/
+     #printf  "removing the directory: " 
+    #echo ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/scripts/${IDIR}/${sampleKey}/value_${VALUE}
 
-  # remove the folder with the jobs settings in NTuplizers
-  printf  "removing the directory: " 
-  echo ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/scripts/${IDIR}/${sampleKey}
-  rm -rf ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/scripts/${IDIR}/${sampleKey}
+    #rm -rf ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/scripts/${IDIR}/${sampleKey}/value_${VALUE}
 
+  done
+  
+  unset sampleKey
+  
 done
-unset sampleKey
  
-
-
 unset samplesMap IDIR INPUT_DIR
+

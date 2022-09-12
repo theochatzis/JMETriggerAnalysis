@@ -30,7 +30,23 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring('/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-RECO/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/01b3b6fd-4e69-4d27-ad97-d889c9ca1f54.root'),
+    inputCommands = cms.untracked.vstring(
+    'keep *',
+    'drop TH1IMEtoEDM_MEtoEDMConverter_MEtoEDMConverterLumi_HLT',
+    'drop TH1IMEtoEDM_MEtoEDMConverter_MEtoEDMConverterLumi_SIM',
+    'drop TH1IMEtoEDM_MEtoEDMConverter_MEtoEDMConverterRun_HLT',
+    'drop TH1IMEtoEDM_MEtoEDMConverter_MEtoEDMConverterRun_SIM',
+    'drop TH2IMEtoEDM_MEtoEDMConverter_MEtoEDMConverterLumi_HLT',
+    'drop TH2IMEtoEDM_MEtoEDMConverter_MEtoEDMConverterLumi_SIM',
+    'drop TH2IMEtoEDM_MEtoEDMConverter_MEtoEDMConverterRun_HLT',
+    'drop TH2IMEtoEDM_MEtoEDMConverter_MEtoEDMConverterRun_SIM'
+    #'drop TH1IMEtoEDM_MEtoEDMConverter_MEtoEDMConverterLumi_*',
+    #'drop TH1IMEtoEDM_MEtoEDMConverter_MEtoEDMConverterRun_*',
+    #'drop TH2IMEtoEDM_MEtoEDMConverter_MEtoEDMConverterLumi_*',
+    #'drop TH2IMEtoEDM_MEtoEDMConverter_MEtoEDMConverterRun_*'
+    ),
     secondaryFileNames = cms.untracked.vstring()
+    
 )
 
 process.options = cms.untracked.PSet(
