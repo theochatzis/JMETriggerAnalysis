@@ -1,6 +1,11 @@
+import os
+from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
+
+
 ###
 ### command-line arguments
 ###
+
 import FWCore.ParameterSet.VarParsing as vpo
 opts = vpo.VarParsing('analysis')
 
@@ -29,6 +34,11 @@ opts.register('lumis', None,
               vpo.VarParsing.varType.string,
               'path to .json with list of luminosity sections')
 
+opts.register('rerunPUPPI', True,
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.bool,
+              'create offline puppi configurations with latest tune note: needs to be updated with developments in puppi')
+
 opts.register('logs', False,
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.bool,
@@ -44,12 +54,53 @@ opts.register('addTimingDQM', False,
               vpo.VarParsing.varType.bool,
               'print results of FastTimerService, and produce corresponding DQM output file')
 
+# === options to tune puppi ================================================================================
+# if nothing is given -> nothing changes
+# available options for each puppi region: Central1, Central2, Forward
+# to change the regions one changes the PuppiProducer options
+# supported changes:
+# MinNeutralPt -> A or offset for weighted pT cut
+# MinNuetralPtSlope -> B or slope of weighted pT cut
+# dz -> for unassociated particles dz from LV for particles to keep
+#
+# reminders: 
+# weighted pT cut: w*pT > A+B*nPU 
+# where w = weight of particle, pT = pT of particle, nPU = PU proxy used as a measure of PU
+# nPU is by default the # of secondary vertices in input vertices collection but can be also anything else
+# ==========================================================================================================
+
+opts.register('DeltaZCut',None,
+             vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.string,
+             'puppi parameter DeltaZCut')
+
+opts.register('NumOfPUVtxsForCharged',None,
+             vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.string,
+             'puppi parameter NumOfPUVtxsForCharged')
+
+opts.register('puppiParamsCentral1',[],
+             vpo.VarParsing.multiplicity.list,
+             vpo.VarParsing.varType.string,
+             'puppi parameters factors for Central1 [0.,2.5] region given as [parameter_name]:[parameter_scale] ')
+
+opts.register('puppiParamsCentral2',[],
+             vpo.VarParsing.multiplicity.list,
+             vpo.VarParsing.varType.string,
+             'puppi parameters factors for Central2 [2.5,3.5] region given as [parameter_name]:[parameter_scale] ')
+
+opts.register('puppiParamsForward',[],
+             vpo.VarParsing.multiplicity.list,
+             vpo.VarParsing.varType.string,
+             'puppi parameters factors for Forward [3.5,10.0] region given as [parameter_name]:[parameter_scale] ')
+
+
 #opts.register('globalTag', None,
 #              vpo.VarParsing.multiplicity.singleton,
 #              vpo.VarParsing.varType.string,
 #              'argument of process.GlobalTag.globaltag')
 
-opts.register('reco', 'offline_reco',
+opts.register('reco', 'HLT_75e33',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
               'keyword defining reconstruction methods for JME inputs')
@@ -91,7 +142,6 @@ opts.parseArguments()
 ###
 
 # customisation to change min-pT threshold of tracks in HLT reco
-"""
 def customisePhase2TrackingPtThresholds(process, ptMin):
   process.CkfBaseTrajectoryFilter_block.minPt = ptMin
   process.HLTIter0Phase2L3FromL1TkMuonGroupedCkfTrajectoryFilterIT.minPt = ptMin
@@ -121,7 +171,6 @@ def customisePhase2TrackingPtThresholds(process, ptMin):
   process.trackWithVertexRefSelectorBeforeSorting.ptMin = ptMin
   process.unsortedOfflinePrimaryVertices.TkFilterParameters.minPt = ptMin
   return process
-"""
 
 # customisation to change min-E threshold of HGCal clusters in HLT reco
 def customisePhase2HGCalClusterEnergyThresholds(process, eMin):
@@ -143,10 +192,7 @@ if opt_reco.endswith('_skimmedTracks'):
   opt_reco = opt_reco[:-len('_skimmedTracks')]
   opt_skimTracks = True
 
-if opt_reco == 'offline_reco':
-  from JMETriggerAnalysis.Common.configs.offline_cfg_test import cms, process
-
-elif opt_reco == 'HLT_TRKv00':
+if opt_reco == 'HLT_TRKv00':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv00_cfg import cms, process
   process.schedule_().append(process.MC_JME)
   process.schedule_().append(process.MC_JME_Others)
@@ -208,8 +254,9 @@ elif opt_reco == 'HLT_TRKv07p2_TICL':
   process.schedule_().append(process.MC_JME_Others)
 
 elif opt_reco == 'HLT_75e33':
-  from HLTrigger.Phase2.HLT_75e33_cfg import cms, process
-  process.schedule_().append(process.MC_JME)
+  #from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg_test import cms, process
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg import cms, process
+  #process.schedule_().append(process.MC_JME)
 
 elif opt_reco == 'HLT_75e33_TrkPtX1p00_HGCEnX1p00': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.00, 1.00)
 elif opt_reco == 'HLT_75e33_TrkPtX1p25_HGCEnX1p25': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.25, 1.25)
@@ -239,26 +286,26 @@ else:
 ###
 
 ## JMETrigger NTuple
-#from HLTrigger.JetMET.hltSiPixelClusterMultiplicityValueProducer_cfi import hltSiPixelClusterMultiplicityValueProducer as _hltSiPixelClusterMultiplicityValueProducer
-#from HLTrigger.JetMET.hltSiPhase2TrackerClusterMultiplicityValueProducer_cfi import hltSiPhase2TrackerClusterMultiplicityValueProducer as _hltSiPhase2TrackerClusterMultiplicityValueProducer
+from HLTrigger.JetMET.hltSiPixelClusterMultiplicityValueProducer_cfi import hltSiPixelClusterMultiplicityValueProducer as _hltSiPixelClusterMultiplicityValueProducer
+from HLTrigger.JetMET.hltSiPhase2TrackerClusterMultiplicityValueProducer_cfi import hltSiPhase2TrackerClusterMultiplicityValueProducer as _hltSiPhase2TrackerClusterMultiplicityValueProducer
 
-#from JMETriggerAnalysis.Common.hltTrackMultiplicityValueProducer_cfi import hltTrackMultiplicityValueProducer as _hltTrackMultiplicityValueProducer
-#from JMETriggerAnalysis.Common.hltVertexMultiplicityValueProducer_cfi import hltVertexMultiplicityValueProducer as _hltVertexMultiplicityValueProducer
+from JMETriggerAnalysis.Common.hltTrackMultiplicityValueProducer_cfi import hltTrackMultiplicityValueProducer as _hltTrackMultiplicityValueProducer
+from JMETriggerAnalysis.Common.hltVertexMultiplicityValueProducer_cfi import hltVertexMultiplicityValueProducer as _hltVertexMultiplicityValueProducer
 
 #if not hasattr(process, 'hltPixelClustersMultiplicity'):
 #  process.hltPixelClustersMultiplicity = _hltSiPixelClusterMultiplicityValueProducer.clone(src = 'siPixelClusters', defaultValue = -1.)
 
-#if not hasattr(process, 'hltOuterTrackerClustersMultiplicity'):
-#  process.hltOuterTrackerClustersMultiplicity = _hltSiPhase2TrackerClusterMultiplicityValueProducer.clone(src = 'siPhase2Clusters', defaultValue = -1.)
+if not hasattr(process, 'hltOuterTrackerClustersMultiplicity'):
+  process.hltOuterTrackerClustersMultiplicity = _hltSiPhase2TrackerClusterMultiplicityValueProducer.clone(src = 'siPhase2Clusters', defaultValue = -1.)
 
-#process.hltPixelTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracks', defaultValue = -1.)
-##process.hltPixelTracksCleanerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracksCleaner', defaultValue = -1.)
-#process.hltPixelTracksMergerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracksMerger', defaultValue = -1.)
-#process.hltTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'generalTracks', defaultValue = -1.)
+process.hltPixelTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracks', defaultValue = -1.)
+process.hltPixelTracksCleanerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracksCleaner', defaultValue = -1.)
+process.hltPixelTracksMergerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracksMerger', defaultValue = -1.)
+process.hltTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'generalTracks', defaultValue = -1.)
 
-#process.hltPixelVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'pixelVertices', defaultValue = -1.)
-#process.hltPrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlinePrimaryVertices', defaultValue = -1.)
-#process.offlinePrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlineSlimmedPrimaryVertices', defaultValue = -1.)
+process.hltPixelVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'pixelVertices', defaultValue = -1.)
+process.hltPrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlinePrimaryVertices', defaultValue = -1.)
+process.offlinePrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlineSlimmedPrimaryVertices', defaultValue = -1.)
 
 # removed because of non existing HLTrigger.mcStitching anymore which contained a stitchingWeight_cfi
 # must do this to work :
@@ -267,10 +314,11 @@ else:
 #from JMETriggerAnalysis.NTuplizers.qcdWeightProducer import qcdWeightProducer
 #process.qcdWeightPU140 = qcdWeightProducer(BXFrequency = 30. * 1e6, PU = 140.)
 #process.qcdWeightPU200 = qcdWeightProducer(BXFrequency = 30. * 1e6, PU = 200.)
-"""
+
 process.jmeTriggerNTupleInputsSeq = cms.Sequence(
-    process.hltPixelClustersMultiplicity
-  + process.hltOuterTrackerClustersMultiplicity
+  #  process.siPixelClusters
+  #+ process.hltPixelClustersMultiplicity
+    process.hltOuterTrackerClustersMultiplicity
   + process.hltPixelTracksMultiplicity
   + process.hltPixelTracksCleanerMultiplicity
   + process.hltPixelTracksMergerMultiplicity
@@ -281,71 +329,295 @@ process.jmeTriggerNTupleInputsSeq = cms.Sequence(
   #+ process.qcdWeightPU140 # see above mcStitching
   #+ process.qcdWeightPU200
 )
-"""
 
-
-#process.jmeTriggerNTupleInputsPath = cms.Path(process.jmeTriggerNTuple_cfg.py)
-#process.schedule_().append(process.jmeTriggerNTupleInputsPath)
-
-
+process.jmeTriggerNTupleInputsPath = cms.Path(process.jmeTriggerNTupleInputsSeq)
+process.schedule_().append(process.jmeTriggerNTupleInputsPath)
 
 ak4jets_stringCut = '' #'pt > 20'
 ak8jets_stringCut = '' #'pt > 80'
 
-process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple_offline',
+## modifications for PUPPI 
+# note these commonly affect puppi --> used for jets and puppiNoLep --> used for MET
+
+# fill the list of modifications 
+puppi_modifications_list = []
+
+if opts.DeltaZCut:
+    puppi_modifications_list.append(['DeltaZCut',opts.DeltaZCut])
+
+if opts.NumOfPUVtxsForCharged:
+    puppi_modifications_list.append(['NumOfPUVtxsForCharged',opts.NumOfPUVtxsForCharged])
+
+for param_change in opts.puppiParamsCentral1:
+     parameter_name, parameter_scale = param_change.split(':')
+     puppi_modifications_list.append(['Central1',parameter_name, parameter_scale])
+
+for param_change in opts.puppiParamsCentral2:
+     parameter_name, parameter_scale = param_change.split(':')
+     puppi_modifications_list.append(['Central2',parameter_name, parameter_scale]) 
+
+for param_change in opts.puppiParamsForward:
+     parameter_name, parameter_scale = param_change.split(':')
+     puppi_modifications_list.append(['Forward',parameter_name, parameter_scale])
+
+
+# apply the modifications based of modifications list
+
+# dictionary to translate regions to puppi algos
+# e.g. [0,0] = algo 0 with "subalgo" 0 (i.e. first eta region (subalgo 0) in central(algo 0))
+regions_dict={ 'Central1':[0,0], 'Central2':[0,1], 'Forward':[1,0]}
+
+for mod_i in [process.hltPFPuppi, process.hltPFPuppiNoLep]:
+  for algo_idx in range(len(mod_i.algos)):
+    if len(mod_i.algos[algo_idx].MinNeutralPt) != len(mod_i.algos[algo_idx].MinNeutralPtSlope):
+      raise RuntimeError('instance of PuppiProducer is misconfigured:\n\n'+str(mod_i)+' = '+mod_i.dumpPython())
+          
+  # changes per specific region
+  
+  for change in puppi_modifications_list:
+    if change[0] == 'DeltaZCut':
+      mod_i.DeltaZCut = float(opts.DeltaZCut)
+      mod_i.DeltaZCutForChargedFromPUVtxs  = float(opts.DeltaZCut)
+    if change[0] == 'NumOfPUVtxsForCharged':
+      mod_i.NumOfPUVtxsForCharged = int(opts.NumOfPUVtxsForCharged)
+    if change[1]=='MinNeutralPt':
+      mod_i.algos[regions_dict[change[0]][0]].MinNeutralPt[regions_dict[change[0]][1]] *= float(change[2])
+    elif change[1]=='MinNeutralPtSlope':
+      mod_i.algos[regions_dict[change[0]][0]].MinNeutralPtSlope[regions_dict[change[0]][1]] *= float(change[2])
+    else: 
+      continue
+
+
+
+
+## add offline puppi ------------------------------------------------------------
+
+if opts.rerunPUPPI:
+  #from CommonTools.PileupAlgos.Puppi_cff import puppi as _puppi, puppiNoLep as _puppiNoLep
+  from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJetsPuppi as _ak4PFJetsPuppi
+  
+  
+  #process.offlinePFPuppi = _puppi.clone(
+  #  candName = 'packedPFCandidates',
+  #  vertexName = cms.InputTag("offlineSlimmedPrimaryVertices4D")
+  #)
+  
+  
+  process.offlinePFPuppi = cms.EDProducer("PuppiProducer",
+      DeltaZCut = cms.double(0.1),
+      DeltaZCutForChargedFromPUVtxs = cms.double(0.2),
+      EtaMaxCharged = cms.double(99999),
+      EtaMaxPhotons = cms.double(2.5),
+      EtaMinUseDeltaZ = cms.double(4.0),
+      MinPuppiWeight = cms.double(0.01),
+      NumOfPUVtxsForCharged = cms.uint32(2),
+      PUProxyValue = cms.InputTag(""),
+      PtMaxCharged = cms.double(20.0),
+      PtMaxNeutrals = cms.double(200),
+      PtMaxNeutralsStartSlope = cms.double(20.0),
+      PtMaxPhotons = cms.double(-1),
+      UseDeltaZCut = cms.bool(True),
+      UseDeltaZCutForPileup = cms.bool(False),
+      UseFromPVLooseTight = cms.bool(False),
+      algos = cms.VPSet(
+          cms.PSet(
+              etaMin = cms.vdouble(0.,  2.5),
+              etaMax = cms.vdouble(2.5, 3.5),
+              ptMin  = cms.vdouble(0.,  0.), #Normally 0
+              MinNeutralPt   = cms.vdouble(0.2, 0.2),
+              MinNeutralPtSlope   = cms.vdouble(0.015, 0.030),
+              RMSEtaSF = cms.vdouble(1.0, 1.0),
+              MedEtaSF = cms.vdouble(1.0, 1.0),
+              EtaMaxExtrap = cms.double(2.0),
+              puppiAlgos = cms.VPSet(cms.PSet(
+                  algoId = cms.int32(5),
+                  applyLowPUCorr = cms.bool(True),
+                  combOpt = cms.int32(0),
+                  cone = cms.double(0.4),
+                  rmsPtMin = cms.double(0.1),
+                  rmsScaleFactor = cms.double(1.0),
+                  useCharged = cms.bool(True)
+              ))
+          ),
+          cms.PSet(
+              etaMin = cms.vdouble( 3.5),
+              etaMax = cms.vdouble(10.0),
+              ptMin = cms.vdouble( 0.), #Normally 0
+              MinNeutralPt = cms.vdouble( 2.0),
+              MinNeutralPtSlope = cms.vdouble(0.08),
+              RMSEtaSF = cms.vdouble(1.0 ),
+              MedEtaSF = cms.vdouble(0.75),
+              EtaMaxExtrap = cms.double( 2.0),
+              puppiAlgos = cms.VPSet(cms.PSet(
+                  algoId = cms.int32(5),
+                  applyLowPUCorr = cms.bool(True),
+                  combOpt = cms.int32(0),
+                  cone = cms.double(0.4),
+                  rmsPtMin = cms.double(0.5),
+                  rmsScaleFactor = cms.double(1.0),
+                  useCharged = cms.bool(False)
+              ))
+          )
+      ),
+      applyCHS = cms.bool(True),
+      candName = cms.InputTag("packedPFCandidates"), # can use also "particleFlow" (see also the jet definition bellow)
+      clonePackedCands = cms.bool(False),
+      invertPuppi = cms.bool(False),
+      mightGet = cms.optional.untracked.vstring,
+      puppiDiagnostics = cms.bool(False),
+      puppiNoLep = cms.bool(False),
+      useExistingWeights = cms.bool(False),
+      useExp = cms.bool(False),
+      usePUProxyValue = cms.bool(False),
+      useVertexAssociation = cms.bool(False),
+      vertexAssociation = cms.InputTag(""),
+      vertexAssociationQuality = cms.int32(0),
+      vertexName = cms.InputTag("offlineSlimmedPrimaryVertices"),
+      #vertexName = cms.InputTag("offlineSlimmedPrimaryVertices4D"),
+      vtxNdofCut = cms.int32(4),
+      vtxZCut = cms.double(24)
+  )
+  
+
+
+  #process.offlineAK4PFPuppiJets  = _ak4PFJetsPuppi.clone( 
+  #    src = "particleFlow", # if use the "particleFlow" (the default in the _ak4PFJetsPuppi) then error if the file doesnt have it
+  #    applyWeight = True,
+  #    srcWeights = cms.InputTag("offlinePFPuppi")
+  #)
+
+
+  process.offlineAK4PFPuppiJets  = _ak4PFJetsPuppi.clone(
+      src = "offlinePFPuppi",
+      applyWeight = cms.bool(False) # don't apply weight, to avoid applying weight 2 times
+  )
+
+  
+  ## JECs
+  # -- L1 -- 
+  process.offlineAK4PFPuppiJetCorrectorL1 = cms.EDProducer("L1FastjetCorrectorProducer",
+    algorithm = cms.string('AK4PFPuppi'),
+    level = cms.string('L1FastJet'),
+    srcRho = cms.InputTag("fixedGridRhoFastjetAllTmp")
+  )
+
+  # -- L2L3 -- 
+  process.offlineAK4PFPuppiJetCorrectorL2 = cms.EDProducer("LXXXCorrectorProducer",
+    algorithm = cms.string('AK4PFPuppi'),
+    level = cms.string('L2Relative')
+  )
+  process.offlineAK4PFPuppiJetCorrectorL3 = cms.EDProducer("LXXXCorrectorProducer",
+    algorithm = cms.string('AK4PFPuppi'),
+    level = cms.string('L3Absolute')
+  )
+
+  process.offlineAK4PFPuppiJetCorrector = cms.EDProducer("ChainedJetCorrectorProducer",
+    correctors = cms.VInputTag("offlineAK4PFPuppiJetCorrectorL1", "offlineAK4PFPuppiJetCorrectorL2", "offlineAK4PFPuppiJetCorrectorL3")
+  )
+
+  process.offlineAK4PFPuppiJetsCorrected = cms.EDProducer("CorrectedPFJetProducer",
+    correctors = cms.VInputTag("offlineAK4PFPuppiJetCorrector"),
+    src = cms.InputTag("offlineAK4PFPuppiJets")
+  )
+
+  process.offlinePFPuppiSequence = cms.Sequence(
+    # calculate particles weights with puppi
+    process.offlinePFPuppi
+    # make jets with puppi particles
+    + process.offlineAK4PFPuppiJets
+    # add corrections for the jets
+    + process.offlineAK4PFPuppiJetCorrectorL1
+    + process.offlineAK4PFPuppiJetCorrectorL2
+    + process.offlineAK4PFPuppiJetCorrectorL3
+    + process.offlineAK4PFPuppiJetCorrector
+    + process.offlineAK4PFPuppiJetsCorrected
+  )
+
+  process.offlinePFPuppiPath = cms.Path(
+    process.offlinePFPuppiSequence
+  )
+
+  process.schedule_().append(process.offlinePFPuppiPath)
+## ------------------------------------------------------------------------------
+
+
+
+
+## ---- updated JECs from local db file ------------------------------------------
+process.jescESSource = cms.ESSource('PoolDBESSource',
+  _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/JESC_Phase2Spring22_MC.db'),
+  toGet = cms.VPSet(
+    cms.PSet(
+      record = cms.string('JetCorrectionsRecord'),
+      tag = cms.string('JetCorrectorParametersCollection_Phase2Spring22_MC_AK4PFPuppiHLT'),
+      label = cms.untracked.string('AK4PFPuppiHLT'),
+    ),
+    #cms.PSet(
+    #  record = cms.string('JetCorrectionsRecord'),
+    #  tag = cms.string('JetCorrectorParametersCollection_Phase2HLTTDR_V5_MC_AK8PFPuppiHLT'),
+    #  label = cms.untracked.string('AK8PFPuppiHLT'),
+    #),
+  ),
+)
+process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
+# ---------------------------------------------------------------------------------
+
+
+process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   TTreeName = cms.string('Events'),
 
-  
   TriggerResults = cms.InputTag('TriggerResults'),
 
   TriggerResultsFilterOR = cms.vstring(),
 
   TriggerResultsFilterAND = cms.vstring(),
+  
 
   TriggerResultsCollections = cms.vstring(
     'MC_JME',
-    'L1T_SinglePFPuppiJet200off',
-    'HLT_AK4PFJet520',
-    'HLT_AK4PFCHSJet520',
     'HLT_AK4PFPuppiJet520',
-    'L1T_PFPuppiHT450off',
     'HLT_PFPuppiHT1070',
-    'L1T_PFPuppiMET200off',
-    'L1T_PFPuppiMET245off',
-    'HLT_PFMET250',
-    'HLT_PFCHSMET250',
-    'HLT_PFPuppiMET250',
-    'HLT_PFPuppiMET140',
-    'HLT_PFPuppiMET140_PFPuppiMHT140',
-    'HLT_PFPuppiMET140_PFPuppiMHT140_PFPuppiHT60',
     'HLT_PFPuppiMETTypeOne140_PFPuppiMHT140',
+    #'L1T_SinglePFPuppiJet200off',
+    #'HLT_AK4PFJet520',
+    #'HLT_AK4PFCHSJet520',
+    #'HLT_AK4PFPuppiJet520',
+    #'L1T_PFPuppiHT450off',
+    #'HLT_PFPuppiHT1070',
+    #'L1T_PFPuppiMET200off',
+    #'L1T_PFPuppiMET245off',
+    #'HLT_PFMET250',
+    #'HLT_PFCHSMET250',
+    #'HLT_PFPuppiMET250',
+    #'HLT_PFPuppiMET140',
+    #'HLT_PFPuppiMET140_PFPuppiMHT140',
+    #'HLT_PFPuppiMET140_PFPuppiMHT140_PFPuppiHT60',
+    #'HLT_PFPuppiMETTypeOne140_PFPuppiMHT140',
   ),
-  
 
   fillCollectionConditions = cms.PSet(),
 
   HepMCProduct = cms.InputTag('generatorSmeared'),
   GenEventInfoProduct = cms.InputTag('generator'),
   PileupSummaryInfo = cms.InputTag('addPileupInfo'),
-
+  
   doubles = cms.PSet(
-    
+
     #qcdWeightPU140 = cms.InputTag('qcdWeightPU140'),
     #qcdWeightPU200 = cms.InputTag('qcdWeightPU200'),
-    
-    #fixedGridRhoFastjetAllTmp = cms.InputTag('fixedGridRhoFastjetAllTmp'),
-    #offlineFixedGridRhoFastjetAll = cms.InputTag('fixedGridRhoFastjetAll::RECO'),
+
+    fixedGridRhoFastjetAllTmp = cms.InputTag('fixedGridRhoFastjetAllTmp'),
+    offlineFixedGridRhoFastjetAll = cms.InputTag('fixedGridRhoFastjetAll::RECO'),
     #hltPixelClustersMultiplicity = cms.InputTag('hltPixelClustersMultiplicity'),
-    #hltOuterTrackerClustersMultiplicity = cms.InputTag('hltOuterTrackerClustersMultiplicity'),
-    #hltPixelTracksMultiplicity = cms.InputTag('hltPixelTracksMultiplicity'),
-    #hltPixelTracksCleanerMultiplicity = cms.InputTag('hltPixelTracksCleanerMultiplicity'),
-    #hltPixelTracksMergerMultiplicity = cms.InputTag('hltPixelTracksMergerMultiplicity'),
-    #hltTracksMultiplicity = cms.InputTag('hltTracksMultiplicity'),
-    #hltPixelVerticesMultiplicity = cms.InputTag('hltPixelVerticesMultiplicity'),
-    #hltPrimaryVerticesMultiplicity = cms.InputTag('hltPrimaryVerticesMultiplicity'),
-    #offlinePrimaryVerticesMultiplicity = cms.InputTag('offlinePrimaryVerticesMultiplicity'),
-    
+    hltOuterTrackerClustersMultiplicity = cms.InputTag('hltOuterTrackerClustersMultiplicity'),
+    hltPixelTracksMultiplicity = cms.InputTag('hltPixelTracksMultiplicity'),
+    hltPixelTracksCleanerMultiplicity = cms.InputTag('hltPixelTracksCleanerMultiplicity'),
+    hltPixelTracksMergerMultiplicity = cms.InputTag('hltPixelTracksMergerMultiplicity'),
+    hltTracksMultiplicity = cms.InputTag('hltTracksMultiplicity'),
+    hltPixelVerticesMultiplicity = cms.InputTag('hltPixelVerticesMultiplicity'),
+    hltPrimaryVerticesMultiplicity = cms.InputTag('hltPrimaryVerticesMultiplicity'),
+    offlinePrimaryVerticesMultiplicity = cms.InputTag('offlinePrimaryVerticesMultiplicity'),
   ),
 
   vdoubles = cms.PSet(
@@ -358,137 +630,149 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple_offline',
 
   recoVertexCollections = cms.PSet(
 
-   #hltPixelVertices = cms.InputTag('pixelVertices'),
-   #hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
-   offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
-   offlineSlimmedPrimaryVertices4D = cms.InputTag('offlineSlimmedPrimaryVertices4D'),
+    hltPixelVertices = cms.InputTag('pixelVertices'),
+    hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
+#    hltPrimaryVertices4D = cms.InputTag('offlinePrimaryVertices4D'),
+#    hltUnsortedPrimaryVertices4D = cms.InputTag('unsortedOfflinePrimaryVertices4D'),
+    offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+#    offlineSlimmedPrimaryVertices4D = cms.InputTag('offlineSlimmedPrimaryVertices4D'),
+
   ),
 
-#  l1tPFCandidateCollections = cms.PSet(
+  l1tPFCandidateCollections = cms.PSet(
 
 #   l1tPFPuppi = cms.InputTag('l1pfCandidates', 'Puppi'),
- # ),
+  ),
 
-#  recoPFCandidateCollections = cms.PSet(
+  recoPFCandidateCollections = cms.PSet(
 
 #    hltPFSim = cms.InputTag('simPFProducer'),
 #    hltPFTICL = cms.InputTag('pfTICL'),
-#    hltParticleFlow = cms.InputTag('particleFlowTmp'),
+#     hltParticleFlow = cms.InputTag('particleFlowTmp'),
+#     hltParticleFlowBarrel = cms.InputTag('particleFlowTmpBarrel'),
+#     hltPfTICL = cms.InputTag('pfTICL'),
 #    hltPFPuppi = cms.InputTag('hltPFPuppi'),
 #    hltPFPuppiNoLep = cms.InputTag('hltPFPuppiNoLep'),
-#  ),
+  ),
 
   patPackedCandidateCollections = cms.PSet(
 
-    offlinePFCandidates = cms.InputTag('packedPFCandidates'),
+#    offlinePFCandidates = cms.InputTag('packedPFCandidates'),
+  ),
+  patPackedGenParticleCollections = cms.PSet(
+#     genParticles = cms.InputTag("packedGenParticles")
   ),
 
   recoGenJetCollections = cms.PSet(
-    ak4GenJets = cms.InputTag('slimmedGenJets'), 
-    #ak4GenJetsNoNu = cms.InputTag('ak4GenJetsNoNu::HLT'),
-    #ak8GenJetsNoNu = cms.InputTag('ak8GenJetsNoNu::HLT'),
+    ak4GenJetsNoNu = cms.InputTag('ak4GenJetsNoNu::HLT'),
+    ak8GenJetsNoNu = cms.InputTag('ak8GenJetsNoNu::HLT'),
+    ak4GenJets = cms.InputTag('slimmedGenJets')
   ),
 
-#  l1tPFJetCollections = cms.PSet(
+  l1tPFJetCollections = cms.PSet(
 
 #   l1tAK4CaloJetsCorrected = cms.InputTag('ak4PFL1CaloCorrected'),
 #   l1tAK4PFJetsCorrected = cms.InputTag('ak4PFL1PFCorrected'),
-#    l1tAK4PFPuppiJetsCorrected = cms.InputTag('ak4PFL1PuppiCorrected'),
-#  ),
+#   l1tAK4PFPuppiJetsCorrected = cms.InputTag('ak4PFL1PuppiCorrected'),
+  ),
 
-#  recoCaloJetCollections = cms.PSet(
+  recoCaloJetCollections = cms.PSet(
 
 #    hltAK4CaloJets = cms.InputTag('hltAK4CaloJets'),
 #    hltAK8CaloJets = cms.InputTag('hltAK8CaloJets'),
 
 #    l1tSlwPFPuppiJets = cms.InputTag('l1tSlwPFPuppiJets', 'UncalibratedPhase1L1TJetFromPfCandidates'),
-#    l1tSlwPFPuppiJetsCorrected = cms.InputTag('l1tSlwPFPuppiJetsCorrected', 'Phase1L1TJetFromPfCandidates'),
-#  ),
+    l1tSlwPFPuppiJetsCorrected = cms.InputTag('l1tSlwPFPuppiJetsCorrected', 'Phase1L1TJetFromPfCandidates'),
+  ),
 
-#  recoPFClusterJetCollections = cms.PSet(
+  recoPFClusterJetCollections = cms.PSet(
 
 #   hltAK4PFClusterJets = cms.InputTag('hltAK4PFClusterJets'),
 #   hltAK8PFClusterJets = cms.InputTag('hltAK8PFClusterJets'),
-#  ),
+  ),
 
- # recoPFJetCollections = cms.PSet(
+  recoPFJetCollections = cms.PSet(
 
 #    l1tAK4CaloJets = cms.InputTag('ak4PFL1Calo'),
 #    l1tAK4PFJets = cms.InputTag('ak4PFL1PF'),
 #    l1tAK4PFPuppiJets = cms.InputTag('ak4PFL1Puppi'),
 
-#    hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
-#    hltAK4PFJetsCorrected = cms.InputTag('hltAK4PFJetsCorrected'),
+    hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
+##    hltAK4PFJetsCorrected = cms.InputTag('hltAK4PFJetsCorrected'),
 #    hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
 #    hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
-#    hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
+#    hltAK8PFJets = hltAK4PFCHSJets('hltAK4PFCHSJets'),
+##    hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
 #    hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
-#    hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
-#    hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
+    hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
+    hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
 #    hltAK8PFPuppiJets = cms.InputTag('hltAK8PFPuppiJets'),
 #    hltAK8PFPuppiJetsCorrected = cms.InputTag('hltAK8PFPuppiJetsCorrected'),
-#  ),
+     offlineAK4PFPuppiJets = cms.InputTag('offlineAK4PFPuppiJets'), # with rerunPUPPI option
+     offlineAK4PFPuppiJetsCorrected = cms.InputTag('offlineAK4PFPuppiJetsCorrected') # with rerunPUPPI option
+  ),
 
   patJetCollections = cms.PSet(
 
-    offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
-    offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
-    #offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
+#    offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
+    offlineAK4PFPuppiJetsCorrectedPAT = cms.InputTag('slimmedJetsPuppi'),
+    
+#    offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
   ),
 
-#  recoGenMETCollections = cms.PSet(
+  recoGenMETCollections = cms.PSet(
 
-#    genMETCalo = cms.InputTag('genMetCalo::HLT'),
-#    genMETTrue = cms.InputTag('genMetTrue::HLT'),
-#  ),
+    #genMETCalo = cms.InputTag('genMetCalo::HLT'),
+    genMETTrue = cms.InputTag('genMetTrue::HLT'),
+  ),
 
- # recoMETCollections = cms.PSet(
+  recoMETCollections = cms.PSet(
 
- #   l1tPFPuppiHT = cms.InputTag('l1tPFPuppiHT'),
- #   hltPFPuppiHT = cms.InputTag('hltPFPuppiHT'),
- #   hltPFPuppiMHT = cms.InputTag('hltPFPuppiMHT'),
- # ),
+    #l1tPFPuppiHT = cms.InputTag('l1tPFPuppiHT'),
+    #hltPFPuppiHT = cms.InputTag('hltPFPuppiHT'),
+    #hltPFPuppiMHT = cms.InputTag('hltPFPuppiMHT'),
+  ),
 
- # recoCaloMETCollections = cms.PSet(
+  recoCaloMETCollections = cms.PSet(
 
- #   hltCaloMET = cms.InputTag('hltCaloMET'),
- # ),
+    hltCaloMET = cms.InputTag('hltCaloMET'),
+  ),
 
- # recoPFClusterMETCollections = cms.PSet(
+  recoPFClusterMETCollections = cms.PSet(
 
 #   hltPFClusterMET = cms.InputTag('hltPFClusterMET'),
- # ),
+  ),
 
- # recoPFMETCollections = cms.PSet(
+  recoPFMETCollections = cms.PSet(
 
- #   l1tCaloMET = cms.InputTag('l1PFMetCalo'),
- #   l1tPFMET = cms.InputTag('l1PFMetPF'),
- #   l1tPFPuppiMET = cms.InputTag('l1PFMetPuppi'),
+    #l1tCaloMET = cms.InputTag('l1PFMetCalo'),
+    #l1tPFMET = cms.InputTag('l1PFMetPF'),
+    #l1tPFPuppiMET = cms.InputTag('l1PFMetPuppi'),
 
- #   hltPFMET = cms.InputTag('hltPFMET'),
- #   hltPFMETTypeOne = cms.InputTag('hltPFMETTypeOne'),
- #   hltPFCHSMET = cms.InputTag('hltPFCHSMET'),
- #   hltPFSoftKillerMET = cms.InputTag('hltPFSoftKillerMET'),
- #   hltPFPuppiMET = cms.InputTag('hltPFPuppiMET'),
- #   hltPFPuppiMETTypeOne = cms.InputTag('hltPFPuppiMETTypeOne'),
- #   hltPFPuppiMETv0 = cms.InputTag('hltPFPuppiMETv0'),
- # ),
+    hltPFMET = cms.InputTag('hltPFMET'),
+    #hltPFMETTypeOne = cms.InputTag('hltPFMETTypeOne'),
+    hltPFCHSMET = cms.InputTag('hltPFCHSMET'),
+    #hltPFSoftKillerMET = cms.InputTag('hltPFSoftKillerMET'),
+    hltPFPuppiMET = cms.InputTag('hltPFPuppiMET'),
+    hltPFPuppiMETTypeOne = cms.InputTag('hltPFPuppiMETTypeOne'),
+    #hltPFPuppiMETv0 = cms.InputTag('hltPFPuppiMETv0'),
+  ),
 
   patMETCollections = cms.PSet(
 
-    offlinePFMET = cms.InputTag('slimmedMETs'),
-    offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
+    #offlinePFMET = cms.InputTag('slimmedMETs'),
+    #offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
   ),
 
-#  patMuonCollections = cms.PSet(
+  patMuonCollections = cms.PSet(
 
 #   offlineIsolatedMuons = cms.InputTag('userIsolatedMuons'),
-#  ),
+  ),
 
-#  patElectronCollections = cms.PSet(
+  patElectronCollections = cms.PSet(
 
 #   offlineIsolatedElectrons = cms.InputTag('userIsolatedElectrons'),
-#  ),
+  ),
 
   stringCutObjectSelectors = cms.PSet(
     # GEN
@@ -496,30 +780,30 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple_offline',
     ak8GenJetsNoNu = cms.string(''),
 
     # L1T AK4
-#    l1tAK4CaloJets = cms.string(ak4jets_stringCut),
-#    l1tAK4PFJets = cms.string(ak4jets_stringCut),
-#    l1tAK4PFPuppiJets = cms.string(ak4jets_stringCut),
-#    l1tSlwPFPuppiJets = cms.string(ak4jets_stringCut),
+    l1tAK4CaloJets = cms.string(ak4jets_stringCut),
+    l1tAK4PFJets = cms.string(ak4jets_stringCut),
+    l1tAK4PFPuppiJets = cms.string(ak4jets_stringCut),
+    l1tSlwPFPuppiJets = cms.string(ak4jets_stringCut),
 
-#    l1tAK4CaloJetsCorrected = cms.string(ak4jets_stringCut),
-#    l1tAK4PFJetsCorrected = cms.string(ak4jets_stringCut),
-#    l1tAK4PFPuppiJetsCorrected = cms.string(ak4jets_stringCut),
-#    l1tSlwPFPuppiJetsCorrected = cms.string(ak4jets_stringCut),
+    l1tAK4CaloJetsCorrected = cms.string(ak4jets_stringCut),
+    l1tAK4PFJetsCorrected = cms.string(ak4jets_stringCut),
+    l1tAK4PFPuppiJetsCorrected = cms.string(ak4jets_stringCut),
+    l1tSlwPFPuppiJetsCorrected = cms.string(ak4jets_stringCut),
 
     # HLT AK4
-#    hltAK4CaloJets = cms.string(ak4jets_stringCut),
-#    hltAK4PFClusterJets = cms.string(ak4jets_stringCut),
-#    hltAK4PFJets = cms.string(ak4jets_stringCut),
-#    hltAK4PFJetsCorrected = cms.string(ak4jets_stringCut),
-#    hltAK4PFCHSJetsCorrected = cms.string(ak4jets_stringCut),
-#    hltAK4PFPuppiJetsCorrected = cms.string(ak4jets_stringCut),
+    hltAK4CaloJets = cms.string(ak4jets_stringCut),
+    hltAK4PFClusterJets = cms.string(ak4jets_stringCut),
+    hltAK4PFJets = cms.string(ak4jets_stringCut),
+    hltAK4PFJetsCorrected = cms.string(ak4jets_stringCut),
+    hltAK4PFCHSJetsCorrected = cms.string(ak4jets_stringCut),
+    hltAK4PFPuppiJetsCorrected = cms.string(ak4jets_stringCut),
 
     # HLT AK8
-#    hltAK8CaloJets = cms.string(ak8jets_stringCut),
-#    hltAK8PFClusterJets = cms.string(ak8jets_stringCut),
-#    hltAK8PFJetsCorrected = cms.string(ak8jets_stringCut),
-#    hltAK8PFCHSJetsCorrected = cms.string(ak8jets_stringCut),
-#    hltAK8PFPuppiJetsCorrected = cms.string(ak8jets_stringCut),
+    hltAK8CaloJets = cms.string(ak8jets_stringCut),
+    hltAK8PFClusterJets = cms.string(ak8jets_stringCut),
+    hltAK8PFJetsCorrected = cms.string(ak8jets_stringCut),
+    hltAK8PFCHSJetsCorrected = cms.string(ak8jets_stringCut),
+    hltAK8PFPuppiJetsCorrected = cms.string(ak8jets_stringCut),
 
     # Offline
     offlineAK4PFCHSJetsCorrected = cms.string(ak4jets_stringCut),
@@ -527,7 +811,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple_offline',
     offlineAK8PFPuppiJetsCorrected = cms.string(ak8jets_stringCut),
   ),
 
- outputBranchesToBeDropped = cms.vstring(
+  outputBranchesToBeDropped = cms.vstring(
 
     'genMETCalo_MuonEtFraction',
     'genMETCalo_InvisibleEtFraction',
@@ -549,7 +833,6 @@ process.schedule_().extend([process.analysisNTupleEndPath])
 #))
 
 # JMETriggerNTuple: save only TriggerResults
-"""
 if opts.onlyTriggerResultsInNTuple:
    # reset input collections
    process.JMETriggerNTuple.doubles = cms.PSet()
@@ -557,6 +840,7 @@ if opts.onlyTriggerResultsInNTuple:
    process.JMETriggerNTuple.l1tPFCandidateCollections = cms.PSet()
    process.JMETriggerNTuple.recoPFCandidateCollections = cms.PSet()
    process.JMETriggerNTuple.patPackedCandidateCollections = cms.PSet()
+   process.JMETriggerNTuple.patPackedGenParticleCollections = cms.PSet()
    process.JMETriggerNTuple.recoGenJetCollections = cms.PSet()
    process.JMETriggerNTuple.l1tPFJetCollections = cms.PSet()
    process.JMETriggerNTuple.recoCaloJetCollections = cms.PSet()
@@ -568,9 +852,9 @@ if opts.onlyTriggerResultsInNTuple:
    process.JMETriggerNTuple.recoPFClusterMETCollections = cms.PSet()
    process.JMETriggerNTuple.recoPFMETCollections = cms.PSet()
    process.JMETriggerNTuple.patMETCollections = cms.PSet()
-   process.JMETriggerNTuple.patMuonCollections = cms.PSet()
-   process.JMETriggerNTuple.patElectronCollections = cms.PSet()
-"""
+   #process.JMETriggerNTuple.patMuonCollections = cms.PSet()
+   #process.JMETriggerNTuple.patElectronCollections = cms.PSet()
+
 # FastTimerService
 if opts.addTimingDQM:
    from HLTrigger.Timer.FastTimer import customise_timer_service, customise_timer_service_print
@@ -612,7 +896,6 @@ if opts.lumis is not None:
 # create TFileService to be accessed by JMETriggerNTuple plugin
 process.TFileService = cms.Service('TFileService', fileName = cms.string(opts.output))
 
-"""
 # Tracking Monitoring
 if opts.trkdqm > 0:
 
@@ -643,7 +926,7 @@ if opts.pvdqm > 0:
 
    from JMETriggerAnalysis.Common.vertexHistogrammer_cfi import vertexHistogrammer
    process.VertexHistograms_hltPixelVertices = vertexHistogrammer.clone(src = 'pixelVertices')
-   process.VertexHistograms_hltTrimmedPixelVertices = vertexHistogrammer.clone(src = 'trimmedPixelVertices')
+   #process.VertexHistograms_hltTrimmedPixelVertices = vertexHistogrammer.clone(src = 'trimmedPixelVertices')
    process.VertexHistograms_hltPrimaryVertices = vertexHistogrammer.clone(src = 'offlinePrimaryVertices')
    process.VertexHistograms_offlinePrimaryVertices = vertexHistogrammer.clone(src = 'offlineSlimmedPrimaryVertices')
 
@@ -683,6 +966,7 @@ if opts.pvdqm > 0:
       process.trkTruthInfoPath = cms.Path(process.trkTruthInfoSeq)
       process.schedule_().extend([process.trkTruthInfoPath])
 
+      #if hasattr(process, 'pixelVertices') or hasattr(process, 'trimmedPixelVertices'):
       if hasattr(process, 'pixelVertices') or hasattr(process, 'trimmedPixelVertices'):
          process.pvAnalyzer1 = cms.EDAnalyzer('PrimaryVertexAnalyzer4PU',
            info = cms.untracked.string(opts.reco),
@@ -722,6 +1006,9 @@ if opts.pvdqm > 0:
            vertexRecoCollections = cms.VInputTag(),
          )
 
+         #for _tmp in ['pixelVertices', 'trimmedPixelVertices']:
+         #  if hasattr(process, _tmp):
+         #    process.pvAnalyzer1.vertexRecoCollections += [_tmp]
          for _tmp in ['pixelVertices', 'trimmedPixelVertices']:
            if hasattr(process, _tmp):
              process.pvAnalyzer1.vertexRecoCollections += [_tmp]
@@ -834,7 +1121,7 @@ if opts.pfdqm > 0:
 
    process.pfMonitoringEndPath = cms.EndPath(process.pfMonitoringSeq)
    process.schedule_().extend([process.pfMonitoringEndPath])
-"""
+
 # MessageLogger
 if opts.logs:
    process.MessageLogger = cms.Service('MessageLogger',
@@ -900,107 +1187,63 @@ else:
 #    '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/QCD_Pt-15to3000_TuneCP5_Flat_14TeV-pythia8/FEVT/PU200_castor_111X_mcRun4_realistic_T15_v1-v1/100000/005010D5-6DF5-5E4A-89A3-30FEE02E40F8.root'
 #     '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/QCD_Pt-15to3000_TuneCP5_Flat_14TeV-pythia8/FEVT/PU200_castor_111X_mcRun4_realistic_T15_v1-v1/100000/005010D5-6DF5-5E4A-89A3-30FEE02E40F8.root'
 #    '/store/group/phys_egamma/sobhatta/egamma_timing_studies/samples/QCD_Pt-15to3000_TuneCP5_Flat_14TeV-pythia8_Phase2HLTTDRWinter20DIGI-PU200_castor_110X_mcRun4_realistic_v3-v2_GEN-SIM-DIGI-RAW_2021-12-06_23-04-36/output_1.root'
-    '/store/mc/PhaseIISpring22DRMiniAOD/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_castor_123X_mcRun4_realistic_v11-v1/40000/009871c5-babe-40aa-9e82-7d91f772b3e4.root'
-    
-      # '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/MINIAODSIM/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/c354eb33-0710-4697-959d-6ae6ffa27946.root',
-      # '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/MINIAODSIM/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/fc9599f3-9048-4d21-9dac-6f5b609dd197.root'
+#     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/MINIAODSIM/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/c354eb33-0710-4697-959d-6ae6ffa27946.root'
+#     '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-RECO/123X_mcRun4_realistic_v11_2026D88noPU-v1/2580000/4cb86d46-f780-4ce7-94df-9e0039e1953b.root'
+   '/store/mc/PhaseIISpring22DRMiniAOD/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_castor_123X_mcRun4_realistic_v11-v1/40000/009871c5-babe-40aa-9e82-7d91f772b3e4.root'
+#    '/store/mc/PhaseIISpring22DRMiniAOD/VBFHToInvisible_M-125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_123X_mcRun4_realistic_v11-v1/2560000/00ba7c93-a3e4-4560-8cbe-2385624e0437.root'
+#    "/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-RECO/123X_mcRun4_realistic_v11_2026D88noPU-v1/2580000/4cb86d46-f780-4ce7-94df-9e0039e1953b.root"
    
+#    '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/MINIAODSIM/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/40f1abc8-1d86-4dae-8e5f-a42f0e700b02.root'
    ]
    process.source.secondaryFileNames = [
-
-  
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/03a1db66-fb19-4832-8825-f98f0a6122c1.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/06b322e5-89de-4d9f-967a-a4843fff6eba.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/1049741a-5b18-4bd7-925a-543324c86499.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/7282fafb-31e8-4072-af96-402e7a889c9a.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/7b600534-2724-4c34-a970-903f5675f135.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/87b1cb2c-39d8-46d5-9f5d-36bead06ad6c.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/8ea05f50-b5ef-47b5-a9a9-6b79752cd4bc.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/b2136d4b-7bb9-4674-9cf5-689757fbdff6.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/d6f15a85-a6e8-4366-9826-34836a28f4d4.root',
+      #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/f8c1743e-94af-4707-a02f-be1b74001178.root'
    
-    #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/03a1db66-fb19-4832-8825-f98f0a6122c1.root',
-    #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/06b322e5-89de-4d9f-967a-a4843fff6eba.root',
-    #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/1049741a-5b18-4bd7-925a-543324c86499.root',
-    #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/7282fafb-31e8-4072-af96-402e7a889c9a.root',
-    #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/7b600534-2724-4c34-a970-903f5675f135.root',
-    #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/87b1cb2c-39d8-46d5-9f5d-36bead06ad6c.root',
-    #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/8ea05f50-b5ef-47b5-a9a9-6b79752cd4bc.root',
-    #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/b2136d4b-7bb9-4674-9cf5-689757fbdff6.root',
-    #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/d6f15a85-a6e8-4366-9826-34836a28f4d4.root',
-    #  '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/f8c1743e-94af-4707-a02f-be1b74001178.root',
-    
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/039041cd-52ec-4b41-9e2c-28a4ca1e61ed.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/0442828e-6d38-4310-a2ce-d2f667c09a7f.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/0a037338-984c-4d66-952f-fbe8fe2cf2b2.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/0a884b3d-e426-427f-8bdb-ff7624beccca.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/13d3b4d7-c86f-4780-9287-d5efb42bda93.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/18e07719-4814-4520-8e6f-4aabab47c7b3.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/1aed794c-c8bd-4b76-b124-d3d7d5049a38.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/1c069818-c881-4346-bdc5-63cffb006a45.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/205595b3-dc74-4d83-9d6a-d02266feb5a3.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/2214afa9-eb0f-4f1c-b823-dfb93fb924bc.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/22a33b17-a02e-400a-a258-924382fe3c67.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/2383d7d6-7407-484f-9990-0f12a5c77d68.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/238aeeae-6092-4032-91d0-934c9d08bfbe.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/2e37c407-ccf9-4504-9bc0-89a0e50f3209.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/2e6b544f-81d5-4bd1-817a-c2637816885d.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/30b2d988-4ccd-4e64-a4ac-06e1459d0bdb.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/343a23ef-5e39-4f8c-ba08-15b2497297e2.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/40118641-715e-453b-9c31-6777a5d89ee4.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/462784a3-846e-43a7-94d5-0a3b1e749bc9.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/478bf469-c706-4f66-aa71-a43ddf091e17.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/48b194ba-778c-4889-a4d8-e465109896cf.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/495f2b84-956d-4cff-beca-1d5e0818708d.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/499002d7-f766-4861-b5ba-99f775918817.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/4e58d57a-1bcf-4714-b1e3-d65d9d90fa9e.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/517014f3-b3ae-402d-b082-06c9355493e3.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/5457e825-e1c0-4979-893d-e26ad9f2930f.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/56296e80-466d-4183-a3bf-d567c2716e3d.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/573c459e-86db-45c4-8b32-b7f03a76b166.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/5bcf7505-f567-4eac-ae18-4f76935dd41b.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/5ea5fc60-09fe-4d37-9b23-62048f2df4c5.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/623ba5f3-4460-4a6e-9dce-2cef02466b37.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/65b6d821-4186-4d7a-b01b-3606a3f707ee.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/6d3c20cf-da20-42ee-89b7-9b0cac16d13f.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/6ed8f895-f630-4d8e-9583-cd0e50532fe3.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/7697d99c-0848-4395-ae1d-074d34ead9de.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/77aa3fe0-215f-479b-bb3e-7b27f289d5b3.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/78c8c089-f24f-465a-bb37-f7219aa7df10.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/792feeb1-d396-4218-ac8b-1ea09bf97954.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/79a9f21a-0341-48d2-8abd-76886816dc18.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/7ca2e4ea-7fac-424f-b4b4-24a8fe5e67b2.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/836688e1-4c3b-4230-8fda-6ee11b890959.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/930d9511-3c19-4156-8e75-22675cc6ce65.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/986dadc2-5049-40c7-b72c-855b12a3e619.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/98b7a168-0bc4-4732-bd6b-88ef590120cd.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/9941d8c9-5c3b-4863-a09a-b1f5b1d131dc.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/a0a56b97-4f64-42c3-ba43-6ec0aea443c5.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/a1ed42e7-6951-47a2-92fe-2401162e2816.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/a4e79aff-e70e-4baa-8078-cfe8229ac7df.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/a5bf9208-741b-4617-9667-96903acb0f5d.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/a7f0d689-b473-4053-90dd-726b65cc37d7.root',
-     
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/a8265c3b-6152-4990-921d-1dc5e434cc57.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/aa91ee5d-4a1d-4dd8-bf2d-668f18997c3c.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/ab833fcf-da09-4d8e-bced-2878f217fe78.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/b194dd86-83b3-41f0-ac69-4546c22148f4.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/b30ef822-d4f1-4f48-ad00-c2d76528a559.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/b37e3fce-0bd8-48cc-9b57-89a07c610170.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/b91857b5-dbb0-4dcb-a270-a05e241b3ba4.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/bac48dfb-ee94-48cc-915f-328ca9dcd018.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/bb9a6c34-d191-40a3-bcd9-08293f33ae64.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/c30a2fea-2c2d-4c24-a8c7-e1987b85c8a9.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/d15ad300-95b0-4119-8f8b-0f7ed200462e.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/d4628ac1-6cf0-4840-a0c1-3b93229dd56d.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/d8990030-0d73-4d65-b2c3-33d07e7782af.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/dc94ff32-095d-4fce-8062-682e43ce0e12.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/e0ac0e3d-50dc-4857-8846-4666797678c9.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/e379bd14-e854-4d28-adc8-2eb8334a60c4.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/e4556ed6-9470-49ba-b39b-21eddcf96374.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/e5e7259c-4c40-40a4-81ee-555ecb666b6f.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/e8faa6ef-a3fa-4431-9762-a7f560aaab80.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/ee972580-25a0-42d1-ae42-6e34a2c40ae5.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/f08a0f99-47a0-4e14-a7ed-4c611115c227.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/f35fc008-8994-4861-a1a6-9dbdce66253a.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/f50e4a7b-cf2b-48bb-a708-ce8f96c21611.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/f6f52cb7-bff5-4444-baa7-354bd6f27732.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/f9554f37-0ba1-4c7f-995b-b96651d2c26e.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/fa87955f-5470-4b12-a386-22e5cde24ec5.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/fd9723d1-30ef-41c5-9595-a652e3546071.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/fea37e62-371e-46be-80aa-ef1e69f8e70a.root',
-    #   '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/ff0e3e6e-31ce-417f-bb6f-7b06d507b275.root'
+#        '/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/123X_mcRun4_realistic_v11_2026D88noPU-v1/2580000/3c7da83f-5893-4e4d-b48f-ecf16025e65f.root'
+   
+
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/00582df6-3bb5-4a55-bf29-80daf63a2746.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/0adec3b3-8880-41ac-825b-e3b4d598fa7f.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/0b985c97-6d34-4799-8e5e-346e9047c9e4.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/1c518713-024c-411a-9640-cacde51e1360.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/1f4b64e5-5ebb-4a43-8e11-b4ecb9a380df.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/23718601-316d-485b-b7e8-57989aa37c8c.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/25b8b014-b275-4b45-95aa-a7bf40cb4047.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/273d16a5-00b0-4842-add2-5de731b93308.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/28665e55-4b68-4f56-b092-0d5960ae42b6.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/2babef46-08a6-493d-9988-e131b046094f.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/2bb05f23-68f0-4cde-bc89-cdd0881ac515.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/30469c20-ee40-45ec-a293-3235c9f55f25.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/328ee71c-1dc2-4a91-b06d-d940f31b94af.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/3b463a25-d70e-40ae-a76c-b6ac463078cd.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/43f84565-e31f-45df-ba89-c4e6b789fdd6.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/59d54666-447c-4fa2-9c57-ecbf6f8d2245.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/5cd4c639-cc3c-41c7-acd3-b9e856bcdb29.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/5e9391d3-a558-4628-a2de-c883c30da4b6.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/6e72ecb3-352b-467f-b997-3a90788012f0.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/6ebc18d1-889b-4999-86ee-91bff8e6eb6d.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/7606e56d-d2d1-4fcc-b8ec-e1697c7d3395.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/8b2e1ac3-1e6b-480f-9dc3-7281909498f1.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/971f2041-739a-4306-80da-863e48cd43d0.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/b3f90577-c454-4a79-9e5e-0857fbe19121.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/b6a4027f-2a4b-4fbb-a93b-0630a13b8333.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/c0d87ae7-aca6-4c8a-8cfb-f0d8bbce274b.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/c897ccde-3d56-479c-8b62-5189b67406ff.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/df8b9e32-c809-4f81-8145-24e500b96baf.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/e1a56266-bf8e-4f27-99b5-bb195267a2ce.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/e3320602-4396-4f8f-8b32-4326355e8e6f.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/e98ce788-51b6-49fb-b987-ef15a78f5b31.root',
+# '/store/relval/CMSSW_12_4_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/2580000/f5dc0974-ac02-4b95-9749-05a40667974c.root'
+  
+  
    ]
 
 # skimming of tracks
@@ -1015,21 +1258,21 @@ if opt_skimTracks:
 
    # add PV collections to JMETriggerNTuple
    process.JMETriggerNTuple.recoVertexCollections = cms.PSet(
-  #   hltPixelVertices = cms.InputTag('pixelVertices'),
- #    hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
+     hltPixelVertices = cms.InputTag('pixelVertices'),
+     hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
+     hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
      offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
-     offlineSlimmedPrimaryVertices4D = cms.InputTag('offlineSlimmedPrimaryVertices4D'),
    )
 
- #  process.JMETriggerNTuple.outputBranchesToBeDropped += [
- #    'hltPixelVertices_isFake',
- #    'hltPixelVertices_chi2',
- #    'hltPixelVertices_ndof',
+   process.JMETriggerNTuple.outputBranchesToBeDropped += [
+     'hltPixelVertices_isFake',
+     'hltPixelVertices_chi2',
+     'hltPixelVertices_ndof',
 
- #    'hltTrimmedPixelVertices_isFake',
- #    'hltTrimmedPixelVertices_chi2',
- #    'hltTrimmedPixelVertices_ndof',
- #  ]
+     'hltTrimmedPixelVertices_isFake',
+     'hltTrimmedPixelVertices_chi2',
+     'hltTrimmedPixelVertices_ndof',
+   ]
 
 process.prune()
 

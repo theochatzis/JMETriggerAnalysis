@@ -17,6 +17,7 @@
 #include "JMETriggerAnalysis/NTuplizers/interface/L1TPFCandidateCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/RecoPFCandidateCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/PATPackedCandidateCollectionContainer.h"
+#include "JMETriggerAnalysis/NTuplizers/interface/PATPackedGenParticleCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/RecoGenJetCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/L1TPFJetCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/RecoCaloJetCollectionContainer.h"
@@ -85,6 +86,7 @@ protected:
   std::vector<L1TPFCandidateCollectionContainer> v_l1tPFCandidateCollectionContainer_;
   std::vector<RecoPFCandidateCollectionContainer> v_recoPFCandidateCollectionContainer_;
   std::vector<PATPackedCandidateCollectionContainer> v_patPackedCandidateCollectionContainer_;
+  std::vector<PATPackedGenParticleCollectionContainer> v_patPackedGenParticleCollectionContainer_;
   std::vector<RecoGenJetCollectionContainer> v_recoGenJetCollectionContainer_;
   std::vector<L1TPFJetCollectionContainer> v_l1tPFJetCollectionContainer_;
   std::vector<RecoCaloJetCollectionContainer> v_recoCaloJetCollectionContainer_;
@@ -97,8 +99,8 @@ protected:
   std::vector<RecoPFClusterMETCollectionContainer> v_recoPFClusterMETCollectionContainer_;
   std::vector<RecoPFMETCollectionContainer> v_recoPFMETCollectionContainer_;
   std::vector<PATMETCollectionContainer> v_patMETCollectionContainer_;
-  std::vector<PATMuonCollectionContainer> v_patMuonCollectionContainer_;
-  std::vector<PATElectronCollectionContainer> v_patElectronCollectionContainer_;
+  //std::vector<PATMuonCollectionContainer> v_patMuonCollectionContainer_;
+  //std::vector<PATElectronCollectionContainer> v_patElectronCollectionContainer_;
 
   TTree* ttree_ = nullptr;
 
@@ -284,6 +286,17 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
     cc_i.orderByHighestPt(true);
   }
 
+  // pat::PackedGenParticleCollection
+  initCollectionContainer<PATPackedGenParticleCollectionContainer, pat::PackedGenParticle>(
+      iConfig,
+      v_patPackedGenParticleCollectionContainer_,
+      "patPackedGenParticleCollections",
+      "pat::PackedGenParticleCollection",
+      stringCutObjectSelectors_map_);
+  for (auto& cc_i : v_patPackedGenParticleCollectionContainer_) {
+    cc_i.orderByHighestPt(true);
+  }
+
   // reco::GenJetCollection
   initCollectionContainer<RecoGenJetCollectionContainer, reco::GenJet>(iConfig,
                                                                        v_recoGenJetCollectionContainer_,
@@ -382,7 +395,9 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   initCollectionContainer<PATMETCollectionContainer, pat::MET>(
       iConfig, v_patMETCollectionContainer_, "patMETCollections", "pat::METCollection", stringCutObjectSelectors_map_);
 
+  /*
   // pat::MuonCollection
+  
   initCollectionContainer<PATMuonCollectionContainer, pat::Muon>(iConfig,
                                                                  v_patMuonCollectionContainer_,
                                                                  "patMuonCollections",
@@ -401,6 +416,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   for (auto& cc_i : v_patElectronCollectionContainer_) {
     cc_i.orderByHighestPt(true);
   }
+  */
 
   // output TTree
   usesResource(TFileService::kSharedResource);
@@ -526,12 +542,20 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                     &recoPFCandidateCollectionContainer_i.vec_rawEcalEnergy());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_rawHcalEnergy",
                     &recoPFCandidateCollectionContainer_i.vec_rawHcalEnergy());
+    this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_ecalEnergyToRaw",
+                    &recoPFCandidateCollectionContainer_i.vec_ecalEnergyToRaw());
+     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_hcalEnergyToRaw",
+                    &recoPFCandidateCollectionContainer_i.vec_hcalEnergyToRaw());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_vx",
                     &recoPFCandidateCollectionContainer_i.vec_vx());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_vy",
                     &recoPFCandidateCollectionContainer_i.vec_vy());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_vz",
                     &recoPFCandidateCollectionContainer_i.vec_vz());
+    this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_time",
+                    &recoPFCandidateCollectionContainer_i.vec_time());
+    this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_timeError",
+                    &recoPFCandidateCollectionContainer_i.vec_timeError());
   }
 
   for (auto& patPackedCandidateCollectionContainer_i : v_patPackedCandidateCollectionContainer_) {
@@ -553,6 +577,25 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                     &patPackedCandidateCollectionContainer_i.vec_vz());
     this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_fromPV",
                     &patPackedCandidateCollectionContainer_i.vec_fromPV());
+  }
+
+    for (auto& patPackedGenParticleCollectionContainer_i : v_patPackedGenParticleCollectionContainer_) {
+    this->addBranch(patPackedGenParticleCollectionContainer_i.name() + "_pdgId",
+                    &patPackedGenParticleCollectionContainer_i.vec_pdgId());
+    this->addBranch(patPackedGenParticleCollectionContainer_i.name() + "_pt",
+                    &patPackedGenParticleCollectionContainer_i.vec_pt());
+    this->addBranch(patPackedGenParticleCollectionContainer_i.name() + "_eta",
+                    &patPackedGenParticleCollectionContainer_i.vec_eta());
+    this->addBranch(patPackedGenParticleCollectionContainer_i.name() + "_phi",
+                    &patPackedGenParticleCollectionContainer_i.vec_phi());
+    this->addBranch(patPackedGenParticleCollectionContainer_i.name() + "_mass",
+                    &patPackedGenParticleCollectionContainer_i.vec_mass());
+    this->addBranch(patPackedGenParticleCollectionContainer_i.name() + "_vx",
+                    &patPackedGenParticleCollectionContainer_i.vec_vx());
+    this->addBranch(patPackedGenParticleCollectionContainer_i.name() + "_vy",
+                    &patPackedGenParticleCollectionContainer_i.vec_vy());
+    this->addBranch(patPackedGenParticleCollectionContainer_i.name() + "_vz",
+                    &patPackedGenParticleCollectionContainer_i.vec_vz());
   }
 
   for (auto& recoGenJetCollectionContainer_i : v_recoGenJetCollectionContainer_) {
@@ -582,6 +625,8 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                     &recoGenJetCollectionContainer_i.vec_photonMultiplicity());
     this->addBranch(recoGenJetCollectionContainer_i.name() + "_muonMultiplicity",
                     &recoGenJetCollectionContainer_i.vec_muonMultiplicity());
+    this->addBranch(recoGenJetCollectionContainer_i.name() + "_CandidateVz",
+                    &recoGenJetCollectionContainer_i.vec_CandidateVz());
   }
 
   for (auto& l1tPFJetCollectionContainer_i : v_l1tPFJetCollectionContainer_) {
@@ -623,10 +668,11 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
     
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_mass", &recoPFJetCollectionContainer_i.vec_mass());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_jesc", &recoPFJetCollectionContainer_i.vec_jesc());
-    /*
+    
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_jetArea", &recoPFJetCollectionContainer_i.vec_jetArea());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_numberOfDaughters",
                     &recoPFJetCollectionContainer_i.vec_numberOfDaughters());
+    
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_chargedHadronEnergyFraction",
                     &recoPFJetCollectionContainer_i.vec_chargedHadronEnergyFraction());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_neutralHadronEnergyFraction",
@@ -637,6 +683,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                     &recoPFJetCollectionContainer_i.vec_photonEnergyFraction());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_muonEnergyFraction",
                     &recoPFJetCollectionContainer_i.vec_muonEnergyFraction());
+    
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_chargedHadronMultiplicity",
                     &recoPFJetCollectionContainer_i.vec_chargedHadronMultiplicity());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_neutralHadronMultiplicity",
@@ -671,7 +718,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
 
 
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_CandidateBelongsToJet",
-                    &recoPFJetCollectionContainer_i.vec_CandidateBelongsToJet());*/
+                    &recoPFJetCollectionContainer_i.vec_CandidateBelongsToJet());
   }
 
   for (auto& patJetCollectionContainer_i : v_patJetCollectionContainer_) {
@@ -826,7 +873,8 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
     this->addBranch(patMETCollectionContainer_i.name() + "_Type7EtFraction",
                     &patMETCollectionContainer_i.vec_Type7EtFraction());
   }
-
+  
+  /*
   for (auto& patMuonCollectionContainer_i : v_patMuonCollectionContainer_) {
     this->addBranch(patMuonCollectionContainer_i.name() + "_pdgId", &patMuonCollectionContainer_i.vec_pdgId());
     this->addBranch(patMuonCollectionContainer_i.name() + "_pt", &patMuonCollectionContainer_i.vec_pt());
@@ -857,6 +905,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
     this->addBranch(patElectronCollectionContainer_i.name() + "_pfIso", &patElectronCollectionContainer_i.vec_pfIso());
     this->addBranch(patElectronCollectionContainer_i.name() + "_etaSC", &patElectronCollectionContainer_i.vec_etaSC());
   }
+  */
 
   // settings for output TFile and TTree
   fs->file().SetCompressionAlgorithm(ROOT::ECompressionAlgorithm::kLZ4);
@@ -1011,6 +1060,10 @@ void JMETriggerNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   // pat::PackedCandidateCollection
   this->fillCollectionContainer<PATPackedCandidateCollectionContainer, pat::PackedCandidate>(
       iEvent, v_patPackedCandidateCollectionContainer_, fillCollectionConditionMap_);
+  
+  // pat::PackedGenParticleCollection
+  this->fillCollectionContainer<PATPackedGenParticleCollectionContainer, pat::PackedGenParticle>(
+      iEvent, v_patPackedGenParticleCollectionContainer_, fillCollectionConditionMap_);
 
   // reco::GenJetCollection
   if (not iEvent.isRealData()) {
@@ -1063,7 +1116,8 @@ void JMETriggerNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   // pat::METCollection
   this->fillCollectionContainer<PATMETCollectionContainer, pat::MET>(
       iEvent, v_patMETCollectionContainer_, fillCollectionConditionMap_);
-
+  
+  /*
   // pat::MuonCollection
   this->fillCollectionContainer<PATMuonCollectionContainer, pat::Muon>(
       iEvent, v_patMuonCollectionContainer_, fillCollectionConditionMap_);
@@ -1071,6 +1125,7 @@ void JMETriggerNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   // pat::ElectronCollection
   this->fillCollectionContainer<PATElectronCollectionContainer, pat::Electron>(
       iEvent, v_patElectronCollectionContainer_, fillCollectionConditionMap_);
+  */
 
   // fill TTree
   ttree_->Fill();

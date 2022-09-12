@@ -24,9 +24,13 @@ public:
   std::vector<float>& vec_mass() { return mass_; }
   std::vector<float>& vec_rawEcalEnergy() { return rawEcalEnergy_; }
   std::vector<float>& vec_rawHcalEnergy() { return rawHcalEnergy_; }
+  std::vector<float>& vec_ecalEnergyToRaw() { return ecalEnergyToRaw_; }
+  std::vector<float>& vec_hcalEnergyToRaw() { return hcalEnergyToRaw_; }
   std::vector<float>& vec_vx() { return vx_; }
   std::vector<float>& vec_vy() { return vy_; }
   std::vector<float>& vec_vz() { return vz_; }
+  std::vector<float>& vec_time() { return time_; }
+  std::vector<float>& vec_timeError() { return timeError_; }
 
 protected:
   std::vector<int> pdgId_;
@@ -36,9 +40,13 @@ protected:
   std::vector<float> mass_;
   std::vector<float> rawEcalEnergy_;
   std::vector<float> rawHcalEnergy_;
+  std::vector<float> ecalEnergyToRaw_;
+  std::vector<float> hcalEnergyToRaw_;
   std::vector<float> vx_;
   std::vector<float> vy_;
   std::vector<float> vz_;
+  std::vector<float> time_;
+  std::vector<float> timeError_;
 };
 
 #endif

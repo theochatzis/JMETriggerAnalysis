@@ -1,5 +1,5 @@
 #include <JMETriggerAnalysis/NTuplizers/interface/RecoGenJetCollectionContainer.h>
-
+#include <DataFormats/Candidate/interface/Candidate.h>
 RecoGenJetCollectionContainer::RecoGenJetCollectionContainer(const std::string& name,
                                                              const std::string& inputTagLabel,
                                                              const edm::EDGetToken& token,
@@ -26,6 +26,8 @@ void RecoGenJetCollectionContainer::clear() {
   electronMultiplicity_.clear();
   photonMultiplicity_.clear();
   muonMultiplicity_.clear();
+
+  CandidateVz_.clear();
 }
 
 void RecoGenJetCollectionContainer::reserve(const size_t vec_size) {
@@ -69,4 +71,12 @@ void RecoGenJetCollectionContainer::emplace_back(const reco::GenJet& obj) {
   electronMultiplicity_.emplace_back(obj.chargedEmMultiplicity());
   photonMultiplicity_.emplace_back(obj.neutralEmMultiplicity());
   muonMultiplicity_.emplace_back(obj.muonMultiplicity());
+
+  // get info for candidates of jet
+  for(unsigned int iCandidate=0; iCandidate < obj.numberOfDaughters(); iCandidate++){
+    // jet daughters are reco::GenParticle so use dynamic cast to change to "daughter class" reco::Candidate
+    // reco::Candidate objects
+    const reco::Candidate *JetCand = dynamic_cast<const reco::Candidate*>(obj.daughter(iCandidate)); 
+    CandidateVz_.emplace_back(JetCand->vz());
+  } // loop over jet daughter particles
 }

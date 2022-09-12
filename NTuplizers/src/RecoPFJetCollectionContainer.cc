@@ -29,6 +29,22 @@ void RecoPFJetCollectionContainer::clear() {
   electronMultiplicity_.clear();
   photonMultiplicity_.clear();
   muonMultiplicity_.clear();
+
+  CandidateEnergy_.clear();
+  CandidatePt_.clear();
+  CandidateEta_.clear();
+  CandidatePhi_.clear();
+  CandidateCharge_.clear();
+  CandidateTime_.clear();
+  CandidateTimeError_.clear();
+  CandidateVx_.clear();
+  CandidateVy_.clear();
+  CandidateVz_.clear();
+
+
+  CandidateBelongsToJet_.clear();
+
+  JetIndex_ = 0;
 }
 
 void RecoPFJetCollectionContainer::reserve(const size_t vec_size) {
@@ -53,22 +69,6 @@ void RecoPFJetCollectionContainer::reserve(const size_t vec_size) {
   electronMultiplicity_.reserve(vec_size);
   photonMultiplicity_.reserve(vec_size);
   muonMultiplicity_.reserve(vec_size);
-
-  CandidateEnergy_.clear();
-  CandidatePt_.clear();
-  CandidateEta_.clear();
-  CandidatePhi_.clear();
-  CandidateCharge_.clear();
-  CandidateTime_.clear();
-  CandidateTimeError_.clear();
-  CandidateVx_.clear();
-  CandidateVy_.clear();
-  CandidateVz_.clear();
-
-
-  CandidateBelongsToJet_.clear();
-
-  JetIndex_ = 0;
 }
 
 void RecoPFJetCollectionContainer::emplace_back(const reco::PFJet& obj) {
