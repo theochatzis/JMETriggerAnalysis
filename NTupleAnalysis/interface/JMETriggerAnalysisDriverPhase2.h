@@ -19,7 +19,7 @@ public:
   void analyze() override;
 
 protected:
-  bool jetBelongsToCategory(const std::string& categLabel, const float jetPt, const float jetAbsEta) const override;
+  bool jetBelongsToCategory(const std::string& jetCollection, const std::string& categLabel, const float jetPt, const float jetAbsEta) const override;
 
   void bookHistograms_Jets_2DMaps(const std::string& dir, const std::string& jetType1, const std::string& jetType2);
   void bookHistograms_MET_2DMaps(const std::string& dir,

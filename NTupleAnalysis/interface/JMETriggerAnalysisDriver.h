@@ -20,8 +20,9 @@ public:
 
 protected:
   std::vector<std::string> jetCategoryLabels_;
-  virtual bool jetBelongsToCategory(const std::string& categLabel, const float jetPt, const float jetAbsEta) const;
-
+  // modification start
+  virtual bool jetBelongsToCategory(const std::string& jetCollection, const std::string& categLabel, const float jetPt, const float jetAbsEta) const;
+  // modification end
   class fillHistoDataJets {
   public:
     std::string jetCollection = "";

@@ -36,7 +36,7 @@ if __name__ == '__main__':
                        help='number of events per job')
 
    parser.add_argument('--time', '--RequestRuntime', dest='RequestRuntime', action='store', default='10800',
-                       help='HTCondor: value of parameter "RequestRuntime"')
+                       help='HTCondor: value of parameter "MaxRuntime"')
 
    parser.add_argument('--JobFlavour', dest='JobFlavour', action='store', default=None,
                        help='argument of HTCondor parameter "+JobFlavour" (by default, the parameter is not specified)')
@@ -236,10 +236,10 @@ if __name__ == '__main__':
                 'should_transfer_files   = IF_NEEDED',
                 'when_to_transfer_output = ON_EXIT',
 
-                #'requirements = (OpSysAndVer == "'+('CentOS7' if is_slc7_arch else 'SL6')+'")',
+                'requirements = (OpSysAndVer =?= "'+('CentOS7' if is_slc7_arch else 'SL6')+'")',
 
-                #' RequestMemory  =  2000',
-                #'+RequestRuntime = '+str(opts.RequestRuntime),
+                ' RequestMemory  =  2000',
+                '+MaxRuntime = '+str(opts.RequestRuntime),
               ]
 
               if opts.JobFlavour is not None:

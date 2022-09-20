@@ -13,119 +13,178 @@ JMETriggerAnalysisDriver::JMETriggerAnalysisDriver(const std::string& tfile,
 JMETriggerAnalysisDriver::JMETriggerAnalysisDriver(const std::string& outputFilePath, const std::string& outputFileMode)
     : AnalysisDriverBase(outputFilePath, outputFileMode) {}
 
-bool JMETriggerAnalysisDriver::jetBelongsToCategory(const std::string& categLabel,
+bool JMETriggerAnalysisDriver::jetBelongsToCategory(const std::string& jetCollection,
+                                                    const std::string& categLabel,
                                                     const float jetPt,
                                                     const float jetAbsEta) const {
   bool ret(false);
+  
+  // modification start
+  // booleans that show if jet is AK4 or AK8
+  bool isAK4 = (jetCollection.find("AK4")!=std::string::npos) or (jetCollection.find("ak4")!=std::string::npos);
+  bool isAK8 = (jetCollection.find("AK8")!=std::string::npos) or (jetCollection.find("ak8")!=std::string::npos);
+  
   if (categLabel == "_EtaIncl") {
     ret = (jetAbsEta < 5.0);
-  } else if (categLabel == "_EtaInclPt0") {
+  } else if (categLabel == "_EtaInclPt0" && isAK4) {  //------------- AK4 pt regions
     ret = (jetAbsEta < 5.0) and (30. <= jetPt) and (jetPt < 60.);
-  } else if (categLabel == "_EtaInclPt1") {
-    ret = (jetAbsEta < 5.0) and (60. <= jetPt) and (jetPt < 110.);
-  } else if (categLabel == "_EtaInclPt2") {
-    ret = (jetAbsEta < 5.0) and (110. <= jetPt) and (jetPt < 400.);
-  } else if (categLabel == "_EtaInclPt3") {
-    ret = (jetAbsEta < 5.0) and (400. <= jetPt) and (jetPt < 2000.);
-  } else if (categLabel == "_EtaInclPt4") {
-    ret = (jetAbsEta < 5.0) and (2000. <= jetPt);
-  }
+  } else if (categLabel == "_EtaInclPt1" && isAK4) {
+    ret = (jetAbsEta < 5.0) and (60. <= jetPt) and (jetPt < 80.);
+  } else if (categLabel == "_EtaInclPt2" && isAK4) {
+    ret = (jetAbsEta < 5.0) and (80. <= jetPt) and (jetPt < 100.);
+  } else if (categLabel == "_EtaInclPt3" && isAK4) {
+    ret = (jetAbsEta < 5.0) and (100. <= jetPt) and (jetPt < 200.);
+  } else if (categLabel == "_EtaInclPt4" && isAK4) {
+    ret = (jetAbsEta < 5.0) and (200. <= jetPt);
+  } else if (categLabel == "_EtaInclPt0" && isAK8) {  //------------- AK8 pt regions
+    ret = (jetAbsEta < 5.0) and (90. <= jetPt) and (jetPt < 150.);
+  } else if (categLabel == "_EtaInclPt1" && isAK8) {
+    ret = (jetAbsEta < 5.0) and (150. <= jetPt) and (jetPt < 200.);
+  } else if (categLabel == "_EtaInclPt2" && isAK8) {
+    ret = (jetAbsEta < 5.0) and (200. <= jetPt) and (jetPt < 250.);
+  } else if (categLabel == "_EtaInclPt3" && isAK8) {
+    ret = (jetAbsEta < 5.0) and (250. <= jetPt) and (jetPt < 400.);
+  } else if (categLabel == "_EtaInclPt4" && isAK8) {
+    ret = (jetAbsEta < 5.0) and (400. <= jetPt);
+  } 
 
   else if (categLabel == "_HB") {
     ret = (jetAbsEta < 1.3);
-  } else if (categLabel == "_HBPt0") {
+  } else if (categLabel == "_HBPt0" && isAK4) {  //------------- AK4 pt regions
     ret = (jetAbsEta < 1.3) and (30. <= jetPt) and (jetPt < 60.);
-  } else if (categLabel == "_HBPt1") {
-    ret = (jetAbsEta < 1.3) and (60. <= jetPt) and (jetPt < 110.);
-  } else if (categLabel == "_HBPt2") {
-    ret = (jetAbsEta < 1.3) and (110. <= jetPt) and (jetPt < 400.);
-  } else if (categLabel == "_HBPt3") {
-    ret = (jetAbsEta < 1.3) and (400. <= jetPt) and (jetPt < 2000.);
-  } else if (categLabel == "_HBPt4") {
-    ret = (jetAbsEta < 1.3) and (2000. <= jetPt);
+  } else if (categLabel == "_HBPt1" && isAK4) {
+    ret = (jetAbsEta < 1.3) and (60. <= jetPt) and (jetPt < 80.);
+  } else if (categLabel == "_HBPt2" && isAK4) {
+    ret = (jetAbsEta < 1.3) and (80. <= jetPt) and (jetPt < 100.);
+  } else if (categLabel == "_HBPt3" && isAK4) {
+    ret = (jetAbsEta < 1.3) and (100. <= jetPt) and (jetPt < 200.);
+  } else if (categLabel == "_HBPt4" && isAK4) {
+    ret = (jetAbsEta < 1.3) and (200. <= jetPt);
+  } else if (categLabel == "_HBPt0" && isAK8) {  //------------- AK8 pt regions
+    ret = (jetAbsEta < 1.3) and (90. <= jetPt) and (jetPt < 150.);
+  } else if (categLabel == "_HBPt1" && isAK8) {
+    ret = (jetAbsEta < 1.3) and (150. <= jetPt) and (jetPt < 200.);
+  } else if (categLabel == "_HBPt2" && isAK8) {
+    ret = (jetAbsEta < 1.3) and (200. <= jetPt) and (jetPt < 250.);
+  } else if (categLabel == "_HBPt3" && isAK8) {
+    ret = (jetAbsEta < 1.3) and (250. <= jetPt) and (jetPt < 400.);
+  } else if (categLabel == "_HBPt4" && isAK8) {
+    ret = (jetAbsEta < 1.3) and (400. <= jetPt);
   }
 
   else if (categLabel == "_HE1") {
     ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5);
-  } else if (categLabel == "_HE1Pt0") {
+  } else if (categLabel == "_HE1Pt0" && isAK4) {  //------------- AK4 pt regions
     ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5) and (30. <= jetPt) and (jetPt < 60.);
-  } else if (categLabel == "_HE1Pt1") {
-    ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5) and (60. <= jetPt) and (jetPt < 110.);
-  } else if (categLabel == "_HE1Pt2") {
-    ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5) and (110. <= jetPt) and (jetPt < 400.);
-  } else if (categLabel == "_HE1Pt3") {
-    ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5) and (400. <= jetPt) and (jetPt < 2000.);
-  } else if (categLabel == "_HE1Pt4") {
-    ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5) and (2000. <= jetPt);
-  }
+  } else if (categLabel == "_HE1Pt1" && isAK4) {
+    ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5) and (60. <= jetPt) and (jetPt < 80.);
+  } else if (categLabel == "_HE1Pt2" && isAK4) {
+    ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5) and (80. <= jetPt) and (jetPt < 100.);
+  } else if (categLabel == "_HE1Pt3" && isAK4) {
+    ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5) and (100. <= jetPt) and (jetPt < 200.);
+  } else if (categLabel == "_HE1Pt4" && isAK4) {
+    ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5) and (200. <= jetPt);
+  } else if (categLabel == "_HE1Pt0" && isAK8) {  //------------- AK8 pt regions
+    ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5) and (90. <= jetPt) and (jetPt < 150.);
+  } else if (categLabel == "_HE1Pt1" && isAK8) {
+    ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5) and (150. <= jetPt) and (jetPt < 200.);
+  } else if (categLabel == "_HE1Pt2" && isAK8) {
+    ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5) and (200. <= jetPt) and (jetPt < 250.);
+  } else if (categLabel == "_HE1Pt3" && isAK8) {
+    ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5) and (250. <= jetPt) and (jetPt < 400.);
+  } else if (categLabel == "_HE1Pt4" && isAK8) {
+    ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5) and (400. <= jetPt);
+  } 
 
   else if (categLabel == "_HE2") {
     ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0);
-  } else if (categLabel == "_HE2Pt0") {
+  } else if (categLabel == "_HE2Pt0" && isAK4) {  //------------- AK4 pt regions
     ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (30. <= jetPt) and (jetPt < 60.);
-  } else if (categLabel == "_HE2Pt1") {
-    ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (60. <= jetPt) and (jetPt < 110.);
-  } else if (categLabel == "_HE2Pt2") {
-    ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (110. <= jetPt) and (jetPt < 400.);
-  } else if (categLabel == "_HE2Pt3") {
-    ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (400. <= jetPt) and (jetPt < 2000.);
-  } else if (categLabel == "_HE2Pt4") {
-    ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (2000. <= jetPt);
-  }
+  } else if (categLabel == "_HE2Pt1" && isAK4) {
+    ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (60. <= jetPt) and (jetPt < 80.);
+  } else if (categLabel == "_HE2Pt2" && isAK4) {
+    ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (80. <= jetPt) and (jetPt < 100.);
+  } else if (categLabel == "_HE2Pt3" && isAK4) {
+    ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (100. <= jetPt) and (jetPt < 200.);
+  } else if (categLabel == "_HE2Pt4" && isAK4) {
+    ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (200. <= jetPt);
+  } else if (categLabel == "_HE2Pt0" && isAK8) {  //------------- AK8 pt regions
+    ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (90. <= jetPt) and (jetPt < 150.);
+  } else if (categLabel == "_HE2Pt1" && isAK8) {
+    ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (150. <= jetPt) and (jetPt < 200.);
+  } else if (categLabel == "_HE2Pt2" && isAK8) {
+    ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (200. <= jetPt) and (jetPt < 250.);
+  } else if (categLabel == "_HE2Pt3" && isAK8) {
+    ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (250. <= jetPt) and (jetPt < 400.);
+  } else if (categLabel == "_HE2Pt4" && isAK8) {
+    ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0) and (400. <= jetPt);
+  } 
 
   else if (categLabel == "_HF") {
     ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0);
-  } else if (categLabel == "_HFPt0") {
+  } else if (categLabel == "_HFPt0" && isAK4) {  //------------- AK4 pt regions
     ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (30. <= jetPt) and (jetPt < 60.);
-  } else if (categLabel == "_HFPt1") {
-    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (60. <= jetPt) and (jetPt < 110.);
-  } else if (categLabel == "_HFPt2") {
-    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (110. <= jetPt) and (jetPt < 400.);
-  } else if (categLabel == "_HFPt3") {
-    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (400. <= jetPt) and (jetPt < 2000.);
-  } else if (categLabel == "_HFPt4") {
-    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (2000. <= jetPt);
-  }
-
+  } else if (categLabel == "_HFPt1" && isAK4) {
+    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (60. <= jetPt) and (jetPt < 80.);
+  } else if (categLabel == "_HFPt2" && isAK4) {
+    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (80. <= jetPt) and (jetPt < 100.);
+  } else if (categLabel == "_HFPt3" && isAK4) {
+    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (100. <= jetPt) and (jetPt < 200.);
+  } else if (categLabel == "_HFPt4" && isAK4) {
+    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (200. <= jetPt);
+  } else if (categLabel == "_HFPt0" && isAK8) {  //------------- AK8 pt regions
+    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (90. <= jetPt) and (jetPt < 150.);
+  } else if (categLabel == "_HFPt1" && isAK8) {
+    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (150. <= jetPt) and (jetPt < 200.);
+  } else if (categLabel == "_HFPt2" && isAK8) {
+    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (200. <= jetPt) and (jetPt < 250.);
+  } else if (categLabel == "_HFPt3" && isAK8) {
+    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (250. <= jetPt) and (jetPt < 400.);
+  } else if (categLabel == "_HFPt4" && isAK8) {
+    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (400. <= jetPt);
+  } 
+  // modification end
+  
   return ret;
 }
 
 void JMETriggerAnalysisDriver::init() {
   jetCategoryLabels_ = {
       "_EtaIncl",
-      //  "_EtaInclPt0",
-      //  "_EtaInclPt1",
-      //  "_EtaInclPt2",
-      //  "_EtaInclPt3",
-      //  "_EtaInclPt4",
+      "_EtaInclPt0",
+      "_EtaInclPt1",
+      "_EtaInclPt2",
+      "_EtaInclPt3",
+      "_EtaInclPt4",
 
       "_HB",
-      //  "_HBPt0",
-      //  "_HBPt1",
-      //  "_HBPt2",
-      //  "_HBPt3",
-      //  "_HBPt4",
+      "_HBPt0",
+      "_HBPt1",
+      "_HBPt2",
+      "_HBPt3",
+      "_HBPt4",
 
       "_HE1",
-      //  "_HE1Pt0",
-      //  "_HE1Pt1",
-      //  "_HE1Pt2",
-      //  "_HE1Pt3",
-      //  "_HE1Pt4",
+      "_HE1Pt0",
+      "_HE1Pt1",
+      "_HE1Pt2",
+      "_HE1Pt3",
+      "_HE1Pt4",
 
       "_HE2",
-      //  "_HE2Pt0",
-      //  "_HE2Pt1",
-      //  "_HE2Pt2",
-      //  "_HE2Pt3",
-      //  "_HE2Pt4",
+      "_HE2Pt0",
+      "_HE2Pt1",
+      "_HE2Pt2",
+      "_HE2Pt3",
+      "_HE2Pt4",
 
       "_HF",
-      //  "_HFPt0",
-      //  "_HFPt1",
-      //  "_HFPt2",
-      //  "_HFPt3",
-      //  "_HFPt4",
+      "_HFPt0",
+      "_HFPt1",
+      "_HFPt2",
+      "_HFPt3",
+      "_HFPt4", 
+      
   };
 
   // histogram: events counter
@@ -464,12 +523,25 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
   if (not dirPrefix.empty()) {
     dirPrefix += "/";
   }
-
-  std::vector<float> binEdges_njets(121);
+  
+  // modification start
+  // defining the bins for the simulated number of PU
+  const std::vector<float> binEdges_simNPU({0,  10, 15, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,  40,  42,
+                                           44, 46, 48, 50, 52, 54, 56, 58, 60, 65, 70, 80, 100, 120, 140}); 
+  // modification end
+  
+  std::vector<float> binEdges_njets(16);
   for (uint idx = 0; idx < binEdges_njets.size(); ++idx) {
     binEdges_njets.at(idx) = idx;
   }
-
+  
+  // modification start
+  std::vector<float> binEdges_njets_ratio(101);
+  for (uint idx = 0; idx < binEdges_njets_ratio.size(); ++idx) {
+    binEdges_njets_ratio.at(idx) = idx*0.01;
+  }
+  // modification end
+  
   std::vector<float> binEdges_HT(221);
   for (uint idx = 0; idx < binEdges_HT.size(); ++idx) {
     binEdges_HT.at(idx) = idx * 10.;
@@ -480,7 +552,7 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
     binEdges_MHT.at(idx) = idx * 10.;
   }
 
-  std::vector<float> binEdges_pt(101);
+  std::vector<float> binEdges_pt(91);
   for (uint idx = 0; idx < binEdges_pt.size(); ++idx) {
     binEdges_pt.at(idx) = 10. * idx;
   }
@@ -537,12 +609,16 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
     addTH1D(dirPrefix + jetType + catLabel + "_njets", binEdges_njets);
     addTH1D(dirPrefix + jetType + catLabel + "_HT", binEdges_HT);
     addTH1D(dirPrefix + jetType + catLabel + "_MHT", binEdges_MHT);
+    // modification start
+    addTH1D(dirPrefix + jetType + catLabel + "_simNPU", binEdges_simNPU);
+    // modification end
     addTH1D(dirPrefix + jetType + catLabel + "_pt", binEdges_pt);
     addTH1D(dirPrefix + jetType + catLabel + "_pt0", binEdges_pt);
     addTH1D(dirPrefix + jetType + catLabel + "_eta", binEdges_eta);
     addTH2D(dirPrefix + jetType + catLabel + "_eta__vs__pt", binEdges_eta, binEdges_pt);
     addTH1D(dirPrefix + jetType + catLabel + "_phi", binEdges_phi);
     addTH1D(dirPrefix + jetType + catLabel + "_mass", binEdges_mass);
+    /*
     addTH1D(dirPrefix + jetType + catLabel + "_numberOfDaughters", binEdges_numberOfDaughters);
     addTH1D(dirPrefix + jetType + catLabel + "_chargedHadronEnergyFraction", binEdges_energyFrac);
     addTH1D(dirPrefix + jetType + catLabel + "_neutralHadronEnergyFraction", binEdges_energyFrac);
@@ -554,7 +630,8 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
     addTH1D(dirPrefix + jetType + catLabel + "_electronMultiplicity", binEdges_dauMult2);
     addTH1D(dirPrefix + jetType + catLabel + "_photonMultiplicity", binEdges_dauMult1);
     addTH1D(dirPrefix + jetType + catLabel + "_muonMultiplicity", binEdges_dauMult2);
-
+    */
+    
     for (auto const& matchLabel : matchLabels) {
       addTH2D(dirPrefix + jetType + catLabel + "_pt__vs__" + matchLabel + "_pt", binEdges_pt, binEdges_pt);
       addTH2D(dirPrefix + jetType + catLabel + "_pt__vs__" + matchLabel + "_eta", binEdges_pt, binEdges_eta);
@@ -573,12 +650,20 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_njets", binEdges_njets);
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_HT", binEdges_HT);
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_MHT", binEdges_MHT);
+      // modification start
+      addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_simNPU", binEdges_simNPU);
+      // modification
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt", binEdges_pt);
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt0", binEdges_pt);
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_eta", binEdges_eta);
       addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_eta__vs__pt", binEdges_eta, binEdges_pt);
+      // modification start
+      //addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_njets__vs__simNPU", binEdges_njets, binEdges_simNPU);
+      //addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_njets_over_tot" + "__vs__simNPU", binEdges_njets_ratio, binEdges_simNPU);
+      // modification end 
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_phi", binEdges_phi);
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_mass", binEdges_mass);
+      /*
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_numberOfDaughters",
               binEdges_numberOfDaughters);
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_chargedHadronEnergyFraction",
@@ -597,7 +682,7 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_electronMultiplicity", binEdges_dauMult2);
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_photonMultiplicity", binEdges_dauMult1);
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_muonMultiplicity", binEdges_dauMult2);
-
+      */
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_dRmatch", binEdges_dRmatch);
 
       addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt__vs__" + matchLabel + "_pt",
@@ -614,8 +699,19 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
               binEdges_eta);
 
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel, binEdges_response);
+      
+      // modification start
+      addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel + "__vs__" +
+             matchLabel + "_simNPU",
+                  binEdges_response,
+                  binEdges_simNPU);
+      // modification end
+      
       addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel + "__vs__" +
                   matchLabel + "_pt",
+              binEdges_response,
+              binEdges_pt);
+      addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel + "__vs__pt",
               binEdges_response,
               binEdges_pt);
       addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel + "__vs__" +
@@ -651,13 +747,21 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_njets", binEdges_njets);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_HT", binEdges_HT);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_MHT", binEdges_MHT);
+      // modification start
+      addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_simNPU", binEdges_simNPU);
+      // modification
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_pt", binEdges_pt);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_pt0", binEdges_pt);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_eta", binEdges_eta);
       addTH2D(
           dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_eta__vs__pt", binEdges_eta, binEdges_pt);
+      // modification start
+      addTH2D(
+          dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_njets__vs__simNPU", binEdges_njets, binEdges_simNPU);
+      // modification end 
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_phi", binEdges_phi);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_mass", binEdges_mass);
+      /*
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_numberOfDaughters",
               binEdges_numberOfDaughters);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_chargedHadronEnergyFraction",
@@ -678,6 +782,7 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
               binEdges_dauMult2);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_photonMultiplicity", binEdges_dauMult1);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_muonMultiplicity", binEdges_dauMult2);
+      */
     }
   }
 }
@@ -692,11 +797,13 @@ void JMETriggerAnalysisDriver::bookHistograms_MET(const std::string& dir,
   if (not dirPrefix.empty()) {
     dirPrefix += "/";
   }
-
-  std::vector<float> binEdges_pt(161);
+  
+  // modification start
+  std::vector<float> binEdges_pt(81);
   for (uint idx = 0; idx < binEdges_pt.size(); ++idx) {
     binEdges_pt.at(idx) = idx * 5.;
   }
+  // modification end
 
   std::vector<float> binEdges_phi(41);
   for (uint idx = 0; idx < binEdges_phi.size(); ++idx) {
@@ -837,12 +944,16 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
   if (not dirPrefix.empty()) {
     dirPrefix += "/";
   }
-
+  // modification start
+  // adding the simulated number of PU in the variables
+  auto const simNPU = this->value<int>("pileupInfo_BX0_numPUInteractions"); 
+  // modification end  
   auto const* v_pt(this->vector_ptr<float>(fhData.jetCollection + "_pt"));
   auto const* v_eta(this->vector_ptr<float>(fhData.jetCollection + "_eta"));
   auto const* v_phi(this->vector_ptr<float>(fhData.jetCollection + "_phi"));
   auto const* v_mass(this->vector_ptr<float>(fhData.jetCollection + "_mass"));
-
+  
+  /*
   auto const* v_numberOfDaughters(this->vector_ptr<uint>(fhData.jetCollection + "_numberOfDaughters"));
 
   auto const* v_chargedHadronMultiplicity(this->vector_ptr<int>(fhData.jetCollection + "_chargedHadronMultiplicity"));
@@ -858,7 +969,8 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
   auto const* v_electronEnergyFraction(this->vector_ptr<float>(fhData.jetCollection + "_electronEnergyFraction"));
   auto const* v_photonEnergyFraction(this->vector_ptr<float>(fhData.jetCollection + "_photonEnergyFraction"));
   auto const* v_muonEnergyFraction(this->vector_ptr<float>(fhData.jetCollection + "_muonEnergyFraction"));
-
+  */
+  
   if (not(v_pt and v_eta and v_phi and v_mass)) {
     if (verbosity_ >= 0) {
       std::cout << "JMETriggerAnalysisDriver::fillHistograms_Jets(\"" << dir << "\", const fillHistoDataJets&) -- "
@@ -878,7 +990,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
         continue;
       }
 
-      if (jetBelongsToCategory(catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)))) {
+      if (jetBelongsToCategory(fhData.jetCollection ,catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)))) {
         jetIndices.emplace_back(idx);
         if ((jetIndices.size() == 1) or (v_pt->at(idx) > jetPtMax)) {
           jetPtMax = v_pt->at(idx);
@@ -893,14 +1005,16 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
       sumPt += v_pt->at(jetIdx);
       sumPx += v_pt->at(jetIdx) * std::cos(v_phi->at(jetIdx));
       sumPy += v_pt->at(jetIdx) * std::sin(v_phi->at(jetIdx));
-
+      // modification start
+      H1(dirPrefix + fhData.jetCollection + catLabel + "_simNPU")->Fill(simNPU, weight);
+      // modification end 
       H1(dirPrefix + fhData.jetCollection + catLabel + "_pt")->Fill(v_pt->at(jetIdx), weight);
       H1(dirPrefix + fhData.jetCollection + catLabel + "_eta")->Fill(v_eta->at(jetIdx), weight);
       H2(dirPrefix + fhData.jetCollection + catLabel + "_eta__vs__pt")
           ->Fill(v_eta->at(jetIdx), v_pt->at(jetIdx), weight);
       H1(dirPrefix + fhData.jetCollection + catLabel + "_phi")->Fill(v_phi->at(jetIdx), weight);
       H1(dirPrefix + fhData.jetCollection + catLabel + "_mass")->Fill(v_mass->at(jetIdx), weight);
-
+      /*
       if (v_numberOfDaughters) {
         H1(dirPrefix + fhData.jetCollection + catLabel + "_numberOfDaughters")
             ->Fill(v_numberOfDaughters->at(jetIdx), weight);
@@ -945,6 +1059,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
         H1(dirPrefix + fhData.jetCollection + catLabel + "_muonEnergyFraction")
             ->Fill(v_muonEnergyFraction->at(jetIdx), weight);
       }
+      */
     }
 
     H1(dirPrefix + fhData.jetCollection + catLabel + "_njets")->Fill(0.01 + jetIndices.size(), weight);
@@ -1031,7 +1146,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
           continue;
         }
 
-        if (jetBelongsToCategory(catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)))) {
+        if (jetBelongsToCategory(fhData.jetCollection, catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)))) {
           jetIndices.emplace_back(idx);
         }
       }
@@ -1044,7 +1159,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
           continue;
         }
 
-        if (jetBelongsToCategory(catLabel, v_match_pt->at(idx), std::abs(v_match_eta->at(idx)))) {
+        if (jetBelongsToCategory(fhData.jetCollection, catLabel, v_match_pt->at(idx), std::abs(v_match_eta->at(idx)))) {
           jetMatchRefIndices.emplace_back(idx);
         }
       }
@@ -1107,14 +1222,17 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
             maxPtJetPtWithMatch = jetPt;
             indexMaxPtJetWithMatch = jetIdx;
           }
-
+          // modification start
+          H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_simNPU")->Fill(simNPU, weight);
+          // modification
           H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt")->Fill(jetPt, weight);
           H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_eta")->Fill(jetEta, weight);
           H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_eta__vs__pt")
               ->Fill(jetEta, jetPt, weight);
           H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_phi")->Fill(jetPhi, weight);
           H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_mass")->Fill(jetMass, weight);
-
+          
+          /*
           if (v_numberOfDaughters) {
             H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_numberOfDaughters")
                 ->Fill(v_numberOfDaughters->at(jetIdx), weight);
@@ -1159,7 +1277,8 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
             H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_muonEnergyFraction")
                 ->Fill(v_muonEnergyFraction->at(jetIdx), weight);
           }
-
+          */
+          
           auto const jetMatchIdx(mapMatchIndeces.at(jetIdx));
 
           auto const jetMatchPt(v_match_pt->at(jetMatchIdx));
@@ -1203,6 +1322,14 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
             H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel +
                "__vs__" + matchLabel + "_pt")
                 ->Fill(jetPtRatio, jetMatchPt, weight);
+            H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel +
+               "__vs__pt")
+                ->Fill(jetPtRatio, jetPt, weight);
+            // modification start
+            H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel +
+               "__vs__" + matchLabel + "_simNPU")
+                ->Fill(jetPtRatio, simNPU, weight);
+            // modification end
             H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel +
                "__vs__" + matchLabel + "_eta")
                 ->Fill(jetPtRatio, jetMatchEta, weight);
@@ -1250,15 +1377,19 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
 
           H2(dirPrefix + fhData.jetCollection + catLabel + "_eta__vs__" + matchLabel + "_minDeltaR")
               ->Fill(jetEta, minDeltaR, weight);
-
+          // modification start
+          H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_simNPU")->Fill(simNPU, weight);
+          // modification
           H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_pt")->Fill(jetPt, weight);
           H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_eta")->Fill(jetEta, weight);
           H2(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_eta__vs__pt")
               ->Fill(jetEta, jetPt, weight);
+              
           H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_phi")->Fill(jetPhi, weight);
           H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_mass")
               ->Fill(jetMass, weight);
-
+              
+          /*
           if (v_numberOfDaughters) {
             H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_numberOfDaughters")
                 ->Fill(v_numberOfDaughters->at(jetIdx), weight);
@@ -1307,6 +1438,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
             H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_muonEnergyFraction")
                 ->Fill(v_muonEnergyFraction->at(jetIdx), weight);
           }
+          */
         }
       }
 
@@ -1314,7 +1446,16 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
           ->Fill(0.01 + nJetsMatched, weight);
       H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_njets")
           ->Fill(0.01 + nJetsNotMatched, weight);
-
+      // modification start
+      //if((nJetsMatched+nJetsNotMatched)!=0){
+      //  H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_njets_over_tot" +"__vs__simNPU")
+      //        ->Fill( (nJetsMatched*1.0)/((nJetsMatched+nJetsNotMatched)*1.0), simNPU, weight);
+      //}
+      if((nJetsMatched+nJetsNotMatched)!=0){
+        H2(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_njets__vs__simNPU")
+              ->Fill(0.01 + nJetsNotMatched, simNPU, weight);
+      }
+      // modification end
       H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_HT")->Fill(sumPtMatched, weight);
       H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_HT")
           ->Fill(sumPtNotMatched, weight);

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 utilities related to the CMS Data Aggregation System (DAS)
 """
@@ -60,7 +60,8 @@ def load_dataset_data(das_name, max_files=-1, max_events=-1, parentFiles_levels=
                   i_file_parents2_tmp = sorted(list(set(i_file_parents2_tmp)))
                   i_file_parents2 += i_file_parents2_tmp
               i_file_parents2 = sorted(list(set(i_file_parents2)))
-
+        
+        
         if verbose:
            for _tmp in i_file_parents2:
                print(' '*5, _tmp)
@@ -89,7 +90,7 @@ def assert_dataset_data(dset_data, verbose=False):
 
     if 'DAS' not in dset_data:
        KILL('assert_dataset_data -- 11')
-    elif not isinstance(dset_data['DAS'], basestring):
+    elif not isinstance(dset_data['DAS'], str):
        KILL('assert_dataset_data -- 12')
 
     if 'files' not in dset_data:
@@ -104,7 +105,7 @@ def assert_dataset_data(dset_data, verbose=False):
 
         if 'file' not in i_ent:
            KILL('assert_dataset_data -- 41 '+str(i_ent))
-        elif not isinstance(i_ent['file'], basestring):
+        elif not isinstance(i_ent['file'], str):
            KILL('assert_dataset_data -- 42 '+str(i_ent))
 
         if 'nevents' not in i_ent:
@@ -121,7 +122,7 @@ def assert_dataset_data(dset_data, verbose=False):
                KILL('assert_dataset_data -- 52 '+str(i_ent))
             else:
                for _tmp2 in i_ent[_tmp]:
-                   if not isinstance(_tmp2, basestring):
+                   if not isinstance(_tmp2, str):
                       KILL('assert_dataset_data -- 53 '+str(i_ent))
 
 def skim_das_jsondump(file_path, max_files=-1, max_events=-1, verbose=False):

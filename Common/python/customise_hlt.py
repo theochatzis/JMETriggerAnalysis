@@ -4,6 +4,7 @@ from CommonTools.ParticleFlow.pfPileUp_cfi import pfPileUp as _pfPileUp
 
 from CommonTools.ParticleFlow.TopProjectors.pfNoPileUp_cfi import pfNoPileUp as _pfNoPileUp
 from CommonTools.PileupAlgos.Puppi_cff import puppi as _puppi, puppiNoLep as _puppiNoLep
+#from CommonTools.RecoAlgos.primaryVertexAssociation_cfi import primaryVertexAssociation
 
 from RecoJets.JetProducers.ak4PFClusterJets_cfi import ak4PFClusterJets as _ak4PFClusterJets
 from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJetsPuppi as _ak4PFJetsPuppi, ak4PFJetsCHS as _ak4PFJetsCHS
@@ -441,7 +442,7 @@ def addPaths_MC_JMEPFCHS(process):
 
     return process
 
-def addPaths_MC_JMEPFPuppi(process):
+def addPaths_MC_JMEPFPuppi(process, change_params_list=[]):
 
     process.hltPreMCJMEPFPuppi = cms.EDFilter('HLTPrescaler',
       L1GtReadoutRecordTag = cms.InputTag('hltGtStage2Digis'),
@@ -449,12 +450,32 @@ def addPaths_MC_JMEPFPuppi(process):
     )
 
     process.hltPixelClustersMultiplicity = _nSiPixelClusters.clone(src = 'hltSiPixelClusters', defaultValue = -1.)
+    
+    ## add offline puppi
+    #process.offlinePFPuppi = _puppi.clone(
+    #  #candName = 'packedPFCandidates',
+    #  #vertexName = 'offlineSlimmedPrimaryVertices',
+    #  #useExistingWeights = False
+    #  useVertexAssociation=False
+    #)
+
+    #process.OfflinePFPuppiSequence = cms.Sequence(
+    #  process.offlinePFPuppi
+    #)
 
     process.hltPFPuppi = _puppi.clone(
       candName = 'hltParticleFlow',
-      vertexName = 'hltVerticesPF',
-      usePUProxyValue = True,
-      PUProxyValue = 'hltPixelClustersMultiplicity',
+      vertexName = 'hltPixelVertices',
+      UseDeltaZCut = True,
+      EtaMinUseDeltaZ = 0.0,
+      DeltaZCut = 0.3,
+      #UseFromPVLooseTight = True,
+      vtxNdofCut = 4,
+      vtxZCut=24,
+      #vertexName = 'hltVerticesPF',
+      #usePUProxyValue = True,
+      #PUProxyValue = 'hltPixelClustersMultiplicity',
+      #NumOfPUVtxsForCharged = 0,
       useVertexAssociation = False,
     )
 
@@ -562,9 +583,17 @@ def addPaths_MC_JMEPFPuppi(process):
     ## MET
     process.hltPFPuppiNoLep = _puppiNoLep.clone(
       candName = 'hltParticleFlow',
-      vertexName = 'hltVerticesPF',
-      usePUProxyValue = True,
-      PUProxyValue = 'hltPixelClustersMultiplicity',
+      vertexName = 'hltPixelVertices',
+      UseDeltaZCut = True,
+      EtaMinUseDeltaZ = 0.0,
+      DeltaZCut = 0.3,
+      #UseFromPVLooseTight = True,
+      vtxNdofCut = 4,
+      vtxZCut=24,
+      #vertexName = 'hltVerticesPF',
+      #usePUProxyValue = True,
+      #PUProxyValue = 'hltPixelClustersMultiplicity',
+      #NumOfPUVtxsForCharged = 0,
       useVertexAssociation = False,
     )
 
@@ -610,13 +639,32 @@ def addPaths_MC_JMEPFPuppi(process):
         if len(mod_i.algos[algo_idx].MinNeutralPt) != len(mod_i.algos[algo_idx].MinNeutralPtSlope):
           raise RuntimeError('instance of PuppiProducer is misconfigured:\n\n'+str(mod_i)+' = '+mod_i.dumpPython())
 
-        for algoReg_idx in range(len(mod_i.algos[algo_idx].MinNeutralPt)):
-          mod_i.algos[algo_idx].MinNeutralPt[algoReg_idx] += 2.56 * mod_i.algos[algo_idx].MinNeutralPtSlope[algoReg_idx]
-          mod_i.algos[algo_idx].MinNeutralPtSlope[algoReg_idx] *= 0.00271
+        #for algoReg_idx in range(len(mod_i.algos[algo_idx].MinNeutralPt)):
+        #  mod_i.algos[algo_idx].MinNeutralPt[algoReg_idx] += 2.56 * mod_i.algos[algo_idx].MinNeutralPtSlope[algoReg_idx]
+        #  mod_i.algos[algo_idx].MinNeutralPtSlope[algoReg_idx] *= 0.00271
+        #  ## for checks without any cut at neutrals pT i.e. MinNeutralPt==0 and MinNeutralPtSlope==0
+        #  #mod_i.algos[algo_idx].MinNeutralPt[algoReg_idx] = 0.0
+        #  #mod_i.algos[algo_idx].MinNeutralPtSlope[algoReg_idx] = 0.0
+          
+      # changes per specific region
+      regions_dict={ 'HB':[0,0], 'HE1':[0,1], 'HE2':[1,0], 'HF':[1,1]}
+      for change in change_params_list:
+        if change[1]=='MinNeutralPt':
+          mod_i.algos[regions_dict[change[0]][0]].MinNeutralPt[regions_dict[change[0]][1]] *= float(change[2])
+        elif change[1]=='MinNeutralPtSlope':
+          mod_i.algos[regions_dict[change[0]][0]].MinNeutralPtSlope[regions_dict[change[0]][1]] *= float(change[2])
+        elif change[1]=='RMSEtaSF':
+          mod_i.algos[regions_dict[change[0]][0]].RMSEtaSF[regions_dict[change[0]][1]] *= float(change[2])
+        elif change[1]=='MedEtaSF':
+          mod_i.algos[regions_dict[change[0]][0]].MedEtaSF[regions_dict[change[0]][1]] *= float(change[2])
+        else: 
+          continue
 
     ## Path
+    #+ process.OfflinePFPuppiSequence # calculate the offline puppi PF first
     process.MC_JMEPFPuppi_v1 = cms.Path(
         process.HLTBeginSequence
+      #+ process.OfflinePFPuppiSequence # calculate the offline puppi PF first
       + process.hltPreMCJMEPFPuppi
       + process.HLTPFPuppiSequence
       + process.HLTAK4PFPuppiJetsSequence

@@ -123,6 +123,8 @@ protected:
   uint pileupInfo_BX0_n_pThat470to600_ = 0;
   uint pileupInfo_BX0_n_pThat600toInf_ = 0;
 
+  //int PFVerticesMultiplicity = 0;
+  
   class FillCollectionConditionsMap {
   public:
     explicit FillCollectionConditionsMap();
@@ -440,6 +442,8 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   this->addBranch("pileupInfo_BX0_n_pThat470to600", &pileupInfo_BX0_n_pThat470to600_);
   this->addBranch("pileupInfo_BX0_n_pThat600toInf", &pileupInfo_BX0_n_pThat600toInf_);
 
+  //this->addBranch("PFVerticesMultiplicity", &PFVerticesMultiplicity);
+
   for (const auto& triggerEntry_i : triggerResultsContainer_ptr_->entries()) {
     this->addBranch(triggerEntry_i.name, const_cast<bool*>(&triggerEntry_i.accept));
   }
@@ -488,6 +492,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
     this->addBranch(recoVertexCollectionContainer_i.name() + "_xError", &recoVertexCollectionContainer_i.vec_xError());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_yError", &recoVertexCollectionContainer_i.vec_yError());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_zError", &recoVertexCollectionContainer_i.vec_zError());
+    this->addBranch(recoVertexCollectionContainer_i.name() + "_sumPt2", &recoVertexCollectionContainer_i.vec_sumPt2());
   }
 
   for (auto& l1tPFCandidateCollectionContainer_i : v_l1tPFCandidateCollectionContainer_) {
@@ -508,6 +513,8 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   }
 
   for (auto& recoPFCandidateCollectionContainer_i : v_recoPFCandidateCollectionContainer_) {
+    this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_charge",
+                    &recoPFCandidateCollectionContainer_i.vec_charge());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_pdgId",
                     &recoPFCandidateCollectionContainer_i.vec_pdgId());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_pt",
@@ -518,6 +525,8 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                     &recoPFCandidateCollectionContainer_i.vec_phi());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_mass",
                     &recoPFCandidateCollectionContainer_i.vec_mass());
+    this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_energy",
+                    &recoPFCandidateCollectionContainer_i.vec_energy());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_rawEcalEnergy",
                     &recoPFCandidateCollectionContainer_i.vec_rawEcalEnergy());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_rawHcalEnergy",
@@ -888,6 +897,21 @@ void JMETriggerNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       }
     }
   }
+  
+  // calculate the PF vertices multiplicity
+  
+  // for loop over vertex collections
+  // if find the name of hltVerticesPF 
+  // -> then calculate the size of the vector for one attribute 
+  // -> that is the multiplicity
+  /*
+  for (auto& recoVertexCollectionContainer_i : v_recoVertexCollectionContainer_) {
+    if(recoVertexCollectionContainer_i.name().find("hltVerticesPF") != std::string::npos){
+      PFVerticesMultiplicity = recoVertexCollectionContainer_i.vec_z().size();
+      std::cout << PFVerticesMultiplicity << std::endl;
+    }
+  }*/
+
 
   // fill TriggerResultsContainer
   edm::Handle<edm::TriggerResults> triggerResults_handle;
