@@ -44,6 +44,8 @@ class JMETriggerAnalysisDriverRun3 : public JMETriggerAnalysisDriver {
   bool hltHTTrigger(std::string const& key) const;
   bool hltMETTrigger(std::string const& key) const;
   bool pileupintervals(std::string const& key) const;
+  bool HLT_PUtracks(std::string const& key) const;
+
 };
 
 #endif

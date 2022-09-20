@@ -346,7 +346,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     hltFixedGridRhoFastjetAllCalo = cms.InputTag('hltFixedGridRhoFastjetAllCalo'),
     hltFixedGridRhoFastjetAllPFCluster = cms.InputTag('hltFixedGridRhoFastjetAllPFCluster'),
     hltFixedGridRhoFastjetAll = cms.InputTag('hltFixedGridRhoFastjetAll'),
-    #offlineFixedGridRhoFastjetAll = cms.InputTag('fixedGridRhoFastjetAll::RECO'),
+    offlineFixedGridRhoFastjetAll = cms.InputTag('fixedGridRhoFastjetAll::RECO'),
 
     hltPixelClustersMultiplicity = cms.InputTag('hltPixelClustersMultiplicity'),
   ),
@@ -359,7 +359,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     hltPixelVertices = cms.InputTag('hltPixelVertices'),
     hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
     hltVerticesPF = cms.InputTag('hltVerticesPF'),
-    #offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
   ),
 
   recoPFCandidateCollections = cms.PSet(
@@ -391,11 +391,11 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoPFJetCollections = cms.PSet(
 
-    #hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
-    #hltAK4PFJetsCorrected = cms.InputTag('hltAK4PFJetsCorrected'),
+    hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
+    hltAK4PFJetsCorrected = cms.InputTag('hltAK4PFJetsCorrected'),
 
-    #hltAK4PFCHSJets = cms.InputTag('hltAK4PFCHSJets'),
-    #hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
+    hltAK4PFCHSJets = cms.InputTag('hltAK4PFCHSJets'),
+    hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
 
     hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
     hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
@@ -406,15 +406,15 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     #hltAK8PFCHSJets = cms.InputTag('hltAK8PFCHSJets'),
     #hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
 
-    hltAK8PFPuppiJets = cms.InputTag('hltAK8PFPuppiJets'),
-    hltAK8PFPuppiJetsCorrected = cms.InputTag('hltAK8PFPuppiJetsCorrected'),
+    #hltAK8PFPuppiJets = cms.InputTag('hltAK8PFPuppiJets'),
+    #hltAK8PFPuppiJetsCorrected = cms.InputTag('hltAK8PFPuppiJetsCorrected'),
   ),
 
   patJetCollections = cms.PSet(
 
-    #offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
-    #offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
-    #offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
+    offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
+    offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
+    offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
   ),
 
   recoGenMETCollections = cms.PSet(
@@ -449,31 +449,22 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   patMETCollections = cms.PSet(
 
-    #offlinePFMET = cms.InputTag('slimmedMETs'),
-    #offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
+    offlinePFMET = cms.InputTag('slimmedMETs'),
+    offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
   ),
 )
 
 if opts.keepPFPuppi:
-  #process.offlinePFPuppi.puppiDiagnostics = True
   process.hltPFPuppi.puppiDiagnostics = True
   process.JMETriggerNTuple.vdoubles = cms.PSet(
-    #offlinePFPuppi_PuppiWeights = cms.InputTag('offlinePFPuppi:PuppiWeights'),
-    #offlinePFPuppi_PuppiRawAlphas = cms.InputTag('offlinePFPuppi:PuppiRawAlphas'),
-    #offlinePFPuppi_PuppiAlphas = cms.InputTag('offlinePFPuppi:PuppiAlphas'),
-    #offlinePFPuppi_PuppiAlphasMed = cms.InputTag('offlinePFPuppi:PuppiAlphasMed'),
-    #offlinePFPuppi_PuppiAlphasRms = cms.InputTag('offlinePFPuppi:PuppiAlphasRms'),
-    hltPFPuppi_PuppiWeights = cms.InputTag('hltPFPuppi:PuppiWeights'),
     hltPFPuppi_PuppiRawAlphas = cms.InputTag('hltPFPuppi:PuppiRawAlphas'),
     hltPFPuppi_PuppiAlphas = cms.InputTag('hltPFPuppi:PuppiAlphas'),
     hltPFPuppi_PuppiAlphasMed = cms.InputTag('hltPFPuppi:PuppiAlphasMed'),
-    hltPFPuppi_PuppiAlphasRms = cms.InputTag('hltPFPuppi:PuppiAlphasRms')
+    hltPFPuppi_PuppiAlphasRms = cms.InputTag('hltPFPuppi:PuppiAlphasRms'),
   )
   process.JMETriggerNTuple.recoPFCandidateCollections = cms.PSet(
     hltParticleFlow = cms.InputTag('hltParticleFlow'),
     hltPFPuppi = cms.InputTag('hltPFPuppi'),
-    #offlineParticleFlow = cms.InputTag('particleFlow'),
-    #offlinePFPuppi = cms.InputTag('offlinePFPuppi'),
   )
 
 process.analysisNTupleEndPath = cms.EndPath(process.JMETriggerNTuple)
@@ -517,17 +508,7 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
- #'/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/01a06ce0-a218-423f-a576-587debd69c63.root',
- #"/store/mc/RunIISummer16DR80/NeutrinoGun_E_10GeV/AODSIM/FlatPU0to75TuneCUETP8M4_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/104F26EB-3B0B-E711-8750-A0369FC5EEF4.root"
- #"/store/mc/RunIIAutumn18DR/SingleNeutrinoGun/GEN-SIM-DIGI-RAW/PUPoissonAve85_102X_upgrade2018_realistic_v15_ext5-v1/100000/3D6B0068-DC22-4143-8DDE-5A68D48FCA4A.root"
- #'/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/003cee26-b0ed-4491-a301-f3261420b157.root'
- 
- # test PU-only
- #'/store/mc/Run3Summer21DRPremix/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/SNB_120X_mcRun3_2021_realistic_v6-v2/2540000/000f4b8d-d64a-473d-9c30-acc77e148637.root'
- #'/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/AODSIM/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520000/00362d0b-f7a4-426b-ba2c-e91c2cd2b792.root'
- # test QCD
- # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/MINIAODSIM/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/1fb87340-34b4-4c8a-a049-33192b21d54b.root' 
-  '/store/mc/Run3Winter22DR/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/AODSIM/L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/2820000/01e4d447-2f4a-4ad0-bbc2-a8324f18ea2a.root'
+ '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/MINIAODSIM/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/18be7762-7893-4377-8d9d-894bf6d90db3.root',
   ]
 
 # input EDM files [secondary]
@@ -538,82 +519,44 @@ if opts.secondaryInputFiles:
   process.source.secondaryFileNames = opts.secondaryInputFiles
 else:
   process.source.secondaryFileNames = [
-    # test PU-only
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520001/9154d5a7-8d1e-40a5-8ff2-0ec12515c390.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/02141377-fef1-4fa1-86f1-9bbae0927d07.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/033d4a7f-4731-4838-b680-40756a41974a.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/03e84645-9aff-4988-ad68-6eb8a1a8d03c.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/17c4f5c4-80ab-4191-95d3-8809e7cee970.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/2602ec39-bfc0-43e7-a72d-d237111342e4.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/32441529-91fb-4b95-ae01-c28a27a9a22e.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/4a417aa4-fce3-4632-886e-fb8a6ec853be.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/4e8a3050-fff4-4292-9eb5-91f48f902cb9.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/65529587-a211-479b-b804-71360ca2a63a.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/80e28bfa-b264-4b52-ac42-1c7b7dca6f0e.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/81e9ae8c-d7f8-4517-9dbe-7ebc868d41f2.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/8cd48b79-77e7-40f3-9c9b-43c8c71a7406.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/8d7a88df-727c-4e98-9d26-4483a7fdb595.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/9923a456-6773-4ea0-b82c-0bcafc94267c.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/b5e84669-cffe-4a7d-b437-65067597c1fa.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/ccbfffab-2c68-4574-a220-cb7dfee2d4b3.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/d2419e1a-97e4-49fa-9bf8-f6fa281dbd19.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/f40e56eb-6589-4c03-99c5-5b40d082888d.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/f9051a3a-670b-4b30-aac0-feee81e9dc06.root',
-    #  '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/2520005/f9a3c6a9-6c81-46d9-952e-12438e946239.root',
-    
-    # test QCD
-    '/store/mc/Run3Winter22DR/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/2820000/a6db45f3-aac7-4123-b48f-021db13fe79c.root',
-    '/store/mc/Run3Winter22DR/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/2820000/bc364d75-61b7-47bc-87a8-54091ce8f0aa.root',
-    '/store/mc/Run3Winter22DR/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/2820001/0e728e38-ff2b-4087-95c3-758e322cdb6e.root',
-    '/store/mc/Run3Winter22DR/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/2820001/f05ad893-993f-4160-939f-3606967070df.root',
-    '/store/mc/Run3Winter22DR/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/2820003/0cf7acea-001f-42b9-b157-222543d86266.root',
-    '/store/mc/Run3Winter22DR/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/2820003/5ce782ce-e5dc-4a2b-952a-02dbc3cf0c7f.root',
-    '/store/mc/Run3Winter22DR/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/2820003/9b91cdb4-a430-4251-b409-f07dfb6e93bc.root',
-    '/store/mc/Run3Winter22DR/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/2820004/1c70a5f5-df2a-4eb3-8abe-91de54b8971a.root',
-    '/store/mc/Run3Winter22DR/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/2820004/8838f488-ed2f-4c3a-b122-6cfe75f55607.root',
-    '/store/mc/Run3Winter22DR/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/2820004/88fc5934-8f30-4af5-827a-a1e075228fff.root',
-    '/store/mc/Run3Winter22DR/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/2820004/a5e064b1-000a-469e-8c7d-221b11c085c5.root',
-    '/store/mc/Run3Winter22DR/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/2820004/d5b09519-335d-4012-bb36-2c155c063c5c.root'
-
-#  '/store/mc/Run3Winter22GS/QCD_Pt-15to7000_TuneCP5_Flat_13p6TeV_pythia8/GEN-SIM/122X_mcRun3_2021_realistic_v9-v2/40003/0f6dd686-c85f-4c55-b207-cdd1646f7d1a.root',
-#  '/store/mc/Run3Winter22GS/QCD_Pt-15to7000_TuneCP5_Flat_13p6TeV_pythia8/GEN-SIM/122X_mcRun3_2021_realistic_v9-v2/40003/45cc05fe-c6ea-42b2-84cf-e6e4af83c1a5.root',
-#  '/store/mc/Run3Winter22GS/QCD_Pt-15to7000_TuneCP5_Flat_13p6TeV_pythia8/GEN-SIM/122X_mcRun3_2021_realistic_v9-v2/40003/571695d2-0e3e-45dc-95b8-5b4881bf0356.root',
-#  '/store/mc/Run3Winter22GS/QCD_Pt-15to7000_TuneCP5_Flat_13p6TeV_pythia8/GEN-SIM/122X_mcRun3_2021_realistic_v9-v2/40003/5835fbc1-66f6-4372-a450-83002f5068a3.root',
-#  '/store/mc/Run3Winter22GS/QCD_Pt-15to7000_TuneCP5_Flat_13p6TeV_pythia8/GEN-SIM/122X_mcRun3_2021_realistic_v9-v2/40003/6fde9068-2ec2-4ead-bca4-5df23c7c6a01.root',
-#  '/store/mc/Run3Winter22GS/QCD_Pt-15to7000_TuneCP5_Flat_13p6TeV_pythia8/GEN-SIM/122X_mcRun3_2021_realistic_v9-v2/40003/ddc677fc-592d-4c43-ba41-fbf3d127902e.root',
-#  '/store/mc/Run3Winter22GS/QCD_Pt-15to7000_TuneCP5_Flat_13p6TeV_pythia8/GEN-SIM/122X_mcRun3_2021_realistic_v9-v2/40003/ed761382-1713-4bca-bebc-0a0be2c04417.root'
-
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/08f9d5ad-7a1c-4440-ac2f-f71c84d6f525.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/0bd11d4d-1967-4973-80ad-0b962d2669c5.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/0e0481b5-1c39-4eda-a1de-0e2254f52a9c.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/2045ffa9-fbd3-4153-bc38-207b607304cb.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/236704cf-462c-47ec-a8b3-6147ff0f4be9.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/23dc9f4b-488c-4f9b-82dd-9c982a7cd449.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/2c2c1b8c-3378-44da-87e5-bd3b4f948d22.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/4fea1664-d8db-43bd-bfad-cd94126424d3.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/5556d434-1dd5-434a-bccd-a0bc5f277152.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/5561b0cb-fe04-4c02-881f-295e558c5444.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/5f8f1d6d-6210-42ab-b8ee-0b00aacdd8e1.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/600ff5f5-716d-49b5-b728-f8376f84ceb0.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/6742997d-3d24-4deb-8365-61b6abc87ca4.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/6cbfb800-3d15-488a-954f-0feb585d37a5.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/755bff65-36b9-4172-ac83-f4e2685b53b4.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/87b78df9-1cf3-4ab7-806e-58f748112d2f.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/991c0347-412d-43eb-b219-b28af01e067f.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/ac7addf7-cbd6-434b-b8b3-8f56407deecd.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/ae75c926-22a1-4d3e-b0b0-7fc2a67c9fb5.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/b259fb57-968d-4aef-b27d-c2fc03aaea27.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/b5799868-5a40-48f3-83ca-b6f59d666565.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/c0640f64-da4d-49b0-87f5-e25f02277eef.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/c1ae0140-d077-4d40-a895-87852244210f.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/ce4c3976-70d7-4d77-aa43-dfeb2eb32f4f.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/ce6ebc04-d829-42d8-88f6-9a7259809f79.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/cf182551-397e-424f-aa9b-190e1003ec38.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/d34ff4b3-ce41-47f7-8f83-9ddcd95122c3.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/d428f27f-2d2f-4e46-a005-92a7f4199fd7.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/d6f2e27b-c502-4fcd-812d-a96280814cca.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/f2bf3602-f0d9-4ddc-9503-e1deefa9a8d8.root',
-      # '/store/mc/Run3Winter21DRMiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/120000/fff0e03b-c95e-41b9-b72e-fa6f163d6308.root'
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/01a06ce0-a218-423f-a576-587debd69c63.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/15ee5715-96ca-4819-9b18-949a5752c90d.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/2cfce011-a30f-419c-903d-fdd41ce8c1f0.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/3cbd20a3-06d1-464f-8a2a-67c6c60bf151.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/409520bf-dfd4-4108-8d2e-1861f049f6ce.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/4f6866bb-d4ff-4b8e-853f-7357921c3064.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/57385ecf-9dec-4ea4-8c57-9f4c4de9f920.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/5c871cca-7a7a-4976-a6af-4ba17b6b6f1a.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/6bdd048a-954d-4917-8dca-bb1e1f1a8a3e.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/6c97e4ca-ea32-4fa0-8dfa-9a4e108f2d83.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/6e03ebce-5504-4011-84e6-d057cec7569f.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/7626b901-2f75-4913-bf20-d2b80b9660cc.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/80028765-7aec-4f9c-afda-acbfa2f96bfc.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/8314a3c1-0f30-433a-838a-f036275b98d5.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/84976616-69d1-4fd7-94c1-ef6d973bbe8d.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/8e894e4c-05b0-4d56-b5b9-427306223d1c.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/9172a5f8-a646-4b41-95ee-5d1c2c53d571.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/91a6c4ec-0b9e-4b46-bba9-4fe4809e4933.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/9796b84e-cfe9-46e0-a8c8-d93899328a0a.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/9c99637f-6087-4789-942f-852fcb34ab78.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/aa470337-aacc-49bf-a4d4-b2b0d5c266b0.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/b8066a49-08dc-4a0f-bc42-3f9ec58dc1ff.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/bb4c3ead-4459-4834-8437-7d4400851152.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/c1e8de24-7c5e-45e8-9994-711ef3b8c2c6.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/c202c929-abbe-46eb-9378-c0ba3a00d53b.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/c7e472c0-b760-4456-9834-47028653abc3.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/cfd7e233-9f49-425c-a085-d814ee65c7e9.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/d0842e2b-6a4f-4afd-a936-ddfb0e5e774d.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/d12b875f-73b9-4caa-89c1-bb21a765ad40.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/db4a260c-ee50-496e-b6aa-a18444934496.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/dbdde510-f144-40df-b2a2-cfc2fd60794a.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/e7ebc304-d1d3-48fa-b09b-b739cbabf1ec.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/e89eec44-3a35-4149-a39b-f18ece491b92.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/f037b249-5b4b-4529-9727-984d36d1ab27.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/f21e5c21-0baf-4838-a096-a4d6a525f623.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/f7366241-0bc7-45e2-9a59-5e15d688ff93.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/f8b44d67-1ab7-4cc7-b485-6938c7172b7e.root',
+    '/store/mc/Run3Winter21DRMiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/270000/fbe46a79-528e-42ef-bae8-4eff8ff68c2e.root',
   ]
 
 # dump content of cms.Process to python file
@@ -628,7 +571,7 @@ if opts.verbosity > 0:
    print('option: reco =', opts.reco)
    print('option: dumpPython =', opts.dumpPython)
    print('')
-   #print('process.GlobalTag =', process.GlobalTag.dumpPython())
+   print('process.GlobalTag =', process.GlobalTag.dumpPython())
    print('process.source =', process.source.dumpPython())
    print('process.maxEvents =', process.maxEvents.dumpPython())
    print('process.options =', process.options.dumpPython())

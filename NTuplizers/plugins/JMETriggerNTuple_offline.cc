@@ -41,9 +41,9 @@
 #include <Compression.h>
 #include <TTree.h>
 
-class JMETriggerNTuple : public edm::one::EDAnalyzer<edm::one::SharedResources> {
+class JMETriggerNTuple_offline : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 public:
-  explicit JMETriggerNTuple(const edm::ParameterSet&);
+  explicit JMETriggerNTuple_offline(const edm::ParameterSet&);
   static void fillDescriptions(edm::ConfigurationDescriptions&);
 
 protected:
@@ -52,8 +52,8 @@ protected:
   template <typename... Args>
   void addBranch(const std::string&, Args...);
 
-  bool passesTriggerResults_OR(const edm::TriggerResults&, const edm::Event&, const std::vector<std::string>&);
-  bool passesTriggerResults_AND(const edm::TriggerResults&, const edm::Event&, const std::vector<std::string>&);
+  //bool passesTriggerResults_OR(const edm::TriggerResults&, const edm::Event&, const std::vector<std::string>&);
+  //bool passesTriggerResults_AND(const edm::TriggerResults&, const edm::Event&, const std::vector<std::string>&);
 
   std::string const TTreeName_;
 
@@ -61,8 +61,8 @@ protected:
   bool const consumeGenEventInfoProduct_;
   bool const consumePileupSummaryInfo_;
 
-  std::vector<std::string> const TriggerResultsFilterOR_;
-  std::vector<std::string> const TriggerResultsFilterAND_;
+  //std::vector<std::string> const TriggerResultsFilterOR_;
+  //std::vector<std::string> const TriggerResultsFilterAND_;
 
   std::vector<std::string> const outputBranchesToBeDropped_;
 
@@ -72,7 +72,7 @@ protected:
   edm::EDGetTokenT<GenEventInfoProduct> genEventInfoProductToken_;
   edm::EDGetTokenT<edm::View<PileupSummaryInfo>> pileupInfoToken_;
 
-  std::unique_ptr<TriggerResultsContainer> triggerResultsContainer_ptr_;
+  //std::unique_ptr<TriggerResultsContainer> triggerResultsContainer_ptr_;
   std::vector<ValueContainer<bool>> v_boolContainer_;
   std::vector<ValueContainer<int>> v_intContainer_;
   std::vector<ValueContainer<float>> v_floatContainer_;
@@ -123,8 +123,6 @@ protected:
   uint pileupInfo_BX0_n_pThat470to600_ = 0;
   uint pileupInfo_BX0_n_pThat600toInf_ = 0;
 
-  //int PFVerticesMultiplicity = 0;
-  
   class FillCollectionConditionsMap {
   public:
     explicit FillCollectionConditionsMap();
@@ -142,7 +140,7 @@ protected:
     bool has(const std::string&) const;
     const condition& at(const std::string&) const;
     bool accept(const std::string&) const;
-    int update(const edm::TriggerResults&, const edm::Event&);
+    int update(const edm::Event&);
 
   protected:
     std::map<std::string, condition> condMap_;
@@ -174,22 +172,23 @@ protected:
                                FillCollectionConditionsMap const&);
 };
 
-JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
+JMETriggerNTuple_offline::JMETriggerNTuple_offline(const edm::ParameterSet& iConfig)
     : TTreeName_(iConfig.getParameter<std::string>("TTreeName")),
       consumeHepMCProduct_(iConfig.exists("HepMCProduct")),
       consumeGenEventInfoProduct_(iConfig.exists("GenEventInfoProduct")),
       consumePileupSummaryInfo_(iConfig.exists("PileupSummaryInfo")),
-      TriggerResultsFilterOR_(iConfig.getParameter<std::vector<std::string>>("TriggerResultsFilterOR")),
-      TriggerResultsFilterAND_(iConfig.getParameter<std::vector<std::string>>("TriggerResultsFilterAND")),
+      //TriggerResultsFilterOR_(iConfig.getParameter<std::vector<std::string>>("TriggerResultsFilterOR")),
+      //TriggerResultsFilterAND_(iConfig.getParameter<std::vector<std::string>>("TriggerResultsFilterAND")),
       outputBranchesToBeDropped_(iConfig.getParameter<std::vector<std::string>>("outputBranchesToBeDropped")) {
-  const auto& TriggerResultsInputTag = iConfig.getParameter<edm::InputTag>("TriggerResults");
-  const auto& TriggerResultsCollections = iConfig.getParameter<std::vector<std::string>>("TriggerResultsCollections");
-
+  //const auto& TriggerResultsInputTag = iConfig.getParameter<edm::InputTag>("TriggerResults");
+  //const auto& TriggerResultsCollections = iConfig.getParameter<std::vector<std::string>>("TriggerResultsCollections");
+  
+  /*
   triggerResultsContainer_ptr_.reset(
       new TriggerResultsContainer(TriggerResultsCollections,
                                   TriggerResultsInputTag.label(),
                                   this->consumes<edm::TriggerResults>(TriggerResultsInputTag)));
-
+  */
   // fillCollectionConditions
   fillCollectionConditionMap_.clear();
 
@@ -442,11 +441,11 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   this->addBranch("pileupInfo_BX0_n_pThat470to600", &pileupInfo_BX0_n_pThat470to600_);
   this->addBranch("pileupInfo_BX0_n_pThat600toInf", &pileupInfo_BX0_n_pThat600toInf_);
 
-  //this->addBranch("PFVerticesMultiplicity", &PFVerticesMultiplicity);
-
+  /*
   for (const auto& triggerEntry_i : triggerResultsContainer_ptr_->entries()) {
     this->addBranch(triggerEntry_i.name, const_cast<bool*>(&triggerEntry_i.accept));
   }
+  */
 
   for (auto& boolContainer_i : v_boolContainer_) {
     this->addBranch(boolContainer_i.name(), &boolContainer_i.value());
@@ -492,7 +491,6 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
     this->addBranch(recoVertexCollectionContainer_i.name() + "_xError", &recoVertexCollectionContainer_i.vec_xError());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_yError", &recoVertexCollectionContainer_i.vec_yError());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_zError", &recoVertexCollectionContainer_i.vec_zError());
-    this->addBranch(recoVertexCollectionContainer_i.name() + "_sumPt2", &recoVertexCollectionContainer_i.vec_sumPt2());
   }
 
   for (auto& l1tPFCandidateCollectionContainer_i : v_l1tPFCandidateCollectionContainer_) {
@@ -525,8 +523,6 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                     &recoPFCandidateCollectionContainer_i.vec_phi());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_mass",
                     &recoPFCandidateCollectionContainer_i.vec_mass());
-    this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_energy",
-                    &recoPFCandidateCollectionContainer_i.vec_energy());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_rawEcalEnergy",
                     &recoPFCandidateCollectionContainer_i.vec_rawEcalEnergy());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_rawHcalEnergy",
@@ -822,7 +818,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   }
 }
 
-void JMETriggerNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
+void JMETriggerNTuple_offline::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   run_ = iEvent.id().run();
   luminosityBlock_ = iEvent.id().luminosityBlock();
   event_ = iEvent.id().event();
@@ -898,27 +894,13 @@ void JMETriggerNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     }
   }
   
-  // calculate the PF vertices multiplicity
-  
-  // for loop over vertex collections
-  // if find the name of hltVerticesPF 
-  // -> then calculate the size of the vector for one attribute 
-  // -> that is the multiplicity
   /*
-  for (auto& recoVertexCollectionContainer_i : v_recoVertexCollectionContainer_) {
-    if(recoVertexCollectionContainer_i.name().find("hltVerticesPF") != std::string::npos){
-      PFVerticesMultiplicity = recoVertexCollectionContainer_i.vec_z().size();
-      std::cout << PFVerticesMultiplicity << std::endl;
-    }
-  }*/
-
-
   // fill TriggerResultsContainer
   edm::Handle<edm::TriggerResults> triggerResults_handle;
   iEvent.getByToken(triggerResultsContainer_ptr_->token(), triggerResults_handle);
 
   if (not triggerResults_handle.isValid()) {
-    edm::LogWarning("JMETriggerNTuple::analyze")
+    edm::LogWarning("JMETriggerNTuple_offline::analyze")
         << "invalid handle for input collection: \"" << triggerResultsContainer_ptr_->inputTagLabel()
         << "\" (NTuple branches for HLT paths)";
 
@@ -938,15 +920,16 @@ void JMETriggerNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       }
     }
 
-    LogDebug("JMETriggerNTuple::analyze") << "output collections will be saved to TTree";
+    LogDebug("JMETriggerNTuple_offline::analyze") << "output collections will be saved to TTree";
 
     // fill TriggerResultsContainer
     triggerResultsContainer_ptr_->fill(*triggerResults_handle, iEvent);
 
     // update fill-collection conditions
     fillCollectionConditionMap_.update(*triggerResults_handle, iEvent);
+    
   }
-
+  */
   // fill boolContainers
   this->fillValueContainers(v_boolContainer_, fillCollectionConditionMap_, iEvent);
 
@@ -1052,33 +1035,34 @@ void JMETriggerNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 }
 
 template <typename... Args>
-void JMETriggerNTuple::addBranch(const std::string& branch_name, Args... args) {
+void JMETriggerNTuple_offline::addBranch(const std::string& branch_name, Args... args) {
   if (ttree_) {
     if (std::find(outputBranchesToBeDropped_.begin(), outputBranchesToBeDropped_.end(), branch_name) ==
         outputBranchesToBeDropped_.end()) {
       if (ttree_->GetBranch(branch_name.c_str())) {
-        throw cms::Exception("JMETriggerNTuple::addBranch")
+        throw cms::Exception("JMETriggerNTuple_offline::addBranch")
             << "output branch \"" << branch_name
             << "\" already exists (there was an attempt to create another TBranch with the same name)";
       } else {
         ttree_->Branch(branch_name.c_str(), args...);
       }
     } else {
-      edm::LogInfo("JMETriggerNTuple::addBranch")
+      edm::LogInfo("JMETriggerNTuple_offline::addBranch")
           << "output branch \"" << branch_name
           << "\" will not be created (string appears in data member \"outputBranchesToBeDropped\")";
     }
   } else {
-    edm::LogWarning("JMETriggerNTuple::addBranch")
+    edm::LogWarning("JMETriggerNTuple_offline::addBranch")
         << "pointer to TTree is null, output branch \"" << branch_name << "\" will not be created";
   }
 }
 
-bool JMETriggerNTuple::passesTriggerResults_OR(const edm::TriggerResults& triggerResults,
+/*
+bool JMETriggerNTuple_offline::passesTriggerResults_OR(const edm::TriggerResults& triggerResults,
                                                const edm::Event& iEvent,
                                                const std::vector<std::string>& paths) {
   if (paths.empty()) {
-    edm::LogWarning("JMETriggerNTuple::passesTriggerResults_OR")
+    edm::LogWarning("JMETriggerNTuple_offline::passesTriggerResults_OR")
         << "input error: empty list of paths for event selection, will return True";
     return true;
   }
@@ -1086,7 +1070,7 @@ bool JMETriggerNTuple::passesTriggerResults_OR(const edm::TriggerResults& trigge
   const auto& triggerNames = iEvent.triggerNames(triggerResults).triggerNames();
 
   if (triggerResults.size() != triggerNames.size()) {
-    edm::LogWarning("JMETriggerNTuple::passesTriggerResults_OR")
+    edm::LogWarning("JMETriggerNTuple_offline::passesTriggerResults_OR")
         << "input error: size of TriggerResults (" << triggerResults.size() << ") and TriggerNames ("
         << triggerNames.size() << ") differ, exiting function";
     return false;
@@ -1097,13 +1081,13 @@ bool JMETriggerNTuple::passesTriggerResults_OR(const edm::TriggerResults& trigge
       const auto& triggerName = triggerNames.at(idx);
 
       if (std::find(paths.begin(), paths.end(), triggerName) != paths.end()) {
-        LogDebug("JMETriggerNTuple::passesTriggerResults_OR") << "event accepted by path \"" << triggerName << "\"";
+        LogDebug("JMETriggerNTuple_offline::passesTriggerResults_OR") << "event accepted by path \"" << triggerName << "\"";
         return true;
       } else {
         const auto triggerName_unv = triggerName.substr(0, triggerName.rfind("_v"));
 
         if (std::find(paths.begin(), paths.end(), triggerName_unv) != paths.end()) {
-          LogDebug("JMETriggerNTuple::passesTriggerResults_OR")
+          LogDebug("JMETriggerNTuple_offline::passesTriggerResults_OR")
               << "event accepted by path \"" << triggerName_unv << "\"";
           return true;
         }
@@ -1112,13 +1096,14 @@ bool JMETriggerNTuple::passesTriggerResults_OR(const edm::TriggerResults& trigge
   }
 
   return false;
-}
+}*/
 
-bool JMETriggerNTuple::passesTriggerResults_AND(const edm::TriggerResults& triggerResults,
+/*
+bool JMETriggerNTuple_offline::passesTriggerResults_AND(const edm::TriggerResults& triggerResults,
                                                 const edm::Event& iEvent,
                                                 const std::vector<std::string>& paths) {
   if (paths.empty()) {
-    edm::LogWarning("JMETriggerNTuple::passesTriggerResults_AND")
+    edm::LogWarning("JMETriggerNTuple_offline::passesTriggerResults_AND")
         << "input error: empty list of paths for event selection, will return True";
     return true;
   }
@@ -1126,7 +1111,7 @@ bool JMETriggerNTuple::passesTriggerResults_AND(const edm::TriggerResults& trigg
   const auto& triggerNames = iEvent.triggerNames(triggerResults).triggerNames();
 
   if (triggerResults.size() != triggerNames.size()) {
-    edm::LogWarning("JMETriggerNTuple::passesTriggerResults_AND")
+    edm::LogWarning("JMETriggerNTuple_offline::passesTriggerResults_AND")
         << "input error: size of TriggerResults (" << triggerResults.size() << ") and TriggerNames ("
         << triggerNames.size() << ") differ, exiting function";
 
@@ -1138,14 +1123,14 @@ bool JMETriggerNTuple::passesTriggerResults_AND(const edm::TriggerResults& trigg
       const auto& triggerName = triggerNames.at(idx);
 
       if (std::find(paths.begin(), paths.end(), triggerName) != paths.end()) {
-        LogDebug("JMETriggerNTuple::passesTriggerResults_AND")
+        LogDebug("JMETriggerNTuple_offline::passesTriggerResults_AND")
             << "event not accepted by path \"" << triggerName << "\"";
         return false;
       } else {
         const auto triggerName_unv = triggerName.substr(0, triggerName.rfind("_v"));
 
         if (std::find(paths.begin(), paths.end(), triggerName_unv) != paths.end()) {
-          LogDebug("JMETriggerNTuple::passesTriggerResults_AND")
+          LogDebug("JMETriggerNTuple_offline::passesTriggerResults_AND")
               << "event not accepted by path \"" << triggerName_unv << "\"";
           return false;
         }
@@ -1155,10 +1140,11 @@ bool JMETriggerNTuple::passesTriggerResults_AND(const edm::TriggerResults& trigg
 
   return true;
 }
+*/
 
-JMETriggerNTuple::FillCollectionConditionsMap::FillCollectionConditionsMap() { this->clear(); }
+JMETriggerNTuple_offline::FillCollectionConditionsMap::FillCollectionConditionsMap() { this->clear(); }
 
-int JMETriggerNTuple::FillCollectionConditionsMap::init(const edm::ParameterSet& pset) {
+int JMETriggerNTuple_offline::FillCollectionConditionsMap::init(const edm::ParameterSet& pset) {
   this->clear();
 
   const auto& pset_strings = pset.getParameterNamesForType<std::string>();
@@ -1172,13 +1158,13 @@ int JMETriggerNTuple::FillCollectionConditionsMap::init(const edm::ParameterSet&
   return 0;
 }
 
-void JMETriggerNTuple::FillCollectionConditionsMap::clear() { condMap_.clear(); }
+void JMETriggerNTuple_offline::FillCollectionConditionsMap::clear() { condMap_.clear(); }
 
-bool JMETriggerNTuple::FillCollectionConditionsMap::has(const std::string& name) const {
+bool JMETriggerNTuple_offline::FillCollectionConditionsMap::has(const std::string& name) const {
   return (condMap_.find(name) != condMap_.end());
 }
 
-const JMETriggerNTuple::FillCollectionConditionsMap::condition& JMETriggerNTuple::FillCollectionConditionsMap::at(
+const JMETriggerNTuple_offline::FillCollectionConditionsMap::condition& JMETriggerNTuple_offline::FillCollectionConditionsMap::at(
     const std::string& name) const {
   if (not this->has(name)) {
     throw cms::Exception("LogicError") << "internal map has no entry associated to key \"" << name << "\"";
@@ -1187,7 +1173,7 @@ const JMETriggerNTuple::FillCollectionConditionsMap::condition& JMETriggerNTuple
   return condMap_.at(name);
 }
 
-bool JMETriggerNTuple::FillCollectionConditionsMap::accept(const std::string& name) const {
+bool JMETriggerNTuple_offline::FillCollectionConditionsMap::accept(const std::string& name) const {
   if (not this->has(name)) {
     throw cms::Exception("LogicError") << "internal map has no entry associated to key \"" << name << "\"";
   }
@@ -1195,20 +1181,22 @@ bool JMETriggerNTuple::FillCollectionConditionsMap::accept(const std::string& na
   return this->at(name).accept;
 }
 
-int JMETriggerNTuple::FillCollectionConditionsMap::update(const edm::TriggerResults& triggerResults,
-                                                          const edm::Event& iEvent) {
+
+int JMETriggerNTuple_offline::FillCollectionConditionsMap::update(const edm::Event& iEvent) {
   for (auto& map_entry : condMap_) {
     map_entry.second.accept = false;
   }
 
-  const auto& triggerNames = iEvent.triggerNames(triggerResults).triggerNames();
+  //const auto& triggerNames = iEvent.triggerNames(triggerResults).triggerNames();
 
+  /*
   if (triggerResults.size() != triggerNames.size()) {
     edm::LogWarning("InputError") << "size of TriggerResults (" << triggerResults.size() << ") and TriggerNames ("
                                   << triggerNames.size() << ") differ, exiting function";
 
     return 1;
   }
+  
 
   for (unsigned int idx = 0; idx < triggerResults.size(); ++idx) {
     LogDebug("FillCollectionConditionsMap::update")
@@ -1232,12 +1220,12 @@ int JMETriggerNTuple::FillCollectionConditionsMap::update(const edm::TriggerResu
       }
     }
   }
-
+  */
   return 0;
 }
 
 template <typename VAL_TYPE>
-int JMETriggerNTuple::initValueContainers(std::vector<ValueContainer<VAL_TYPE>>& v_valContainers,
+int JMETriggerNTuple_offline::initValueContainers(std::vector<ValueContainer<VAL_TYPE>>& v_valContainers,
                                           const std::string& psetName,
                                           const edm::ParameterSet& iConfig,
                                           const VAL_TYPE defaultValue) {
@@ -1262,9 +1250,9 @@ int JMETriggerNTuple::initValueContainers(std::vector<ValueContainer<VAL_TYPE>>&
 }
 
 template <typename VAL_TYPE>
-void JMETriggerNTuple::fillValueContainers(
+void JMETriggerNTuple_offline::fillValueContainers(
     std::vector<ValueContainer<VAL_TYPE>>& v_valContainers,
-    const JMETriggerNTuple::FillCollectionConditionsMap& fillCollectionConditionMap,
+    const JMETriggerNTuple_offline::FillCollectionConditionsMap& fillCollectionConditionMap,
     const edm::Event& iEvent) {
   for (auto& valueContainer_i : v_valContainers) {
     valueContainer_i.setValue(valueContainer_i.defaultValue());
@@ -1277,7 +1265,7 @@ void JMETriggerNTuple::fillValueContainers(
     auto const& i_handle(iEvent.getHandle(valueContainer_i.token()));
 
     if (not i_handle.isValid()) {
-      edm::LogWarning("JMETriggerNTuple::fillValueContainers")
+      edm::LogWarning("JMETriggerNTuple_offline::fillValueContainers")
           << "invalid handle for input collection: \"" << valueContainer_i.inputTagLabel() << "\" (NTuple branch: \""
           << valueContainer_i.name() << "\")";
     } else {
@@ -1287,7 +1275,7 @@ void JMETriggerNTuple::fillValueContainers(
 }
 
 template <typename COLL_CONTAINER_TYPE, typename OBJ_TYPE>
-int JMETriggerNTuple::initCollectionContainer(
+int JMETriggerNTuple_offline::initCollectionContainer(
     const edm::ParameterSet& iConfig,
     std::vector<COLL_CONTAINER_TYPE>& v_collContainer,
     std::string const& collPSetName,
@@ -1304,7 +1292,7 @@ int JMETriggerNTuple::initCollectionContainer(
     for (auto const& label : inputTagLabels_collections) {
       auto const& inputTag(pset_collections.getParameter<edm::InputTag>(label));
 
-      LogDebug("JMETriggerNTuple::initCollectionContainer")
+      LogDebug("JMETriggerNTuple_offline::initCollectionContainer")
           << "adding " << collTypeName << " \"" << inputTag.label() << "\" (NTuple branches: \"" << label << "_*\")";
 
       v_collContainer.emplace_back(
@@ -1322,9 +1310,9 @@ int JMETriggerNTuple::initCollectionContainer(
 }
 
 template <typename COLL_CONTAINER_TYPE, typename OBJ_TYPE>
-void JMETriggerNTuple::fillCollectionContainer(edm::Event const& iEvent,
+void JMETriggerNTuple_offline::fillCollectionContainer(edm::Event const& iEvent,
                                                std::vector<COLL_CONTAINER_TYPE>& v_collectionContainer,
-                                               JMETriggerNTuple::FillCollectionConditionsMap const& fillConditionMap) {
+                                               JMETriggerNTuple_offline::FillCollectionConditionsMap const& fillConditionMap) {
   for (auto& collContainer_i : v_collectionContainer) {
     collContainer_i.clear();
 
@@ -1338,14 +1326,14 @@ void JMETriggerNTuple::fillCollectionContainer(edm::Event const& iEvent,
     if (i_handle.isValid()) {
       collContainer_i.fill(*i_handle);
     } else {
-      edm::LogWarning("JMETriggerNTuple::fillCollectionContainer")
+      edm::LogWarning("JMETriggerNTuple_offline::fillCollectionContainer")
           << "invalid handle for input collection: \"" << collContainer_i.inputTagLabel() << "\" (NTuple branches: \""
           << collContainer_i.name() << "_*\")";
     }
   }
 }
 
-void JMETriggerNTuple::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+void JMETriggerNTuple_offline::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   edm::ParameterSetDescription desc;
   desc.setUnknown();
   //  desc.add<std::string>("TTreeName", "TTreeName")->setComment("Name of TTree");
@@ -1357,7 +1345,7 @@ void JMETriggerNTuple::fillDescriptions(edm::ConfigurationDescriptions& descript
 
   //  edm::ParameterSetDescription recoCaloMETCollections;
   //  desc.add<edm::ParameterSetDescription>("recoCaloMETCollections", recoCaloMETCollections);
-  descriptions.add("JMETriggerNTuple", desc);
+  descriptions.add("JMETriggerNTuple_offline", desc);
 }
 
-DEFINE_FWK_MODULE(JMETriggerNTuple);
+DEFINE_FWK_MODULE(JMETriggerNTuple_offline);

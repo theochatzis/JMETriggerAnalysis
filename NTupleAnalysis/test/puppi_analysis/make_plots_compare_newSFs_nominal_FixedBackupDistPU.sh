@@ -14,8 +14,7 @@ MinNeutralPtSlope_factors=(
 )
 
 NOMINAL_IDIR=./tuning_nominal/harvester_output
-IDIR=./tuning_$1/harvester_output 
-ODIR=./tuning_$1/plots
+ODIR=./tuning_test_newSFs_nominal_FixedBackupDistPU/plots
 
 FOUND_ODIR=false
 
@@ -43,20 +42,14 @@ for recoKey in "${recoKeys[@]}"; do
       if [ -d ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor} ]; then rm -rf ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}; fi
       
       # make the plotting
-      #jmePlots.py -k run3_jme_compareTRK5_puppi_noOffline -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/QCD \
-      #-i ./${NOMINAL_IDIR}/HLT_Run3TRK/MinNeutralPt_1.0/MinNeutralPtSlope_1.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'nominal settings':600:1:24 ./${IDIR}/HLT_Run3TRK/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'modified settings':632:1:24 \
-      #-l 'Run3Winter21_QCD_PtFlat15to7000_14TeV_PU'
-      
-      #jmePlots.py -k run3_jme_compareTRK5_puppi_noOffline -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/VBF_HToInv \
-      #-i ./${NOMINAL_IDIR}/HLT_Run3TRK/MinNeutralPt_1.0/MinNeutralPtSlope_1.0/Run3Winter21_VBF_HToInvisible_14TeV_PU__0.root:'nominal settings':600:1:24 ./${IDIR}/HLT_Run3TRK/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/Run3Winter21_VBF_HToInvisible_14TeV_PU__0.root:'modified settings':632:1:24 \
-      #-l 'Run3Winter21_VBF_HToInvisible_14TeV_PU'
-
       jmePlots.py -k run3_jme_compareTRK5_puppi_noOffline -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/QCD \
-      -i ./${IDIR}/HLT_Run3TRK/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'nominal':600:1:24 \
+      -i ./tuning_test_newSFs_nominal/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'SFs + nominal A,B':600:1:24 \
+      ./tuning_test_newSFs_nominal_FixedBackupDistPU/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'hybrid method':632:1:25 \
       -l 'Run3Winter21_QCD_PtFlat15to7000_14TeV_PU'
       
       jmePlots.py -k run3_jme_compareTRK5_puppi_noOffline -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/VBF_HToInv \
-      -i ./${IDIR}/HLT_Run3TRK/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/Run3Winter21_VBF_HToInvisible_14TeV_PU__0.root:'nominal':600:1:24 \
+      -i ./tuning_test_newSFs_nominal/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_VBF_HToInvisible_14TeV_PU__0.root:'SFs + nominal A,B':600:1:24 \
+      ./tuning_test_newSFs_nominal_FixedBackupDistPU/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_VBF_HToInvisible_14TeV_PU__0.root:'hybrid method':632:1:25 \
       -l 'Run3Winter21_VBF_HToInvisible_14TeV_PU'
       
       # organise the plots

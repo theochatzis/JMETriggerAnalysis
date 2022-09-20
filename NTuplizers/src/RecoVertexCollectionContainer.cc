@@ -17,6 +17,7 @@ void RecoVertexCollectionContainer::clear() {
   xError_.clear();
   yError_.clear();
   zError_.clear();
+  sumPt2_.clear();
 }
 
 void RecoVertexCollectionContainer::reserve(const size_t vec_size) {
@@ -30,6 +31,7 @@ void RecoVertexCollectionContainer::reserve(const size_t vec_size) {
   xError_.reserve(vec_size);
   yError_.reserve(vec_size);
   zError_.reserve(vec_size);
+  sumPt2_.reserve(vec_size);
 }
 
 void RecoVertexCollectionContainer::emplace_back(const reco::Vertex& obj) {
@@ -43,4 +45,11 @@ void RecoVertexCollectionContainer::emplace_back(const reco::Vertex& obj) {
   xError_.emplace_back(obj.xError());
   yError_.emplace_back(obj.yError());
   zError_.emplace_back(obj.zError());
+  
+  // calculate sum of pT^2 for vertices 
+  float sum = 0.;
+  for(reco::Vertex::trackRef_iterator track = obj.tracks_begin(); track != obj.tracks_end(); ++track){
+    sum += pow((*track)->px(),2) + pow((*track)->py(),2);
+  }
+  sumPt2_.emplace_back(sum); 
 }

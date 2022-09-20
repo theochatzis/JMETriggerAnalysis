@@ -552,9 +552,9 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
     binEdges_MHT.at(idx) = idx * 10.;
   }
 
-  std::vector<float> binEdges_pt(31);
+  std::vector<float> binEdges_pt(91);
   for (uint idx = 0; idx < binEdges_pt.size(); ++idx) {
-    binEdges_pt.at(idx) = 30. * idx;
+    binEdges_pt.at(idx) = 10. * idx;
   }
 
   std::vector<float> binEdges_eta(101);
@@ -709,6 +709,9 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
       
       addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel + "__vs__" +
                   matchLabel + "_pt",
+              binEdges_response,
+              binEdges_pt);
+      addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel + "__vs__pt",
               binEdges_response,
               binEdges_pt);
       addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel + "__vs__" +
@@ -944,7 +947,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
   // modification start
   // adding the simulated number of PU in the variables
   auto const simNPU = this->value<int>("pileupInfo_BX0_numPUInteractions"); 
-  // modification end
+  // modification end  
   auto const* v_pt(this->vector_ptr<float>(fhData.jetCollection + "_pt"));
   auto const* v_eta(this->vector_ptr<float>(fhData.jetCollection + "_eta"));
   auto const* v_phi(this->vector_ptr<float>(fhData.jetCollection + "_phi"));
@@ -1319,6 +1322,9 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
             H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel +
                "__vs__" + matchLabel + "_pt")
                 ->Fill(jetPtRatio, jetMatchPt, weight);
+            H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel +
+               "__vs__pt")
+                ->Fill(jetPtRatio, jetPt, weight);
             // modification start
             H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel +
                "__vs__" + matchLabel + "_simNPU")
