@@ -5,7 +5,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-NEVT=10000
+NEVT=20000
 ODIR=${1}
 
 #TUNE_QUANTITY="MinNeutralPt"
@@ -33,14 +33,6 @@ TUNE_VALUES=(
   0.1
   0.2
   0.3
-  0.4
-  0.5
-  0.6
-  0.7
-  0.8
-  0.9
-  1.0
-  10.0
 )
 
 #if [ -d ${ODIR} ]; then
@@ -73,10 +65,11 @@ opts="--submit"
 
 for VALUE in ${TUNE_VALUES[@]}; do
   python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple_puppiTune_cfg.py dumpPython=.tmp_cfg.py numThreads=1 \
-    DeltaZCut=${VALUE} \
     puppiParamsCentral1=MinNeutralPt:1.0,MinNeutralPtSlope:1.0 \
     puppiParamsCentral2=MinNeutralPt:1.0,MinNeutralPtSlope:1.0 \
-    puppiParamsForward=MinNeutralPt:1.0,MinNeutralPtSlope:1.0
+    puppiParamsForward=MinNeutralPt:1.0,MinNeutralPtSlope:1.0 \
+    DeltaZCut=0.3 \
+    DeltaTCut=${VALUE} 
   
   for sampleKey in ${!samplesMap[@]}; do
     sampleName=${samplesMap[${sampleKey}]}
@@ -108,7 +101,7 @@ for VALUE in ${TUNE_VALUES[@]}; do
     # Note: You can automatically run the jobs after creating them by using --submit option of bdriver
     
     if [[ "${sampleName}" == *"GEN-SIM-DIGI-RAW"* ]]; then
-    bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 100 --cpus 1 --memory 2G --time 01:30:00 ${opts} --batch-system htc \
+    bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 100 --cpus 1 --memory 2G --time 02:00:00 ${opts} --batch-system htc \
     -d ${sampleName} -p 0 -o ${ODIR}/${sampleKey}/value_${VALUE} \
     --final-output ${FINAL_OUTPUT_DIR} \
     --customise-commands \
@@ -116,7 +109,7 @@ for VALUE in ${TUNE_VALUES[@]}; do
     "if hasattr(process, 'TFileService'):" \
     '  process.TFileService.fileName = opts.output' 
     else
-    bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 100 --cpus 1 --memory 2G --time 01:30:00 ${opts} --batch-system htc \
+    bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 100 --cpus 1 --memory 2G --time 02:00:00 ${opts} --batch-system htc \
     -d ${sampleName} -p 1 -o ${ODIR}/${sampleKey}/value_${VALUE} \
     --final-output ${FINAL_OUTPUT_DIR} \
     --customise-commands \

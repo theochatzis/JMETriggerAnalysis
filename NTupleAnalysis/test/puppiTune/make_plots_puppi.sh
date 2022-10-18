@@ -52,12 +52,19 @@ for key in "${keys[@]}"; do
   # ./${IDIR}/${key}/value_3/value_3__0.root:'no. vtxs = 3':807:1:24 \
   # -l 'Phase2HLT_QCD_Flat_Pt-15to3000_14TeV_PU200'
 
+  #  jmePlots.py -k phase2_jme_puppi_new -o ./${ODIR}/${key}/QCD -e png \
+  #  -i ./${IDIR}/${key}/value_0.6/value_0.6__0.root:'dz=0.6':1:1:24 \
+  #  ./${IDIR}/${key}/value_0.7/value_0.7__0.root:'dz=0.7':861:1:24 \
+  #  ./${IDIR}/${key}/value_0.8/value_0.8__0.root:'dz=0.8':874:1:24 \
+  #  ./${IDIR}/${key}/value_1.0/value_1.0__0.root:'dz=1.0':904:1:24 \
+  #  ./${IDIR}/${key}/value_10.0/value_10.0__0.root:'dz=10.0':807:1:24 \
+  #  -l 'Phase2HLT_QCD_Flat_Pt-15to3000_14TeV_PU200'
+  
    jmePlots.py -k phase2_jme_puppi_new -o ./${ODIR}/${key}/QCD -e png \
-   -i ./${IDIR}/${key}/value_0.6/value_0.6__0.root:'dz=0.6':1:1:24 \
-   ./${IDIR}/${key}/value_0.7/value_0.7__0.root:'dz=0.7':861:1:24 \
-   ./${IDIR}/${key}/value_0.8/value_0.8__0.root:'dz=0.8':874:1:24 \
-   ./${IDIR}/${key}/value_1.0/value_1.0__0.root:'dz=1.0':904:1:24 \
-   ./${IDIR}/${key}/value_10.0/value_10.0__0.root:'dz=10.0':807:1:24 \
+   -i ./test_MTDPuppiDz0p1/harvester_output/${key}/value_1000.0/value_1000.0__0.root:'no dt cut':1:1:24 \
+   ./${IDIR}/${key}/value_0.3/value_0.3__0.root:'dt=0.3ns':861:1:24 \
+   ./${IDIR}/${key}/value_0.2/value_0.2__0.root:'dt=0.2ns':874:1:24 \
+   ./${IDIR}/${key}/value_0.1/value_0.1__0.root:'dt=0.1ns':904:1:24 \
    -l 'Phase2HLT_QCD_Flat_Pt-15to3000_14TeV_PU200'
   
   #jmePlots.py -k phase2_jme_puppi -o ./${ODIR}/${key}/VBF_HToInv \
@@ -66,6 +73,7 @@ for key in "${keys[@]}"; do
   
   # organise the plots
   ./organise_plots.sh ${ODIR}/${key}/QCD/NoSelection
+  ./organise_plots.sh ${ODIR}/${key}/QCD/matchedLV
   #./organise_plots.sh ${ODIR}/${key}/VBF_HToInv/NoSelection       
   
 done

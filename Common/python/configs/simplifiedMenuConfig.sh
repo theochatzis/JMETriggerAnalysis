@@ -15,5 +15,5 @@ cmsDriver.py Phase2 -s HLT:75e33 --processName=HLTX \
 #process = customise_aging_1000(process) 
 #
 # then run:
-#cmsConfigDump Phase2_HLT.py > HLT_75e33_cfg.py
+#edmConfigDump Phase2_HLT.py > HLT_75e33_cfg.py
 # (the HLT_75e33_cfg will be used in the NTuplizers/test/jmeTriggerNTuple_cfg.py to create the NTuple for your studies)

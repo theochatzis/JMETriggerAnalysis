@@ -31,6 +31,8 @@ class JMETriggerAnalysisDriverPhase2 : public JMETriggerAnalysisDriver {
   bool l1tHTSeed(std::string const& key) const;
   bool l1tMETSeed(std::string const& key) const;
 
+  bool HLT_LVmatching(std::string const& key) const;
+
   float getMET(std::string const&) const;
   float getMHT(float const, float const) const;
 

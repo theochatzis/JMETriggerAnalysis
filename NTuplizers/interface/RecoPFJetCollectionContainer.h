@@ -16,7 +16,8 @@ public:
   void clear() override;
   void reserve(const size_t) override;
   void emplace_back(const reco::PFJet&) override;
-
+  
+  std::vector<float>& vec_energy() { return energy_; }
   std::vector<float>& vec_pt() { return pt_; }
   std::vector<float>& vec_eta() { return eta_; }
   std::vector<float>& vec_phi() { return phi_; }
@@ -53,6 +54,7 @@ public:
 
 
 protected:
+  std::vector<float> energy_;
   std::vector<float> pt_;
   std::vector<float> eta_;
   std::vector<float> phi_;
@@ -84,10 +86,12 @@ protected:
   std::vector<float> CandidateVx_;
   std::vector<float> CandidateVy_;
   std::vector<float> CandidateVz_;
+  
 
   std::vector<int> CandidateBelongsToJet_;
 
   int JetIndex_;
+  int andidateAssociation_;
 };
 
 #endif

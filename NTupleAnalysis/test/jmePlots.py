@@ -1466,7 +1466,7 @@ def getPlotConfig(key, keyword, inputList):
 #          return
 
        
-       if ('/' in key) and ((not key.startswith('NoSelection/')) ):
+       if ('/' in key) and ((not key.startswith('NoSelection/')) and (not key.startswith('matchedLV/'))  ):
           if ('_pt0' not in key_basename) or key_basename.endswith('pt0_eff') or \
              key_basename.endswith('pt0') or ('pt0_over' in key_basename):
              return

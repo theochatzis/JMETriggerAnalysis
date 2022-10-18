@@ -21428,6 +21428,287 @@ process.generalTracks = cms.EDProducer("TrackListMerger",
     writeOnlyTrkQuals = cms.bool(False)
 )
 
+# use track extender with MTD producer to add timing maps with general tracks
+# will produce maps :
+# generalTracksWithMTD:generalTrackt0
+# generalTracksWithMTD:generalTracktmtd
+# generalTracksWithMTD:generalTracksigmat0
+# generalTracksWithMTD:generalTracksigmatmtd
+
+# adding these necessary inputs for the TrackExtenderWithMTD
+
+
+
+process.Chi2MeasurementEstimatorForInOut = cms.ESProducer("Chi2MeasurementEstimatorESProducer",
+    ComponentName = cms.string('Chi2ForInOut'),
+    MaxChi2 = cms.double(100.0),
+    MaxDisplacement = cms.double(100),
+    MaxSagitta = cms.double(-1),
+    MinPtForHitRecoveryInGluedDet = cms.double(1000000000000),
+    MinimalTolerance = cms.double(0.5),
+    appendToDataLabel = cms.string(''),
+    nSigma = cms.double(3)
+)
+
+process.alongMomElePropagator = cms.ESProducer("PropagatorWithMaterialESProducer",
+    ComponentName = cms.string('alongMomElePropagator'),
+    Mass = cms.double(0.000511),
+    MaxDPhi = cms.double(1.6),
+    PropagationDirection = cms.string('alongMomentum'),
+    SimpleMagneticField = cms.string(''),
+    ptMin = cms.double(-1.0),
+    useRungeKutta = cms.bool(False)
+)
+
+process.KFTrajectoryFitterForInOut = cms.ESProducer("KFTrajectoryFitterESProducer",
+    ComponentName = cms.string('KFFitterForInOut'),
+    Estimator = cms.string('Chi2ForInOut'),
+    Propagator = cms.string('alongMomElePropagator'),
+    RecoGeometry = cms.string('GlobalDetLayerGeometry'),
+    Updator = cms.string('KFUpdator'), 
+    appendToDataLabel = cms.string(''),
+    minHits = cms.int32(3)
+)
+
+process.Chi2EstimatorForRefit = cms.ESProducer("Chi2MeasurementEstimatorESProducer",
+    ComponentName = cms.string('Chi2EstimatorForRefit'),
+    MaxChi2 = cms.double(100000.0),
+    MaxDisplacement = cms.double(0.5),
+    MaxSagitta = cms.double(2),
+    MinPtForHitRecoveryInGluedDet = cms.double(1000000000000),
+    MinimalTolerance = cms.double(0.5),
+    appendToDataLabel = cms.string(''),
+    nSigma = cms.double(3.0)
+)
+
+process.RungeKuttaTrackerPropagatorOpposite = cms.ESProducer("PropagatorWithMaterialESProducer",
+    ComponentName = cms.string('RungeKuttaTrackerPropagatorOpposite'),
+    Mass = cms.double(0.105),
+    MaxDPhi = cms.double(1.6),
+    PropagationDirection = cms.string('oppositeToMomentum'),
+    SimpleMagneticField = cms.string(''),
+    ptMin = cms.double(-1.0),
+    useRungeKutta = cms.bool(True)
+)
+
+process.SmartPropagatorAnyRKOpposite = cms.ESProducer("SmartPropagatorESProducer",
+    ComponentName = cms.string('SmartPropagatorAnyRKOpposite'),
+    Epsilon = cms.double(5.0),
+    MuonPropagator = cms.string('SteppingHelixPropagatorAny'),
+    PropagationDirection = cms.string('oppositeToMomentum'),
+    TrackerPropagator = cms.string('RungeKuttaTrackerPropagatorOpposite')
+)
+
+process.KFSmootherForRefitOutsideIn = cms.ESProducer("KFTrajectorySmootherESProducer",
+    ComponentName = cms.string('KFSmootherForRefitOutsideIn'),
+    Estimator = cms.string('Chi2EstimatorForRefit'),
+    Propagator = cms.string('SmartPropagatorAnyRKOpposite'),
+    RecoGeometry = cms.string('GlobalDetLayerGeometry'),
+    Updator = cms.string('KFUpdator'), # why not "hltESPKFUpdator"?
+    appendToDataLabel = cms.string(''),
+    errorRescaling = cms.double(100.0),
+    minHits = cms.int32(3)
+)
+
+process.MTDCPEESProducer = cms.ESProducer("MTDCPEESProducer",
+    appendToDataLabel = cms.string('')
+)
+
+
+process.MTDTimeCalibESProducer = cms.ESProducer("MTDTimeCalibESProducer",
+    BTLTimeOffset = cms.double(0.0115),
+    ETLTimeOffset = cms.double(0.0066),
+    #BTLTimeOffset = cms.double(-0.0778),
+    #ETLTimeOffset = cms.double(-0.0357),
+    BTLLightCollTime = cms.double(0.2),
+    BTLLightCollSlope = cms.double(0.075),
+    appendToDataLabel = cms.string('')
+)
+
+process.MTDTransientTrackingRecHitBuilder = cms.ESProducer("MTDTransientTrackingRecHitBuilderESProducer",
+    ComponentName = cms.string('MTDRecHitBuilder')
+)
+
+process.PropagatorWithMaterialForMTD = cms.ESProducer("PropagatorWithMaterialESProducer",
+    ComponentName = cms.string('PropagatorWithMaterialForMTD'),
+    Mass = cms.double(0.13957018),
+    MaxDPhi = cms.double(1.6),
+    PropagationDirection = cms.string('anyDirection'),
+    ptMin = cms.double(0.1),
+    useOldAnalPropLogic = cms.bool(False),
+    useRungeKutta = cms.bool(False)
+)
+
+
+# rec hits (uncalibrated)
+from SimFastTiming.FastTimingCommon.mtdDigitizer_cfi import mtdDigitizer
+
+
+_barrelAlgo = cms.PSet(
+    algoName = cms.string("BTLUncalibRecHitAlgo"),
+    adcNbits = mtdDigitizer.barrelDigitizer.ElectronicsSimulation.adcNbits,
+    adcSaturation = mtdDigitizer.barrelDigitizer.ElectronicsSimulation.adcSaturation_MIP,
+    toaLSB_ns = mtdDigitizer.barrelDigitizer.ElectronicsSimulation.toaLSB_ns,
+    timeResolutionInNs = cms.string("0.308*pow(x,-0.4175)"), # [ns]
+    timeCorr_p0 = cms.double( 2.21103),
+    timeCorr_p1 = cms.double(-0.933552),
+    timeCorr_p2 = cms.double( 0.),
+    c_LYSO = cms.double(13.846235)     # in unit cm/ns
+)
+
+
+_endcapAlgo = cms.PSet(
+    algoName      = cms.string("ETLUncalibRecHitAlgo"),
+    adcNbits      = mtdDigitizer.endcapDigitizer.ElectronicsSimulation.adcNbits,
+    adcSaturation = mtdDigitizer.endcapDigitizer.ElectronicsSimulation.adcSaturation_MIP,
+    toaLSB_ns     = mtdDigitizer.endcapDigitizer.ElectronicsSimulation.toaLSB_ns,
+    tofDelay      = mtdDigitizer.endcapDigitizer.DeviceSimulation.tofDelay,
+    timeResolutionInNs = cms.string("0.039") # [ns]
+)
+
+
+process.mtdUncalibratedRecHits = cms.EDProducer(
+    "MTDUncalibratedRecHitProducer",
+    barrel = _barrelAlgo,
+    endcap = _endcapAlgo,
+    barrelDigis = cms.InputTag('mix:FTLBarrel'),
+    endcapDigis = cms.InputTag('mix:FTLEndcap'),
+    BarrelHitsName = cms.string('FTLBarrel'),
+    EndcapHitsName = cms.string('FTLEndcap')
+)
+
+# from Configuration.ProcessModifiers.premix_stage2_cff import premix_stage2
+# premix_stage2.toModify(mtdUncalibratedRecHits,
+#     barrelDigis = 'mixData:FTLBarrel',
+#     endcapDigis = 'mixData:FTLEndcap',
+# )
+
+
+## rec hits
+
+# from mtdRecHits_cfi.py:
+
+_barrelAlgo = cms.PSet(
+    algoName = cms.string("MTDRecHitAlgo"),
+    thresholdToKeep = cms.double(1.),          # MeV
+    calibrationConstant = cms.double(0.03125), # MeV/pC
+)
+
+
+_endcapAlgo = cms.PSet(
+    algoName = cms.string("MTDRecHitAlgo"),
+    thresholdToKeep = cms.double(0.005),    # MeV
+    calibrationConstant = cms.double(0.015), # MeV/MIP
+    #thresholdToKeep = cms.double(0.0425),    # MeV
+    #calibrationConstant = cms.double(0.085), # MeV/MIP
+)
+
+#from Configuration.Eras.Modifier_phase2_etlV4_cff import phase2_etlV4
+#phase2_etlV4.toModify(_endcapAlgo, thresholdToKeep = 0.005, calibrationConstant = 0.015 )
+
+process.mtdRecHits = cms.EDProducer(
+    "MTDRecHitProducer",
+    barrel = _barrelAlgo,
+    endcap = _endcapAlgo,
+    barrelUncalibratedRecHits = cms.InputTag('mtdUncalibratedRecHits:FTLBarrel'),
+    endcapUncalibratedRecHits = cms.InputTag('mtdUncalibratedRecHits:FTLEndcap'),
+    BarrelHitsName = cms.string('FTLBarrel'),
+    EndcapHitsName = cms.string('FTLEndcap'),
+)
+
+## clusters
+#import FWCore.ParameterSet.Config as cms
+#from RecoLocalFastTime.FTLClusterizer.mtdClusterProducer_cfi import mtdClusterProducer
+#process.mtdClusters = mtdClusterProducer.clone()
+process.mtdClusters = cms.EDProducer("MTDClusterProducer",
+    srcBarrel = cms.InputTag('mtdRecHits:FTLBarrel'),
+    srcEndcap = cms.InputTag('mtdRecHits:FTLEndcap'),
+    BarrelClusterName = cms.string('FTLBarrel'),
+    EndcapClusterName = cms.string('FTLEndcap'),
+    ClusterMode = cms.string('MTDThresholdClusterizer')  
+)
+
+## tracking rec hits
+#from RecoLocalFastTime.FTLRecProducers.mtdTrackingRecHitProducer_cfi import mtdTrackingRecHitProducer
+#process.mtdTrackingRecHits = mtdTrackingRecHitProducer.clone()
+
+
+process.mtdTrackingRecHits = cms.EDProducer("MTDTrackingRecHitProducer",
+    barrelClusters = cms.InputTag("mtdClusters","FTLBarrel"),
+    endcapClusters = cms.InputTag("mtdClusters","FTLEndcap"),
+)
+
+
+process.generalTracksWithMTD = cms.EDProducer("TrackExtenderWithMTD",
+  tracksSrc = cms.InputTag('generalTracks'),
+  trjtrkAssSrc = cms.InputTag('generalTracks'),
+  hitsSrc = cms.InputTag('mtdTrackingRecHits'),
+  beamSpotSrc = cms.InputTag('offlineBeamSpot'),
+  genVtxPositionSrc = cms.InputTag('genParticles', 'xyz0'),
+  genVtxTimeSrc = cms.InputTag('genParticles', 't0'),
+  vtxSrc = cms.InputTag('unsortedOfflinePrimaryVertices'), 
+  updateTrackTrajectory = cms.bool(True),
+  updateTrackExtra = cms.bool(True),
+  updateTrackHitPattern = cms.bool(True),
+  TransientTrackBuilder = cms.string('TransientTrackBuilder'),
+  MTDRecHitBuilder = cms.string('MTDRecHitBuilder'),
+  Propagator = cms.string('PropagatorWithMaterialForMTD'),
+  TrackTransformer = cms.PSet(
+    DoPredictionsOnly = cms.bool(False),
+    #Fitter = cms.string('KFFitterForRefitInsideOut'), 
+    #Smoother = cms.string('KFSmootherForRefitInsideOut'),
+    Fitter = cms.string('KFFitterForInOut'),
+    Smoother = cms.string('KFSmootherForRefitOutsideIn'),
+    Propagator = cms.string('PropagatorWithMaterialForMTD'),
+    RefitDirection = cms.string('alongMomentum'),
+    RefitRPCHits = cms.bool(True),
+    TrackerRecHitBuilder = cms.string('WithTrackAngle'),
+    #MuonRecHitBuilder = cms.string('MuonRecHitBuilder'),
+    MuonRecHitBuilder = cms.string('hltESPMuonTransientTrackingRecHitBuilder'),
+    MTDRecHitBuilder = cms.string('MTDRecHitBuilder')
+  ),
+  estimatorMaxChi2 = cms.double(500),
+  estimatorMaxNSigma = cms.double(10),
+  btlChi2Cut = cms.double(50),
+  btlTimeChi2Cut = cms.double(10),
+  etlChi2Cut = cms.double(50),
+  etlTimeChi2Cut = cms.double(10),
+  useVertex = cms.bool(False),
+  useSimVertex = cms.bool(False),
+  dZCut = cms.double(0.1),
+  bsTimeSpread = cms.double(0.2),
+)
+
+process.generalTracksMtdTrackQualityMVA = cms.EDProducer("MTDTrackQualityMVAProducer",
+  tracksSrc = cms.InputTag('generalTracks'),
+  btlMatchChi2Src = cms.InputTag('generalTracksWithMTD:btlMatchChi2'),
+  btlMatchTimeChi2Src = cms.InputTag('generalTracksWithMTD:btlMatchTimeChi2'),
+  etlMatchChi2Src = cms.InputTag('generalTracksWithMTD:etlMatchChi2'),
+  etlMatchTimeChi2Src = cms.InputTag('generalTracksWithMTD:etlMatchTimeChi2'),
+  mtdTimeSrc = cms.InputTag('generalTracksWithMTD:generalTracktmtd'),
+  pathLengthSrc = cms.InputTag('generalTracksWithMTD:generalTrackPathLength'),
+  npixBarrelSrc = cms.InputTag('generalTracksWithMTD:npixBarrel'),
+  npixEndcapSrc = cms.InputTag('generalTracksWithMTD:npixEndcap'),
+)
+
+
+
+process.generalTracksTOFPIDProducer = cms.EDProducer('TOFPIDProducer',
+  tracksSrc    = cms.InputTag('generalTracks'),
+  t0Src        = cms.InputTag('generalTracksWithMTD:generalTrackt0'),
+  tmtdSrc      = cms.InputTag('generalTracksWithMTD:generalTracktmtd'),
+  sigmat0Src   = cms.InputTag('generalTracksWithMTD:generalTracksigmat0'),
+  sigmatmtdSrc = cms.InputTag('generalTracksWithMTD:generalTracksigmatmtd'),
+  tofkSrc      = cms.InputTag('generalTracksWithMTD:generalTrackTofK'),
+  tofpSrc      = cms.InputTag('generalTracksWithMTD:generalTrackTofP'),
+  vtxsSrc      = cms.InputTag('unsortedOfflinePrimaryVertices'),
+  vtxMaxSigmaT      = cms.double(0.025),
+  maxDz             = cms.double(0.1),
+  maxDtSignificance = cms.double(5.0),
+  minProbHeavy      = cms.double(0.75),
+  fixedT0Error      = cms.double(0.0),
+)
+
 
 process.hbhereco = cms.EDProducer("HBHEPhase1Reconstructor",
     algoConfigClass = cms.string(''),
@@ -22093,7 +22374,7 @@ process.highPtTripletStepTrackCutClassifier = cms.EDProducer("TrackCutClassifier
 
 process.highPtTripletStepTrackSelectionHighPurity = cms.EDProducer("TrackCollectionFilterCloner",
     copyExtras = cms.untracked.bool(True),
-    copyTrajectories = cms.untracked.bool(False),
+    copyTrajectories = cms.untracked.bool(True), # changed this from false 
     minQuality = cms.string('highPurity'),
     originalMVAVals = cms.InputTag("highPtTripletStepTrackCutClassifier","MVAValues"),
     originalQualVals = cms.InputTag("highPtTripletStepTrackCutClassifier","QualityMasks"),
@@ -22125,7 +22406,7 @@ process.highPtTripletStepTracks = cms.EDProducer("TrackProducer",
     Propagator = cms.string('RungeKuttaTrackerPropagator'),
     SimpleMagneticField = cms.string(''),
     TTRHBuilder = cms.string('WithTrackAngle'),
-    TrajectoryInEvent = cms.bool(False),
+    TrajectoryInEvent = cms.bool(True), # changed this to True from False
     alias = cms.untracked.string('ctfWithMaterialTracks'),
     beamSpot = cms.InputTag("offlineBeamSpot"),
     clusterRemovalInfo = cms.InputTag(""),
@@ -22513,20 +22794,20 @@ process.hltAK8PFPuppiJetCorrector = cms.EDProducer("ChainedJetCorrectorProducer"
 
 
 process.hltAK8PFPuppiJetCorrectorL1 = cms.EDProducer("L1FastjetCorrectorProducer",
-    algorithm = cms.string('AK8PFPuppiHLT'),
+    algorithm = cms.string('AK8PFPuppi'),
     level = cms.string('L1FastJet'),
     srcRho = cms.InputTag("fixedGridRhoFastjetAllTmp")
 )
 
 
 process.hltAK8PFPuppiJetCorrectorL2 = cms.EDProducer("LXXXCorrectorProducer",
-    algorithm = cms.string('AK8PFPuppiHLT'),
+    algorithm = cms.string('AK8PFPuppi'),
     level = cms.string('L2Relative')
 )
 
 
 process.hltAK8PFPuppiJetCorrectorL3 = cms.EDProducer("LXXXCorrectorProducer",
-    algorithm = cms.string('AK8PFPuppiHLT'),
+    algorithm = cms.string('AK8PFPuppi'),
     level = cms.string('L3Absolute')
 )
 
@@ -26665,15 +26946,13 @@ process.hltPFPuppi = cms.EDProducer("PuppiProducer",
     useExistingWeights = cms.bool(False),
     useExp = cms.bool(False),
     usePUProxyValue = cms.bool(True),
-    # vertexName = cms.InputTag("goodOfflinePrimaryVertices"),
-    # vtxNdofCut = cms.int32(4),
-    # vtxZCut = cms.double(24)
-    useVertexAssociation = cms.bool(False),
-    vertexAssociation = cms.InputTag(""),
-    vertexAssociationQuality = cms.int32(0),
-    vertexName = cms.InputTag("goodOfflinePrimaryVertices"),
+    vertexName = cms.InputTag("goodOfflinePrimaryVertices4D"), # updates for puppi with timing
     vtxNdofCut = cms.int32(4),
-    vtxZCut = cms.double(24)
+    vtxZCut = cms.double(24),
+    UseDeltaTCut = cms.bool(True), # updates for puppi with timing
+    DeltaTCut = cms.double(0.1),
+    timeErrorMap = cms.InputTag("generalTracksTOFPIDProducer","sigmat0"),
+    timeValueMap = cms.InputTag("generalTracksTOFPIDProducer","t0"),
 )
 
 
@@ -26704,19 +26983,6 @@ process.hltPFPuppiMET = cms.EDProducer("PFMETProducer",
     src = cms.InputTag("particleFlowTmp"),
     srcWeights = cms.InputTag("hltPFPuppiNoLep")
 )
-
-##--- adding the CHS MET for test
-
-process.hltParticleFlowCHS = cms.EDProducer('FwdPtrRecoPFCandidateConverter',
-  src = process.hltAK4PFCHSJets.src,
-)
-process.hltPFCHSMET = cms.EDProducer( 'PFMETProducer',
-  src = cms.InputTag( 'hltParticleFlowCHS' ),
-  globalThreshold = cms.double( 0.0 ),
-  calculateSignificance = cms.bool( False ),
-)
-
-# ----------------------------------
 
 
 process.hltPFPuppiMETTypeOne = cms.EDProducer("CorrectedPFMETProducer",
@@ -26774,7 +27040,7 @@ process.hltPFPuppiNoLep = cms.EDProducer("PuppiProducer",
     PtMaxCharged = cms.double(-1.0),
     PtMaxNeutrals = cms.double(200.0),
     PtMaxNeutralsStartSlope = cms.double(0.0),
-    PtMaxPhotons = cms.double(-1.0),
+    PtMaxPhotons = cms.double(20.0),
     UseDeltaZCut = cms.bool(True),
     UseFromPVLooseTight = cms.bool(False),
     algos = cms.VPSet(
@@ -26826,9 +27092,13 @@ process.hltPFPuppiNoLep = cms.EDProducer("PuppiProducer",
     useExistingWeights = cms.bool(False),
     useExp = cms.bool(False),
     usePUProxyValue = cms.bool(True),
-    vertexName = cms.InputTag("goodOfflinePrimaryVertices"),
+    vertexName = cms.InputTag("goodOfflinePrimaryVertices4D"),
     vtxNdofCut = cms.int32(4),
-    vtxZCut = cms.double(24)
+    vtxZCut = cms.double(24),
+    UseDeltaTCut = cms.bool(True), # updates for puppi with timing
+    DeltaTCut = cms.double(0.1),
+    timeErrorMap = cms.InputTag("generalTracksTOFPIDProducer","sigmat0"),
+    timeValueMap = cms.InputTag("generalTracksTOFPIDProducer","t0"),
 )
 
 
@@ -30136,7 +30406,7 @@ process.initialStepTrackCutClassifier = cms.EDProducer("TrackCutClassifier",
 
 process.initialStepTrackSelectionHighPurity = cms.EDProducer("TrackCollectionFilterCloner",
     copyExtras = cms.untracked.bool(True),
-    copyTrajectories = cms.untracked.bool(False),
+    copyTrajectories = cms.untracked.bool(True), # changed this to True from False
     minQuality = cms.string('highPurity'),
     originalMVAVals = cms.InputTag("initialStepTrackCutClassifier","MVAValues"),
     originalQualVals = cms.InputTag("initialStepTrackCutClassifier","QualityMasks"),
@@ -30154,7 +30424,7 @@ process.initialStepTracks = cms.EDProducer("TrackProducer",
     Propagator = cms.string('RungeKuttaTrackerPropagator'),
     SimpleMagneticField = cms.string(''),
     TTRHBuilder = cms.string('WithTrackAngle'),
-    TrajectoryInEvent = cms.bool(False),
+    TrajectoryInEvent = cms.bool(True),  # changed this to True from False
     alias = cms.untracked.string('ctfWithMaterialTracks'),
     beamSpot = cms.InputTag("offlineBeamSpot"),
     clusterRemovalInfo = cms.InputTag(""),
@@ -32243,6 +32513,46 @@ process.offlinePrimaryVertices = cms.EDProducer("RecoChargedRefCandidatePrimaryV
 )
 
 
+process.offlinePrimaryVertices4D = cms.EDProducer("RecoChargedRefCandidatePrimaryVertexSorter",
+    assignment = cms.PSet(
+        DzCutForChargedFromPUVtxs = cms.double(0.2),
+        EtaMinUseDz = cms.double(-1),
+        NumOfPUVtxsForCharged = cms.uint32(0),
+        OnlyUseFirstDz = cms.bool(False),
+        PtMaxCharged = cms.double(-1),
+        maxDistanceToJetAxis = cms.double(0.07),
+        maxDtSigForPrimaryAssignment = cms.double(4.0),
+        maxDxyForJetAxisAssigment = cms.double(0.1),
+        maxDxyForNotReconstructedPrimary = cms.double(0.01),
+        maxDxySigForNotReconstructedPrimary = cms.double(2),
+        maxDzErrorForPrimaryAssignment = cms.double(0.05),
+        maxDzForJetAxisAssigment = cms.double(0.1),
+        maxDzForPrimaryAssignment = cms.double(0.1),
+        maxDzSigForPrimaryAssignment = cms.double(5.0),
+        maxJetDeltaR = cms.double(0.5),
+        minJetPt = cms.double(25),
+        preferHighRanked = cms.bool(False),
+        useTiming = cms.bool(True),
+        useVertexFit = cms.bool(True)
+    ),
+    jets = cms.InputTag("ak4CaloJetsForTrk"),
+    particles = cms.InputTag("trackRefsForJetsBeforeSorting"),
+    produceAssociationToOriginalVertices = cms.bool(False),
+    produceNoPileUpCollection = cms.bool(False),
+    producePileUpCollection = cms.bool(False),
+    produceSortedVertices = cms.bool(True),
+    qualityForPrimary = cms.int32(3),
+    sorting = cms.PSet(
+
+    ),
+    trackTimeTag = cms.InputTag("generalTracksTOFPIDProducer:t0"),
+    trackTimeResoTag = cms.InputTag("generalTracksTOFPIDProducer:sigmat0"),
+    #trackTimeTag = cms.InputTag("generalTracksTOFPIDProducer:t0safe"),
+    #trackTimeResoTag = cms.InputTag("generalTracksTOFPIDProducer:sigmat0safe"),
+    usePVMET = cms.bool(True),
+    vertices = cms.InputTag("unsortedOfflinePrimaryVertices4D")
+)
+
 process.particleFlowBadHcalPseudoCluster = cms.EDProducer("PFBadHcalPseudoClusterProducer",
     debug = cms.untracked.bool(False),
     enable = cms.bool(False),
@@ -32308,14 +32618,17 @@ process.particleFlowBlock = cms.EDProducer("PFBlockProducer",
         cms.PSet(
             importerName = cms.string('GenericClusterImporter'),
             source = cms.InputTag("particleFlowClusterPS")
+        ),
+        cms.PSet( ## adding TrackTimingImporter
+            importerName = cms.string('TrackTimingImporter'),
+            timeErrorMap = cms.InputTag("generalTracksTOFPIDProducer","sigmat0"),
+            timeErrorMapGsf = cms.InputTag("generalTracksTOFPIDProducer","sigmat0"),
+            timeValueMap = cms.InputTag("generalTracksTOFPIDProducer","t0"),
+            timeValueMapGsf = cms.InputTag("generalTracksTOFPIDProducer","t0"),
+            timeQualityMap = cms.InputTag("generalTracksMtdTrackQualityMVA","mtdQualMVA"),
+            timeQualityMapGsf = cms.InputTag("generalTracksMtdTrackQualityMVA","mtdQualMVA"),
+            timeQualityThreshold = cms.double(0.5) # MVA quality threshold
         )
-        #cms.PSet(
-        #        importerName = cms.string('TrackTimingImporter'),
-        #        timeErrorMap = cms.InputTag("tofPID","sigmat0"),
-        #        timeErrorMapGsf = cms.InputTag("tofPID","sigmat0"),
-        #        timeValueMap = cms.InputTag("tofPID","t0"),
-        #        timeValueMapGsf = cms.InputTag("tofPID","t0")
-        #)
     ),
     linkDefinitions = cms.VPSet(
         cms.PSet(
@@ -32732,7 +33045,7 @@ process.particleFlowClusterHBHE = cms.EDProducer("PFClusterProducer",
 process.particleFlowClusterHCAL = cms.EDProducer("PFMultiDepthClusterProducer",
     clustersSource = cms.InputTag("particleFlowClusterHBHE"),
     energyCorrector = cms.PSet(
-    
+
     ),
     pfClusterBuilder = cms.PSet(
         algoName = cms.string('PFMultiDepthClusterizer'),
@@ -33425,12 +33738,10 @@ process.particleFlowSuperClusterECAL = cms.EDProducer("PFECALSuperClusterProduce
     PFSuperClusterCollectionEndcap = cms.string('particleFlowSuperClusterECALEndcap'),
     PFSuperClusterCollectionEndcapWithPreshower = cms.string('particleFlowSuperClusterECALEndcapWithPreshower'),
     applyCrackCorrections = cms.bool(False),
-    #barrelRecHits = cms.InputTag("ecalRecHit","EcalRecHitsEE"), # probbaly error should be the opposite? (see also bellow)
-    barrelRecHits = cms.InputTag("ecalRecHit","EcalRecHitsEB"), 
+    barrelRecHits = cms.InputTag("ecalRecHit","EcalRecHitsEE"),
     doSatelliteClusterMerge = cms.bool(False),
     dropUnseedable = cms.bool(False),
-    #endcapRecHits = cms.InputTag("ecalRecHit","EcalRecHitsEB"),  # probbaly error should be the opposite?
-    endcapRecHits = cms.InputTag("ecalRecHit","EcalRecHitsEE"),  
+    endcapRecHits = cms.InputTag("ecalRecHit","EcalRecHitsEB"),
     etawidth_SuperClusterBarrel = cms.double(0.04),
     etawidth_SuperClusterEndcap = cms.double(0.04),
     isOOTCollection = cms.bool(False),
@@ -33915,12 +34226,17 @@ process.pfTICL = cms.EDProducer("PFTICLProducer",
         trackQuality = cms.string('highPurity')
     ),
     ticlCandidateSrc = cms.InputTag("ticlTrackstersMerge"),
-    timingQualityThreshold = cms.double(0.5),
-    trackTimeErrorMap = cms.InputTag("tofPID","sigmat0"),
-    trackTimeQualityMap = cms.InputTag("mtdTrackQualityMVA","mtdQualMVA"),
-    trackTimeValueMap = cms.InputTag("tofPID","t0"),
-    useMTDTiming = cms.bool(False),
-    useTimingAverage = cms.bool(False)
+    #trackTimeErrorMap = cms.InputTag("tofPID","sigmat0"),
+    # trackTimeQualityMap = cms.InputTag("mtdTrackQualityMVA","mtdQualMVA"),
+    #trackTimeValueMap = cms.InputTag("tofPID","t0"),
+    trackTimeErrorMap = cms.InputTag("generalTracksTOFPIDProducer","sigmat0"),
+    trackTimeValueMap = cms.InputTag("generalTracksTOFPIDProducer","t0"),
+    #trackTimeErrorMap = cms.InputTag("generalTracksTOFPIDProducer","sigmat0safe"),
+    #trackTimeValueMap = cms.InputTag("generalTracksTOFPIDProducer","t0safe"),
+    trackTimeQualityMap = cms.InputTag("generalTracksMtdTrackQualityMVA","mtdQualMVA"),
+    timingQualityThreshold = cms.double(0.5), # MVA quality threshold
+    useMTDTiming = cms.bool(True), # uses MTD timing  
+    useTimingAverage = cms.bool(False) # combined time from both MTD and HGCAL if they both valid time (time error > 0)
 )
 
 
@@ -34118,12 +34434,12 @@ process.siPixelClusters = cms.EDProducer("SiPixelClusterProducer",
     ClusterMode = cms.string('PixelThresholdClusterizer'),
     ClusterThreshold = cms.int32(4000),
     ClusterThreshold_L1 = cms.int32(4000),
-    ElectronPerADCGain = cms.double(600.0),
+    ElectronPerADCGain = cms.double(1500.0),
     MissCalibrate = cms.bool(False),
     Phase2Calibration = cms.bool(True),
-    Phase2DigiBaseline = cms.double(1200),
+    Phase2DigiBaseline = cms.double(1000),
     Phase2KinkADC = cms.int32(8),
-    Phase2ReadoutMode = cms.int32(-1),
+    Phase2ReadoutMode = cms.int32(3),
     SeedThreshold = cms.int32(1000),
     SplitClusters = cms.bool(False),
     VCaltoElectronGain = cms.int32(1),
@@ -34862,7 +35178,7 @@ process.trackerClusterCheck = cms.EDProducer("ClusterCheckerEDProducer",
 
 
 process.unsortedOfflinePrimaryVertices = cms.EDProducer("PrimaryVertexProducer",
-    TkClusParameters = cms.PSet(
+    TkClusParameters = cms.PSet( # clustering parameters
         TkDAClusParameters = cms.PSet(
             Tmin = cms.double(2.0),
             Tpurge = cms.double(2.0),
@@ -34874,7 +35190,58 @@ process.unsortedOfflinePrimaryVertices = cms.EDProducer("PrimaryVertexProducer",
             vertexSize = cms.double(0.006),
             zmerge = cms.double(0.01)
         ),
-        algorithm = cms.string('DA_vect')
+        algorithm = cms.string('DA_vect') # if use 'DA2D_vect' insted of 'DA_vect' which was default it activates the 4D vertex reco
+        # note: for 4D also needs the maps for tracks times and resolution labels
+    ),
+    TkFilterParameters = cms.PSet(
+        algorithm = cms.string('filter'),
+        maxD0Significance = cms.double(4.0),
+        maxEta = cms.double(4.0),
+        maxNormalizedChi2 = cms.double(10.0),
+        minPixelLayersWithHits = cms.int32(2),
+        minPt = cms.double(0.9),
+        minSiliconLayersWithHits = cms.int32(5),
+        trackQuality = cms.string('any')
+    ),
+    TrackLabel = cms.InputTag("generalTracks"),
+    beamSpotLabel = cms.InputTag("offlineBeamSpot"), 
+    verbose = cms.untracked.bool(False),
+    vertexCollections = cms.VPSet(
+        cms.PSet(
+            algorithm = cms.string('AdaptiveVertexFitter'),
+            chi2cutoff = cms.double(2.5),
+            label = cms.string(''),
+            maxDistanceToBeam = cms.double(1.0),
+            minNdof = cms.double(0.0),
+            useBeamConstraint = cms.bool(False)
+        ),
+        cms.PSet(
+            algorithm = cms.string('AdaptiveVertexFitter'),
+            chi2cutoff = cms.double(2.5),
+            label = cms.string('WithBS'),
+            maxDistanceToBeam = cms.double(1.0),
+            minNdof = cms.double(2.0),
+            useBeamConstraint = cms.bool(True)
+        )
+    )
+)
+
+
+process.unsortedOfflinePrimaryVertices4D = cms.EDProducer("PrimaryVertexProducer",
+    TkClusParameters = cms.PSet( # clustering parameters
+        TkDAClusParameters = cms.PSet(
+            Tmin = cms.double(2.0),
+            Tpurge = cms.double(2.0),
+            Tstop = cms.double(0.5),
+            coolingFactor = cms.double(0.6),
+            d0CutOff = cms.double(3.0),
+            dzCutOff = cms.double(3.0),
+            uniquetrkweight = cms.double(0.8),
+            vertexSize = cms.double(0.006),
+            zmerge = cms.double(0.01)
+        ),
+        algorithm = cms.string('DA2D_vect') # if use this option insted of DA_vect which was default it activates the 4D vertex reco
+        # note: for 4D also needs the maps for tracks times and resolution labels (see bellow)
     ),
     TkFilterParameters = cms.PSet(
         algorithm = cms.string('filter'),
@@ -34888,6 +35255,10 @@ process.unsortedOfflinePrimaryVertices = cms.EDProducer("PrimaryVertexProducer",
     ),
     TrackLabel = cms.InputTag("generalTracks"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
+    TrackTimesLabel = cms.InputTag("generalTracksTOFPIDProducer:t0"),
+    TrackTimeResosLabel = cms.InputTag("generalTracksTOFPIDProducer:sigmat0"),
+    #TrackTimesLabel = cms.InputTag("generalTracksTOFPIDProducer:t0safe"),
+    #TrackTimeResosLabel = cms.InputTag("generalTracksTOFPIDProducer:sigmat0safe"),   
     verbose = cms.untracked.bool(False),
     vertexCollections = cms.VPSet(
         cms.PSet(
@@ -35190,6 +35561,12 @@ process.goodOfflinePrimaryVertices = cms.EDFilter("VertexSelector",
     cut = cms.string('!isFake && ndof >= 4.0 && abs(z) <= 24.0 && abs(position.Rho) <= 2.0'),
     filter = cms.bool(False),
     src = cms.InputTag("offlinePrimaryVertices")
+)
+
+process.goodOfflinePrimaryVertices4D = cms.EDFilter("VertexSelector",
+    cut = cms.string('!isFake && ndof >= 4.0 && abs(z) <= 24.0 && abs(position.Rho) <= 2.0'),
+    filter = cms.bool(False),
+    src = cms.InputTag("offlinePrimaryVertices4D")
 )
 
 
@@ -46548,7 +46925,36 @@ process.calolocalrecoTask = cms.Task(process.ecalLocalRecoTask, process.hcalLoca
 process.localrecoTask = cms.Task(process.bunchSpacingProducer, process.calolocalrecoTask, process.csclocalrecoTask, process.dtlocalrecoTask, process.gemLocalRecoTask, process.rpcRecHits, process.trackerlocalrecoTask)
 
 
-process.HLTParticleFlowTask = cms.Task(process.RawToDigiTask, process.bunchSpacingProducer, process.caloTowersRecTask, process.calolocalrecoTask, process.csclocalrecoTask, process.dtlocalrecoTask, process.ecalClustersTask, process.gemLocalRecoTask, process.generalTracks, process.hcalGlobalRecoTask, process.hgcalLocalRecoTask, process.highPtTripletStepTask, process.highlevelrecoTask, process.initialStepTask, process.itLocalRecoTask, process.iterTICLTask, process.otLocalRecoTask, process.particleFlowClusterTask, process.pixelTracksTask, process.pixelVertices, process.rpcRecHits, process.trackerClusterCheck, process.trackerlocalrecoTask, process.vertexRecoTask)
+process.mtdRecoTask = cms.Task(
+  process.mtdUncalibratedRecHits,
+  process.mtdRecHits,
+  process.mtdClusters,
+  process.mtdTrackingRecHits,
+  process.Chi2MeasurementEstimatorForInOut,
+  process.KFTrajectoryFitterForInOut,
+  process.Chi2EstimatorForRefit,
+  process.RungeKuttaTrackerPropagatorOpposite,
+  process.SmartPropagatorAnyRKOpposite,
+  process.KFSmootherForRefitOutsideIn,
+  process.KFSmootherForRefitOutsideIn,
+  process.MTDCPEESProducer,
+  process.MTDTimeCalibESProducer,
+  process.MTDTransientTrackingRecHitBuilder,
+  process.PropagatorWithMaterialForMTD,
+  process.generalTracksWithMTD,
+  process.generalTracksMtdTrackQualityMVA,
+  process.generalTracksTOFPIDProducer
+)
+
+process.vertex4DrecoTask = cms.Task(
+  process.unsortedOfflinePrimaryVertices4D,
+  process.offlinePrimaryVertices4D,
+  process.goodOfflinePrimaryVertices4D
+)
+process.HLTParticleFlowTask = cms.Task(process.RawToDigiTask, process.bunchSpacingProducer, process.caloTowersRecTask, process.calolocalrecoTask, process.csclocalrecoTask, process.dtlocalrecoTask, process.ecalClustersTask, process.gemLocalRecoTask, process.generalTracks, 
+  process.hcalGlobalRecoTask, process.hgcalLocalRecoTask, process.highPtTripletStepTask, process.highlevelrecoTask, process.initialStepTask, process.itLocalRecoTask, process.otLocalRecoTask, process.particleFlowClusterTask, process.pixelTracksTask, process.pixelVertices, process.rpcRecHits, process.trackerClusterCheck, process.trackerlocalrecoTask, process.vertexRecoTask,
+  process.mtdRecoTask, process.iterTICLTask, process.vertex4DrecoTask
+)
 
 
 process.HLTAK4PFJetsReconstruction = cms.Sequence(process.hltAK4PFJets+process.hltAK4PFJetCorrectorL1+process.hltAK4PFJetCorrectorL2+process.hltAK4PFJetCorrectorL3+process.hltAK4PFJetCorrector+process.hltAK4PFJetsCorrected)
@@ -46631,18 +47037,14 @@ process.HLTPFClusteringForEgammaUnseeded = cms.Sequence(process.HLTPFClusteringF
 
 process.HLTPFHcalClusteringForEgamma = cms.Sequence(process.HLTPFHcalClusteringForEgammaTask)
 
-## --- for CHS MET
-process.HLTPFCHSMETReconstruction = cms.Sequence( process.hltParticleFlowCHS + process.hltPFCHSMET)
-## ----
 
-process.HLTPFJetsCHSReconstruction = cms.Sequence(process.particleFlowPtrs+process.goodOfflinePrimaryVertices+process.pfPileUpJME+process.pfNoPileUpJME+process.hltAK4PFCHSJets+process.hltAK4PFCHSJetCorrectorL1+process.hltAK4PFCHSJetCorrectorL2+process.hltAK4PFCHSJetCorrectorL3+process.hltAK4PFCHSJetCorrector+process.hltAK4PFCHSJetsCorrected+process.hltAK8PFCHSJets+process.hltAK8PFCHSJetCorrectorL1+process.hltAK8PFCHSJetCorrectorL2+process.hltAK8PFCHSJetCorrectorL3+process.hltAK8PFCHSJetCorrector+process.hltAK8PFCHSJetsCorrected+process.HLTPFCHSMETReconstruction)
+process.HLTPFJetsCHSReconstruction = cms.Sequence(process.particleFlowPtrs+process.goodOfflinePrimaryVertices+process.pfPileUpJME+process.pfNoPileUpJME+process.hltAK4PFCHSJets+process.hltAK4PFCHSJetCorrectorL1+process.hltAK4PFCHSJetCorrectorL2+process.hltAK4PFCHSJetCorrectorL3+process.hltAK4PFCHSJetCorrector+process.hltAK4PFCHSJetsCorrected+process.hltAK8PFCHSJets+process.hltAK8PFCHSJetCorrectorL1+process.hltAK8PFCHSJetCorrectorL2+process.hltAK8PFCHSJetCorrectorL3+process.hltAK8PFCHSJetCorrector+process.hltAK8PFCHSJetsCorrected)
 
 
 process.HLTPFMETsReconstruction = cms.Sequence(process.hltPFMET+process.hltPFMETJetCorrectorL1+process.hltPFMETJetCorrectorL2+process.hltPFMETJetCorrectorL3+process.hltPFMETJetCorrector+process.hltPFMETTypeOneCorrector+process.hltPFMETTypeOne)
 
 
 process.HLTPFPuppiJMEReconstruction = cms.Sequence(process.hltPixelClustersMultiplicity+process.hltPFPuppiNoLep+process.hltPFPuppiMET+process.hltPixelClustersMultiplicity+process.hltPFPuppi+process.hltPFPuppiMETv0+process.hltAK4PFPuppiJets+process.hltAK4PFPuppiJetCorrectorL1+process.hltAK4PFPuppiJetCorrectorL2+process.hltAK4PFPuppiJetCorrectorL3+process.hltAK4PFPuppiJetCorrector+process.hltAK4PFPuppiJetsCorrected+process.hltPFPuppiMETTypeOneCorrector+process.hltPFPuppiMETTypeOne+process.hltAK8PFPuppiJets+process.hltAK8PFPuppiJetCorrectorL1+process.hltAK8PFPuppiJetCorrectorL2+process.hltAK8PFPuppiJetCorrectorL3+process.hltAK8PFPuppiJetCorrector+process.hltAK8PFPuppiJetsCorrected)
-
 
 
 process.HLTPFPuppiMETReconstruction = cms.Sequence(process.goodOfflinePrimaryVertices+process.hltPixelClustersMultiplicity+process.hltPFPuppiNoLep+process.hltPFPuppiMET)
@@ -47019,6 +47421,7 @@ process.simSiStripDigis = cms.EDAlias(
 )
 
 
+
 process.schedule = cms.Schedule(*[
   process.l1tReconstructionPath,
   process.L1T_SinglePFPuppiJet230off,
@@ -47029,40 +47432,40 @@ process.schedule = cms.Schedule(*[
   process.HLT_PFPuppiMETTypeOne140_PFPuppiMHT140,
   process.L1T_PFHT400PT30_QuadPFPuppiJet_70_55_40_40_2p4,
   process.L1T_DoublePFPuppiJets112_2p4_DEta1p6,
-  process.HLT_PFHT330PT30_QuadPFPuppiJet_75_60_45_40_TriplePFPuppiBTagDeepCSV_2p4,
+  #process.HLT_PFHT330PT30_QuadPFPuppiJet_75_60_45_40_TriplePFPuppiBTagDeepCSV_2p4,
   #process.HLT_PFHT200PT30_QuadPFPuppiJet_70_40_30_30_TriplePFPuppiBTagDeepCSV_2p4,
   #process.HLT_DoublePFPuppiJets128_DoublePFPuppiBTagDeepCSV_2p4,
   #process.HLT_PFHT330PT30_QuadPFPuppiJet_75_60_45_40_TriplePFPuppiBTagDeepFlavour_2p4,
   #process.HLT_PFHT200PT30_QuadPFPuppiJet_70_40_30_30_TriplePFPuppiBTagDeepFlavour_2p4,
   #process.HLT_DoublePFPuppiJets128_DoublePFPuppiBTagDeepFlavour_2p4,
-  process.L1T_SingleTkMuon_22, process.L1T_DoubleTkMuon_15_7,
-  process.L1T_TripleTkMuon_5_3_3,
-  process.HLT_Mu50_FromL1TkMuon,
-  process.HLT_IsoMu24_FromL1TkMuon,
-  process.HLT_Mu37_Mu27_FromL1TkMuon,
-  process.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_FromL1TkMuon,
-  process.HLT_TriMu_10_5_5_DZ_FromL1TkMuon,
-  process.L1T_TkEm51,
-  process.L1T_TkEle36,
-  process.L1T_TkIsoEm36,
-  process.L1T_TkIsoEle28,
-  process.L1T_TkEm37TkEm24,
-  process.L1T_TkEle25TkEle12,
-  process.L1T_TkIsoEm22TkIsoEm12,
-  process.L1T_TkIsoEle22TkEm12,
+#   process.L1T_SingleTkMuon_22, process.L1T_DoubleTkMuon_15_7,
+#   process.L1T_TripleTkMuon_5_3_3,
+#   process.HLT_Mu50_FromL1TkMuon,
+#   process.HLT_IsoMu24_FromL1TkMuon,
+#   process.HLT_Mu37_Mu27_FromL1TkMuon,
+#   process.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_FromL1TkMuon,
+   process.HLT_TriMu_10_5_5_DZ_FromL1TkMuon,
+#   process.L1T_TkEm51,
+#   process.L1T_TkEle36,
+#   process.L1T_TkIsoEm36,
+#   process.L1T_TkIsoEle28,
+#   process.L1T_TkEm37TkEm24,
+#   process.L1T_TkEle25TkEle12,
+#   process.L1T_TkIsoEm22TkIsoEm12,
+#   process.L1T_TkIsoEle22TkEm12,
   #process.HLT_Ele32_WPTight_Unseeded,
   #process.HLT_Ele26_WP70_Unseeded,
   #process.HLT_Photon108EB_TightID_TightIso_Unseeded,
   #process.HLT_Photon187_Unseeded,
   #process.HLT_DoubleEle25_CaloIdL_PMS2_Unseeded,
   #process.HLT_Diphoton30_23_IsoCaloId_Unseeded,
-  process.HLT_Ele32_WPTight_L1Seeded,
-  process.HLT_Ele26_WP70_L1Seeded,
-  process.HLT_Photon108EB_TightID_TightIso_L1Seeded,
-  process.HLT_Photon187_L1Seeded,
-  process.HLT_DoubleEle25_CaloIdL_PMS2_L1Seeded,
-  process.HLT_DoubleEle23_12_Iso_L1Seeded,
-  process.HLT_Diphoton30_23_IsoCaloId_L1Seeded,
+#   process.HLT_Ele32_WPTight_L1Seeded,
+#   process.HLT_Ele26_WP70_L1Seeded,
+#   process.HLT_Photon108EB_TightID_TightIso_L1Seeded,
+#   process.HLT_Photon187_L1Seeded,
+#   process.HLT_DoubleEle25_CaloIdL_PMS2_L1Seeded,
+#   process.HLT_DoubleEle23_12_Iso_L1Seeded,
+#   process.HLT_Diphoton30_23_IsoCaloId_L1Seeded,
   process.MC_JME,
   #process.MC_BTV,
   #process.MC_Ele5_Open_Unseeded,
@@ -47078,7 +47481,4 @@ process.schedule = cms.Schedule(*[
   #process.endjob_step,
   #process.FEVTDEBUGHLToutput_step #drop this so it does not save the Phase2_HLT.root
   ],tasks=[process.patAlgosToolsTask])
-
-
-
 

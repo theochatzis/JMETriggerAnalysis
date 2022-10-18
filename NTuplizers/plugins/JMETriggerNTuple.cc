@@ -662,6 +662,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   }
 
   for (auto& recoPFJetCollectionContainer_i : v_recoPFJetCollectionContainer_) {
+    this->addBranch(recoPFJetCollectionContainer_i.name() + "_energy", &recoPFJetCollectionContainer_i.vec_energy());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_pt", &recoPFJetCollectionContainer_i.vec_pt());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_eta", &recoPFJetCollectionContainer_i.vec_eta());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_phi", &recoPFJetCollectionContainer_i.vec_phi());

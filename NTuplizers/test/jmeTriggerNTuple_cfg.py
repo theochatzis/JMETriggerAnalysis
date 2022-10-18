@@ -59,7 +59,7 @@ opts.register('globalTag', None,
               vpo.VarParsing.varType.string,
               'argument of process.GlobalTag.globaltag')
 
-opts.register('reco', 'HLT_75e33',
+opts.register('reco', 'HLT_75e33_time',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
               'keyword defining reconstruction methods for JME inputs')
@@ -470,8 +470,49 @@ process.jescESSource = cms.ESSource('PoolDBESSource',
 )
 process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
 # ---------------------------------------------------------------------------------
+"""
+# add analyzer for MTD timing checks
+process.MtdTracksValidation = cms.EDProducer('MtdTracksValidation',
+  #folder = cms.string('MTDvalidation'),
+  inputTagG = cms.InputTag('generalTracks'),
+  inputTagT = cms.InputTag('generalTracksWithMTD'),
+  inputTagV = cms.InputTag('offlinePrimaryVertices4D'),
+  inputTagH = cms.InputTag('generatorSmeared'),
+  tmtd = cms.InputTag('generalTracksWithMTD:generalTracktmtd'),
+  sigmatmtd = cms.InputTag('generalTracksWithMTD:generalTracksigmatmtd'),
+  t0Src = cms.InputTag('generalTracksWithMTD:generalTrackt0'),
+  sigmat0Src = cms.InputTag('generalTracksWithMTD:generalTracksigmat0'),
+  trackAssocSrc = cms.InputTag('generalTracksWithMTD:generalTrackassoc'),
+  pathLengthSrc = cms.InputTag('generalTracksWithMTD:generalTrackPathLength'),
+  t0SafePID = cms.InputTag('generalTracksTOFPIDProducer:t0safe'),
+  sigmat0SafePID = cms.InputTag('generalTracksTOFPIDProducer:sigmat0safe'),
+  sigmat0PID = cms.InputTag('generalTracksTOFPIDProducer:sigmat0'),
+  t0PID = cms.InputTag('generalTracksTOFPIDProducer:t0'),
+  trackMVAQual = cms.InputTag('generalTracksMtdTrackQualityMVA:mtdQualMVA'),
+  trackMinimumPt = cms.double(0.7),
+  #trackMaximumBtlEta = cms.double(1.5),
+  #trackMinimumEtlEta = cms.double(1.6),
+  #trackMaximumEtlEta = cms.double(3.)
+  
+)
 
+process.mtdvalidationEndPath = cms.EndPath(process.MtdTracksValidation)
+process.schedule_().extend([process.mtdvalidationEndPath])
 
+process.DQMoutput = cms.OutputModule("DQMRootOutputModule",
+    #dataset = cms.untracked.PSet(
+    #    dataTier = cms.untracked.string('DQMIO'),
+    #    filterName = cms.untracked.string('')
+    #),
+    fileName = cms.untracked.string('file:step3_inDQM.root'),
+    outputCommands = process.DQMEventContent.outputCommands,
+    splitLevel = cms.untracked.int32(0)
+)
+
+process.DQMoutput_step = cms.EndPath( process.DQMoutput )
+
+"""
+# JME Trigger NTuple analyzer
 process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   TTreeName = cms.string('Events'),
@@ -541,7 +582,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
 #    hltPixelVertices = cms.InputTag('pixelVertices'),
 #    hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
-    hltPrimaryVertices4D = cms.InputTag('offlinePrimaryVertices4D'),
+    hltPrimaryVertices4D = cms.InputTag('goodOfflinePrimaryVertices4D'),
 #    hltUnsortedPrimaryVertices4D = cms.InputTag('unsortedOfflinePrimaryVertices4D'),
 #    offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
     offlineSlimmedPrimaryVertices4D = cms.InputTag('offlineSlimmedPrimaryVertices4D'),
@@ -557,7 +598,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
 #    hltPFSim = cms.InputTag('simPFProducer'),
 #    hltPFTICL = cms.InputTag('pfTICL'),
-#     hltParticleFlow = cms.InputTag('particleFlowTmp'),
+     hltParticleFlow = cms.InputTag('particleFlowTmp'),
 #     hltParticleFlowBarrel = cms.InputTag('particleFlowTmpBarrel'), # all PF without the pfTICL (that means + forward > 3.0 etas)
 #     hltPfTICL = cms.InputTag('pfTICL'), # HGCal particles 1.5 < |eta| < 3.0
 #    hltPFPuppi = cms.InputTag('hltPFPuppi'),
@@ -569,7 +610,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 #    offlinePFCandidates = cms.InputTag('packedPFCandidates'),
   ),
   patPackedGenParticleCollections = cms.PSet(
-#     genParticles = cms.InputTag("packedGenParticles")
+     genParticles = cms.InputTag("packedGenParticles")
   ),
 
   recoGenJetCollections = cms.PSet(
@@ -607,6 +648,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 #    l1tAK4PFPuppiJets = cms.InputTag('ak4PFL1Puppi'),
 
     hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
+    hltAK4PFCHSJets = cms.InputTag('hltAK4PFCHSJets'),
 ##    hltAK4PFJetsCorrected = cms.InputTag('hltAK4PFJetsCorrected'),
 #    hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
 #    hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),

@@ -9,6 +9,7 @@ RecoPFJetCollectionContainer::RecoPFJetCollectionContainer(const std::string& na
     : VRecoCandidateCollectionContainer(name, inputTagLabel, token, strCut, orderByHighestPt) {}
 
 void RecoPFJetCollectionContainer::clear() {
+  energy_.clear();
   pt_.clear();
   eta_.clear();
   phi_.clear();
@@ -45,9 +46,11 @@ void RecoPFJetCollectionContainer::clear() {
   CandidateBelongsToJet_.clear();
 
   JetIndex_ = 0;
+  //associationIndex = -10;
 }
 
 void RecoPFJetCollectionContainer::reserve(const size_t vec_size) {
+  energy_.reserve(vec_size);
   pt_.reserve(vec_size);
   eta_.reserve(vec_size);
   phi_.reserve(vec_size);
@@ -72,6 +75,7 @@ void RecoPFJetCollectionContainer::reserve(const size_t vec_size) {
 }
 
 void RecoPFJetCollectionContainer::emplace_back(const reco::PFJet& obj) {
+  energy_.emplace_back(obj.energy());
   pt_.emplace_back(obj.pt());
   eta_.emplace_back(obj.eta());
   phi_.emplace_back(obj.phi());
@@ -116,6 +120,20 @@ void RecoPFJetCollectionContainer::emplace_back(const reco::PFJet& obj) {
     CandidateVy_.emplace_back(JetCand->vy());
     CandidateVz_.emplace_back(JetCand->vz());
     CandidateBelongsToJet_.emplace_back(JetIndex_);
+
+    // for each candidate find if its track was used in association or not 
+    // using exactly the way it is done in Puppi
+    // -> this is like the fromPV in packedPFCandidates
+    // but with 2 categories 
+    // 1) particles which were assigned to LV/PU with association
+    // 2) particles which were unassociated
+    // for neutrals the value is -10 (default)
+    //associationIndex_ = -10
+    //const reco::TrackRef aTrackRef = JetCand->trackRef();
+    
+    //if (std::abs(JetCand->charge()) > 0) {
+    //  associationIndex_ = (closestVtx != nullptr) ? 1 : 0.;
+    //}
   } // loop over jet daughter particles
   
   JetIndex_+=1;

@@ -6,6 +6,7 @@ keys=(
   Phase2HLTTDR_QCD_Flat_Pt-15to3000_14TeV_PU200
   #Phase2HLTTDR_VBF_HToInvisible_14TeV_PU200
   #RelValQCD_Pt15To7000_Flat_14TeV_noPU
+  Phase2HLTTDR_VBF_HToInvisible_14TeV_PU200
 )
 
 

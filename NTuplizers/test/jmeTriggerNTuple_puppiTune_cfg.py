@@ -34,7 +34,7 @@ opts.register('lumis', None,
               vpo.VarParsing.varType.string,
               'path to .json with list of luminosity sections')
 
-opts.register('rerunPUPPI', True,
+opts.register('rerunPUPPI', False,
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.bool,
               'create offline puppi configurations with latest tune note: needs to be updated with developments in puppi')
@@ -74,6 +74,11 @@ opts.register('DeltaZCut',None,
               vpo.VarParsing.varType.string,
              'puppi parameter DeltaZCut')
 
+opts.register('DeltaTCut',None,
+             vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.string,
+             'puppi parameter DeltaTCut')
+
 opts.register('NumOfPUVtxsForCharged',None,
              vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
@@ -100,7 +105,7 @@ opts.register('puppiParamsForward',[],
 #              vpo.VarParsing.varType.string,
 #              'argument of process.GlobalTag.globaltag')
 
-opts.register('reco', 'HLT_75e33',
+opts.register('reco', 'HLT_75e33_time',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
               'keyword defining reconstruction methods for JME inputs')
@@ -257,7 +262,8 @@ elif opt_reco == 'HLT_75e33':
   #from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg_test import cms, process
   from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg import cms, process
   #process.schedule_().append(process.MC_JME)
-
+elif opt_reco == 'HLT_75e33_time':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg_time import cms, process
 elif opt_reco == 'HLT_75e33_TrkPtX1p00_HGCEnX1p00': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.00, 1.00)
 elif opt_reco == 'HLT_75e33_TrkPtX1p25_HGCEnX1p25': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.25, 1.25)
 elif opt_reco == 'HLT_75e33_TrkPtX1p50_HGCEnX1p50': cms, process = loadProcess_HLT_75e33_TrkPtX_HGCEnX(1.50, 1.50)
@@ -304,7 +310,7 @@ process.hltPixelTracksMergerMultiplicity = _hltTrackMultiplicityValueProducer.cl
 process.hltTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'generalTracks', defaultValue = -1.)
 
 process.hltPixelVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'pixelVertices', defaultValue = -1.)
-process.hltPrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlinePrimaryVertices', defaultValue = -1.)
+process.hltPrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'goodOfflinePrimaryVertices', defaultValue = -1.)
 process.offlinePrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlineSlimmedPrimaryVertices', defaultValue = -1.)
 
 # removed because of non existing HLTrigger.mcStitching anymore which contained a stitchingWeight_cfi
@@ -345,6 +351,9 @@ puppi_modifications_list = []
 if opts.DeltaZCut:
     puppi_modifications_list.append(['DeltaZCut',opts.DeltaZCut])
 
+if opts.DeltaTCut:
+    puppi_modifications_list.append(['DeltaTCut',opts.DeltaTCut])
+
 if opts.NumOfPUVtxsForCharged:
     puppi_modifications_list.append(['NumOfPUVtxsForCharged',opts.NumOfPUVtxsForCharged])
 
@@ -378,6 +387,8 @@ for mod_i in [process.hltPFPuppi, process.hltPFPuppiNoLep]:
     if change[0] == 'DeltaZCut':
       mod_i.DeltaZCut = float(opts.DeltaZCut)
       mod_i.DeltaZCutForChargedFromPUVtxs  = float(opts.DeltaZCut)
+    if change[0] == 'DeltaTCut':
+      mod_i.DeltaTCut = float(opts.DeltaTCut)
     if change[0] == 'NumOfPUVtxsForCharged':
       mod_i.NumOfPUVtxsForCharged = int(opts.NumOfPUVtxsForCharged)
     if change[1]=='MinNeutralPt':
@@ -632,10 +643,10 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
     hltPixelVertices = cms.InputTag('pixelVertices'),
     hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
-#    hltPrimaryVertices4D = cms.InputTag('offlinePrimaryVertices4D'),
+    hltPrimaryVertices4D = cms.InputTag('goodOfflinePrimaryVertices4D'),
 #    hltUnsortedPrimaryVertices4D = cms.InputTag('unsortedOfflinePrimaryVertices4D'),
-    offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
-#    offlineSlimmedPrimaryVertices4D = cms.InputTag('offlineSlimmedPrimaryVertices4D'),
+#    offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    offlineSlimmedPrimaryVertices4D = cms.InputTag('offlineSlimmedPrimaryVertices4D'),
 
   ),
 
@@ -648,7 +659,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
 #    hltPFSim = cms.InputTag('simPFProducer'),
 #    hltPFTICL = cms.InputTag('pfTICL'),
-#     hltParticleFlow = cms.InputTag('particleFlowTmp'),
+     hltParticleFlow = cms.InputTag('particleFlowTmp'),
 #     hltParticleFlowBarrel = cms.InputTag('particleFlowTmpBarrel'),
 #     hltPfTICL = cms.InputTag('pfTICL'),
 #    hltPFPuppi = cms.InputTag('hltPFPuppi'),
@@ -708,8 +719,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
 #    hltAK8PFPuppiJets = cms.InputTag('hltAK8PFPuppiJets'),
 #    hltAK8PFPuppiJetsCorrected = cms.InputTag('hltAK8PFPuppiJetsCorrected'),
-     offlineAK4PFPuppiJets = cms.InputTag('offlineAK4PFPuppiJets'), # with rerunPUPPI option
-     offlineAK4PFPuppiJetsCorrected = cms.InputTag('offlineAK4PFPuppiJetsCorrected') # with rerunPUPPI option
+#     offlineAK4PFPuppiJets = cms.InputTag('offlineAK4PFPuppiJets'), # with rerunPUPPI option
+#     offlineAK4PFPuppiJetsCorrected = cms.InputTag('offlineAK4PFPuppiJetsCorrected') # with rerunPUPPI option
   ),
 
   patJetCollections = cms.PSet(
@@ -751,7 +762,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
     hltPFMET = cms.InputTag('hltPFMET'),
     #hltPFMETTypeOne = cms.InputTag('hltPFMETTypeOne'),
-    hltPFCHSMET = cms.InputTag('hltPFCHSMET'),
+#    hltPFCHSMET = cms.InputTag('hltPFCHSMET'),
     #hltPFSoftKillerMET = cms.InputTag('hltPFSoftKillerMET'),
     hltPFPuppiMET = cms.InputTag('hltPFPuppiMET'),
     hltPFPuppiMETTypeOne = cms.InputTag('hltPFPuppiMETTypeOne'),

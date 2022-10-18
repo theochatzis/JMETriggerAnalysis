@@ -5,7 +5,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-NEVT=1000
+NEVT=20000
 ODIR=${1}
 
 #if [ -d ${ODIR} ]; then
@@ -66,7 +66,7 @@ for sampleKey in ${!samplesMap[@]}; do
   # Note: You can automatically run the jobs after creating them by using --submit option of bdriver
   
   if [[ "${sampleName}" == *"GEN-SIM-DIGI-RAW"* ]]; then
-  bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 100 --cpus 1 --memory 2G --time 01:30:00 ${opts} --batch-system htc \
+  bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 100 --cpus 1 --memory 2G --time 02:00:00 ${opts} --batch-system htc \
   -d ${sampleName} -p 0 -o ${ODIR}/${sampleKey} \
   --final-output ${FINAL_OUTPUT_DIR} \
   --customise-commands \

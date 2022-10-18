@@ -213,9 +213,9 @@ void JMETriggerAnalysisDriverPhase2::init(){
 //    {"hltAK4PFCHSJetsCorrected"  , {{"GEN", "ak4GenJetsNoNu"}}},//, {"Offline", "offlineAK4PFCHSJetsCorrected"}}},
     {"hltAK4PFPuppiJets"         , {{"GEN", "ak4GenJetsNoNu"}}},
     {"hltAK4PFPuppiJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}}},//, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
-    {"offlineAK4PFPuppiJets"         , {{"GEN", "ak4GenJetsNoNu"}}},
-    {"offlineAK4PFPuppiJetsCorrected"  , {{"GEN", "ak4GenJetsNoNu"}}},
-    {"offlineAK4PFPuppiJetsCorrectedPAT"  , {{"GEN", "ak4GenJetsNoNu"}}},
+//    {"offlineAK4PFPuppiJets"         , {{"GEN", "ak4GenJetsNoNu"}}},
+//    {"offlineAK4PFPuppiJetsCorrected"  , {{"GEN", "ak4GenJetsNoNu"}}},
+//    {"offlineAK4PFPuppiJetsCorrectedPAT"  , {{"GEN", "ak4GenJetsNoNu"}}},
 
 //    {"offlineAK4PFPuppiJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}}},
   };
@@ -262,7 +262,7 @@ void JMETriggerAnalysisDriverPhase2::init(){
 //    {"hltPFClusterMET"     , {{"GEN", "genMETCalo"}}},
 //    {"hltPFMETNoMu"        , {{"GEN", "genMETCalo"}}},
     {"hltPFMET"            , {{"GEN", "genMETTrue"}}},//, {"Offline", "offlinePFMET_Raw"}}},
-    {"hltPFCHSMET"         , {{"GEN", "genMETTrue"}}},
+//    {"hltPFCHSMET"         , {{"GEN", "genMETTrue"}}},
 //    {"hltPFSoftKillerMET"  , {{"GEN", "genMETTrue"}}},
 //    {"hltPFPuppiMETNoMu"   , {{"GEN", "genMETCalo"}}},
     {"hltPFPuppiMET"       , {{"GEN", "genMETTrue"}}},//, {"Offline", "offlinePFPuppiMET_Raw"}}},
@@ -387,6 +387,27 @@ void JMETriggerAnalysisDriverPhase2::init(){
 
     bookHistograms_METMHT(selLabel);
   }
+
+
+
+  for(auto const& selLabel : {"matchedLV"}){
+    // histograms: AK4 Jets
+    for(auto const& jetLabel : labelMap_jetAK4_){
+      bookHistograms_Jets(selLabel, jetLabel.first, utils::mapKeys(jetLabel.second));
+    }
+
+    // histograms: AK8 Jets
+    for(auto const& jetLabel : labelMap_jetAK8_){
+      bookHistograms_Jets(selLabel, jetLabel.first, utils::mapKeys(jetLabel.second));
+    }
+
+    // histograms: MET
+    for(auto const& metLabel : labelMap_MET_){
+      bookHistograms_MET(selLabel, metLabel.first, utils::mapKeys(metLabel.second));
+    }
+
+    //bookHistograms_METMHT(selLabel);
+  }
 }
 
 void JMETriggerAnalysisDriverPhase2::analyze(){
@@ -439,6 +460,12 @@ void JMETriggerAnalysisDriverPhase2::analyze(){
     }
 
     fillHistograms_Jets("NoSelection", fhDataAK4Jets, wgt);
+    
+    for(auto const& selLabel : {"matchedLV"}){
+      if(HLT_LVmatching(selLabel)){
+        fillHistograms_Jets(selLabel, fhDataAK4Jets, wgt);
+      }
+    }
 
     if(jetLabel.first.find("l1t") == 0) continue;
 
@@ -542,6 +569,12 @@ void JMETriggerAnalysisDriverPhase2::analyze(){
     }
 
     fillHistograms_MET("NoSelection", fhDataMET, wgt);
+    
+    for(auto const& selLabel : {"matchedLV"}){
+      if(HLT_LVmatching(selLabel)){
+        fillHistograms_MET(selLabel, fhDataMET, wgt);
+      }
+    }
 
     for(auto const& selLabel : l1tSeeds_MET_){
       auto const l1tSeed = hasTTreeReaderValue(selLabel) ? value<bool>(selLabel) : l1tMETSeed(selLabel);
@@ -591,6 +624,51 @@ void JMETriggerAnalysisDriverPhase2::analyze(){
     }
   }
   */
+}
+
+
+bool JMETriggerAnalysisDriverPhase2::HLT_LVmatching(std::string const& key) const {
+  auto const& v_vtxZ = this->vector<float>("hltPrimaryVertices4D_z");
+  auto const& v_vtxTimeError = this->vector<float>("hltPrimaryVertices4D_tError");
+  auto const& v_genVtxZ = this->vector<float>("ak4GenJetsNoNu_CandidateVz");
+  
+  int leadingVertexIndex = 1000;
+  float DZ = 10000.;
+  float DZmin = 1000.;
+  float trueLeadingVertexZ = 0.;
+
+
+  trueLeadingVertexZ = v_genVtxZ[0];
+  //std::cout << trueLeadingVertexZ << std::endl;
+  
+
+  if(key == "matchedLV"){
+    
+    if(v_vtxTimeError[0]>0.){ // if LV has valid time info
+
+      // loop over vertices
+      for(unsigned int iVtx=0;iVtx< v_vtxZ.size();iVtx++){
+
+        // calculate dz from true Z positions
+        DZ = std::abs(v_vtxZ[iVtx] - trueLeadingVertexZ); 
+        // if found minimum dz hold the index of the vertex
+        if( DZ < DZmin ){
+          leadingVertexIndex = iVtx;
+          DZmin = DZ;
+        }
+      }// end vertices loop
+
+      if (leadingVertexIndex == 0){
+        return true;
+      }else{
+        return false;
+      }
+    }else{
+      return false;
+    }
+  }
+  
+  return false;
 }
 
 void JMETriggerAnalysisDriverPhase2::bookHistograms_Jets_2DMaps(const std::string& dir, const std::string& jetType1, const std::string& jetType2){

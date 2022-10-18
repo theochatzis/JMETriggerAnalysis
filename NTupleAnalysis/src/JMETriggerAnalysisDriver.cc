@@ -392,11 +392,13 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir, const
   for(uint idx=0; idx<binEdges_pt.size(); ++idx){ binEdges_pt.at(idx) = 10.*idx; }
   
   std::vector<float> const binEdges_pt_central(
-    {0,10,20,30, 40, 50, 60, 80, 100, 120, 140, 160, 200, 250, 300, 350, 400, 500, 600}
+    {0,20,40,60, 80, 100, 120, 140, 160, 180, 200}
+    //{0,10,20,30, 40, 50, 60, 80, 100, 120, 140, 160, 200, 250, 300, 350, 400, 500, 600}
   );
 
   std::vector<float> const binEdges_pt_forward(
-    {0,10,20,30, 40, 50, 60, 80, 120, 240, 600}
+    {0,20,40,60,80, 100, 140, 200}
+    //{0,10,20,30, 40, 50, 60, 80, 120, 240, 600}
   );
 
   std::vector<float> binEdges_eta(101);
