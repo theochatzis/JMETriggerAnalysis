@@ -1,2 +1,9 @@
 output_*/
 tmp*/
+*.png
+*.root
+*.eps
+*.txt
+*.done
+step*.sh
+*.db

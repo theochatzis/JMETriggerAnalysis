@@ -196,8 +196,8 @@ void JMETriggerAnalysisDriverRun3::init(){
            //{"hltPFCorr", "hltAK4PFJetsCorrected"},
            //{"offlPFCorr", "offlineAK4PFCHSJetsCorrected"},
            {"hltPFPuppi", "hltAK4PFPuppiJets"},
-           //{"hltPFPuppiCorr", "hltAK4PFPuppiJetsCorrected"},
-           {"offlPFPuppiCorr", "offlineAK4PFPuppiJetsCorrected"}}},
+           {"hltPFPuppiCorr", "hltAK4PFPuppiJetsCorrected"}}},
+           //{"offlPFPuppiCorr", "offlineAK4PFPuppiJetsCorrected"}}},
     //{"hltAK4CaloJets"              , {{"GEN", "ak4GenJetsNoNu"}}},
     //{"hltAK4CaloJetsCorrected"     , {{"GEN", "ak4GenJetsNoNu"}}},
     //{"hltAK4PFClusterJets"         , {{"GEN", "ak4GenJetsNoNu"}}},
@@ -205,9 +205,9 @@ void JMETriggerAnalysisDriverRun3::init(){
     //{"hltAK4PFJets"                , {{"GEN", "ak4GenJetsNoNu"}}},
     //{"hltAK4PFJetsCorrected"       , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFCHSJetsCorrected"}}},
     {"hltAK4PFPuppiJets"           , {{"GEN", "ak4GenJetsNoNu"}}},
-    //{"hltAK4PFPuppiJetsCorrected"  , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
+    {"hltAK4PFPuppiJetsCorrected"  , {{"GEN", "ak4GenJetsNoNu"}}},
     //{"offlineAK4PFCHSJetsCorrected"   , {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
-    {"offlineAK4PFPuppiJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
+    //{"offlineAK4PFPuppiJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
   };
 
   labelMap_jetAK8_.clear();
@@ -371,9 +371,10 @@ void JMETriggerAnalysisDriverRun3::analyze(){
   for(auto const& jetLabel : labelMap_jetAK4_){
     auto const isGENJets = (jetLabel.first.find("GenJets") != std::string::npos);
 
-    auto const jetPt1 = isGENJets ? minAK4JetPtRef : minAK4JetPt;
-    auto const jetPt2 = isGENJets ? minAK4JetPtRef * 0.75 : minAK4JetPtRef;
-    
+    //auto const jetPt1 = isGENJets ? minAK4JetPtRef : minAK4JetPt;
+    //auto const jetPt2 = isGENJets ? minAK4JetPtRef * 0.75 : minAK4JetPtRef;
+    auto const jetPt1 = minAK4JetPt;
+    auto const jetPt2 = minAK4JetPtRef;
     
     fillHistoDataJets fhDataAK4Jets;
     fhDataAK4Jets.jetCollection = jetLabel.first;

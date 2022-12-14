@@ -41,11 +41,11 @@ for recoKey in "${recoKeys[@]}"; do
       # ouput dir: if already exists remove it
       if [ -d ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor} ]; then rm -rf ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}; fi
       # run the batch driver to prepare the HTC jobs
-      batch_driver.py -l 0 -n 100000 -p JMETriggerAnalysisDriverRun3 \
+      batch_driver.py -l 0 -n 50000 -p JMETriggerAnalysisDriverRun3 \
        -i ${IDIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/*.root \
        -od ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor} \
        -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor} \
-       --time 2400
+       --time 7200
     done
   done
 done

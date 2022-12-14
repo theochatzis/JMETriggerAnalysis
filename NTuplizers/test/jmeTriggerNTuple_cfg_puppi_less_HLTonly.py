@@ -214,7 +214,7 @@ if update_jmeCalibs:
   ## ES modules for PF-Hadron Calibrations
   process.pfhcESSource = cms.ESSource('PoolDBESSource',
     #_CondDB.clone(connect = 'sqlite_file:PFHC_Run3Winter21_HLT_V3.db'),
-    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/data/PFHC_Run3Winter21_HLT_V3.db'),
+    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/PFHC_Run3Winter21_HLT_V3.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('PFCalibrationRcd'),
@@ -229,7 +229,7 @@ if update_jmeCalibs:
   ## ES modules for HLT JECs
   process.jescESSource = cms.ESSource('PoolDBESSource',
     #_CondDB.clone(connect = 'sqlite_file:JESC_Run3Winter21_V2_MC.db'),
-    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/data/JESC_Run3Winter21_V2_MC.db'),
+    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/JESC_Run3Winter21_V2_MC.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
@@ -251,11 +251,11 @@ if update_jmeCalibs:
         tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK4PFHLT'),#!!
         label = cms.untracked.string('AK4PFchsHLT'),
       ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK4PFPuppiHLT'),
-        label = cms.untracked.string('AK4PFPuppiHLT'),
-      ),
+      #cms.PSet(
+      #  record = cms.string('JetCorrectionsRecord'),
+      #  tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK4PFPuppiHLT'),
+      #  label = cms.untracked.string('AK4PFPuppiHLT'),
+      #),
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
         tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK8CaloHLT'),
@@ -285,6 +285,20 @@ if update_jmeCalibs:
   )
   process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
 
+  # -- adding fast puppi jecs separately
+  
+  process.puppijescESSource = cms.ESSource('PoolDBESSource', # Nominal, Offline, FixedDist
+    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/JESCorrections/test/jescs_FixedDist/DBfile/Run3Summer21_MC.db'),
+    toGet = cms.VPSet(
+      cms.PSet(
+        record = cms.string('JetCorrectionsRecord'),
+        tag = cms.string('JetCorrectorParametersCollection_Run3Summer21_MC_AK4PFPuppiHLT'),
+        label = cms.untracked.string('AK4PFPuppiHLT'),
+      ),
+    ),
+  )
+  process.puppijescESPrefer = cms.ESPrefer('PoolDBESSource', 'puppijescESSource')
+  
 else:
   ## ES modules for HLT JECs
   process.jescESSource = cms.ESSource('PoolDBESSource',

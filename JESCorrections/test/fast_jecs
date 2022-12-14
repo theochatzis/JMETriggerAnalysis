@@ -1,0 +1,18 @@
+#!/bin/bash
+
+NAME=jescs_FixedDist
+EVENTS=1000000
+
+if [ -d "./$NAME" ]; then rm -rf ./$NAME; fi
+
+# calculate JECs using the fitJECs 
+./fitJESCs -o ${NAME} -n ${EVENTS}  -b --skip-L1-PFPuppi -j ak4pfpuppiHLT
+
+python3 jescTxtToDBConverter_cfg.py input=${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/${NAME}/ak4pfpuppiHLT/jesc/ output=./${NAME}/DBfile dumpPython=make_db_file_tmp.py
+
+cmsRun make_db_file_tmp.py 
+
+rm make_db_file_tmp.py
+
+## check the db file
+conddb --db ./${NAME}/DBfile/Run3Summer21_MC.db search JetCorr

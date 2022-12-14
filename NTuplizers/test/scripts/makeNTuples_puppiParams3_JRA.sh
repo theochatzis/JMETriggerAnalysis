@@ -7,7 +7,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-NEVT=100000
+NEVT=1000000
 
 OUTPUT_DIR_EOS=/eos/user/t/tchatzis/PUPPI_samples
 ODIR=${1}
@@ -21,7 +21,7 @@ declare -A samplesMap
 #samplesMap["Run3Winter21_QCD_Pt15to7000_14TeV_PU"]="/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/Run3Winter21DRMiniAOD-FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/MINIAODSIM"
 #samplesMap["Run3Winter21_QCD_Pt15to7000_14TeV_PU"]="/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/Run3Summer21MiniAOD-FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v5-v1/MINIAODSIM"
 #samplesMap["Run3Winter21_QCD_Pt15to7000_14TeV_PU"]='/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/Run3Winter21DRMiniAOD-FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/GEN-SIM-DIGI-RAW'
-#samplesMap["Run3Winter21_QCD_Pt15to7000_14TeV_PU"]='/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/Run3Summer21DR-FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/GEN-SIM-DIGI-RAW'
+samplesMap["Run3Winter21_QCD_Pt15to7000_14TeV_PU"]='/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/Run3Summer21DR-FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/GEN-SIM-DIGI-RAW'
 
 # VBF H(125)->Invisible
 #samplesMap["Run3Winter20_VBF_HToInvisible_14TeV_PU"]="/VBF_HToInvisible_M125_TuneCUETP8M1_14TeV_powheg_pythia8/Run3Winter20DRPremixMiniAOD-110X_mcRun3_2021_realistic_v6-v1/MINIAODSIM"
@@ -29,16 +29,6 @@ declare -A samplesMap
 #samplesMap["Run3Winter21_VBF_HToInvisible_14TeV_PU"]="/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/Run3Winter21DRMiniAOD-FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/GEN-SIM-RECO"
 #samplesMap["Run3Winter21_VBF_HToInvisible_14TeV_PU"]="/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/Run3Winter21DRMiniAOD-FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v1/GEN-SIM-DIGI-RAW"
 
-# DY
-#samplesMap["Run3Winter21_DYJetsToMuMu"]='/DYJetsToMuMu_M-50_TuneCP5_14TeV-madgraphMLM-pythia8/Run3Winter21DRMiniAOD-designGT_112X_mcRun3_2021_realistic_v16_ext1-v2/GEN-SIM-DIGI-RAW'
-#samplesMap["Run3Winter21_DYToLL"]='/DYToLL_M-4To50_TuneCP5_14TeV-pythia8/Run3Winter21DRMiniAOD-FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v3/GEN-SIM-DIGI-RAW'
-#samplesMap["Run3Winter21_DYToLL"]='/DYToLL_M-50_TuneCP5_13p6TeV-pythia8/Run3Winter22DR-L1TPU0to99FEVT_122X_mcRun3_2021_realistic_v9-v2/GEN-SIM-DIGI-RAW'
-# TT
-#samplesMap["Run3Winter21_TT"]='/TT_TuneCP5_14TeV-powheg-pythia8/Run3Winter21DRMiniAOD-FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v2/GEN-SIM-DIGI-RAW'
-#samplesMap["Run3Winter21_TT"]='/TT_TuneCP5_14TeV-powheg-pythia8/Run3Winter21DRMiniAOD-FlatPU30to80FEVT_112X_mcRun3_2021_realistic_v16-v2/GEN-SIM-DIGI-RAW'
-#samplesMap["Run3Winter21_TT"]='/TT_TuneCP5_14TeV-powheg-pythia8/Run3Summer21DRPremix-120X_mcRun3_2021_realistic_v6-v2/GEN-SIM-DIGI-RAW'
-samplesMap["Run3Winter22_TT"]='/TT_TuneCP5_13p6TeV-powheg-pythia8/Run3Winter22DR-PUForTRK_DIGI_122X_mcRun3_2021_realistic_v9-v2/GEN-SIM-DIGI-RAW'
-samplesMap["Run3Winter21_TT"]='/TT_TuneCP5_14TeV-powheg-pythia8/Run3Winter21DRMiniAOD-FlatPU20to70_for_DNN_112X_mcRun3_2021_realistic_v16_ext1-v2/GEN-SIM-DIGI-RAW'
 recoKeys=(
   HLT_Run3TRK
 )
@@ -87,7 +77,7 @@ for recoKey in "${recoKeys[@]}"; do
       #       puppiParamsHF=MinNeutralPtSlope:${MinNeutralPt_factor} \
       #       puppiParamsHE2=MinNeutralPtSlope:${MinNeutralPt_factor}
       
-      python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple_cfg_puppi_less_HLTonly.py dumpPython=.tmp_cfg.py
+      python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/jescJRA_cfg.py dumpPython=.tmp_cfg.py
       
       # good settings with PU vertices
       #python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple_cfg_puppi_less_HLTonly.py dumpPython=.tmp_cfg.py \

@@ -15,7 +15,9 @@ MinNeutralPtSlope_factors=(
 
 NOMINAL_IDIR=./tuning_nominal/harvester_output
 #ODIR=./tuning_test_newSFs_nominal_tunings_withPUtracks/plots
-ODIR=./tuning_test_newSFs_nominal_tunings_calibrated2/plots
+#ODIR=./tuning_test_newSFs_nominal_tunings_calibrated/plots
+ODIR=./tuning_test_calibrated/plots
+
 
 FOUND_ODIR=false
 
@@ -48,11 +50,29 @@ for recoKey in "${recoKeys[@]}"; do
       #./tuning_test_newSFs_nominal_tuned_calibrated/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'tuned AB':616:1:25 \
       #./tuning_test_newSFs_nominal_FixedBackupDist_PUfitNew_tuned_withPUtracks_calibrated/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'offline MedRMS + tuned AB':800:1:25 \
       
-      jmePlots.py -k run3_jme_compareTRK5_puppi_noOffline_puTracks -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/QCD \
-      -i ./tuning_test_newSFs_nominal_calibrated/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'nominal AB':600:1:24 \
-      ./tuning_test_newOffset/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'tuned AB':616:1:25 \
-      ./tuning_test_newFixedDist/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'offline MedRMS + tuned AB':800:1:25 \
+      #jmePlots.py -k run3_jme_compareTRK5_puppiCorr_noOffline_puTracks -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/QCD \
+      #-i ./tuning_test_newNominal_calibrated/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'nominal AB':600:1:24 \
+      #./tuning_test_newOffset_calibrated/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'tuned AB':616:1:25 \
+      #./tuning_test_newFixedDist_calibrated/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'offline MedRMS + tuned AB':800:1:25 \
+      #-l 'Run3Summer21_QCD_PtFlat15to7000_14TeV_PU'
 
+      #jmePlots.py -k run3_jme_compareTRK5_puppiCorr_noOffline_puTracks -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/QCD \
+      #-i ./tuning_test_newNominal_500K_calibrated/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'nominal AB':600:1:24 \
+      #./tuning_test_newOffset_500K_calibrated/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'tuned AB':616:1:25 \
+      #./tuning_test_newFixedDist_500K_calibrated/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'offline MedRMS + tuned AB':800:1:25 \
+      
+      # jmePlots.py -k run3_jme_compareTRK5_puppiCorr_noOffline_puTracks -o ./${ODIR}/QCD \
+      # -i ./tuning_test_Nominal/harvester_output/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'nominal AB':600:1:24 \
+      # ./tuning_test_Offset/harvester_output/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'tuned AB':616:1:25 \
+      # ./tuning_test_FixedDist/harvester_output/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'offline MedRMS + tuned AB':800:1:25 \
+      # -l 'Run3Summer21_QCD_PtFlat15to7000_14TeV_PU'
+
+      jmePlots.py -k run3_jme_compareTRK5_puppiCorr_noOffline_puTracks -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/QCD \
+      -i ./tuning_test_Nominal/harvester_output/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'nominal AB':600:1:24 \
+      ./tuning_test_Offset/harvester_output/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'tuned AB':616:1:25 \
+      ./tuning_test_FixedDist/harvester_output/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'offline MedRMS + tuned AB':800:1:25 \
+      -l 'Run3Summer21_QCD_PtFlat15to7000_14TeV_PU'
+      
       #./tuning_test_newSFs_nominal_increase_B/harvester_output/HLT_Run3TRK/MinNeutralPt_1.0/MinNeutralPtSlope_6.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'6 x B':820:1:25 \
       #./tuning_test_newSFs_nominal_increase_B/harvester_output/HLT_Run3TRK/MinNeutralPt_1.0/MinNeutralPtSlope_7.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'7 x B':400:1:25 \
       #./tuning_test_newSFs_nominal_increase_B/harvester_output/HLT_Run3TRK/MinNeutralPt_1.0/MinNeutralPtSlope_8.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'8 x B':800:1:25 \
