@@ -526,8 +526,12 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
   
   // modification start
   // defining the bins for the simulated number of PU
+  /*
   const std::vector<float> binEdges_simNPU({0,  10, 15, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,  40,  42,
                                            44, 46, 48, 50, 52, 54, 56, 58, 60, 65, 70, 80, 100, 120, 140}); 
+  */
+  //const std::vector<float> binEdges_simNPU({0,  10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 80, 100, 120, 140});
+  const std::vector<float> binEdges_simNPU({0, 10, 20, 30, 40, 50, 60, 70, 90, 120});
   // modification end
   
   std::vector<float> binEdges_njets(16);
@@ -552,10 +556,11 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
     binEdges_MHT.at(idx) = idx * 10.;
   }
 
-  std::vector<float> binEdges_pt(91);
-  for (uint idx = 0; idx < binEdges_pt.size(); ++idx) {
-    binEdges_pt.at(idx) = 10. * idx;
-  }
+  // std::vector<float> binEdges_pt(16);
+  // for (uint idx = 0; idx < binEdges_pt.size(); ++idx) {
+  //   binEdges_pt.at(idx) = 20. * idx;
+  // }
+  std::vector<float> binEdges_pt({0, 30, 50, 70, 100, 150, 200, 300});
 
   std::vector<float> binEdges_eta(101);
   for (uint idx = 0; idx < binEdges_eta.size(); ++idx) {
@@ -618,7 +623,7 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
     addTH2D(dirPrefix + jetType + catLabel + "_eta__vs__pt", binEdges_eta, binEdges_pt);
     addTH1D(dirPrefix + jetType + catLabel + "_phi", binEdges_phi);
     addTH1D(dirPrefix + jetType + catLabel + "_mass", binEdges_mass);
-    /*
+    
     addTH1D(dirPrefix + jetType + catLabel + "_numberOfDaughters", binEdges_numberOfDaughters);
     addTH1D(dirPrefix + jetType + catLabel + "_chargedHadronEnergyFraction", binEdges_energyFrac);
     addTH1D(dirPrefix + jetType + catLabel + "_neutralHadronEnergyFraction", binEdges_energyFrac);
@@ -630,7 +635,7 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
     addTH1D(dirPrefix + jetType + catLabel + "_electronMultiplicity", binEdges_dauMult2);
     addTH1D(dirPrefix + jetType + catLabel + "_photonMultiplicity", binEdges_dauMult1);
     addTH1D(dirPrefix + jetType + catLabel + "_muonMultiplicity", binEdges_dauMult2);
-    */
+    
     
     for (auto const& matchLabel : matchLabels) {
       addTH2D(dirPrefix + jetType + catLabel + "_pt__vs__" + matchLabel + "_pt", binEdges_pt, binEdges_pt);
@@ -663,7 +668,7 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
       // modification end 
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_phi", binEdges_phi);
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_mass", binEdges_mass);
-      /*
+      
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_numberOfDaughters",
               binEdges_numberOfDaughters);
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_chargedHadronEnergyFraction",
@@ -682,7 +687,7 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_electronMultiplicity", binEdges_dauMult2);
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_photonMultiplicity", binEdges_dauMult1);
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_muonMultiplicity", binEdges_dauMult2);
-      */
+      
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_dRmatch", binEdges_dRmatch);
 
       addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt__vs__" + matchLabel + "_pt",
@@ -761,7 +766,7 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
       // modification end 
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_phi", binEdges_phi);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_mass", binEdges_mass);
-      /*
+      
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_numberOfDaughters",
               binEdges_numberOfDaughters);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_chargedHadronEnergyFraction",
@@ -782,7 +787,7 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
               binEdges_dauMult2);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_photonMultiplicity", binEdges_dauMult1);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_muonMultiplicity", binEdges_dauMult2);
-      */
+      
     }
   }
 }
@@ -815,9 +820,9 @@ void JMETriggerAnalysisDriver::bookHistograms_MET(const std::string& dir,
     binEdges_sumEt.at(idx) = idx * 50.;
   }
 
-  const std::vector<float> binEdges_simNPU({0,  10, 15, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,  40,  42,
-                                            44, 46, 48, 50, 52, 54, 56, 58, 60, 65, 70, 80, 100, 120, 140});
-
+  //const std::vector<float> binEdges_simNPU({0,  10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 80, 100, 120, 140});
+  const std::vector<float> binEdges_simNPU({0, 10, 20, 30, 40, 50, 60, 70, 90, 120});
+  
   const std::vector<float> binEdges_offlineNPV({0,  10, 15, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,  40,  42,
                                                 44, 46, 48, 50, 52, 54, 56, 58, 60, 65, 70, 80, 100, 120, 140});
 
@@ -953,9 +958,9 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
   auto const* v_phi(this->vector_ptr<float>(fhData.jetCollection + "_phi"));
   auto const* v_mass(this->vector_ptr<float>(fhData.jetCollection + "_mass"));
   
-  /*
+  
   auto const* v_numberOfDaughters(this->vector_ptr<uint>(fhData.jetCollection + "_numberOfDaughters"));
-
+  
   auto const* v_chargedHadronMultiplicity(this->vector_ptr<int>(fhData.jetCollection + "_chargedHadronMultiplicity"));
   auto const* v_neutralHadronMultiplicity(this->vector_ptr<int>(fhData.jetCollection + "_neutralHadronMultiplicity"));
   auto const* v_electronMultiplicity(this->vector_ptr<int>(fhData.jetCollection + "_electronMultiplicity"));
@@ -969,7 +974,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
   auto const* v_electronEnergyFraction(this->vector_ptr<float>(fhData.jetCollection + "_electronEnergyFraction"));
   auto const* v_photonEnergyFraction(this->vector_ptr<float>(fhData.jetCollection + "_photonEnergyFraction"));
   auto const* v_muonEnergyFraction(this->vector_ptr<float>(fhData.jetCollection + "_muonEnergyFraction"));
-  */
+  
   
   if (not(v_pt and v_eta and v_phi and v_mass)) {
     if (verbosity_ >= 0) {
@@ -1014,7 +1019,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
           ->Fill(v_eta->at(jetIdx), v_pt->at(jetIdx), weight);
       H1(dirPrefix + fhData.jetCollection + catLabel + "_phi")->Fill(v_phi->at(jetIdx), weight);
       H1(dirPrefix + fhData.jetCollection + catLabel + "_mass")->Fill(v_mass->at(jetIdx), weight);
-      /*
+      
       if (v_numberOfDaughters) {
         H1(dirPrefix + fhData.jetCollection + catLabel + "_numberOfDaughters")
             ->Fill(v_numberOfDaughters->at(jetIdx), weight);
@@ -1059,7 +1064,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
         H1(dirPrefix + fhData.jetCollection + catLabel + "_muonEnergyFraction")
             ->Fill(v_muonEnergyFraction->at(jetIdx), weight);
       }
-      */
+      
     }
 
     H1(dirPrefix + fhData.jetCollection + catLabel + "_njets")->Fill(0.01 + jetIndices.size(), weight);
@@ -1232,7 +1237,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
           H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_phi")->Fill(jetPhi, weight);
           H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_mass")->Fill(jetMass, weight);
           
-          /*
+          
           if (v_numberOfDaughters) {
             H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_numberOfDaughters")
                 ->Fill(v_numberOfDaughters->at(jetIdx), weight);
@@ -1277,7 +1282,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
             H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_muonEnergyFraction")
                 ->Fill(v_muonEnergyFraction->at(jetIdx), weight);
           }
-          */
+          
           
           auto const jetMatchIdx(mapMatchIndeces.at(jetIdx));
 
@@ -1389,7 +1394,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
           H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_mass")
               ->Fill(jetMass, weight);
               
-          /*
+          
           if (v_numberOfDaughters) {
             H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_numberOfDaughters")
                 ->Fill(v_numberOfDaughters->at(jetIdx), weight);
@@ -1438,7 +1443,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
             H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_muonEnergyFraction")
                 ->Fill(v_muonEnergyFraction->at(jetIdx), weight);
           }
-          */
+          
         }
       }
 

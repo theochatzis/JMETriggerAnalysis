@@ -6,6 +6,27 @@ import fnmatch
 import FWCore.ParameterSet.VarParsing as vpo
 opts = vpo.VarParsing('analysis')
 
+# options to control puppi tuning at different regions
+opts.register('puppiParamsHB',[],
+             vpo.VarParsing.multiplicity.list,
+             vpo.VarParsing.varType.string,
+             'puppi parameters factors for HB region given as [parameter_name]:[parameter_scale] ')
+
+opts.register('puppiParamsHE1',[],
+             vpo.VarParsing.multiplicity.list,
+             vpo.VarParsing.varType.string,
+             'puppi parameters factors for HE1 region given as [parameter_name]:[parameter_scale] ')
+
+opts.register('puppiParamsHE2',[],
+             vpo.VarParsing.multiplicity.list,
+             vpo.VarParsing.varType.string,
+             'puppi parameters factors for HE2 region given as [parameter_name]:[parameter_scale] ')
+
+opts.register('puppiParamsHF',[],
+             vpo.VarParsing.multiplicity.list,
+             vpo.VarParsing.varType.string,
+             'puppi parameters factors for HF region given as [parameter_name]:[parameter_scale] ')
+             
 opts.register('skipEvents', 0,
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.int,
@@ -40,7 +61,11 @@ opts.register('wantSummary', False,
 #              vpo.VarParsing.multiplicity.singleton,
 #              vpo.VarParsing.varType.string,
 #              'argument of process.GlobalTag.globaltag')
-
+opts.register('useMixedTrk',False,
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.bool,
+              'use  full + pixel tracks in PF')
+              
 opts.register('output', 'out.root',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
@@ -57,7 +82,8 @@ opts.parseArguments()
 ### HLT configuration
 ###
 
-from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_3_0_GRun_configDump import cms, process
+#from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_3_0_GRun_configDump import cms, process
+from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_4_0_GRun_configDump import cms, process
 
 # remove cms.OutputModule objects from HLT config-dump
 for _modname in process.outputModules_():
@@ -105,8 +131,8 @@ if hasattr(process, 'FastTimerService'):
   del process.FastTimerService
 
 # remove MessageLogger
-if hasattr(process, 'MessageLogger'):
-  del process.MessageLogger
+#if hasattr(process, 'MessageLogger'):
+#  del process.MessageLogger
 
 ###
 ### customisations
@@ -116,14 +142,32 @@ if hasattr(process, 'MessageLogger'):
 from JMETriggerAnalysis.Common.customise_hlt import addPaths_MC_JMEPFCluster, addPaths_MC_JMEPFCHS, addPaths_MC_JMEPFPuppi
 process = addPaths_MC_JMEPFCluster(process)
 process = addPaths_MC_JMEPFCHS(process)
-process = addPaths_MC_JMEPFPuppi(process, []) # added empty PUPPI modifications list
+
+puppi_modifications_list = []
+for param_change in opts.puppiParamsHB:
+     parameter_name, parameter_scale = param_change.split(':')
+     puppi_modifications_list.append(['HB',parameter_name, parameter_scale])
+
+for param_change in opts.puppiParamsHE1:
+     parameter_name, parameter_scale = param_change.split(':')
+     puppi_modifications_list.append(['HE1',parameter_name, parameter_scale]) 
+
+for param_change in opts.puppiParamsHE2:
+     parameter_name, parameter_scale = param_change.split(':')
+     puppi_modifications_list.append(['HE2',parameter_name, parameter_scale])
+
+for param_change in opts.puppiParamsHF:
+     parameter_name, parameter_scale = param_change.split(':')
+     puppi_modifications_list.append(['HF',parameter_name, parameter_scale])
+
+process = addPaths_MC_JMEPFPuppi(process, puppi_modifications_list) # added empty PUPPI modifications list
 
 ###
 ### updating Phase 0 HCAL thresholds
 ###
 
-process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].name = "PFRecHitQTestHCALThresholdVsDepth"
-del process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].threshold
+#process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].name = "PFRecHitQTestHCALThresholdVsDepth"
+#del process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].threshold
 
 ## ECAL UL calibrations
 process.GlobalTag.toGet = cms.VPSet(
@@ -142,11 +186,11 @@ import os
 from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
 process.pfhcESSource = cms.ESSource('PoolDBESSource',
   #_CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
-  _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/PFHC_Run3Winter21_HLT_V3.db'),
+  _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/PFHC_Run3Summer21_MC.db'),
   toGet = cms.VPSet(
     cms.PSet(
       record = cms.string('PFCalibrationRcd'),
-      tag = cms.string('PFCalibration_CMSSW_12_0_1_HLT_120X_mcRun3_2021'),
+      tag = cms.string('PFCalibration_CMSSW_12_4_0_pre3_HLT_112X_mcRun3_2022'),
       label = cms.untracked.string('HLT'),
     ),
   ),
@@ -154,13 +198,17 @@ process.pfhcESSource = cms.ESSource('PoolDBESSource',
 process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
 #process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
 
+if opts.useMixedTrk:
+  from HLTrigger.Configuration.customizeHLTforMixedPF import customizeHLTForMixedPF
+  process = customizeHLTForMixedPF(process)
+
 ###
 ### Jet Response Analyzer (JRA) NTuple
 ###
 from jescJRA_utils import addJRAPath
 
 #addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4caloHLT'     , recoJets = 'hltAK4CaloJets'     , rho = 'hltFixedGridRhoFastjetAllCalo')
-#addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfHLT'       , recoJets = 'hltAK4PFJets'       , rho = 'hltFixedGridRhoFastjetAll')
+addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfHLT'       , recoJets = 'hltAK4PFJets'       , rho = 'hltFixedGridRhoFastjetAll')
 #addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfclusterHLT', recoJets = 'hltAK4PFClusterJets', rho = 'hltFixedGridRhoFastjetAllPFCluster')
 #addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfchsHLT'    , recoJets = 'hltAK4PFCHSJets'    , rho = 'hltFixedGridRhoFastjetAll')
 addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfpuppiHLT'  , recoJets = 'hltAK4PFPuppiJets'  , rho = 'hltFixedGridRhoFastjetAll')
@@ -207,7 +255,7 @@ if opts.inputFiles:
 else:
    process.source.fileNames = [
      #'',
-     '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/NoPUFEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/0afdabe6-1c24-4e1a-bba2-26ba586e9b3e.root'
+     '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/0d8a6361-5115-49d3-86a4-4dbeca2e2fd6.root'
    ]
 
 # input EDM files [secondary]

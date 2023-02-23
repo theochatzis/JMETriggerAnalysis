@@ -8,7 +8,7 @@ HB
 HE1
 HE2
 HF
-#MET
+MET
 )
 
 IDIR=$1

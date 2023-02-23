@@ -463,21 +463,61 @@ def addPaths_MC_JMEPFPuppi(process, change_params_list=[]):
     #  process.offlinePFPuppi
     #)
 
+    # process.hltPFPuppi = _puppi.clone(
+    #   candName = 'hltParticleFlow',
+    #   vertexName = 'hltPixelVertices',
+    #   UseDeltaZCut = True,
+    #   EtaMinUseDeltaZ = 0.0,
+    #   DeltaZCut = 0.3,
+    #   #UseFromPVLooseTight = True,
+    #   vtxNdofCut = 4,
+    #   vtxZCut=24,
+    #   UseDeltaZCutForPileup = True,
+    #   #vertexName = 'hltVerticesPF',
+    #   #usePUProxyValue = True,
+    #   #PUProxyValue = 'hltPixelClustersMultiplicity',
+    #   #NumOfPUVtxsForCharged = 0,
+    #   useVertexAssociation = False,
+    # )
+
     process.hltPFPuppi = _puppi.clone(
       candName = 'hltParticleFlow',
-      vertexName = 'hltPixelVertices',
+      #vertexName = 'hltPixelVertices',
       UseDeltaZCut = True,
       EtaMinUseDeltaZ = 0.0,
       DeltaZCut = 0.3,
+      RemovePixelOnly = True,
       #UseFromPVLooseTight = True,
       vtxNdofCut = 4,
       vtxZCut=24,
-      #vertexName = 'hltVerticesPF',
-      #usePUProxyValue = True,
-      #PUProxyValue = 'hltPixelClustersMultiplicity',
+      UseDeltaZCutForPileup = True,
+      vertexName = 'hltVerticesPF',
+      #vertexName = 'hltPixelVertices',
+      usePUProxyValue = True,
+      PUProxyValue = 'hltPixelClustersMultiplicity',
       #NumOfPUVtxsForCharged = 0,
       useVertexAssociation = False,
+      #NumOfPUVtxsForCharged = 10,  # from any vertex apply dz cut 
+      #DeltaZCutForChargedFromPUVtxs = 0.3
     )
+    
+    #for mixedTrkV2 - using vertex fit for LV particles
+    # process.hltPFPuppi = _puppi.clone(
+    #   candName = 'hltParticleFlow',
+    #   #vertexName = 'hltPixelVertices',
+    #   UseDeltaZCut = True,
+    #   EtaMinUseDeltaZ = 0.0,
+    #   DeltaZCut = 0.3,
+    #   #UseFromPVLooseTight = True,
+    #   vtxNdofCut = 4,
+    #   vtxZCut=24,
+    #   UseDeltaZCutForPileup = True,
+    #   vertexName = 'hltVerticesPF',
+    #   #usePUProxyValue = True,
+    #   PUProxyValue = 'hltPixelVertices',
+    #   #NumOfPUVtxsForCharged = 0,
+    #   useVertexAssociation = False,
+    # )
 
     process.HLTPFPuppiSequence = cms.Sequence(
         process.HLTPreAK4PFJetsRecoSequence
@@ -583,16 +623,18 @@ def addPaths_MC_JMEPFPuppi(process, change_params_list=[]):
     ## MET
     process.hltPFPuppiNoLep = _puppiNoLep.clone(
       candName = 'hltParticleFlow',
-      vertexName = 'hltPixelVertices',
+      #vertexName = 'hltPixelVertices',
       UseDeltaZCut = True,
       EtaMinUseDeltaZ = 0.0,
       DeltaZCut = 0.3,
+      RemovePixelOnly = True,
       #UseFromPVLooseTight = True,
       vtxNdofCut = 4,
       vtxZCut=24,
-      #vertexName = 'hltVerticesPF',
-      #usePUProxyValue = True,
-      #PUProxyValue = 'hltPixelClustersMultiplicity',
+      UseDeltaZCutForPileup = True,
+      vertexName = 'hltVerticesPF',
+      usePUProxyValue = True,
+      PUProxyValue = 'hltPixelClustersMultiplicity',
       #NumOfPUVtxsForCharged = 0,
       useVertexAssociation = False,
     )
@@ -639,13 +681,34 @@ def addPaths_MC_JMEPFPuppi(process, change_params_list=[]):
         if len(mod_i.algos[algo_idx].MinNeutralPt) != len(mod_i.algos[algo_idx].MinNeutralPtSlope):
           raise RuntimeError('instance of PuppiProducer is misconfigured:\n\n'+str(mod_i)+' = '+mod_i.dumpPython())
 
-        #for algoReg_idx in range(len(mod_i.algos[algo_idx].MinNeutralPt)):
+        for algoReg_idx in range(len(mod_i.algos[algo_idx].MinNeutralPt)):
+          mod_i.algos[algo_idx].MinNeutralPtSlope[algoReg_idx] *= 0.0027
         #  mod_i.algos[algo_idx].MinNeutralPt[algoReg_idx] += 2.56 * mod_i.algos[algo_idx].MinNeutralPtSlope[algoReg_idx]
         #  mod_i.algos[algo_idx].MinNeutralPtSlope[algoReg_idx] *= 0.00271
         #  ## for checks without any cut at neutrals pT i.e. MinNeutralPt==0 and MinNeutralPtSlope==0
         #  #mod_i.algos[algo_idx].MinNeutralPt[algoReg_idx] = 0.0
-        #  #mod_i.algos[algo_idx].MinNeutralPtSlope[algoReg_idx] = 0.0
-          
+
+      ### tune V1 ###
+      # central
+      mod_i.algos[0].MinNeutralPtSlope[0] *= 0.4 # HB
+      mod_i.algos[0].MinNeutralPtSlope[1] *= 0.0 # HE1
+      # forward
+      mod_i.algos[1].MinNeutralPtSlope[0] *= 4.0 # HB
+      mod_i.algos[1].MinNeutralPtSlope[1] *= 1.25 # HE1
+      ###############
+      
+
+      # all A zero
+      mod_i.algos[0].MinNeutralPt[0] *= 0.0 # HB
+      mod_i.algos[0].MinNeutralPt[1] *= 0.0 # HE1
+      mod_i.algos[1].MinNeutralPt[0] *= 0.0 # HB
+      mod_i.algos[1].MinNeutralPt[1] *= 0.0 # HE1
+      # all B zero
+      mod_i.algos[0].MinNeutralPtSlope[0] *= 0.0 # HB
+      mod_i.algos[0].MinNeutralPtSlope[1] *= 0.0 # HE1
+      mod_i.algos[1].MinNeutralPtSlope[0] *= 0.0 # HB
+      mod_i.algos[1].MinNeutralPtSlope[1] *= 0.0 # HE1
+
       # changes per specific region
       regions_dict={ 'HB':[0,0], 'HE1':[0,1], 'HE2':[1,0], 'HF':[1,1]}
       for change in change_params_list:

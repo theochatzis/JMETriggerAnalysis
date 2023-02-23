@@ -41,7 +41,7 @@ for recoKey in "${recoKeys[@]}"; do
       # ouput dir: if already exists remove it
       if [ -d ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor} ]; then rm -rf ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}; fi
       # run the harvester to make profiles, efficiencies etc.
-      jmeAnalysisHarvester.py -l 0 \
+      jmeAnalysisHarvester_experimental2.py -l 0 -pc gausfit \
        -i ./${IDIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/*.root \
        -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}        
     done

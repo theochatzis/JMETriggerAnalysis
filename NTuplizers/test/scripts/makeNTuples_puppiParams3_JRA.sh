@@ -77,7 +77,11 @@ for recoKey in "${recoKeys[@]}"; do
       #       puppiParamsHF=MinNeutralPtSlope:${MinNeutralPt_factor} \
       #       puppiParamsHE2=MinNeutralPtSlope:${MinNeutralPt_factor}
       
-      python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/jescJRA_cfg.py dumpPython=.tmp_cfg.py
+      python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/jescJRA_cfg.py dumpPython=.tmp_cfg.py useMixedTrk=True \
+            #  puppiParamsHB=MinNeutralPtSlope:0.4 \
+            #  puppiParamsHE1=MinNeutralPtSlope:0.0 \
+            #  puppiParamsHE2=MinNeutralPtSlope:4.0 \
+            #  puppiParamsHF=MinNeutralPtSlope:1.25
       
       # good settings with PU vertices
       #python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple_cfg_puppi_less_HLTonly.py dumpPython=.tmp_cfg.py \

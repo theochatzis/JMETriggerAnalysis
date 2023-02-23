@@ -20,6 +20,21 @@ def load_dataset_data(das_name, max_files=-1, max_events=-1, parentFiles_levels=
     dataset_files = command_output_lines('dasgoclient --query "file dataset='+str(das_name)+' | grep file.name,file.nevents"')
     dataset_files = [_tmp for _tmp in dataset_files if _tmp != '']
     dataset_files = sorted(list(set(dataset_files)))
+    
+   #  # removing files from list which do not have a T2 site (so only T0_CH_CERN_Tape i.e. not available to user)
+   #  for iFile in range(len(dataset_files)):
+   #      _fileName = dataset_files[iFile].split()[0]
+   #      #print(_fileName)
+   #      _dasSites = command_output_lines('dasgoclient --query "site file='+str(_fileName)+'"')
+   #      #print(_dasSites)
+   #      # loop over sites and check if there is a T2
+   #      foundT2=False
+   #      for _site in _dasSites:
+   #         if 'T2' in _site:
+   #           foundT2 = True
+   #           break
+   #      if not foundT2:
+   #         del dataset_files[iFile]
 
     if len(dataset_files) == 0:
        KILL('load_dataset_data -- empty list of input files for dataset: '+str(das_name))
