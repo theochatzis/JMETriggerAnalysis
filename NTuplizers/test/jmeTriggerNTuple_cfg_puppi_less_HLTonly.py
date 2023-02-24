@@ -103,7 +103,7 @@ if opts.reco == 'HLT_oldJECs':
   update_jmeCalibs = False
 
 elif opts.reco == 'HLT_Run3TRK':
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_4_0_GRun_configDump import cms, process
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_4_0_GRun_postEE_configDump import cms, process
 #  from HLTrigger.Configuration.customizeHLTforRun3 import customizeHLTforRun3Tracking
 #  process = customizeHLTforRun3Tracking(process)
   update_jmeCalibs = True
@@ -137,11 +137,11 @@ keepPaths = [
   'MC_*Jets*',
   'MC_*MET*',
   'MC_*AK8Calo*',
-  'HLT_PFJet*_v*',
-  'HLT_AK4PFJet*_v*',
-  'HLT_AK8PFJet*_v*',
-  'HLT_PFHT*_v*',
-  'HLT_PFMET*_PFMHT*_v*',
+  #'HLT_PFJet*_v*',
+  #'HLT_AK4PFJet*_v*',
+  #'HLT_AK8PFJet*_v*',
+  #'HLT_PFHT*_v*',
+  #'HLT_PFMET*_PFMHT*_v*',
 ]
 
 vetoPaths = [

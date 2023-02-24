@@ -21,7 +21,7 @@ declare -A samplesMap
 #samplesMap["Run3Winter21_QCD_Pt15to7000_14TeV_PU"]="/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/Run3Winter21DRMiniAOD-FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/MINIAODSIM"
 #samplesMap["Run3Winter21_QCD_Pt15to7000_14TeV_PU"]="/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/Run3Summer21MiniAOD-FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v5-v1/MINIAODSIM"
 #samplesMap["Run3Winter21_QCD_Pt15to7000_14TeV_PU"]='/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/Run3Winter21DRMiniAOD-FlatPU0to80FEVT_castor_112X_mcRun3_2021_realistic_v16-v2/GEN-SIM-DIGI-RAW'
-samplesMap["Run3Winter21_QCD_Pt15to7000_14TeV_PU"]='/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/Run3Summer21DR-FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/GEN-SIM-DIGI-RAW'
+samplesMap["Run3Winter21_QCD_Pt15to7000_14TeV_PU"]='/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/Run3Summer22DR-FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/GEN-SIM-RAW'
 
 # VBF H(125)->Invisible
 #samplesMap["Run3Winter20_VBF_HToInvisible_14TeV_PU"]="/VBF_HToInvisible_M125_TuneCUETP8M1_14TeV_powheg_pythia8/Run3Winter20DRPremixMiniAOD-110X_mcRun3_2021_realistic_v6-v1/MINIAODSIM"
