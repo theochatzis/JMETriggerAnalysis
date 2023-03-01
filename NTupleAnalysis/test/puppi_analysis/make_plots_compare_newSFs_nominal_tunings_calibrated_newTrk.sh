@@ -17,7 +17,7 @@ NOMINAL_IDIR=./tuning_nominal/harvester_output
 #ODIR=./tuning_test_newSFs_nominal_tunings_withPUtracks/plots
 #ODIR=./tuning_test_newSFs_nominal_tunings_calibrated/plots
 #ODIR=./tuning_test_puppiTune/plots
-ODIR=./tuning_test_puppiJets_maxIter50/plots
+ODIR=./tuning_test_puppiJets_tuneV0/plots
 
 
 FOUND_ODIR=false
@@ -67,10 +67,8 @@ for recoKey in "${recoKeys[@]}"; do
       # -i ./tuning_test_puppiJets_newVerticesPF/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'full pf vertices ':600:1:24 \
       # ./tuning_test_puppiJets_pixelVertices/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'pixel vertices':616:1:25 \
       
-       jmePlots.py -k run3_jme_compareTRK5_puppiCorr_noOffline_puTracks -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/QCD \
-      -i ./tuning_test_puppiJets_newVerticesPF/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'HEHBmaxIter=5':600:1:24 \
-      ./tuning_test_puppiJets_maxIter50/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'HEHBmaxIter=50':632:1:25 \
-
+      
+      
       # jmePlots.py -k run3_jme_compareTRK5_puppiCorr_noOffline_puTracks -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/QCD \
       # -i ./tuning_test_puppiJets_ptcut6GEV/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'tuneV1':600:1:24 \
       # ./tuning_test_puppiJets_Azero/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'A=0':616:1:25 \
@@ -94,11 +92,29 @@ for recoKey in "${recoKeys[@]}"; do
       # -i ./tuning_test_tuneV1/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'fully tuned':600:1:24 \
       # -l 'Run3Summer21_QCD_PtFlat15to7000_14TeV_PU'
       
-      
+      # jmePlots.py -k run3_jme_compareTRK5_puppiCorr_noOffline_puTracks -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/QCD \
+      # -i ./tuning_test_puppiJets_newVerticesPF/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'Run3Summer21':600:1:24 \
+      # ./tuning_test_puppiJets_noAB/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'Run3Summer22':632:1:25 \
+
+
       # jmePlots.py -k run3_jme_compareTRK5_puppiCorr_noOffline_puTracks_new_comparePF -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/QCD \
-      # -i ./tuning_test_pfJets_new/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'nominal Trk':1:1:24 \
-      # ./tuning_test_puppiJets_new/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'mixed Trk':600:1:25 \
-      # -l 'Run3Summer21_QCD_PtFlat15to7000_14TeV_PU'
+      # -i ./tuning_test_puppiJets_postEEtag_nominalTrk/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'nominal Trk':1:1:24 \
+      # ./tuning_test_puppiJets_tuneV1/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'mixed Trk':632:1:25 \
+
+      
+      jmePlots.py -k run3_jme_compareTRK5_puppiCorr_noOffline_puTracks_new_comparePF -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/QCD \
+      -i ./tuning_test_puppiJets_postEEtag_nominalTrk/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'nominal Trk':1:1:24 \
+      ./tuning_test_puppiJets_tuneV1/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'mixed Trk (tight PUPPI)':632:1:25 \
+      ./tuning_test_puppiJets_tuneV0/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'mixed Trk (loose PUPPI)':600:1:25 \
+
+      # jmePlots.py -k run3_jme_compareTRK5_puppiCorr_noOffline_puTracks_new_comparePF -o ./${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/QCD \
+      # -i ./tuning_test_puppiJets_postEEtag_nominalTrk/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'nominal Trk':1:1:24 \
+      # ./tuning_test_puppiJets_tuneV1/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'mixed Trk':632:1:25 \
+      # ./tuning_test_puppiJets_ptstart10/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'mixed ptStart=10':800:1:25 \
+      # ./tuning_test_puppiJets_ptstart5/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'mixed ptStart=5':616:1:25 \
+      # ./tuning_test_puppiJets_ptstart0/harvester_output/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU__0.root:'mixed ptStart=0':600:1:25 \
+
+      
       
       # organise the plots
       ./organise_plots.sh ${ODIR}/${recoKey}/MinNeutralPt_${MinNeutralPt_factor}/MinNeutralPtSlope_${MinNeutralPtSlope_factor}/QCD/NoSelection

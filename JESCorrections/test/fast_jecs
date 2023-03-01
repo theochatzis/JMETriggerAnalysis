@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAME=jescs_tuneV1
+NAME=jescs_tuneV0_Run3Summer22
 EVENTS=500000
 
 if [ -d "./$NAME" ]; then rm -rf ./$NAME; fi

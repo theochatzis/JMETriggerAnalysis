@@ -486,7 +486,7 @@ def addPaths_MC_JMEPFPuppi(process, change_params_list=[]):
       UseDeltaZCut = True,
       EtaMinUseDeltaZ = 0.0,
       DeltaZCut = 0.3,
-      RemovePixelOnly = True,
+      RemovePixelOnly = False,
       #UseFromPVLooseTight = True,
       vtxNdofCut = 4,
       vtxZCut=24,
@@ -497,8 +497,10 @@ def addPaths_MC_JMEPFPuppi(process, change_params_list=[]):
       PUProxyValue = 'hltPixelClustersMultiplicity',
       #NumOfPUVtxsForCharged = 0,
       useVertexAssociation = False,
-      #NumOfPUVtxsForCharged = 10,  # from any vertex apply dz cut 
-      #DeltaZCutForChargedFromPUVtxs = 0.3
+      #NumOfPUVtxsForCharged = 2,  # from any vertex apply dz cut 
+      #DeltaZCutForChargedFromPUVtxs = 1000.0
+      #PtMaxNeutralsStartSlope = 10.0,
+      #PtMaxNeutrals = 190.0,
     )
     
     #for mixedTrkV2 - using vertex fit for LV particles
@@ -627,7 +629,7 @@ def addPaths_MC_JMEPFPuppi(process, change_params_list=[]):
       UseDeltaZCut = True,
       EtaMinUseDeltaZ = 0.0,
       DeltaZCut = 0.3,
-      RemovePixelOnly = True,
+      RemovePixelOnly = False,
       #UseFromPVLooseTight = True,
       vtxNdofCut = 4,
       vtxZCut=24,
@@ -687,27 +689,45 @@ def addPaths_MC_JMEPFPuppi(process, change_params_list=[]):
         #  mod_i.algos[algo_idx].MinNeutralPtSlope[algoReg_idx] *= 0.00271
         #  ## for checks without any cut at neutrals pT i.e. MinNeutralPt==0 and MinNeutralPtSlope==0
         #  #mod_i.algos[algo_idx].MinNeutralPt[algoReg_idx] = 0.0
+      
+      # ### tune V0 ###
+      # # central
+      # mod_i.algos[0].MinNeutralPtSlope[0] *= 0.4 # HB
+      # mod_i.algos[0].MinNeutralPtSlope[1] *= 0.0 # HE1
+      # # forward
+      # mod_i.algos[1].MinNeutralPtSlope[0] *= 1.0 # HE2
+      # mod_i.algos[1].MinNeutralPtSlope[1] *= 1.0 # HF
+      # ###############
 
-      ### tune V1 ###
+      ### tune V1 (tight) ###
       # central
       mod_i.algos[0].MinNeutralPtSlope[0] *= 0.4 # HB
       mod_i.algos[0].MinNeutralPtSlope[1] *= 0.0 # HE1
       # forward
-      mod_i.algos[1].MinNeutralPtSlope[0] *= 4.0 # HB
-      mod_i.algos[1].MinNeutralPtSlope[1] *= 1.25 # HE1
-      ###############
+      mod_i.algos[1].MinNeutralPtSlope[0] *= 4.0 # HE2
+      mod_i.algos[1].MinNeutralPtSlope[1] *= 1.25 # HF
+      # ###############
       
 
-      # all A zero
-      mod_i.algos[0].MinNeutralPt[0] *= 0.0 # HB
-      mod_i.algos[0].MinNeutralPt[1] *= 0.0 # HE1
-      mod_i.algos[1].MinNeutralPt[0] *= 0.0 # HB
-      mod_i.algos[1].MinNeutralPt[1] *= 0.0 # HE1
-      # all B zero
-      mod_i.algos[0].MinNeutralPtSlope[0] *= 0.0 # HB
-      mod_i.algos[0].MinNeutralPtSlope[1] *= 0.0 # HE1
-      mod_i.algos[1].MinNeutralPtSlope[0] *= 0.0 # HB
-      mod_i.algos[1].MinNeutralPtSlope[1] *= 0.0 # HE1
+      # V1 loose
+      # mod_i.algos[1].MinNeutralPtSlope[0] *= 0.25 # HE2
+      # mod_i.algos[1].MinNeutralPtSlope[1] *= 0.25 # HF
+
+      # V1 medium
+      mod_i.algos[1].MinNeutralPtSlope[0] *= 0.50 # HE2
+      mod_i.algos[1].MinNeutralPtSlope[1] *= 0.50 # HF
+      
+
+      # # all A zero
+      # mod_i.algos[0].MinNeutralPt[0] *= 0.0 # HB
+      # mod_i.algos[0].MinNeutralPt[1] *= 0.0 # HE1
+      # mod_i.algos[1].MinNeutralPt[0] *= 0.0 # HB
+      # mod_i.algos[1].MinNeutralPt[1] *= 0.0 # HE1
+      # # all B zero
+      # mod_i.algos[0].MinNeutralPtSlope[0] *= 0.0 # HB
+      # mod_i.algos[0].MinNeutralPtSlope[1] *= 0.0 # HE1
+      # mod_i.algos[1].MinNeutralPtSlope[0] *= 0.0 # HB
+      # mod_i.algos[1].MinNeutralPtSlope[1] *= 0.0 # HE1
 
       # changes per specific region
       regions_dict={ 'HB':[0,0], 'HE1':[0,1], 'HE2':[1,0], 'HF':[1,1]}

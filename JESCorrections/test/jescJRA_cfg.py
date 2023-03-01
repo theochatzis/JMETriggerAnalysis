@@ -83,7 +83,7 @@ opts.parseArguments()
 ###
 
 #from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_3_0_GRun_configDump import cms, process
-from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_4_0_GRun_configDump import cms, process
+from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_4_0_GRun_postEE_configDump import cms, process
 
 # remove cms.OutputModule objects from HLT config-dump
 for _modname in process.outputModules_():
@@ -208,7 +208,7 @@ if opts.useMixedTrk:
 from jescJRA_utils import addJRAPath
 
 #addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4caloHLT'     , recoJets = 'hltAK4CaloJets'     , rho = 'hltFixedGridRhoFastjetAllCalo')
-addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfHLT'       , recoJets = 'hltAK4PFJets'       , rho = 'hltFixedGridRhoFastjetAll')
+#addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfHLT'       , recoJets = 'hltAK4PFJets'       , rho = 'hltFixedGridRhoFastjetAll')
 #addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfclusterHLT', recoJets = 'hltAK4PFClusterJets', rho = 'hltFixedGridRhoFastjetAllPFCluster')
 #addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfchsHLT'    , recoJets = 'hltAK4PFCHSJets'    , rho = 'hltFixedGridRhoFastjetAll')
 addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfpuppiHLT'  , recoJets = 'hltAK4PFPuppiJets'  , rho = 'hltFixedGridRhoFastjetAll')

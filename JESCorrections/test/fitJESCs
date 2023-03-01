@@ -7,12 +7,12 @@ set -euo pipefail
 JESC_BASE=${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test
 
 #JRANTuple_NoPU=root://cms-xrd-global.cern.ch//store/group/phys_jetmet/saparede/runIII_hlt_jec/jra_ntuples/jescs_jul_2022_noPU/part_noPU_Run3Summer120X_CMSSW_12_4_0_pre3.root
-JRANTuple_NoPU=root://cms-xrd-global.cern.ch//store/group/phys_jetmet/saparede/runIII_hlt_jec/jra_ntuples/jescs_jul_2022_noPU/bigger_part_noPU_Run3Summer120X_CMSSW_12_4_0_pre3.root
+#JRANTuple_NoPU=root://cms-xrd-global.cern.ch//store/group/phys_jetmet/saparede/runIII_hlt_jec/jra_ntuples/jescs_jul_2022_noPU/bigger_part_noPU_Run3Summer120X_CMSSW_12_4_0_pre3.root
 #JRANTuple_PU=root://cms-xrd-global.cern.ch//store/group/phys_jetmet/saparede/runIII_hlt_jec/jra_ntuples/jescs_jul_2022_flatPU/part_flatPU_Run3Summer120X_CMSSW_12_4_0_pre3.root
 
 #JRANTuple_PU=root://cms-xrd-global.cern.ch//store/group/phys_jetmet/saparede/runIII_hlt_jec/jra_ntuples/jescs_jul_2022_flatPU/part_flatPU_Run3Summer120X_CMSSW_12_4_0_pre3.root
 #JRANTuple_PU=/eos/user/t/tchatzis/PUPPI_samples/test_newFixedDist_1M_JRA/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0/Run3Winter21_QCD_Pt15to7000_14TeV_PU.root
-JRANTuple_PU=/eos/user/t/tchatzis/PUPPI_samples/test_puppiJets_new_JRA/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0//Run3Winter21_QCD_Pt15to7000_14TeV_PU.root
+JRANTuple_PU=/eos/user/t/tchatzis/PUPPI_samples/puppiJets_tuneV0_JRA/HLT_Run3TRK/MinNeutralPt_0.0/MinNeutralPtSlope_0.0//Run3Winter21_QCD_Pt15to7000_14TeV_PU.root
 
 ERA=Run3Summer21_MC
 #ERA=Phase2Spring22_MC

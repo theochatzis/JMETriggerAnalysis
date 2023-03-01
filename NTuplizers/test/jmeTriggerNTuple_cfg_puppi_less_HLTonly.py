@@ -292,7 +292,7 @@ if update_jmeCalibs:
   # -- adding fast puppi jecs separately
   
   process.puppijescESSource = cms.ESSource('PoolDBESSource', # Nominal, Offline, FixedDist
-    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/JESCorrections/test/jescs_tuneV1/DBfile/Run3Summer21_MC.db'),
+    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/JESCorrections/test/jescs_tuneV1_Run3Summer22/DBfile/Run3Summer21_MC.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
@@ -579,6 +579,7 @@ else:
 
  #  '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/0d8a6361-5115-49d3-86a4-4dbeca2e2fd6.root'
  '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/00323e70-75e6-4098-8cbc-31c69a451d8c.root'
+ # '/store/mc/Run3Summer22DRPremix/SingleNeutrino_E-10_gun/GEN-SIM-RAW/SNB_124X_mcRun3_2022_realistic_v12-v2/70000/004ec806-0719-4f8c-8056-0efbd5ba22b1.root'
  # '/store/mc/Run3Winter22DR/SingleNeutrino_E-10-gun/GEN-SIM-DIGI-RAW/L1TPU0to99FEVT_SNB_122X_mcRun3_2021_realistic_v9-v2/70007/98c44c2f-d5b4-49b3-a2bf-a709898dd8cd.root' 
   
   ]
