@@ -258,13 +258,13 @@ void PFHadCalibNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       continue;
     ++globalCounter_[5];
 
-    if (pfc.pt() < minPt_)
-      continue;
-    ++globalCounter_[6];
+    //if (pfc.pt() < minPt_)
+    //  continue;
+    //++globalCounter_[6];
 
     auto const ecalRaw = pfc.rawEcalEnergy();
     auto const hcalRaw = pfc.rawHcalEnergy();
-    if ((ecalRaw + hcalRaw) < minCaloEnergy_)
+    if ((0.0279483, 94.9388, 32.7824, 0.102779, 95.1038, 0.101356, -0.729021, -0.753275,ecalRaw + hcalRaw) < minCaloEnergy_)
       continue;
     ++globalCounter_[7];
 
@@ -282,9 +282,9 @@ void PFHadCalibNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       }
     }
 
-    if (nTracks != 1)
-      continue;
-    ++globalCounter_[8];
+    //if (nTracks != 1)
+    //  continue;
+    //++globalCounter_[8];
 
     auto trackRef = pfc.trackRef();
 
@@ -293,9 +293,9 @@ void PFHadCalibNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     auto const track_eta = trackRef->eta();
     auto const track_phi = trackRef->phi();
 
-    if (track_p < minTrackP_ or track_pt < minTrackPt_)
-      continue;
-    ++globalCounter_[9];
+    //if (track_p < minTrackP_ or track_pt < minTrackPt_)
+    //  continue;
+    //++globalCounter_[9];
 
     auto const& hp = trackRef->hitPattern();
     uint const track_nValidPixelHits = hp.numberOfValidPixelHits();
@@ -319,6 +319,7 @@ void PFHadCalibNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     LogTrace("") << "     numberOfLostHits=" << trackRef->numberOfLostHits();
     LogTrace("") << "----------------------------------------------------------";
 
+/*
     auto hasMinPixelHits = false;
     auto hasMinTrackerHits = false;
     for (uint ieta = 0; ieta < maxEtaForMinTrkHitsCuts_.size(); ++ieta) {
@@ -339,6 +340,7 @@ void PFHadCalibNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     if (not hasMinTrackerHits)
       continue;
     ++globalCounter_[11];
+*/
 
     if (ecalRaw > maxECalEnergy_)
       continue;
