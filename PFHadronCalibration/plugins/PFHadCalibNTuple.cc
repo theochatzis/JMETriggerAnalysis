@@ -264,7 +264,7 @@ void PFHadCalibNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
     auto const ecalRaw = pfc.rawEcalEnergy();
     auto const hcalRaw = pfc.rawHcalEnergy();
-    if ((0.0279483, 94.9388, 32.7824, 0.102779, 95.1038, 0.101356, -0.729021, -0.753275,ecalRaw + hcalRaw) < minCaloEnergy_)
+    if ((ecalRaw + hcalRaw) < minCaloEnergy_)
       continue;
     ++globalCounter_[7];
 
