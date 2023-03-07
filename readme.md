@@ -16,6 +16,7 @@ please ignore this `readme`, and follow the instructions in the dedicated `readm
 cmsrel CMSSW_13_0_0
 cd CMSSW_13_0_0/src
 cmsenv
+git cms-merge-topic  silviodonato:customizeHLTfor2023
 git clone https://github.com/cghuh/JMETriggerAnalysis.git -b run3_13_0_X
 
 # PFHC: preliminary HLT-PFHC for Run-3
