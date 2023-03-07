@@ -41,6 +41,11 @@ opts.register('wantSummary', False,
 #              vpo.VarParsing.varType.string,
 #              'argument of process.GlobalTag.globaltag')
 
+opts.register('reco', 'HLT_Run3TRK',
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.string,
+              'keyword to define HLT reconstruction')
+
 opts.register('output', 'out.root',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
@@ -56,8 +61,23 @@ opts.parseArguments()
 ###
 ### HLT configuration
 ###
+if opts.reco == 'HLT_GRun':
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_0_0_HLT_V4_configDump import cms, process
 
-from HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
+elif opts.reco == 'HLT_Run3TRK':
+  # (a) Run-3 tracking: standard
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_0_0_HLT_V4_configDump import cms, process
+  #from HLTrigger.Configuration.customizeHLTforRun3Tracking import customizeHLTforRun3Tracking
+  #process = customizeHLTforRun3Tracking(process)
+
+elif opts.reco == 'HLT_Run3TRKWithPU':
+  # (b) Run-3 tracking: all pixel vertices
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_0_0_HLT_V4_configDump import cms, process
+  from HLTrigger.Configuration.customizeHLTforRun3Tracking import customizeHLTforRun3TrackingAllPixelVertices
+  process = customizeHLTforRun3TrackingAllPixelVertices(process)
+
+else:
+  raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
 
 # remove cms.OutputModule objects from HLT config-dump
 for _modname in process.outputModules_():
@@ -118,31 +138,12 @@ process = addPaths_MC_JMEPFCluster(process)
 process = addPaths_MC_JMEPFCHS(process)
 process = addPaths_MC_JMEPFPuppi(process)
 
-###
-### updating Phase 0 HCAL thresholds
-###
-
-process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].name = "PFRecHitQTestHCALThresholdVsDepth"
-del process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].threshold
-
-## ECAL UL calibrations
-process.GlobalTag.toGet = cms.VPSet(
- cms.PSet(record = cms.string("EcalLaserAlphasRcd"),
- tag = cms.string("EcalLaserAlphas_UL_Run1_Run2_2018_lastIOV_movedTo1"),
- connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
- ),
- cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
- tag = cms.string("EcalIntercalibConstants_UL_Run1_Run2_2018_lastIOV_movedTo1"),
- connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
- ),)
-
 ## ES modules for PF-Hadron Calibrations
 import os
 
 from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
 process.pfhcESSource = cms.ESSource('PoolDBESSource',
-  _CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
-  #_CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/JESCorrections/test/PFCalibration.db'),
+  _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/JESCorrections/test/PFCalibration.db'),
   toGet = cms.VPSet(
     cms.PSet(
       record = cms.string('PFCalibrationRcd'),
@@ -160,14 +161,14 @@ process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
 from jescJRA_utils import addJRAPath
 
 addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4caloHLT'     , recoJets = 'hltAK4CaloJets'     , rho = 'hltFixedGridRhoFastjetAllCalo')
-addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfHLT'       , recoJets = 'hltAK4PFJets'       , rho = 'hltFixedGridRhoFastjetAll')
 addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfclusterHLT', recoJets = 'hltAK4PFClusterJets', rho = 'hltFixedGridRhoFastjetAllPFCluster')
+addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfHLT'       , recoJets = 'hltAK4PFJets'       , rho = 'hltFixedGridRhoFastjetAll')
 addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfchsHLT'    , recoJets = 'hltAK4PFCHSJets'    , rho = 'hltFixedGridRhoFastjetAll')
 addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfpuppiHLT'  , recoJets = 'hltAK4PFPuppiJets'  , rho = 'hltFixedGridRhoFastjetAll')
 
 addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8caloHLT'     , recoJets = 'hltAK8CaloJets'     , rho = 'hltFixedGridRhoFastjetAllCalo')
-addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfHLT'       , recoJets = 'hltAK8PFJets'       , rho = 'hltFixedGridRhoFastjetAll')
 addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfclusterHLT', recoJets = 'hltAK8PFClusterJets', rho = 'hltFixedGridRhoFastjetAllPFCluster')
+addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfHLT'       , recoJets = 'hltAK8PFJets'       , rho = 'hltFixedGridRhoFastjetAll')
 addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfchsHLT'    , recoJets = 'hltAK8PFCHSJets'    , rho = 'hltFixedGridRhoFastjetAll')
 addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfpuppiHLT'  , recoJets = 'hltAK8PFPuppiJets'  , rho = 'hltFixedGridRhoFastjetAll')
 
