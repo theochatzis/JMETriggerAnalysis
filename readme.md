@@ -19,8 +19,8 @@ git clone https://github.com/cghuh/JMETriggerAnalysis.git -b run3_13_0_X
 
 # PFHC: preliminary HLT-PFHC for Run-3
 cp /afs/cern.ch/user/c/chuh/public/PFCalibration/CMSSW_1300_126X/PFCalibration.db ${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/
-cp /afs/cern.ch/user/c/chuh/public/PFCalibration/HLT_dev_CMSSW_13_0_0_GRun_configDump.py ${CMSSW_BASE}/src/JMETriggerAnalysis/PFHadronCalibration/test/
-cp /afs/cern.ch/user/c/chuh/public/PFCalibration/HLT_dev_CMSSW_13_0_0_GRun_configDump.py ${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/
+cp /afs/cern.ch/user/c/chuh/public/PFCalibration/CMSSW_1300_126X/HLT_dev_CMSSW_13_0_0_GRun_configDump.py ${CMSSW_BASE}/src/JMETriggerAnalysis/PFHadronCalibration/test/
+cp /afs/cern.ch/user/c/chuh/public/PFCalibration/CMSSW_1300_126X/HLT_dev_CMSSW_13_0_0_GRun_configDump.py ${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/
 
 scram b -j 12
 ```
