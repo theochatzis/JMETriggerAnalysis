@@ -8,16 +8,6 @@ used in the High-Level Trigger (HLT).
    incl. references to the relevant documentation
    (publications, analysis notes, presentations, webpages)
 
-#### Setup
-
-Instructions to set up the local CMSSW area:
-```
-scram project CMSSW_12_3_0_pre4
-cd CMSSW_12_3_0_pre4/src
-cmsenv
-git clone https://github.com/pallabidas/JMETriggerAnalysis.git -o pallabidas -b run3_12_3_X
-scram b -j 12
-```
 
 #### Production of NTuples for PFHCs
 
@@ -25,7 +15,7 @@ The first step to derive PFHCs is to create an NTuple with the relevant informat
 
 PFHCs are derived using MC events simulating
 the production of a single-pion without pileup (NoPU),
-with the generated pion $p_{T}$ usually restricted to values below 200 GeV.
+with the generated pion $p_{T}$ usually restricted to values below 500 GeV.
 
 !! Add more details on how to find the relevant sample in DAS (e.g. look for `/*SinglePion*0*200*/*NoPU*/*RAW*`).
 
@@ -39,7 +29,8 @@ and the `PFSimParticle` candidates (truth-level information) associated to them.
 
 To test the first step of the workflow, a small test NTuple can be produced locally as follows:
 ```
-cmsRun ${CMSSW_BASE}/src/JMETriggerAnalysis/PFHadronCalibration/test/pfHadCalibNTuple_cfg.py maxEvents=1000
+cd ${CMSSW_BASE}/src/JMETriggerAnalysis/PFHadronCalibration/test/
+cmsRun pfHadCalibNTuple_cfg.py maxEvents=1000
 ```
 
 which contains information
