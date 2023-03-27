@@ -1,0 +1,33 @@
+executable            = fitJESCs
+getenv                = True
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+transfer_output_files = jescs_total
+
+arguments             =  -o jescs_total -n -1 -b -j ak4caloHLT
+output                = htc_out/ak4caloHLT_total.out
+error                 = htc_out/ak4caloHLT_total.err
+log                   = htc_out/ak4caloHLT_total.log
++JobFlavour           = "testmatch"
+queue
+
+arguments             =  -o jescs_total -n -1 -b -j ak4pfHLT
+output                = htc_out/ak4pfHLT_total.out
+error                 = htc_out/ak4pfHLT_total.err
+log                   = htc_out/ak4pfHLT_total.log
++JobFlavour           = "testmatch"
+queue
+
+arguments             =  -o jescs_total -n -1 -b -j ak8caloHLT
+output                = htc_out/ak8caloHLT_total.out
+error                 = htc_out/ak8caloHLT_total.err
+log                   = htc_out/ak8caloHLT_total.log
++JobFlavour           = "testmatch"
+queue
+
+arguments             =  -o jescs_total -n -1 -b -j ak8pfHLT
+output                = htc_out/ak8pfHLT_total.out
+error                 = htc_out/ak8pfHLT_total.err
+log                   = htc_out/ak8pfHLT_total.log
++JobFlavour           = "testmatch"
+queue

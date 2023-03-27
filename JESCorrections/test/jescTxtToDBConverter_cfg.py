@@ -43,7 +43,7 @@ for _txtFile in sorted(textFiles):
   _basename_woext = os.path.basename(_txtFile)[:-4]
   _basename_woext_split = _basename_woext.split('_')
   if len(_basename_woext_split) < 3:
-    print 'invalid input file (unsupported name format): '+_txtFile
+    print('invalid input file (unsupported name format): '+_txtFile)
     continue
   _algo = _basename_woext_split[-1]
   _level = _basename_woext_split[-2]

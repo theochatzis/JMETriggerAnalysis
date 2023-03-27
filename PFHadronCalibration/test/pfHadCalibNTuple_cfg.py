@@ -40,7 +40,8 @@ opts.parseArguments()
 ### HLT configuration
 ###
 
-from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_3_0_GRun_configDump import cms, process
+from HLT_dev_CMSSW_13_0_0_GRun_configDump import *
+#from HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
 
 # remove cms.OutputModule objects from HLT config-dump
 for _modname in process.outputModules_():
@@ -141,8 +142,8 @@ process.schedule.append(process.pfHadCalibNTupleEndPath)
 ### updating Phase 0 HCAL thresholds
 ###
 
-process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].name = "PFRecHitQTestHCALThresholdVsDepth"
-del process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].threshold
+#process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].name = "PFRecHitQTestHCALThresholdVsDepth"
+#del process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].threshold
 
 ###
 ### ECAL UL calibrations
@@ -181,7 +182,8 @@ else:
   process.source.fileNames = [
     #'/store/mc/Run3Winter21DRMiniAOD/SinglePion_PT0to200/GEN-SIM-DIGI-RAW/NoPUFEVT_112X_mcRun3_2021_realistic_v16-v2/140000/53fc39b0-c12c-419f-ba73-78c4d032ff3e.root',
 		#'/store/mc/Run3Summer21DR/Single_Pion_gun_E_2to200_14TeV_pythia8/GEN-SIM-RAW/NoPURAWRECO_120X_mcRun3_2021_realistic_v6-v2/270000/49a1fc5f-af28-4189-9842-399295b12d9e.root',
-		'/store/mc/Run3Winter20DRMiniAOD/SinglePion_PT0to200/GEN-SIM-RAW/NoPU_110X_mcRun3_2021_realistic_v6-v3/10000/037D66E6-1789-3741-9DC4-669B2EDDA263.root',
+		#'/store/mc/Run3Winter20DRMiniAOD/SinglePion_PT0to200/GEN-SIM-RAW/NoPU_110X_mcRun3_2021_realistic_v6-v3/10000/037D66E6-1789-3741-9DC4-669B2EDDA263.root',
+		'/store/mc/Run3Winter23Digi/SinglePionGun_E0p2to200/GEN-SIM-RAW/NoPU_126X_mcRun3_2023_forPU65_v1-v2/40000/00045a90-b54d-429d-8494-4d6d5148bbb4.root',
   ]
 
 # output file

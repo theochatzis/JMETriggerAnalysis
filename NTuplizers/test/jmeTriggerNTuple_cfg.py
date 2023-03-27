@@ -79,9 +79,7 @@ if opts.reco == 'HLT_oldJECs':
   update_jmeCalibs = False
 
 elif opts.reco == 'HLT_Run3TRK':
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_3_0_GRun_configDump import cms, process
-#  from HLTrigger.Configuration.customizeHLTforRun3 import customizeHLTforRun3Tracking
-#  process = customizeHLTforRun3Tracking(process)
+  from HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
   update_jmeCalibs = True
 
 else:
@@ -153,30 +151,14 @@ print('-'*108)
 if hasattr(process, 'FastTimerService'):
   del process.FastTimerService
 
-# remove MessageLogger
-if hasattr(process, 'MessageLogger'):
-  del process.MessageLogger
-
-###
-### customisations
-###
-
-## customised JME collections
-from JMETriggerAnalysis.Common.customise_hlt import *
-process = addPaths_MC_JMECalo(process)
-process = addPaths_MC_JMEPFCluster(process)
-process = addPaths_MC_JMEPF(process)
-process = addPaths_MC_JMEPFCHS(process)
-process = addPaths_MC_JMEPFPuppi(process)
-
 if update_jmeCalibs:
   ## ES modules for PF-Hadron Calibrations
   process.pfhcESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:PFHC_Run3Winter21_HLT_V3.db'),
+    _CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('PFCalibrationRcd'),
-        tag = cms.string('PFCalibration_CMSSW_12_0_1_HLT_120X_mcRun3_2021'),
+        tag = cms.string('PFCalibration_CMSSW_13_0_0_pre4_HLT_126X_mcRun3_2023'),
         label = cms.untracked.string('HLT'),
       ),
     ),
@@ -186,57 +168,27 @@ if update_jmeCalibs:
 
   ## ES modules for HLT JECs
   process.jescESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:JESC_Run3Winter21_V2_MC.db'),
+    _CondDB.clone(connect = 'sqlite_file:Run3Winter23Digi.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK4CaloHLT'),
+        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK4CaloHLT'),
         label = cms.untracked.string('AK4CaloHLT'),
       ),
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK4PFClusterHLT'),
-        label = cms.untracked.string('AK4PFClusterHLT'),
-      ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK4PFHLT'),
+        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK4PFHLT'),
         label = cms.untracked.string('AK4PFHLT'),
       ),
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK4PFHLT'),#!!
-        label = cms.untracked.string('AK4PFchsHLT'),
-      ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK4PFPuppiHLT'),
-        label = cms.untracked.string('AK4PFPuppiHLT'),
-      ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK8CaloHLT'),
+        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK8CaloHLT'),
         label = cms.untracked.string('AK8CaloHLT'),
       ),
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK8PFClusterHLT'),
-        label = cms.untracked.string('AK8PFClusterHLT'),
-      ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK8PFHLT'),
+        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK8PFHLT'),
         label = cms.untracked.string('AK8PFHLT'),
-      ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK8PFHLT'),#!!
-        label = cms.untracked.string('AK8PFchsHLT'),
-      ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK8PFPuppiHLT'),
-        label = cms.untracked.string('AK8PFPuppiHLT'),
       ),
     ),
   )
@@ -245,37 +197,17 @@ if update_jmeCalibs:
 else:
   ## ES modules for HLT JECs
   process.jescESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:JESC_Run3Winter21_V2_MC.db'),
+    _CondDB.clone(connect = 'sqlite_file:JESC_Run3Winter23Digi.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK4PFClusterHLT'),
-        label = cms.untracked.string('AK4PFClusterHLT'),
-      ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK4PFHLT'),#!!
+        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK4PFHLT'),#!!
         label = cms.untracked.string('AK4PFchsHLT'),
       ),
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK4PFPuppiHLT'),
-        label = cms.untracked.string('AK4PFPuppiHLT'),
-      ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK8PFClusterHLT'),
-        label = cms.untracked.string('AK8PFClusterHLT'),
-      ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK8PFHLT'),#!!
+        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK8PFHLT'),#!!
         label = cms.untracked.string('AK8PFchsHLT'),
-      ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter21_V2_MC_AK8PFPuppiHLT'),
-        label = cms.untracked.string('AK8PFPuppiHLT'),
       ),
     ),
   )
@@ -312,11 +244,11 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   doubles = cms.PSet(
 
     hltFixedGridRhoFastjetAllCalo = cms.InputTag('hltFixedGridRhoFastjetAllCalo'),
-    hltFixedGridRhoFastjetAllPFCluster = cms.InputTag('hltFixedGridRhoFastjetAllPFCluster'),
+    #hltFixedGridRhoFastjetAllPFCluster = cms.InputTag('hltFixedGridRhoFastjetAllPFCluster'),
     hltFixedGridRhoFastjetAll = cms.InputTag('hltFixedGridRhoFastjetAll'),
     offlineFixedGridRhoFastjetAll = cms.InputTag('fixedGridRhoFastjetAll::RECO'),
 
-    hltPixelClustersMultiplicity = cms.InputTag('hltPixelClustersMultiplicity'),
+    #hltPixelClustersMultiplicity = cms.InputTag('hltPixelClustersMultiplicity'),
   ),
 
   vdoubles = cms.PSet(
@@ -326,7 +258,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
     hltPixelVertices = cms.InputTag('hltPixelVertices'),
     hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
-    hltVerticesPF = cms.InputTag('hltVerticesPF'),
+    #hltVerticesPF = cms.InputTag('hltVerticesPF'),
     offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
   ),
 
@@ -348,34 +280,34 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     hltAK8CaloJetsCorrected = cms.InputTag('hltAK8CaloJetsCorrected'),
   ),
 
-  recoPFClusterJetCollections = cms.PSet(
+# recoPFClusterJetCollections = cms.PSet(
 
-    hltAK4PFClusterJets = cms.InputTag('hltAK4PFClusterJets'),
-    hltAK4PFClusterJetsCorrected = cms.InputTag('hltAK4PFClusterJetsCorrected'),
+#   hltAK4PFClusterJets = cms.InputTag('hltAK4PFClusterJets'),
+#   hltAK4PFClusterJetsCorrected = cms.InputTag('hltAK4PFClusterJetsCorrected'),
 
-    hltAK8PFClusterJets = cms.InputTag('hltAK8PFClusterJets'),
-    hltAK8PFClusterJetsCorrected = cms.InputTag('hltAK8PFClusterJetsCorrected'),
-  ),
+#   hltAK8PFClusterJets = cms.InputTag('hltAK8PFClusterJets'),
+#   hltAK8PFClusterJetsCorrected = cms.InputTag('hltAK8PFClusterJetsCorrected'),
+# ),
 
   recoPFJetCollections = cms.PSet(
 
     hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
     hltAK4PFJetsCorrected = cms.InputTag('hltAK4PFJetsCorrected'),
 
-    hltAK4PFCHSJets = cms.InputTag('hltAK4PFCHSJets'),
-    hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
+    #hltAK4PFCHSJets = cms.InputTag('hltAK4PFCHSJets'),
+    #hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
 
-    hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
-    hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
+    #hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
+    #hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
 
     hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
     hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
 
-    hltAK8PFCHSJets = cms.InputTag('hltAK8PFCHSJets'),
-    hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
+    #hltAK8PFCHSJets = cms.InputTag('hltAK8PFCHSJets'),
+    #hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
 
-    hltAK8PFPuppiJets = cms.InputTag('hltAK8PFPuppiJets'),
-    hltAK8PFPuppiJetsCorrected = cms.InputTag('hltAK8PFPuppiJetsCorrected'),
+    #hltAK8PFPuppiJets = cms.InputTag('hltAK8PFPuppiJets'),
+    #hltAK8PFPuppiJetsCorrected = cms.InputTag('hltAK8PFPuppiJetsCorrected'),
   ),
 
   patJetCollections = cms.PSet(
@@ -393,26 +325,26 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoCaloMETCollections = cms.PSet(
 
-    hltCaloMET = cms.InputTag('hltMet'),
-    hltCaloMETTypeOne = cms.InputTag('hltCaloMETTypeOne'),
+    #hltCaloMET = cms.InputTag('hltMet'),
+    #hltCaloMETTypeOne = cms.InputTag('hltCaloMETTypeOne'),
   ),
 
-  recoPFClusterMETCollections = cms.PSet(
+# recoPFClusterMETCollections = cms.PSet(
 
-    hltPFClusterMET = cms.InputTag('hltPFClusterMET'),
-    hltPFClusterMETTypeOne = cms.InputTag('hltPFClusterMETTypeOne'),
-  ),
+#   hltPFClusterMET = cms.InputTag('hltPFClusterMET'),
+#   hltPFClusterMETTypeOne = cms.InputTag('hltPFClusterMETTypeOne'),
+# ),
 
   recoPFMETCollections = cms.PSet(
 
     hltPFMET = cms.InputTag('hltPFMETProducer'),
-    hltPFMETTypeOne = cms.InputTag('hltPFMETTypeOne'),
+    #hltPFMETTypeOne = cms.InputTag('hltPFMETTypeOne'),
 
-    hltPFCHSMET = cms.InputTag('hltPFCHSMET'),
-    hltPFCHSMETTypeOne = cms.InputTag('hltPFCHSMETTypeOne'),
+    #hltPFCHSMET = cms.InputTag('hltPFCHSMET'),
+    #hltPFCHSMETTypeOne = cms.InputTag('hltPFCHSMETTypeOne'),
 
-    hltPFPuppiMET = cms.InputTag('hltPFPuppiMET'),
-    hltPFPuppiMETTypeOne = cms.InputTag('hltPFPuppiMETTypeOne'),
+    #hltPFPuppiMET = cms.InputTag('hltPFPuppiMET'),
+    #hltPFPuppiMETTypeOne = cms.InputTag('hltPFPuppiMETTypeOne'),
   ),
 
   patMETCollections = cms.PSet(
@@ -437,19 +369,6 @@ if opts.keepPFPuppi:
 
 process.analysisNTupleEndPath = cms.EndPath(process.JMETriggerNTuple)
 process.schedule.append(process.analysisNTupleEndPath)
-
-###
-### updating Phase 0 HCAL thresholds
-###
-
-process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].name = "PFRecHitQTestHCALThresholdVsDepth"
-del process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].threshold
-
-#if opts.printSummaries:
-#   process.FastTimerService.printEventSummary = False
-#   process.FastTimerService.printRunSummary = False
-#   process.FastTimerService.printJobSummary = True
-#   process.ThroughputService.printEventSummary = False
 
 ###
 ### standard options
@@ -483,8 +402,11 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
-#    '/store/mc/Run3Summer21MiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/MINIAODSIM/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v5-v1/30000/76dfad7c-52eb-4207-96cf-e74c5c6509d0.root',
-    '/store/mc/Run3Summer21MiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/MINIAODSIM/120X_mcRun3_2021_realistic_v5-v2/2550000/1028cea6-2e14-4526-b247-d13f0636a8fe.root',
+    #'/store/mc/Run3Winter23MiniAOD/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/MINIAODSIM/FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v2/2540000/10e9c9ff-b431-42c5-a1ec-e3143eafee20.root',
+    '/store/mc/Run3Winter23MiniAOD/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/MINIAODSIM/126X_mcRun3_2023_forPU65_v1-v2/2550000/19e43825-6b8e-426e-9cca-e23cf318737c.root',
+    #'',
+    #'',
+    #'',
   ]
 
 # input EDM files [secondary]
@@ -495,29 +417,14 @@ if opts.secondaryInputFiles:
   process.source.secondaryFileNames = opts.secondaryInputFiles
 else:
   process.source.secondaryFileNames = [
-#    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/5a423664-f0f4-432a-9573-601f608ffd61.root',
-#    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/76845592-a3ca-4ba0-88d6-62a7783903d7.root',
-#    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/a825d603-efb0-4ec8-aa97-64c1d1668be4.root',
-#    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/00169f6c-2bd0-4419-9de0-f9dff5f6e909.root',
-#    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/4489ddce-a7e0-4a36-b924-7ec6de3b6bab.root',
-#    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/b66444c2-1e9e-4f10-8f75-6e9099fa7d6e.root',
-#    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/d73315f5-4981-4a87-a48d-465ab24e203e.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/141d8d98-3271-429f-9fd0-c78e6e0db93e.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/1c44e0f3-01bb-41aa-a676-2fbcfda6e409.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/715cb464-ab15-4fe6-a9a2-c976f33a7398.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/90f917a4-f48c-4718-9dd3-4eed7dec4fa5.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/c6ce4ddc-d57e-4389-ba29-52d36e4d3617.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/5fa84df6-e4b2-4313-9f13-56eee4a36e6e.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/7669b8d9-07f8-4381-b1f1-50023104651d.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/7a192aaf-7578-4e02-a850-a969414a028d.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/e8aafeff-508a-47fb-b4e4-a6e40c259884.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/fa12328e-e272-405e-a47c-33990ef804ae.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/3a20d772-b0eb-481e-b4c3-5fa44ed11f31.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/a13ca715-7abe-4113-916c-340f270ec5f0.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/b08c3c0f-c835-4cb7-8c0a-2094a4193c92.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/b0ac068d-d03d-41ea-af73-975e53567265.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/f0baf87e-ad3f-4916-baff-156ce74a8e7d.root',
-    '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/f440062e-85d6-40ce-ba87-3d9035dbe663.root',
+    #'/store/mc/Run3Winter23Digi/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1/2560000/00d203d8-3ef3-4ca2-884d-a6b2f3bfbb6e.root',
+    #'',
+    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/f61dc979-f42d-443f-8a1f-587b3353b109.root',
+    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/e465ec59-571a-4dd5-b429-93b2b55f643b.root',
+    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/f90d178a-8997-43ca-b9c9-edc49b733fcb.root',
+    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/572aa6f8-a7a2-4db2-b332-5729c37ba743.root',
+    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/5d2ccf3f-7f9f-4237-b210-a48c838dfa6a.root',
+    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/b17347c9-536a-4b06-9a68-f8199e76ddf2.root',
   ]
 
 # dump content of cms.Process to python file

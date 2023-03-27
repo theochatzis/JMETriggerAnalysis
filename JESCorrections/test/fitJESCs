@@ -6,24 +6,27 @@ set -euo pipefail
 ## -------------------------
 JESC_BASE=${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test
 
-JRANTuple_NoPU=root://cms-xrd-global.cern.ch//store/group/phys_jetmet/saparede/runIII_hlt_jec/jra_ntuples/npv_fix_noPU/npvFix_noPU.root
-JRANTuple_PU=root://cms-xrd-global.cern.ch//store/group/phys_jetmet/saparede/runIII_hlt_jec/jra_ntuples/npv_fix_flatPU/npvFix_flatPU.root
+JRANTuple_NoPU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jmeTriggerNTuple_NoPU.root
+JRANTuple_PU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jmeTriggerNTuple_PU0to80.root
 
-ERA=Run3Winter20_V2_MC
+ERA=Run3Winter23Digi
 
 JET_TYPES=(
-  ak4caloHLT
-  ak4pfclusterHLT
   ak4pfHLT
-  ak4chsHLT
-  ak4puppiHLT
-  ak8caloHLT
-  ak8pfclusterHLT
   ak8pfHLT
-  ak8chsHLT
-  ak8puppiHLT
+  ak4caloHLT
+  ak8caloHLT
 )
-## -------------------------
+#JET_TYPES=(
+#  ak4pfHLT
+#  ak4pfpuppiHLT
+#  ak8pfpuppiHLT
+#  ak4pfchsHLT
+#  ak8pfchsHLT
+#  ak4pfclusterHLT
+#  ak8pfclusterHLT
+#)
+### -------------------------
 
 ## -------------------------
 ## Main
@@ -46,6 +49,8 @@ Options:
   -h, --help          Show this help message
   -o, --output-dir    Path to output directory          [Default: .]
   -n, --maxEvents     Max number of events to process   [Default: -1]
+  -b, --batch-mode    Run on batch mode (see htc scritp)[Default: true]
+  -j, --jet-type      Jet name for batch (e.g. ak4pfpuppiHLT)   
   -p, --parallelise   Parallelise by jet algorithm      [Default: false]
   --skip-L1-PFPuppi   Skip L1FastJet for PFPuppi jets   [Default: false]
   -d, --dry-run       Enable dry-run mode               [Default: false]
@@ -55,18 +60,29 @@ Options:
 maxEvents=-1
 paralleliseByAlgo=false
 skipL1PFPuppi=false
+doBatch=false
+batchJetType="dummyJetType"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -h|--help) showHelpMsg=true; shift;;
+    -h|-khelp) showHelpMsg=true; shift;;
+    -j|--jet-type) batchJetType=$2; shift; shift;;
     -o|--output-dir) outputDir=$2; shift; shift;;
     -n|--maxEvents) maxEvents=$2; shift; shift;;
     -p|--parallelise) paralleliseByAlgo=true; shift;;
     --skip-L1-PFPuppi) skipL1PFPuppi=true; shift;;
     -d|--dry-run) dryRun=true; shift;;
+    -b|--batch-mode) doBatch=true; shift;;
+    -j|--jet-type) batchJetType=$2; shift; shift;;
     *) printf "%s\n" ">> ERROR -- unrecognised command-line argument: ${1}"; exit 1; shift;;
   esac
 done
+
+if [ "X$doBatch" = "Xtrue" ]
+then
+  echo "running on batch mode for jet-type $batchJetType"
+  JET_TYPES=( $batchJetType )
+fi
 
 # print help message
 if [ "X${showHelpMsg}" = "Xtrue" ]; then
@@ -100,6 +116,7 @@ runJECWorflowForOneAlgo(){
   cd ${OUTDIR}
 
   stepN=0
+  stepName=""
 
   dRgen=0.2
   if [[ ${jetType} == ak8* ]]; then dRgen=0.4; fi
@@ -116,7 +133,7 @@ runJECWorflowForOneAlgo(){
 
     stepNameOld=${stepName} && ((++stepN)) && stepName="step"$(printf "%02d" ${stepN})
     if [ ! -f ${stepName}.done ]; then
-      CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU}"
+      CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU} -NBinsNpvRhoNpu 13"
       CMD_STEP+=" -ApplyJEC false"
       CMD_STEP+=" -ignoreNPV true -overwriteNPVwithNPUInTime true"
       CMD_STEP+=" -useweight false -doNotSave true"
@@ -126,7 +143,7 @@ runJECWorflowForOneAlgo(){
 
     stepNameOld=${stepName} && ((++stepN)) && stepName="step"$(printf "%02d" ${stepN})
     if [ ! -f ${stepName}.done ]; then
-      CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true"
+      CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true -NBinsNpvRhoNpu 13"
       CMD_STEP+=" -inputDir ./ -outDir plots_${stepName} -outputFormat .png"
       stepCmd "mkdir -p plots_${stepName}\n\n${CMD_STEP}" ${stepName}
     fi
@@ -139,7 +156,7 @@ runJECWorflowForOneAlgo(){
 
     stepNameOld=${stepName} && ((++stepN)) && stepName="step"$(printf "%02d" ${stepN})
     if [ ! -f ${stepName}.done ]; then
-      CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU}"
+      CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU} -NBinsNpvRhoNpu 13"
       CMD_STEP+=" -ApplyJEC true -JECpar ./${ERA}_L1FastJet_*.txt"
       CMD_STEP+=" -ignoreNPV true -overwriteNPVwithNPUInTime true"
       CMD_STEP+=" -useweight false -doNotSave true"
@@ -149,7 +166,7 @@ runJECWorflowForOneAlgo(){
 
     stepNameOld=${stepName} && ((++stepN)) && stepName="step"$(printf "%02d" ${stepN})
     if [ ! -f ${stepName}.done ]; then
-      CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true"
+      CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true -NBinsNpvRhoNpu 13"
       CMD_STEP+=" -inputDir plots_${stepNameOld} -outDir plots_${stepName} -outputFormat .png"
       stepCmd "mkdir -p plots_${stepName}\n\n${CMD_STEP}" ${stepName}
     fi
@@ -175,8 +192,8 @@ runJECWorflowForOneAlgo(){
   if [ ! -f ${stepName}.done ]; then
     CMD_STEP="jet_l2_correction_x -algs ${jetType} -era ${ERA} -l2l3 true"
     CMD_STEP+=" -input plots_${stepNameOld}/histogram_${jetType}l1_${stepNameOld}.root -outputDir ./ -output l2p3.root"
-    CMD_STEP+=" -makeCanvasVariable AbsCorVsJetPt:JetEta -batch true -histMet median -l2pffit standard+gaussian -maxFitIter 50"
-    CMD_STEP+=" -ptclipfit true"
+    CMD_STEP+=" -makeCanvasVariable AbsCorVsJetPt:JetEta -batch true -histMet median -l2pffit standard+Gaussian -maxFitIter 50"
+    CMD_STEP+=" -ptclipfit true -ptclip 10.0"
     stepCmd "mkdir -p plots_${stepName}\n\n${CMD_STEP}" ${stepName}
   fi
 
@@ -195,7 +212,8 @@ runJECWorflowForOneAlgo(){
   stepNameOld=${stepName} && ((++stepN)) && stepName="step"$(printf "%02d" ${stepN})
   if [ ! -f ${stepName}.done ]; then
     CMD_STEP="jet_draw_closure_x -path plots_${stepNameOld} -filename Closure_${jetType} -histMet median -outputDir plots_${stepName}"
-    CMD_STEP+=" -draw_guidelines true -doPt true -doEta true -doRatioPt false -doRatioEta false"
+    CMD_STEP+=" -draw_guidelines true -doPt true -doEta true -doRatioPt false -doRatioEta false; "
+    CMD_STEP+="jet_draw_corrections_x -algs ${jetType} -outputDir plots_${stepNameOld} -era ${ERA} -useL1FasCor true -useL2Cor true"
     stepCmd "mkdir -p plots_${stepName}\n\n${CMD_STEP}" ${stepName}
   fi
 

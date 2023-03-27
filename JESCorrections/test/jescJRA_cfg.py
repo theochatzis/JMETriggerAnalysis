@@ -57,7 +57,7 @@ opts.parseArguments()
 ### HLT configuration
 ###
 
-from HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
+from HLT_dev_CMSSW_13_0_0_GRun_configDump import *
 
 # remove cms.OutputModule objects from HLT config-dump
 for _modname in process.outputModules_():
@@ -105,25 +105,29 @@ if hasattr(process, 'FastTimerService'):
   del process.FastTimerService
 
 # remove MessageLogger
-if hasattr(process, 'MessageLogger'):
-  del process.MessageLogger
+#if hasattr(process, 'MessageLogger'):
+#  del process.MessageLogger
+
+#from FWCore.MessageService.MessageLogger_cfi import *
+#MessageLogger = cms.Service("MessageLogger")
+
 
 ###
 ### customisations
 ###
 
 ## customised JME collections
-from JMETriggerAnalysis.Common.customise_hlt import *
-process = addPaths_MC_JMEPFCluster(process)
-process = addPaths_MC_JMEPFCHS(process)
-process = addPaths_MC_JMEPFPuppi(process)
+#from JMETriggerAnalysis.Common.customise_hlt import *
+#process = addPaths_MC_JMEPFCluster(process)
+#process = addPaths_MC_JMEPFCHS(process)
+#process = addPaths_MC_JMEPFPuppi(process)
 
 ###
 ### updating Phase 0 HCAL thresholds
 ###
 
-process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].name = "PFRecHitQTestHCALThresholdVsDepth"
-del process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].threshold
+#process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].name = "PFRecHitQTestHCALThresholdVsDepth"
+#del process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].threshold
 
 ## ECAL UL calibrations
 process.GlobalTag.toGet = cms.VPSet(
@@ -161,15 +165,15 @@ from jescJRA_utils import addJRAPath
 
 addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4caloHLT'     , recoJets = 'hltAK4CaloJets'     , rho = 'hltFixedGridRhoFastjetAllCalo')
 addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfHLT'       , recoJets = 'hltAK4PFJets'       , rho = 'hltFixedGridRhoFastjetAll')
-addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfclusterHLT', recoJets = 'hltAK4PFClusterJets', rho = 'hltFixedGridRhoFastjetAllPFCluster')
-addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfchsHLT'    , recoJets = 'hltAK4PFCHSJets'    , rho = 'hltFixedGridRhoFastjetAll')
-addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfpuppiHLT'  , recoJets = 'hltAK4PFPuppiJets'  , rho = 'hltFixedGridRhoFastjetAll')
+#addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfclusterHLT', recoJets = 'hltAK4PFClusterJets', rho = 'hltFixedGridRhoFastjetAllPFCluster')
+#addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfchsHLT'    , recoJets = 'hltAK4PFCHSJets'    , rho = 'hltFixedGridRhoFastjetAll')
+#addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfpuppiHLT'  , recoJets = 'hltAK4PFPuppiJets'  , rho = 'hltFixedGridRhoFastjetAll')
 
 addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8caloHLT'     , recoJets = 'hltAK8CaloJets'     , rho = 'hltFixedGridRhoFastjetAllCalo')
 addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfHLT'       , recoJets = 'hltAK8PFJets'       , rho = 'hltFixedGridRhoFastjetAll')
-addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfclusterHLT', recoJets = 'hltAK8PFClusterJets', rho = 'hltFixedGridRhoFastjetAllPFCluster')
-addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfchsHLT'    , recoJets = 'hltAK8PFCHSJets'    , rho = 'hltFixedGridRhoFastjetAll')
-addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfpuppiHLT'  , recoJets = 'hltAK8PFPuppiJets'  , rho = 'hltFixedGridRhoFastjetAll')
+#addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfclusterHLT', recoJets = 'hltAK8PFClusterJets', rho = 'hltFixedGridRhoFastjetAllPFCluster')
+#addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfchsHLT'    , recoJets = 'hltAK8PFCHSJets'    , rho = 'hltFixedGridRhoFastjetAll')
+#addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfpuppiHLT'  , recoJets = 'hltAK8PFPuppiJets'  , rho = 'hltFixedGridRhoFastjetAll')
 
 ###
 ### standard options
@@ -206,7 +210,7 @@ if opts.inputFiles:
    process.source.fileNames = opts.inputFiles
 else:
    process.source.fileNames = [
-     '/store/mc/Run3Winter23Digi/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1/2560000/00d203d8-3ef3-4ca2-884d-a6b2f3bfbb6e.root',
+     'file://00d203d8-3ef3-4ca2-884d-a6b2f3bfbb6e.root',
    ]
 
 # input EDM files [secondary]

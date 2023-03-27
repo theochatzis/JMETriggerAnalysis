@@ -1,0 +1,33 @@
+executable            = fitJESCs
+getenv                = True
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+transfer_output_files = jescs_5M
+
+arguments             =  -o jescs_5M -n 5000000 -b -j ak4caloHLT
+output                = htc_out/ak4caloHLT_5M.out
+error                 = htc_out/ak4caloHLT_5M.err
+log                   = htc_out/ak4caloHLT_5M.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o jescs_5M -n 5000000 -b -j ak4pfHLT
+output                = htc_out/ak4pfHLT_5M.out
+error                 = htc_out/ak4pfHLT_5M.err
+log                   = htc_out/ak4pfHLT_5M.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o jescs_5M -n 5000000 -b -j ak8caloHLT
+output                = htc_out/ak8caloHLT_5M.out
+error                 = htc_out/ak8caloHLT_5M.err
+log                   = htc_out/ak8caloHLT_5M.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o jescs_5M -n 5000000 -b -j ak8pfHLT
+output                = htc_out/ak8pfHLT_5M.out
+error                 = htc_out/ak8pfHLT_5M.err
+log                   = htc_out/ak8pfHLT_5M.log
++JobFlavour           = "workday"
+queue
