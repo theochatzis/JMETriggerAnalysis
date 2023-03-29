@@ -11,7 +11,7 @@ cd CMSSW_13_0_0/src
 eval `scram runtime -sh`
 git cms-merge-topic  silviodonato:customizeHLTfor2023
 
-clone https://github.com/cghuh/JetMETAnalysis.git -b hlt_run3
+git clone https://github.com/cghuh/JetMETAnalysis.git -b hlt_run3
 git clone https://github.com/cghuh/JMETriggerAnalysis.git -b run3_13_0_X
 scram b -j 8
 ```
