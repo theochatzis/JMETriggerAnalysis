@@ -79,7 +79,7 @@ if opts.reco == 'HLT_oldJECs':
   update_jmeCalibs = False
 
 elif opts.reco == 'HLT_Run3TRK':
-  from HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
   update_jmeCalibs = True
 
 else:
@@ -116,6 +116,7 @@ keepPaths = [
   'HLT_AK8PFJet*_v*',
   'HLT_PFHT*_v*',
   'HLT_PFMET*_PFMHT*_v*',
+  'AlCa_*'
 ]
 
 vetoPaths = [
@@ -147,6 +148,7 @@ for _modname in sorted(process.paths_()):
       print('{:<99} | {:<4} |'.format(_modname, ''))
 print('-'*108)
 
+
 # remove FastTimerService
 if hasattr(process, 'FastTimerService'):
   del process.FastTimerService
@@ -154,7 +156,7 @@ if hasattr(process, 'FastTimerService'):
 if update_jmeCalibs:
   ## ES modules for PF-Hadron Calibrations
   process.pfhcESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
+    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/PFCalibration.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('PFCalibrationRcd'),
@@ -168,7 +170,7 @@ if update_jmeCalibs:
 
   ## ES modules for HLT JECs
   process.jescESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:Run3Winter23Digi.db'),
+    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Run3Winter23Digi.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
@@ -197,7 +199,7 @@ if update_jmeCalibs:
 else:
   ## ES modules for HLT JECs
   process.jescESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:JESC_Run3Winter23Digi.db'),
+    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/JESC_Run3Winter23Digi.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
@@ -213,16 +215,6 @@ else:
   )
   process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
 
-## ECAL UL calibrations
-process.GlobalTag.toGet = cms.VPSet(
- cms.PSet(record = cms.string("EcalLaserAlphasRcd"),
- tag = cms.string("EcalLaserAlphas_UL_Run1_Run2_2018_lastIOV_movedTo1"),
- connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
- ),
- cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
- tag = cms.string("EcalIntercalibConstants_UL_Run1_Run2_2018_lastIOV_movedTo1"),
- connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
- ),)
 
 ## Output NTuple
 process.TFileService = cms.Service('TFileService', fileName = cms.string(opts.output))
@@ -338,7 +330,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   recoPFMETCollections = cms.PSet(
 
     hltPFMET = cms.InputTag('hltPFMETProducer'),
-    #hltPFMETTypeOne = cms.InputTag('hltPFMETTypeOne'),
+    hltPFMETTypeOne = cms.InputTag('hltPFMETTypeOne'),
 
     #hltPFCHSMET = cms.InputTag('hltPFCHSMET'),
     #hltPFCHSMETTypeOne = cms.InputTag('hltPFCHSMETTypeOne'),
