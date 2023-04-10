@@ -57,10 +57,11 @@ def command_output_lines(cmd, stdout=True, stderr=False, permissive=False):
        return _tmp_out_ls
 
     _tmp_out = get_output(cmd, permissive=permissive)
-
+    
+    #print(type(_tmp_out[0]))
     if stdout: _tmp_out_ls += _tmp_out[0].decode("utf-8").split('\n')
     if stderr: _tmp_out_ls += _tmp_out[1].decode("utf-8").split('\n')
-
+    
     return _tmp_out_ls
 
 def rreplace(str__, old__, new__, occurrence__):
@@ -178,7 +179,7 @@ def HTCondor_jobExecutables(username=None):
     _condorq_jobExes_dict = {}
 
     _condorq_cmd = 'condor_q {:} -format "%d." ClusterId -format "%d " ProcId -format "%s\\n" Cmd'.format(username)
-
+    
     _condorq_lines = get_output(_condorq_cmd, permissive=True)[0].decode("utf-8").split('\n')
 
     for _i_condorq_line in _condorq_lines:

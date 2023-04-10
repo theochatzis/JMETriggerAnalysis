@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 script to create area for submission of batch jobs
 (supported batch systems: HTCondor, SLURM)
@@ -63,6 +64,7 @@ if __name__ == '__main__':
 
    parser.add_argument('-t', '--time', dest='time', action='store', default='01:00:00',
                        help='job runtime in number of seconds or HH:MM:SS format (HTCondor: "+MaxRuntime"; SLURM: "--time")')
+                       help='job runtime in number of seconds or HH:MM:SS format (HTCondor: "+MaxRuntime"; SLURM: "--time")')
 
    parser.add_argument('-q', '--queue', dest='queue', action='store', default='standard',
                        help='name of partition on the batch system (SLURM: "--partition")')
@@ -110,12 +112,6 @@ if __name__ == '__main__':
 
    if opts.n_events == 0:
      KILL(log_prx+'logic error: requesting zero events per job (use non-zero value for argument of option "-n")')
-
-   is_slc7_arch = False
-   if os.environ['SCRAM_ARCH'].startswith('slc7'): is_slc7_arch = True
-   elif os.environ['SCRAM_ARCH'].startswith('slc6'): pass
-   else:
-     KILL(log_prc+'could not infer architecture from environment variable "SCRAM_ARCH": '+str(os.environ['SCRAM_ARCH']))
 
    if opts.max_events == 0:
      KILL(log_prx+'logic error: requesting a maximum of zero input events (use non-zero value for argument of option --max-events/-m)')
@@ -182,6 +178,10 @@ if __name__ == '__main__':
      print(colored_text('additional cmsRun command-line arguments:', ['1']))
      for _tmp in cmsRun_addopts: print(' '+str(_tmp))
      print('-'*50)
+     print('-'*50)
+     print(colored_text('additional cmsRun command-line arguments:', ['1']))
+     for _tmp in cmsRun_addopts: print(' '+str(_tmp))
+     print('-'*50)
 
    ### extract input-files information from data set name via dasgoclient
    ### -> list of dictionaries, each containing DAS name, files, number of events per file, and parent files
@@ -192,6 +192,7 @@ if __name__ == '__main__':
    else:
       which('dasgoclient')
       input_dset = load_dataset_data(das_name=opts.dataset, max_files=opts.max_files, max_events=opts.max_events, parentFiles_levels=opts.parentFiles_level, verbose=(opts.verbosity > 0))
+
 
    ### total number of events and jobs
    ### -> used to determine format of output-file name
@@ -319,7 +320,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
        'getenv = True',
        'should_transfer_files = IF_NEEDED',
        'when_to_transfer_output = ON_EXIT',
-       'requirements = (OpSysAndVer =?= "'+('CentOS7' if is_slc7_arch else 'SL6')+'")',
+       'MY.WantOS = "el8"',
        'RequestCpus = '+opts.cpus,
        'RequestMemory = '+memory_htc_str,
        '+MaxRuntime = '+TIME_STR_secs,
@@ -484,7 +485,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
              cmsRun_opts += ' \\\n inputFiles='+str(i_inputFile)
              if i_secondaryInputFiles:
                cmsRun_opts += ' \\\n secondaryInputFiles='+str(','.join(i_secondaryInputFiles))
-             cmsRun_opts += ' \\\n output='+opts.final_output+'/out'+outputname_postfix_format.format(jobCounter)+'.root'     ##############
+             cmsRun_opts += ' \\\n output='+opts.final_output+'/out'+outputname_postfix_format.format(jobCounter)+'.root'
 
              for _tmp in cmsRun_addopts:
                cmsRun_opts += ' \\\n '+str(_tmp)
