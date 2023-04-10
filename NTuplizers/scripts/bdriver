@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 script to create area for submission of batch jobs
 (supported batch systems: HTCondor, SLURM)
@@ -30,7 +30,8 @@ if __name__ == '__main__':
 
    parser.add_argument('-o', '--output', dest='output', action='store', default=None, required=True,
                        help='path to output directory')
-
+   parser.add_argument('-fo', '--final-output', dest='final_output', action='store', default='./', required=False,
+                       help='path to final output directory i.e. directory with the NTuples')
    parser.add_argument('--customize-cfg', dest='customize_cfg', action='store_true', default=False,
                        help='append minimal customization to cmsRun-cfg required by the driver')
 
@@ -59,7 +60,7 @@ if __name__ == '__main__':
                        help='job max memory (HTCondor: "RequestMemory"; SLURM: "--mem")')
 
    parser.add_argument('-t', '--time', dest='time', action='store', default='01:00:00',
-                       help='job runtime in number of seconds or HH:MM:SS format (HTCondor: "+RequestRuntime"; SLURM: "--time")')
+                       help='job runtime in number of seconds or HH:MM:SS format (HTCondor: "+MaxRuntime"; SLURM: "--time")')
 
    parser.add_argument('-q', '--queue', dest='queue', action='store', default='standard',
                        help='name of partition on the batch system (SLURM: "--partition")')
@@ -108,12 +109,6 @@ if __name__ == '__main__':
    if opts.n_events == 0:
      KILL(log_prx+'logic error: requesting zero events per job (use non-zero value for argument of option "-n")')
 
-   is_slc7_arch = False
-   if os.environ['SCRAM_ARCH'].startswith('slc7'): is_slc7_arch = True
-   elif os.environ['SCRAM_ARCH'].startswith('slc6'): pass
-   else:
-     KILL(log_prc+'could not infer architecture from environment variable "SCRAM_ARCH": '+str(os.environ['SCRAM_ARCH']))
-
    if opts.max_events == 0:
      KILL(log_prx+'logic error: requesting a maximum of zero input events (use non-zero value for argument of option --max-events/-m)')
 
@@ -133,6 +128,22 @@ if __name__ == '__main__':
        TIME_STR_secs = str(int(TIME_STR_blocks[0])*3600 + int(TIME_STR_blocks[1])*60 + int(TIME_STR_blocks[2]))
      except:
        KILL(log_prx+'invalid format for maximum runtime [--time/-t]: '+opts.time)
+   
+      # in case memory is given in HTC form (bytes number) -> also make conversion to slurm (G,M)
+     try:
+       memory_htc = int(opts.memory)
+       memory_htc_str = str(memory_htc)
+       memory_slurm_str = str(int(memory_htc/1000))+'G' if ((memory_htc)%1000==0 or (memory_htc)%1024==0) else memory_htc_str +'M'
+     except:
+       try:# in case memory is given in slurm form (G,M)->  also convert it to HTC form (bytes number) 
+         memory_dictionary = {'M':1,'G':1000}
+         memory_htc = int(opts.memory[0:(len(opts.memory)-1)])*memory_dictionary[opts.memory[len(opts.memory)-1]]
+         memory_htc_str = str(memory_htc)
+         memory_slurm_str = opts.memory
+       except:
+         KILL(log_prx+'invalid format for requested memory [--memory]: '+opts.memory)
+   # --------------------------------------------------------------------------------------------------------------
+
 
    if opts.batch_system == 'htc':
      try: which('condor_q')
@@ -160,10 +171,10 @@ if __name__ == '__main__':
    cmsRun_addopts = opts_unknown[:]
 
    if opts.verbosity > 0 and len(cmsRun_addopts):
-     print '-'*50
-     print colored_text('additional cmsRun command-line arguments:', ['1'])
-     for _tmp in cmsRun_addopts: print ' '+str(_tmp)
-     print '-'*50
+     print('-'*50)
+     print(colored_text('additional cmsRun command-line arguments:', ['1']))
+     for _tmp in cmsRun_addopts: print(' '+str(_tmp))
+     print('-'*50)
 
    ### extract input-files information from data set name via dasgoclient
    ### -> list of dictionaries, each containing DAS name, files, number of events per file, and parent files
@@ -174,6 +185,7 @@ if __name__ == '__main__':
    else:
       which('dasgoclient')
       input_dset = load_dataset_data(das_name=opts.dataset, max_files=opts.max_files, max_events=opts.max_events, parentFiles_levels=opts.parentFiles_level, verbose=(opts.verbosity > 0))
+
 
    ### total number of events and jobs
    ### -> used to determine format of output-file name
@@ -301,10 +313,10 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
        'getenv = True',
        'should_transfer_files = IF_NEEDED',
        'when_to_transfer_output = ON_EXIT',
-       'requirements = (OpSysAndVer == "'+('CentOS7' if is_slc7_arch else 'SL6')+'")',
+       'MY.WantOS = "el8"',
        'RequestCpus = '+opts.cpus,
-       'RequestMemory = '+opts.memory,
-       '+RequestRuntime = '+TIME_STR_secs,
+       'RequestMemory = '+memory_htc_str,
+       '+MaxRuntime = '+TIME_STR_secs,
      ]
 
      if opts.JobFlavour is not None:
@@ -347,7 +359,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
        '#SBATCH --partition='+opts.queue,
        '#SBATCH --job-name='+jobName,
        '#SBATCH --cpus-per-task='+opts.cpus,
-       '#SBATCH --mem='+opts.memory,
+       '#SBATCH --mem='+memory_slurm_str,
        '#SBATCH --time='+TIME_STR_hhmmss,
        '#SBATCH --nodes=1',
        '#SBATCH -o /work/%u/test/.slurm/%x_%A_%a.out',
@@ -466,7 +478,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
              cmsRun_opts += ' \\\n inputFiles='+str(i_inputFile)
              if i_secondaryInputFiles:
                cmsRun_opts += ' \\\n secondaryInputFiles='+str(','.join(i_secondaryInputFiles))
-             cmsRun_opts += ' \\\n output=./out'+outputname_postfix_format.format(jobCounter)+'.root'
+             cmsRun_opts += ' \\\n output='+opts.final_output+'/out'+outputname_postfix_format.format(jobCounter)+'.root'
 
              for _tmp in cmsRun_addopts:
                cmsRun_opts += ' \\\n '+str(_tmp)
@@ -485,7 +497,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
 
          os.chmod(EXEFILE_ABSPATH, os.stat(EXEFILE_ABSPATH).st_mode | stat.S_IEXEC)
 
-         print colored_text('output:', ['1', '94']), os.path.relpath(EXEFILE_ABSPATH, os.environ['PWD'])
+         print(colored_text('output:', ['1', '94']), os.path.relpath(EXEFILE_ABSPATH, os.environ['PWD']))
 
          jobCounter += 1
 
@@ -507,7 +519,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
            ]
 
          cmsRun_opts += [
-           'output=${TMPDIR}/out'+outputname_postfix_format.format(jobCounter)+'.root',
+           'output='+opts.final_output+'/out'+outputname_postfix_format.format(jobCounter)+'.root',
          ]
 
          cmsRun_opts += cmsRun_addopts
@@ -580,7 +592,7 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
      EXE('mv '+OUTPUT_DIR+' '+OUTPUT_DIR_FINAL, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
      EXEFILE_ABSPATH = OUTPUT_DIR_FINAL+'/'+os.path.basename(EXEFILE_ABSPATH)
      if not opts.dry_run:
-       print colored_text('output:', ['1', '94']), EXEFILE_ABSPATH
+       print(colored_text('output:', ['1', '94']), EXEFILE_ABSPATH)
 
    if opts.submit:
      if opts.batch_system == 'htc':
