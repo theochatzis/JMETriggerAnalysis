@@ -139,27 +139,6 @@ process.pfHadCalibNTupleEndPath = cms.EndPath(process.pfHadCalibNTupleSeq)
 process.schedule.append(process.pfHadCalibNTupleEndPath)
 
 ###
-### updating Phase 0 HCAL thresholds
-###
-
-#process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].name = "PFRecHitQTestHCALThresholdVsDepth"
-#del process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].threshold
-
-###
-### ECAL UL calibrations
-###
-
-process.GlobalTag.toGet = cms.VPSet(
- cms.PSet(record = cms.string("EcalLaserAlphasRcd"),
- tag = cms.string("EcalLaserAlphas_UL_Run1_Run2_2018_lastIOV_movedTo1"),
- connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
- ),
- cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
- tag = cms.string("EcalIntercalibConstants_UL_Run1_Run2_2018_lastIOV_movedTo1"),
- connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
- ),)
-
-###
 ### options
 ###
 
