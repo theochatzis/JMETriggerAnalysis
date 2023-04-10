@@ -133,12 +133,12 @@ if __name__ == '__main__':
               key_varX = key_vars_split[0]
               key_varY = key_vars_split[1]
               
-              # modification start
+              
               #if not (key_varX.endswith('GEN') or key_varX.endswith('Offline')):
               #   continue
               if not (key_varX.endswith('GEN') or key_varX.endswith('Offline') or ('njets' in key_varX)):
                  continue
-              # modification end
+         
 
               tmp_h2 = histograms[i_h2_key]
 
@@ -258,12 +258,12 @@ if __name__ == '__main__':
    
               if (opts.separator_2d in hkey_i_basename) and (not hkey_i_basename.endswith('_eta__vs__pt')):
                  continue
-              # modification start
+              
               #elif not (hkey_i_basename.endswith('_pt') or hkey_i_basename.endswith('_eta') or hkey_i_basename.endswith('_phi')):
               #   continue
               elif not (hkey_i_basename.endswith('_pt') or hkey_i_basename.endswith('_eta') or hkey_i_basename.endswith('_phi') or hkey_i_basename.endswith('_simNPU')):
                  continue
-              # modification end
+              
    
               hkey_i_num, hkey_i_den = hkey_i_dirname+hkey_i_basename, None
               if '_MatchedTo' in hkey_i_basename:
@@ -426,7 +426,9 @@ if __name__ == '__main__':
 
        i_inptfile.Close()
 
-       #for _tmp in histograms.keys():
+       ##for _tmp in histograms.keys():
+       #  del histograms[_tmp]
+       for _tmp in list(histograms):
        #  del histograms[_tmp]
        for _tmp in list(histograms):
          del histograms[_tmp]
