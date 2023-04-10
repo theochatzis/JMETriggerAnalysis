@@ -42,10 +42,10 @@ void JMETriggerAnalysisDriverRun3::init(){
   labelMap_jetAK4_ = {
     {"ak4GenJetsNoNu",{
            {"hltCaloCorr", "hltAK4CaloJetsCorrected"},
-           {"hltPFClusterCorr", "hltAK4PFClusterJetsCorrected"},
+           //{"hltPFClusterCorr", "hltAK4PFClusterJetsCorrected"},
            {"hltPFCorr", "hltAK4PFJetsCorrected"},
            {"offlPFCorr", "offlineAK4PFCHSJetsCorrected"},
-           {"hltPFPuppiCorr", "hltAK4PFPuppiJetsCorrected"},
+           //{"hltPFPuppiCorr", "hltAK4PFPuppiJetsCorrected"},
            {"offlPFPuppiCorr", "offlineAK4PFPuppiJetsCorrected"}}},
     {"hltAK4CaloJets"              , {{"GEN", "ak4GenJetsNoNu"}}},
     {"hltAK4CaloJetsCorrected"     , {{"GEN", "ak4GenJetsNoNu"}}},
@@ -53,9 +53,9 @@ void JMETriggerAnalysisDriverRun3::init(){
     {"hltAK4PFClusterJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}}},
     {"hltAK4PFJets"                , {{"GEN", "ak4GenJetsNoNu"}}},
     {"hltAK4PFJetsCorrected"       , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
-    {"hltAK4PFPuppiJets"           , {{"GEN", "ak4GenJetsNoNu"}}},
-    {"hltAK4PFPuppiJetsCorrected"  , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
-    {"offlineAK4PFCHSJetsCorrected"   , {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
+    //{"hltAK4PFPuppiJets"           , {{"GEN", "ak4GenJetsNoNu"}}},
+    //{"hltAK4PFPuppiJetsCorrected"  , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
+    //{"offlineAK4PFCHSJetsCorrected"   , {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
     {"offlineAK4PFPuppiJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
   };
 
@@ -63,10 +63,10 @@ void JMETriggerAnalysisDriverRun3::init(){
   labelMap_jetAK8_ = {
     {"ak8GenJetsNoNu",{
            {"hltCaloCorr", "hltAK8CaloJetsCorrected"},
-           {"hltPFClusterCorr", "hltAK8PFClusterJetsCorrected"},
+           //{"hltPFClusterCorr", "hltAK8PFClusterJetsCorrected"},
            {"hltPFCorr", "hltAK8PFJetsCorrected"},
            {"offlPFCorr", "offlineAK8PFJetsCorrected"},
-           {"hltPFPuppiCorr", "hltAK8PFPuppiJetsCorrected"},
+           //{"hltPFPuppiCorr", "hltAK8PFPuppiJetsCorrected"},
            {"offlPFPuppiCorr", "offlineAK8PFPuppiJetsCorrected"}}},
     {"hltAK8CaloJets"              , {{"GEN", "ak8GenJetsNoNu"}}},
     {"hltAK8CaloJetsCorrected"     , {{"GEN", "ak8GenJetsNoNu"}}},
@@ -74,22 +74,22 @@ void JMETriggerAnalysisDriverRun3::init(){
     {"hltAK8PFClusterJetsCorrected", {{"GEN", "ak8GenJetsNoNu"}}},
     {"hltAK8PFJets"                , {{"GEN", "ak8GenJetsNoNu"}}},
     {"hltAK8PFJetsCorrected"       , {{"GEN", "ak8GenJetsNoNu"}}},
-    {"hltAK8PFPuppiJets"           , {{"GEN", "ak8GenJetsNoNu"}}},
-    {"hltAK8PFPuppiJetsCorrected"  , {{"GEN", "ak8GenJetsNoNu"}}},
+    //{"hltAK8PFPuppiJets"           , {{"GEN", "ak8GenJetsNoNu"}}},
+    //{"hltAK8PFPuppiJetsCorrected"  , {{"GEN", "ak8GenJetsNoNu"}}},
   };
 
   labelMap_MET_.clear();
   labelMap_MET_ = {
     {"genMETCalo", {}},
     {"genMETTrue", {}},
-    {"hltCaloMET"             , {{"GEN", "genMETCalo"}}},
-    {"hltCaloMETTypeOne"      , {{"GEN", "genMETCalo"}}},
-    {"hltPFClusterMET"        , {{"GEN", "genMETCalo"}}},
-    {"hltPFClusterMETTypeOne" , {{"GEN", "genMETCalo"}}},
+    //{"hltCaloMET"             , {{"GEN", "genMETCalo"}}},
+    //{"hltCaloMETTypeOne"      , {{"GEN", "genMETCalo"}}},
+    //{"hltPFClusterMET"        , {{"GEN", "genMETCalo"}}},
+    //{"hltPFClusterMETTypeOne" , {{"GEN", "genMETCalo"}}},
     {"hltPFMET"               , {{"GEN", "genMETTrue"}}},
     {"hltPFMETTypeOne"        , {{"GEN", "genMETTrue"}}},
-    {"hltPFPuppiMET"          , {{"GEN", "genMETTrue"}}},
-    {"hltPFPuppiMETTypeOne"   , {{"GEN", "genMETTrue"}}},
+    //{"hltPFPuppiMET"          , {{"GEN", "genMETTrue"}}},
+    //{"hltPFPuppiMETTypeOne"   , {{"GEN", "genMETTrue"}}},
 
     {"offlinePFMET_Raw"       , {{"GEN", "genMETTrue"}}},
     {"offlinePFMET_Type1"     , {{"GEN", "genMETTrue"}}},
@@ -122,6 +122,7 @@ void JMETriggerAnalysisDriverRun3::init(){
   }
 
   jettriggers = {
+  "HLT_PFJet60",
   "HLT_PFJet140",
   "HLT_PFJet320",
   "HLT_PFJet500",
@@ -149,7 +150,6 @@ void JMETriggerAnalysisDriverRun3::init(){
 
   mettriggers = {
   "HLT_PFMET120_PFMHT120_IDTight",
-  "HLT_PFMETTypeOne120_PFMHT120_IDTight",
   "HLT_PFMET140_PFMHT140_IDTight",
   "HLT_PFMETTypeOne140_PFMHT140_IDTight",
   };
@@ -168,9 +168,9 @@ void JMETriggerAnalysisDriverRun3::init(){
   "PU0to20_HLT",
   "PU20to40_HLT",
   "PUgt40_HLT",
-  "PU0to20_HLT_TypeOne",
-  "PU20to40_HLT_TypeOne",
-  "PUgt40_HLT_TypeOne",
+  //"PU0to20_HLT_TypeOne",
+  //"PU20to40_HLT_TypeOne",
+  //"PUgt40_HLT_TypeOne",
   };
 
   for(auto const& selLabel : puintervals){
@@ -219,6 +219,7 @@ void JMETriggerAnalysisDriverRun3::analyze(){
         if(match.label == "HLT" && selLabel == "HLT_PFJet140") match.jetPtMin = 140.;
         else if(match.label == "HLT" && selLabel == "HLT_PFJet320") match.jetPtMin = 320.;
         else if(match.label == "HLT" && selLabel == "HLT_PFJet500") match.jetPtMin = 500.;
+        else if(match.label == "HLT" && selLabel == "HLT_PFJet60") match.jetPtMin = 60.;
       }
 
       fillHistograms_Jets(selLabel, fhDataAK4JetsNew, wgt);
@@ -330,6 +331,7 @@ bool JMETriggerAnalysisDriverRun3::hltJetTrigger(std::string const& key) const {
   if(key == "HLT_PFJet140") return value<bool>("HLT_PFJet140");
   else if(key == "HLT_PFJet320") return value<bool>("HLT_PFJet320");
   else if(key == "HLT_PFJet500") return value<bool>("HLT_PFJet500");
+  else if(key == "HLT_PFJet60") return value<bool>("HLT_PFJet60");
   else
     throw std::runtime_error("JMETriggerAnalysisDriverRun3::hltJetTrigger(\""+key+"\") -- invalid key");
 
@@ -348,7 +350,6 @@ bool JMETriggerAnalysisDriverRun3::hltHTTrigger(std::string const& key) const {
 
 bool JMETriggerAnalysisDriverRun3::hltMETTrigger(std::string const& key) const {
   if(key == "HLT_PFMET120_PFMHT120_IDTight") return value<bool>("HLT_PFMET120_PFMHT120_IDTight");
-  else if(key == "HLT_PFMETTypeOne120_PFMHT120_IDTight") return value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight");
   else if(key == "HLT_PFMET140_PFMHT140_IDTight") return value<bool>("HLT_PFMET140_PFMHT140_IDTight");
   else if(key == "HLT_PFMETTypeOne140_PFMHT140_IDTight") return value<bool>("HLT_PFMETTypeOne140_PFMHT140_IDTight");
   else
@@ -364,9 +365,9 @@ bool JMETriggerAnalysisDriverRun3::pileupintervals(std::string const& key) const
   if(key == "PU0to20_HLT") return (value<int>("pileupInfo_BX0_numPUInteractions") > 0 && value<int>("pileupInfo_BX0_numPUInteractions") <= 20 && value<bool>("HLT_PFMET120_PFMHT120_IDTight"));
   if(key == "PU20to40_HLT") return (value<int>("pileupInfo_BX0_numPUInteractions") > 20 && value<int>("pileupInfo_BX0_numPUInteractions") <= 40 && value<bool>("HLT_PFMET120_PFMHT120_IDTight"));
   if(key == "PUgt40_HLT") return(value<int>("pileupInfo_BX0_numPUInteractions") > 40 && value<bool>("HLT_PFMET120_PFMHT120_IDTight"));
-  if(key == "PU0to20_HLT_TypeOne") return (value<int>("pileupInfo_BX0_numPUInteractions") > 0 && value<int>("pileupInfo_BX0_numPUInteractions") <= 20 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));
-  if(key == "PU20to40_HLT_TypeOne") return (value<int>("pileupInfo_BX0_numPUInteractions") > 20 && value<int>("pileupInfo_BX0_numPUInteractions") <= 40 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));
-  if(key == "PUgt40_HLT_TypeOne") return(value<int>("pileupInfo_BX0_numPUInteractions") > 40 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));
+  //if(key == "PU0to20_HLT_TypeOne") return (value<int>("pileupInfo_BX0_numPUInteractions") > 0 && value<int>("pileupInfo_BX0_numPUInteractions") <= 20 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));
+  //if(key == "PU20to40_HLT_TypeOne") return (value<int>("pileupInfo_BX0_numPUInteractions") > 20 && value<int>("pileupInfo_BX0_numPUInteractions") <= 40 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));
+  //if(key == "PUgt40_HLT_TypeOne") return(value<int>("pileupInfo_BX0_numPUInteractions") > 40 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));
   else
     throw std::runtime_error("JMETriggerAnalysisDriverRun3::hltMETTrigger(\""+key+"\") -- invalid key");
 
@@ -429,8 +430,8 @@ void JMETriggerAnalysisDriverRun3::bookHistograms_METMHT(const std::string& dir)
 
   addTH2D(dirPrefix+"hltPFMET_pt__vs__hltPFMHT_pt", binEdges_pt, binEdges_pt);
   addTH2D(dirPrefix+"hltPFMETTypeOne_pt__vs__hltPFMHT_pt", binEdges_pt, binEdges_pt);
-  addTH2D(dirPrefix+"hltPFPuppiMET_pt__vs__hltPFPuppiMHT_pt", binEdges_pt, binEdges_pt);
-  addTH2D(dirPrefix+"hltPFPuppiMETTypeOne_pt__vs__hltPFPuppiMHT_pt", binEdges_pt, binEdges_pt);
+  //addTH2D(dirPrefix+"hltPFPuppiMET_pt__vs__hltPFPuppiMHT_pt", binEdges_pt, binEdges_pt);
+  //addTH2D(dirPrefix+"hltPFPuppiMETTypeOne_pt__vs__hltPFPuppiMHT_pt", binEdges_pt, binEdges_pt);
 }
 
 void JMETriggerAnalysisDriverRun3::fillHistograms_Jets_2DMaps(const std::string& dir, const fillHistoDataJets& fhData1, const fillHistoDataJets& fhData2, float const weight){
@@ -553,16 +554,16 @@ void JMETriggerAnalysisDriverRun3::fillHistograms_METMHT(const std::string& dir,
 
   auto const hltPFMET_pt = getMET("hltPFMET_pt");
   auto const hltPFMETTypeOne_pt = getMET("hltPFMETTypeOne_pt");
-  auto const hltPFPuppiMET_pt = getMET("hltPFPuppiMET_pt");
-  auto const hltPFPuppiMETTypeOne_pt = getMET("hltPFPuppiMETTypeOne_pt");
+  //auto const hltPFPuppiMET_pt = getMET("hltPFPuppiMET_pt");
+  //auto const hltPFPuppiMETTypeOne_pt = getMET("hltPFPuppiMETTypeOne_pt");
 
   auto const hltPFMHT_pt = getPFMHT(30., 5.0);
-  auto const hltPFPuppiMHT_pt = getPuppiMHT(30., 5.0);
+  //auto const hltPFPuppiMHT_pt = getPuppiMHT(30., 5.0);
 
   H2(dirPrefix+"hltPFMET_pt__vs__hltPFMHT_pt")->Fill(hltPFMET_pt, hltPFMHT_pt, weight);
   H2(dirPrefix+"hltPFMETTypeOne_pt__vs__hltPFMHT_pt")->Fill(hltPFMETTypeOne_pt, hltPFMHT_pt, weight);
-  H2(dirPrefix+"hltPFPuppiMET_pt__vs__hltPFPuppiMHT_pt")->Fill(hltPFPuppiMET_pt, hltPFPuppiMHT_pt, weight);
-  H2(dirPrefix+"hltPFPuppiMETTypeOne_pt__vs__hltPFPuppiMHT_pt")->Fill(hltPFPuppiMETTypeOne_pt, hltPFPuppiMHT_pt, weight);
+  //H2(dirPrefix+"hltPFPuppiMET_pt__vs__hltPFPuppiMHT_pt")->Fill(hltPFPuppiMET_pt, hltPFPuppiMHT_pt, weight);
+  //H2(dirPrefix+"hltPFPuppiMETTypeOne_pt__vs__hltPFPuppiMHT_pt")->Fill(hltPFPuppiMETTypeOne_pt, hltPFPuppiMHT_pt, weight);
 }
 
 float JMETriggerAnalysisDriverRun3::getMET(std::string const& branchName) const {
