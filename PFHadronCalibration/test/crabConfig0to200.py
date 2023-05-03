@@ -4,10 +4,10 @@ from CRABClient.UserUtilities import config
 config = config()
 
 config.section_("General")
-config.General.requestName   = 'SinglePion_E_2to200_PFHadCalib_run3_2023'
-#config.General.requestName   = 'SinglePion_E_200to500_PFHadCalib_run3_2023'
+#config.General.requestName   = 'SinglePion_E_2to200_PFHadCalib_run3_2023'
+config.General.requestName   = 'SinglePion_E_200to500_PFHadCalib_run3_2023'
 config.General.transferLogs = False
-config.General.workArea = 'SinglePion_2'
+config.General.workArea = 'SinglePion'
 
 config.section_("JobType")
 config.JobType.pluginName  = 'Analysis'
@@ -24,8 +24,8 @@ config.section_("Data")
 # This string determines the primary dataset of the newly-produced outputs.
 # For instance, this dataset will be named /CrabTestSingleMu/something/USER
 #config.Data.inputDataset = ''
-config.Data.inputDataset = '/SinglePionGun_E0p2to200/Run3Winter23Digi-NoPU_126X_mcRun3_2023_forPU65_v1-v2/GEN-SIM-RAW'
-#config.Data.inputDataset = '/SinglePionGun_E200to500/Run3Winter23Digi-NoPU_126X_mcRun3_2023_forPU65_v1-v2/GEN-SIM-RAW'
+#config.Data.inputDataset = '/SinglePionGun_E0p2to200/Run3Winter23Digi-NoPUGTv4_126X_mcRun3_2023_forPU65_v4-v2/GEN-SIM-RAW'
+config.Data.inputDataset = '/SinglePionGun_E200to500/Run3Winter23Digi-NoPUGTv4_126X_mcRun3_2023_forPU65_v4-v2/GEN-SIM-RAW'
 config.Data.splitting = 'Automatic'
 config.Data.unitsPerJob = 180
 config.Data.totalUnits = -1
@@ -34,8 +34,8 @@ config.Data.totalUnits = -1
 #config.Data.totalUnits = 6429
 config.Data.publication = False
 
-config.Data.outLFNDirBase = '/store/user/chuh/PFHadCalib_2023_/SinglePionE_2_200_run3_13_0_0_pre4'
-#config.Data.outLFNDirBase = '/store/user/chuh/PFHadCalib_2023_/SinglePionE_200_500_run3_13_0_0_pre4'
+#config.Data.outLFNDirBase = '/store/user/chuh/PFHadCalib_2023/SinglePionE_2_200_run3_13_0_0'
+config.Data.outLFNDirBase = '/store/user/chuh/PFHadCalib_2023/SinglePionE_200_500_run3_v4_13_0_0'
 #config.Data.useParent = True
 #config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt'
 

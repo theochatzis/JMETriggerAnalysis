@@ -9,7 +9,7 @@ process.source = cms.Source("PoolSource",
     inputCommands = cms.untracked.vstring('keep *')
 )
 process.HLTConfigVersion = cms.PSet(
-    tableName = cms.string('/dev/CMSSW_13_0_0/GRun/V16')
+    tableName = cms.string('/dev/CMSSW_13_0_0/GRun/V24')
 )
 
 process.HLTIter0GroupedCkfTrajectoryBuilderIT = cms.PSet(
@@ -1811,6 +1811,7 @@ process.datasets = cms.PSet(
     ),
     EGamma0 = cms.vstring(
         'HLT_DiEle27_WPTightCaloOnly_L1DoubleEG_v6',
+        'HLT_DiPhoton10Time1ns_v2',
         'HLT_DiPhoton10Time1p2ns_v2',
         'HLT_DiPhoton10Time1p4ns_v2',
         'HLT_DiPhoton10Time1p6ns_v2',
@@ -1824,6 +1825,8 @@ process.datasets = cms.PSet(
         'HLT_Diphoton20_14_eta1p5_R9IdL_AND_HE_AND_IsoTCaloIdT_v2',
         'HLT_Diphoton22_14_eta1p5_R9IdL_AND_HET_AND_IsoTCaloIdT_v2',
         'HLT_Diphoton22_14_eta1p5_R9IdL_AND_HE_AND_IsoTCaloIdT_v2',
+        'HLT_Diphoton24_14_eta1p5_R9IdL_AND_HET_AND_IsoTCaloIdT_v2',
+        'HLT_Diphoton24_16_eta1p5_R9IdL_AND_HET_AND_IsoTCaloIdT_v2',
         'HLT_Diphoton30_18_R9IdL_AND_HE_AND_IsoCaloId_Mass55_v3',
         'HLT_Diphoton30_18_R9IdL_AND_HE_AND_IsoCaloId_v3',
         'HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90_v15',
@@ -1892,6 +1895,7 @@ process.datasets = cms.PSet(
     ),
     EGamma1 = cms.vstring(
         'HLT_DiEle27_WPTightCaloOnly_L1DoubleEG_v6',
+        'HLT_DiPhoton10Time1ns_v2',
         'HLT_DiPhoton10Time1p2ns_v2',
         'HLT_DiPhoton10Time1p4ns_v2',
         'HLT_DiPhoton10Time1p6ns_v2',
@@ -1905,6 +1909,8 @@ process.datasets = cms.PSet(
         'HLT_Diphoton20_14_eta1p5_R9IdL_AND_HE_AND_IsoTCaloIdT_v2',
         'HLT_Diphoton22_14_eta1p5_R9IdL_AND_HET_AND_IsoTCaloIdT_v2',
         'HLT_Diphoton22_14_eta1p5_R9IdL_AND_HE_AND_IsoTCaloIdT_v2',
+        'HLT_Diphoton24_14_eta1p5_R9IdL_AND_HET_AND_IsoTCaloIdT_v2',
+        'HLT_Diphoton24_16_eta1p5_R9IdL_AND_HET_AND_IsoTCaloIdT_v2',
         'HLT_Diphoton30_18_R9IdL_AND_HE_AND_IsoCaloId_Mass55_v3',
         'HLT_Diphoton30_18_R9IdL_AND_HE_AND_IsoCaloId_v3',
         'HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90_v15',
@@ -1982,6 +1988,7 @@ process.datasets = cms.PSet(
         'HLT_HT300_Beamspot_v13',
         'HLT_ZeroBias_Beamspot_v6'
     ),
+    ExpressPPSRandom = cms.vstring('HLT_PPSRandom_v1'),
     ExpressPhysics = cms.vstring(
         'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v21',
         'HLT_ExpressMuons_v3',
@@ -2686,6 +2693,7 @@ process.datasets = cms.PSet(
         'HLT_DiPFJetAve60_v16',
         'HLT_DiPFJetAve80_HFJEC_v18',
         'HLT_DiPFJetAve80_v15',
+        'HLT_DiPhoton10Time1ns_v2',
         'HLT_DiPhoton10Time1p2ns_v2',
         'HLT_DiPhoton10Time1p4ns_v2',
         'HLT_DiPhoton10Time1p6ns_v2',
@@ -2732,6 +2740,8 @@ process.datasets = cms.PSet(
         'HLT_Diphoton20_14_eta1p5_R9IdL_AND_HE_AND_IsoTCaloIdT_v2',
         'HLT_Diphoton22_14_eta1p5_R9IdL_AND_HET_AND_IsoTCaloIdT_v2',
         'HLT_Diphoton22_14_eta1p5_R9IdL_AND_HE_AND_IsoTCaloIdT_v2',
+        'HLT_Diphoton24_14_eta1p5_R9IdL_AND_HET_AND_IsoTCaloIdT_v2',
+        'HLT_Diphoton24_16_eta1p5_R9IdL_AND_HET_AND_IsoTCaloIdT_v2',
         'HLT_Diphoton30_18_R9IdL_AND_HE_AND_IsoCaloId_Mass55_v3',
         'HLT_Diphoton30_18_R9IdL_AND_HE_AND_IsoCaloId_v3',
         'HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90_v15',
@@ -4214,6 +4224,7 @@ process.streams = cms.PSet(
     Express = cms.vstring('ExpressPhysics'),
     ExpressAlignment = cms.vstring('ExpressAlignment'),
     ExpressCosmics = cms.vstring(),
+    ExpressPPSRandom = cms.vstring('ExpressPPSRandom'),
     HLTMonitor = cms.vstring('HLTMonitor'),
     NanoDST = cms.vstring('L1Accept'),
     ParkingDoubleElectronLowMass0 = cms.vstring(
@@ -17741,8 +17752,8 @@ process.hltTowerMakerForAll = cms.EDProducer("CaloTowersCreator",
     EcutTower = cms.double(-1000.0),
     HBGrid = cms.vdouble(),
     HBThreshold = cms.double(0.3),
-    HBThreshold1 = cms.double(0.1),
-    HBThreshold2 = cms.double(0.2),
+    HBThreshold1 = cms.double(0.4),
+    HBThreshold2 = cms.double(0.3),
     HBWeight = cms.double(1.0),
     HBWeights = cms.vdouble(),
     HEDGrid = cms.vdouble(),
@@ -18570,6 +18581,16 @@ process.hltAK8TrimPFJetCollection20Filter = cms.EDFilter("HLT1PFJet",
     inputTag = cms.InputTag("hltAK8TrimModJets"),
     saveTags = cms.bool(True),
     triggerType = cms.int32(85)
+)
+
+
+process.hltAlCaPFJet40GPUxorCPUFilter = cms.EDFilter("TriggerResultsFilter",
+    hltResults = cms.InputTag(""),
+    l1tIgnoreMaskAndPrescale = cms.bool(False),
+    l1tResults = cms.InputTag(""),
+    throw = cms.bool(True),
+    triggerConditions = cms.vstring('( AlCa_PFJet40_v22 AND NOT AlCa_PFJet40_CPUOnly_v1 ) OR ( NOT AlCa_PFJet40_v22 AND AlCa_PFJet40_CPUOnly_v1 )'),
+    usePathStatus = cms.bool(True)
 )
 
 
@@ -24021,23 +24042,6 @@ process.hltOutputFull = cms.OutputModule("PoolOutputModule",
 )
 
 
-process.CUDAService = cms.Service("CUDAService",
-    allocator = cms.untracked.PSet(
-        devicePreallocate = cms.untracked.vuint32(),
-        hostPreallocate = cms.untracked.vuint32()
-    ),
-    enabled = cms.untracked.bool(True),
-    limits = cms.untracked.PSet(
-        cudaLimitDevRuntimePendingLaunchCount = cms.untracked.int32(-1),
-        cudaLimitDevRuntimeSyncDepth = cms.untracked.int32(-1),
-        cudaLimitMallocHeapSize = cms.untracked.int32(-1),
-        cudaLimitPrintfFifoSize = cms.untracked.int32(-1),
-        cudaLimitStackSize = cms.untracked.int32(-1)
-    ),
-    verbose = cms.untracked.bool(False)
-)
-
-
 process.DQMStore = cms.Service("DQMStore",
     MEsToSave = cms.untracked.vstring(
         'Hcal/DigiTask/Occupancy/depth/depth1',
@@ -26836,6 +26840,7 @@ process.hltESPTrajectorySmootherRK = cms.ESProducer("KFTrajectorySmootherESProdu
 
 process.hltOnlineBeamSpotESProducer = cms.ESProducer("OnlineBeamSpotESProducer",
     appendToDataLabel = cms.string(''),
+    sigmaXYThreshold = cms.double(4.0),
     sigmaZThreshold = cms.double(2.0),
     timeThreshold = cms.int32(1000000)
 )
@@ -27023,7 +27028,7 @@ process.GlobalTag = cms.ESSource("PoolDBESSource",
     RefreshEachRun = cms.untracked.bool(True),
     RefreshOpenIOVs = cms.untracked.bool(False),
     connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
-    globaltag = cms.string('126X_mcRun3_2023_forPU65_v1'),
+    globaltag = cms.string('126X_mcRun3_2023_forPU65_v4'),
     pfnPostfix = cms.untracked.string(''),
     pfnPrefix = cms.untracked.string(''),
     snapshotTime = cms.string(''),
@@ -27035,6 +27040,36 @@ process.GlobalTag = cms.ESSource("PoolDBESSource",
         cms.PSet(
             record = cms.string('BeamSpotOnlineHLTObjectsRcd'),
             refreshTime = cms.uint64(2)
+        ),
+        cms.PSet(
+            label = cms.untracked.string('AK4PFHLT'),
+            record = cms.string('JetCorrectionsRecord'),
+            snapshotTime = cms.string('9999-12-31 23:59:59.000'),
+            tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK4PFHLT_mc_v3')
+        ),
+        cms.PSet(
+            label = cms.untracked.string('AK8PFHLT'),
+            record = cms.string('JetCorrectionsRecord'),
+            snapshotTime = cms.string('9999-12-31 23:59:59.000'),
+            tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK8PFHLT_mc_v3')
+        ),
+        cms.PSet(
+            label = cms.untracked.string('AK4CaloHLT'),
+            record = cms.string('JetCorrectionsRecord'),
+            snapshotTime = cms.string('9999-12-31 23:59:59.000'),
+            tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK4CaloHLT_mc_v3')
+        ),
+        cms.PSet(
+            label = cms.untracked.string('AK8CaloHLT'),
+            record = cms.string('JetCorrectionsRecord'),
+            snapshotTime = cms.string('9999-12-31 23:59:59.000'),
+            tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK8CaloHLT_mc_v3')
+        ),
+        cms.PSet(
+            label = cms.untracked.string('HLT'),
+            record = cms.string('PFCalibrationRcd'),
+            snapshotTime = cms.string('9999-12-31 23:59:59.000'),
+            tag = cms.string('PFCalibration_Run3Winter23Digi_mc_v3')
         )
     )
 )
@@ -27935,7 +27970,7 @@ process.MC_PFBTagDeepJet_v3 = cms.Path(process.HLTBeginSequence+process.hltPreMC
 process.MC_Run3_PFScoutingPixelTracking_v18 = cms.Path(process.HLTBeginSequence+process.hltL1sMCRun3PFScoutingPixelTracking+process.hltPreMCRun3PFScoutingPixelTracking+process.HLTPFScoutingPixelTrackingSequence+process.HLTEndSequence)
 
 
-process.HLT_PFJet40_GPUvsCPU_v1 = cms.Path(process.HLTBeginSequence+process.hltPrePFJet40GPUvsCPU+process.HLTEndSequence)
+process.HLT_PFJet40_GPUvsCPU_v1 = cms.Path(process.HLTBeginSequence+process.hltAlCaPFJet40GPUxorCPUFilter+process.hltPrePFJet40GPUvsCPU+process.HLTEndSequence)
 
 
 process.HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepJet_4p5_v3 = cms.Path(process.HLTBeginSequence+process.hltL1sQuadJetC50to60IorHTT280to500IorHTT250to340QuadJet+process.hltPrePFHT330PT30QuadPFJet75604540TriplePFBTagDeepJet4p5+process.HLTAK4CaloJetsSequence+process.hltQuadCentralJet30+process.hltCaloJetsQuad30ForHt+process.hltHtMhtCaloJetsQuadC30+process.hltCaloQuadJet30HT320+process.HLTBtagDeepCSVSequenceL3+process.hltBTagCaloDeepCSVp17Double+process.HLTAK4PFJetsSequence+process.hltPFCentralJetLooseIDQuad30+process.hlt1PFCentralJetLooseID75+process.hlt2PFCentralJetLooseID60+process.hlt3PFCentralJetLooseID45+process.hlt4PFCentralJetLooseID40+process.hltPFCentralJetLooseIDQuad30forHt+process.hltHtMhtPFCentralJetsLooseIDQuadC30+process.hltPFCentralJetsLooseIDQuad30HT330+process.HLTBtagDeepJetSequencePF+process.hltBTagPFDeepJet4p5Triple+process.HLTEndSequence)

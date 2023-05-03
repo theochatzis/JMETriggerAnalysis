@@ -74,16 +74,8 @@ opts.parseArguments()
 ###
 ### HLT configuration
 ###
-if opts.reco == 'HLT_oldJECs':
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_3_0_GRun_configDump import cms, process
-  update_jmeCalibs = False
-
-elif opts.reco == 'HLT_Run3TRK':
-  from HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
-  update_jmeCalibs = True
-
-else:
-  raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
+#from HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
+from HLT_dev_CMSSW_13_0_0_GRun_configDump import *
 
 # remove cms.OutputModule objects from HLT config-dump
 for _modname in process.outputModules_():
@@ -115,11 +107,12 @@ keepPaths = [
   'HLT_AK4PFJet*_v*',
   'HLT_AK8PFJet*_v*',
   'HLT_PFHT*_v*',
-  'HLT_PFMET*_PFMHT*_v*',
+  'HLT_PF*MET*_PFMHT*_v*',
 ]
 
 vetoPaths = [
   'HLT_*ForPPRef_v*',
+	'AlCa_*',
 ]
 
 # list of paths that are kept
@@ -151,78 +144,51 @@ print('-'*108)
 if hasattr(process, 'FastTimerService'):
   del process.FastTimerService
 
-if update_jmeCalibs:
-  ## ES modules for PF-Hadron Calibrations
-  process.pfhcESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
-    toGet = cms.VPSet(
-      cms.PSet(
-        record = cms.string('PFCalibrationRcd'),
-        tag = cms.string('PFCalibration_CMSSW_13_0_0_pre4_HLT_126X_mcRun3_2023'),
-        label = cms.untracked.string('HLT'),
-      ),
-    ),
-  )
-  process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
-  #process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
+from JMETriggerAnalysis.Common.customise_hlt import *
+process = addPaths_MC_JMECalo(process)
+process = addPaths_MC_JMEPF(process)
 
-  ## ES modules for HLT JECs
-  process.jescESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:Run3Winter23Digi.db'),
-    toGet = cms.VPSet(
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK4CaloHLT'),
-        label = cms.untracked.string('AK4CaloHLT'),
-      ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK4PFHLT'),
-        label = cms.untracked.string('AK4PFHLT'),
-      ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK8CaloHLT'),
-        label = cms.untracked.string('AK8CaloHLT'),
-      ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK8PFHLT'),
-        label = cms.untracked.string('AK8PFHLT'),
-      ),
+## ES modules for PF-Hadron Calibrations
+process.pfhcESSource = cms.ESSource('PoolDBESSource',
+  _CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
+  toGet = cms.VPSet(
+    cms.PSet(
+      record = cms.string('PFCalibrationRcd'),
+      tag = cms.string('PFCalibration_CMSSW_13_0_0_HLT_126X_fixEE_mcRun3_2023'),
+      label = cms.untracked.string('HLT'),
     ),
-  )
-  process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
+  ),
+)
+process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
+#process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
 
-else:
-  ## ES modules for HLT JECs
-  process.jescESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:JESC_Run3Winter23Digi.db'),
-    toGet = cms.VPSet(
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK4PFHLT'),#!!
-        label = cms.untracked.string('AK4PFchsHLT'),
-      ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK8PFHLT'),#!!
-        label = cms.untracked.string('AK8PFchsHLT'),
-      ),
+## ES modules for HLT JECs
+process.jescESSource = cms.ESSource('PoolDBESSource',
+  _CondDB.clone(connect = 'sqlite_file:Run3Winter23Digi.db'),
+  toGet = cms.VPSet(
+    cms.PSet(
+      record = cms.string('JetCorrectionsRecord'),
+      tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK4CaloHLT'),
+      label = cms.untracked.string('AK4CaloHLT'),
     ),
-  )
-  process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
-
-## ECAL UL calibrations
-process.GlobalTag.toGet = cms.VPSet(
- cms.PSet(record = cms.string("EcalLaserAlphasRcd"),
- tag = cms.string("EcalLaserAlphas_UL_Run1_Run2_2018_lastIOV_movedTo1"),
- connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
- ),
- cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
- tag = cms.string("EcalIntercalibConstants_UL_Run1_Run2_2018_lastIOV_movedTo1"),
- connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
- ),)
+    cms.PSet(
+      record = cms.string('JetCorrectionsRecord'),
+      tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK4PFHLT'),
+      label = cms.untracked.string('AK4PFHLT'),
+    ),
+    cms.PSet(
+      record = cms.string('JetCorrectionsRecord'),
+      tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK8CaloHLT'),
+      label = cms.untracked.string('AK8CaloHLT'),
+    ),
+    cms.PSet(
+      record = cms.string('JetCorrectionsRecord'),
+      tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK8PFHLT'),
+      label = cms.untracked.string('AK8PFHLT'),
+    ),
+  ),
+)
+process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
 
 ## Output NTuple
 process.TFileService = cms.Service('TFileService', fileName = cms.string(opts.output))
@@ -313,7 +279,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   patJetCollections = cms.PSet(
 
     offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
-    offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
+    #offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
     offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
   ),
 
@@ -325,8 +291,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoCaloMETCollections = cms.PSet(
 
-    #hltCaloMET = cms.InputTag('hltMet'),
-    #hltCaloMETTypeOne = cms.InputTag('hltCaloMETTypeOne'),
+    hltCaloMET = cms.InputTag('hltMet'),
+    hltCaloMETTypeOne = cms.InputTag('hltCaloMETTypeOne'),
   ),
 
 # recoPFClusterMETCollections = cms.PSet(
@@ -338,7 +304,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   recoPFMETCollections = cms.PSet(
 
     hltPFMET = cms.InputTag('hltPFMETProducer'),
-    #hltPFMETTypeOne = cms.InputTag('hltPFMETTypeOne'),
+    hltPFMETTypeOne = cms.InputTag('hltPFMETTypeOne'),
 
     #hltPFCHSMET = cms.InputTag('hltPFCHSMET'),
     #hltPFCHSMETTypeOne = cms.InputTag('hltPFCHSMETTypeOne'),
@@ -350,7 +316,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   patMETCollections = cms.PSet(
 
     offlinePFMET = cms.InputTag('slimmedMETs'),
-    offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
+    #offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
   ),
 )
 
@@ -369,10 +335,6 @@ if opts.keepPFPuppi:
 
 process.analysisNTupleEndPath = cms.EndPath(process.JMETriggerNTuple)
 process.schedule.append(process.analysisNTupleEndPath)
-
-###
-### standard options
-###
 
 # max number of events to be processed
 process.maxEvents.input = opts.maxEvents
@@ -402,8 +364,7 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
-    #'/store/mc/Run3Winter23MiniAOD/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/MINIAODSIM/FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v2/2540000/10e9c9ff-b431-42c5-a1ec-e3143eafee20.root',
-    '/store/mc/Run3Winter23MiniAOD/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/MINIAODSIM/126X_mcRun3_2023_forPU65_v1-v2/2550000/19e43825-6b8e-426e-9cca-e23cf318737c.root',
+    '/store/mc/Run3Winter23MiniAOD/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/MINIAODSIM/GTv3Digi_GTv3_MiniGTv3_126X_mcRun3_2023_forPU65_v3-v2/50000/78394008-4a41-4f53-8ecf-ba8df82ec202.root',
     #'',
     #'',
     #'',
@@ -417,14 +378,8 @@ if opts.secondaryInputFiles:
   process.source.secondaryFileNames = opts.secondaryInputFiles
 else:
   process.source.secondaryFileNames = [
-    #'/store/mc/Run3Winter23Digi/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1/2560000/00d203d8-3ef3-4ca2-884d-a6b2f3bfbb6e.root',
     #'',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/f61dc979-f42d-443f-8a1f-587b3353b109.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/e465ec59-571a-4dd5-b429-93b2b55f643b.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/f90d178a-8997-43ca-b9c9-edc49b733fcb.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/572aa6f8-a7a2-4db2-b332-5729c37ba743.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/5d2ccf3f-7f9f-4237-b210-a48c838dfa6a.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/b17347c9-536a-4b06-9a68-f8199e76ddf2.root',
+    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/GTv3Digi_126X_mcRun3_2023_forPU65_v3-v2/50000/ba066652-43d2-477d-8b94-6dbd8f49f02a.root',
   ]
 
 # dump content of cms.Process to python file
