@@ -214,6 +214,8 @@ elif opt_reco == 'HLT_TRKv07p2_TICL':
 
 elif opt_reco == 'HLT_75e33':
   from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg import cms, process
+  # optimal tracking thresholds for MET
+  process = customisePhase2TrackingPtThresholds(process, 1.8)
   #process.schedule_().append(process.MC_JME)
 
 elif opt_reco == 'HLT_75e33_time':
