@@ -37,7 +37,6 @@ if __name__ == '__main__':
 
    parser.add_argument('--time', '--RequestRuntime', dest='RequestRuntime', action='store', default='10800',
                        help='HTCondor: value of parameter "MaxRuntime"')
-                       help='HTCondor: value of parameter "MaxRuntime"')
 
    parser.add_argument('--JobFlavour', dest='JobFlavour', action='store', default=None,
                        help='argument of HTCondor parameter "+JobFlavour" (by default, the parameter is not specified)')
