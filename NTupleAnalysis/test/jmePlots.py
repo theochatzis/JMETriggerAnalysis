@@ -1528,11 +1528,11 @@ def getPlotConfig(key, keyword, inputList):
        
       
        ## MET ##   
-       #elif ( ('hltPFPuppiMET_' in key ) and ( (key=='NoSelection/hltPFPuppiMET_pt') or (('pt_overGEN_Mean_wrt_simNPU' in key) or ('pt_overGEN_RMSOverMean_wrt_simNPU' in key) or ('pt_overGEN_Mean_wrt_GEN_pt' in key) or ('pt_overGEN_RMSOverMean_wrt_GEN_pt' in key)) ) ):
-       #   cfg.logY=(key=='NoSelection/hltPFPuppiMET_pt')
-       #   for idx, inp in enumerate(inputList):
-       #     #cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('hltPFPuppiMET_', 'offlinePFPuppiMET_Raw_'), Legend='Offline',Color=ROOT.kBlack) if idx==0 else None]
-       #     cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='HLT ('+inp['Legend']+')')]   
+       elif ( ('hltPFPuppiMETTypeOne_' in key ) and ( (key=='NoSelection/hltPFPuppiMETTypeOne_pt') or (('pt_overGEN_Mean_wrt_simNPU' in key) or ('pt_overGEN_RMSOverMean_wrt_simNPU' in key) or ('pt_overGEN_Mean_wrt_GEN_pt' in key) or ('pt_overGEN_RMSOverMean_wrt_GEN_pt' in key)) ) ):
+          cfg.logY=(key=='NoSelection/hltPFPuppiMETTypeOne_pt')
+          for idx, inp in enumerate(inputList):
+            #cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('hltPFPuppiMET_', 'offlinePFPuppiMET_Raw_'), Legend='Offline',Color=ROOT.kBlack) if idx==0 else None]
+            cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='HLT ('+inp['Legend']+')')]   
 
     ###
     ### run3_jme_comparePF
@@ -2360,7 +2360,7 @@ if __name__ == '__main__':
    parser.add_argument('-u', '--upgrade', dest='upgrade', action='store_true', default=False,
                        help='labels for Phase-2 plots')
 
-   parser.add_argument('-e', '--exts', dest='exts', nargs='+', default=['pdf'],
+   parser.add_argument('-e', '--exts', dest='exts', nargs='+', default=['png'],
                        help='list of extension(s) for output file(s)')
 
    parser.add_argument('-v', '--verbosity', dest='verbosity', nargs='?', const=1, type=int, default=0,

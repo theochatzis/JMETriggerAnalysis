@@ -59,7 +59,7 @@ opts.register('globalTag', None,
               vpo.VarParsing.varType.string,
               'argument of process.GlobalTag.globaltag')
 
-opts.register('reco', 'HLT_75e33_time',
+opts.register('reco', 'HLT_75e33',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
               'keyword defining reconstruction methods for JME inputs')
@@ -582,7 +582,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
 #    hltPixelVertices = cms.InputTag('pixelVertices'),
 #    hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
-    hltPrimaryVertices4D = cms.InputTag('goodOfflinePrimaryVertices4D'),
+#    hltPrimaryVertices4D = cms.InputTag('goodOfflinePrimaryVertices4D'),
 #    hltUnsortedPrimaryVertices4D = cms.InputTag('unsortedOfflinePrimaryVertices4D'),
 #    offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
     offlineSlimmedPrimaryVertices4D = cms.InputTag('offlineSlimmedPrimaryVertices4D'),
@@ -598,7 +598,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
 #    hltPFSim = cms.InputTag('simPFProducer'),
 #    hltPFTICL = cms.InputTag('pfTICL'),
-     hltParticleFlow = cms.InputTag('particleFlowTmp'),
+#     hltParticleFlow = cms.InputTag('particleFlowTmp'),
 #     hltParticleFlowBarrel = cms.InputTag('particleFlowTmpBarrel'), # all PF without the pfTICL (that means + forward > 3.0 etas)
 #     hltPfTICL = cms.InputTag('pfTICL'), # HGCal particles 1.5 < |eta| < 3.0
 #    hltPFPuppi = cms.InputTag('hltPFPuppi'),
@@ -616,7 +616,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   recoGenJetCollections = cms.PSet(
     ak4GenJetsNoNu = cms.InputTag('ak4GenJetsNoNu::HLT'),
     ak8GenJetsNoNu = cms.InputTag('ak8GenJetsNoNu::HLT'),
-    ak4GenJets = cms.InputTag('slimmedGenJets')
+    #ak4GenJets = cms.InputTag('slimmedGenJets')
   ),
 
   l1tPFJetCollections = cms.PSet(
