@@ -1,11 +1,10 @@
 ----------
 ----------
-
 **Note**: for instructions on HLT PF-Hadron calibrations and Jet Energy Scale Corrections,
 please ignore this `readme`, and follow the instructions in the dedicated `readme` files:
 
- * [`readme` for HLT PF-Hadron Calibrations](https://github.com/pallabidas/JMETriggerAnalysis/blob/run3_12_3_X/PFHadronCalibration/readme.md)
- * [`readme` for HLT Jet Energy Scale Corrections](https://github.com/sparedes/JMETriggerAnalysis/blob/run3_12_3_X/JESCorrections/readme.md)
+ * [`readme` for HLT PF-Hadron Calibrations](https://github.com/theochatzis/JMETriggerAnalysis/blob/run3_12_4_12_testTrk/PFHadronCalibration/readme.md)
+ * [`readme` for HLT Jet Energy Scale Corrections](https://github.com/theochatzis/JMETriggerAnalysis/blob/run3_12_4_12_testTrk/JESCorrections/readme.md)
 
 ----------
 ----------
