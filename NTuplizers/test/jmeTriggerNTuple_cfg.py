@@ -75,11 +75,11 @@ opts.parseArguments()
 ### HLT configuration
 ###
 if opts.reco == 'HLT_oldJECs':
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_3_0_GRun_configDump import cms, process
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_4_0_GRun_postEE_configDump import cms, process
   update_jmeCalibs = False
 
 elif opts.reco == 'HLT_Run3TRK':
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_3_0_GRun_configDump import cms, process
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_4_0_GRun_postEE_configDump import cms, process
 #  from HLTrigger.Configuration.customizeHLTforRun3 import customizeHLTforRun3Tracking
 #  process = customizeHLTforRun3Tracking(process)
   update_jmeCalibs = True
@@ -162,12 +162,12 @@ if hasattr(process, 'MessageLogger'):
 ###
 
 ## customised JME collections
-from JMETriggerAnalysis.Common.customise_hlt import *
-process = addPaths_MC_JMECalo(process)
-process = addPaths_MC_JMEPFCluster(process)
-process = addPaths_MC_JMEPF(process)
-process = addPaths_MC_JMEPFCHS(process)
-process = addPaths_MC_JMEPFPuppi(process)
+# from JMETriggerAnalysis.Common.customise_hlt import *
+# process = addPaths_MC_JMECalo(process)
+# process = addPaths_MC_JMEPFCluster(process)
+# process = addPaths_MC_JMEPF(process)
+# process = addPaths_MC_JMEPFCHS(process)
+# process = addPaths_MC_JMEPFPuppi(process)
 
 if update_jmeCalibs:
   ## ES modules for PF-Hadron Calibrations
@@ -283,16 +283,16 @@ else:
   )
   process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
 
-## ECAL UL calibrations
-process.GlobalTag.toGet = cms.VPSet(
- cms.PSet(record = cms.string("EcalLaserAlphasRcd"),
- tag = cms.string("EcalLaserAlphas_UL_Run1_Run2_2018_lastIOV_movedTo1"),
- connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
- ),
- cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
- tag = cms.string("EcalIntercalibConstants_UL_Run1_Run2_2018_lastIOV_movedTo1"),
- connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
- ),)
+# ## ECAL UL calibrations
+# process.GlobalTag.toGet = cms.VPSet(
+#  cms.PSet(record = cms.string("EcalLaserAlphasRcd"),
+#  tag = cms.string("EcalLaserAlphas_UL_Run1_Run2_2018_lastIOV_movedTo1"),
+#  connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
+#  ),
+#  cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
+#  tag = cms.string("EcalIntercalibConstants_UL_Run1_Run2_2018_lastIOV_movedTo1"),
+#  connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
+#  ),)
 
 ## Output NTuple
 process.TFileService = cms.Service('TFileService', fileName = cms.string(opts.output))
@@ -364,20 +364,20 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
     hltAK4PFJetsCorrected = cms.InputTag('hltAK4PFJetsCorrected'),
 
-    hltAK4PFCHSJets = cms.InputTag('hltAK4PFCHSJets'),
-    hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
+    #hltAK4PFCHSJets = cms.InputTag('hltAK4PFCHSJets'),
+    #hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
 
-    hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
-    hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
+    #hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
+    #hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
 
     hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
     hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
 
-    hltAK8PFCHSJets = cms.InputTag('hltAK8PFCHSJets'),
-    hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
+    #hltAK8PFCHSJets = cms.InputTag('hltAK8PFCHSJets'),
+    #hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
 
-    hltAK8PFPuppiJets = cms.InputTag('hltAK8PFPuppiJets'),
-    hltAK8PFPuppiJetsCorrected = cms.InputTag('hltAK8PFPuppiJetsCorrected'),
+    #hltAK8PFPuppiJets = cms.InputTag('hltAK8PFPuppiJets'),
+    #hltAK8PFPuppiJetsCorrected = cms.InputTag('hltAK8PFPuppiJetsCorrected'),
   ),
 
   patJetCollections = cms.PSet(
@@ -444,8 +444,8 @@ process.schedule.append(process.analysisNTupleEndPath)
 ### updating Phase 0 HCAL thresholds
 ###
 
-process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].name = "PFRecHitQTestHCALThresholdVsDepth"
-del process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].threshold
+# process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].name = "PFRecHitQTestHCALThresholdVsDepth"
+# del process.hltParticleFlowRecHitHBHE.producers[0].qualityTests[0].threshold
 
 #if opts.printSummaries:
 #   process.FastTimerService.printEventSummary = False
@@ -485,8 +485,7 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
-    '/store/mc/Run3Summer21MiniAOD/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/MINIAODSIM/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v5-v1/30000/76dfad7c-52eb-4207-96cf-e74c5c6509d0.root',
- #   '/store/mc/Run3Summer21MiniAOD/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/MINIAODSIM/120X_mcRun3_2021_realistic_v5-v2/2550000/1028cea6-2e14-4526-b247-d13f0636a8fe.root',
+  '/store/mc/Run3Summer22MiniAODv3/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/MINIAODSIM/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/0345b123-6141-4707-8f96-d17170654938.root'
   ]
 
 # input EDM files [secondary]
@@ -497,29 +496,38 @@ if opts.secondaryInputFiles:
   process.source.secondaryFileNames = opts.secondaryInputFiles
 else:
   process.source.secondaryFileNames = [
-    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/5a423664-f0f4-432a-9573-601f608ffd61.root',
-    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/76845592-a3ca-4ba0-88d6-62a7783903d7.root',
-    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/a825d603-efb0-4ec8-aa97-64c1d1668be4.root',
-    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/00169f6c-2bd0-4419-9de0-f9dff5f6e909.root',
-    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/4489ddce-a7e0-4a36-b924-7ec6de3b6bab.root',
-    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/b66444c2-1e9e-4f10-8f75-6e9099fa7d6e.root',
-    '/store/mc/Run3Summer21DR/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW/FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/30000/d73315f5-4981-4a87-a48d-465ab24e203e.root',
- #   '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/141d8d98-3271-429f-9fd0-c78e6e0db93e.root',
- #   '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/1c44e0f3-01bb-41aa-a676-2fbcfda6e409.root',
- #   '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/715cb464-ab15-4fe6-a9a2-c976f33a7398.root',
- #   '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/90f917a4-f48c-4718-9dd3-4eed7dec4fa5.root',
- #   '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/c6ce4ddc-d57e-4389-ba29-52d36e4d3617.root',
- #   '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/5fa84df6-e4b2-4313-9f13-56eee4a36e6e.root',
- #   '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/7669b8d9-07f8-4381-b1f1-50023104651d.root',
-  #  '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/7a192aaf-7578-4e02-a850-a969414a028d.root',
-  #  '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/e8aafeff-508a-47fb-b4e4-a6e40c259884.root',
-  #  '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/fa12328e-e272-405e-a47c-33990ef804ae.root',
-  #  '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/3a20d772-b0eb-481e-b4c3-5fa44ed11f31.root',
-  #  '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/a13ca715-7abe-4113-916c-340f270ec5f0.root',
-  #  '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/b08c3c0f-c835-4cb7-8c0a-2094a4193c92.root',
-  #  '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/b0ac068d-d03d-41ea-af73-975e53567265.root',
-  #  '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/f0baf87e-ad3f-4916-baff-156ce74a8e7d.root',
-  #  '/store/mc/Run3Summer21DRPremix/VBFHToInvisible_M125_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/120X_mcRun3_2021_realistic_v6-v2/2550000/f440062e-85d6-40ce-ba87-3d9035dbe663.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/11962fa4-129d-4ad0-8bc8-8ffb631fb034.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/1bcabf5d-ec1c-46f4-88cd-746bb14a05b5.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/29c2f2f6-61ad-4e1b-8ecc-021a0d02a86e.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/2c4aabb4-423b-4c61-b1b6-64f47d1b5711.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/46131606-30ec-4229-90d9-67504a5e7bbf.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/4a5f31d3-a0e6-4c15-b1c8-93a2002fa94d.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/4def2ecd-261a-4afc-9e8e-cc6ca17206c7.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/81bdc368-2f48-4d58-b4a0-2c1970028417.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/8eb28a05-dcc7-47eb-837b-a88bb26fa2a9.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/980e3228-116c-4e1e-817c-998fef4c36de.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/9cbdda6f-a994-43ea-8e98-0e7b75ed3e96.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/9f2a9e0f-ac30-4b14-bf71-1334b86323f7.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/bad149a7-b885-4e8b-95f2-4fd6a292d9ef.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/c5208e50-10ce-471b-891a-a005a0a23af9.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/c5a5a118-ae74-4139-9566-5f454b320b37.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810000/c8997caa-88a2-4493-87ef-e31897cba3db.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/02866b1a-22c5-43e9-a5c1-5ac174227dab.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/083de72f-375a-4310-b286-6d072ed29199.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/099d5c8f-f23c-4a3a-ba79-0d2bbd92e089.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/1d9ad32b-a287-4f26-8e28-0c5d1fa9bd7a.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/2b3c2453-26b8-4460-96f9-0193579e37ac.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/4b653df4-7ca0-4a0b-8727-4eec4543e8da.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/553d86c8-0e45-4e24-b7e6-91add3cd9a35.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/5b552d2a-1479-41b7-be0e-f6680984a593.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/78bc9f4a-8e86-4175-966b-2d19754635a2.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/827278d4-7841-4bfb-bbda-b75866a76a6e.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/8df29cee-0bfa-4cc8-87d3-f8dbe1fbc718.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/b7c9d294-d936-464e-9c22-26f665fa9d0d.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/baa9f5da-98a4-4c3a-bd54-8e4b085e2252.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/cb95288a-1f37-42ea-977b-33a71832184e.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/d132cd0c-465e-40db-be91-8dd34726ce24.root',
+    '/store/mc/Run3Summer22DR/QCD_Pt-15To7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_castor_124X_mcRun3_2022_realistic_v12-v1/2810003/e6c0bddb-63d1-43d6-a094-148a1769b211.root',
   ]
 
 # dump content of cms.Process to python file
