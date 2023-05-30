@@ -44,7 +44,7 @@ opts.register('globalTag', None,
               vpo.VarParsing.varType.string,
               'argument of process.GlobalTag.globaltag')
 
-opts.register('reco', 'HLT_TRKv06_TICL',
+opts.register('reco', 'HLT_75e33',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
               'keyword defining reconstruction methods for JME inputs')

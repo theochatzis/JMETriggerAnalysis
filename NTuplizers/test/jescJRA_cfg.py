@@ -39,10 +39,10 @@ opts.register('wantSummary', False,
               vpo.VarParsing.varType.bool,
               'show cmsRun summary at job completion')
 
-#opts.register('globalTag', None,
-#              vpo.VarParsing.multiplicity.singleton,
-#              vpo.VarParsing.varType.string,
-#              'argument of process.GlobalTag.globaltag')
+opts.register('globalTag', None,
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.string,
+              'argument of process.GlobalTag.globaltag')
 
 opts.register('reco', 'HLT_75e33',
               vpo.VarParsing.multiplicity.singleton,
@@ -64,13 +64,47 @@ opts.parseArguments()
 ###
 ### base configuration file
 ###
+
+# customisation to change min-pT threshold of tracks in HLT reco
+def customisePhase2TrackingPtThresholds(process, ptMin):
+  process.CkfBaseTrajectoryFilter_block.minPt = cms.double(ptMin)
+  process.HLTIter0Phase2L3FromL1TkMuonGroupedCkfTrajectoryFilterIT.minPt = cms.double(ptMin)
+  process.HLTPSetMuonCkfTrajectoryFilter.minPt = cms.double(ptMin)
+  process.TrajectoryFilterForConversions.minPt = cms.double(ptMin)
+  process.highPtTripletStepTrajectoryFilterBase.minPt = cms.double(ptMin)
+  process.highPtTripletStepTrajectoryFilterInOut.minPt = cms.double(ptMin)
+  process.hltPhase2L3MuonHighPtTripletStepTrajectoryBuilder.minPt = cms.double(ptMin)
+  process.hltPhase2L3MuonHighPtTripletStepTrajectoryFilterBase.minPt = cms.double(ptMin)
+  process.hltPhase2L3MuonHighPtTripletStepTrajectoryFilterInOut.minPt = cms.double(ptMin)
+  process.hltPhase2L3MuonInitialStepTrajectoryBuilder.minPt = cms.double(ptMin)
+  process.hltPhase2L3MuonInitialStepTrajectoryFilter.minPt = cms.double(ptMin)
+  process.initialStepTrajectoryFilter.minPt = cms.double(ptMin)
+  process.muonSeededTrajectoryFilterForInOut.minPt = cms.double(ptMin)
+  process.muonSeededTrajectoryFilterForOutIn.minPt = cms.double(ptMin)
+  process.muonSeededTrajectoryFilterForOutInDisplaced.minPt = cms.double(ptMin)
+  process.firstStepPrimaryVerticesUnsorted.TkFilterParameters.minPt = cms.double(ptMin)
+  process.generalTracks.MinPT = cms.double(ptMin)
+  process.highPtTripletStepTrackingRegions.RegionPSet.ptMin = cms.double(ptMin)
+  process.hltPhase2L3MuonGeneralTracks.MinPT = cms.double(ptMin)
+  process.hltPhase2L3MuonHighPtTripletStepTrackingRegions.RegionPSet.ptMin = cms.double(ptMin)
+  process.hltPhase2L3MuonPixelTrackFilterByKinematics.ptMin = cms.double(ptMin)
+  process.hltPhase2L3MuonPixelTracksFilter.ptMin = cms.double(ptMin)
+  process.hltPhase2L3MuonPixelTracksTrackingRegions.RegionPSet.ptMin = cms.double(ptMin)
+  process.pixelTrackFilterByKinematics.ptMin = cms.double(ptMin)
+  process.pixelTracksTrackingRegions.RegionPSet.ptMin = cms.double(ptMin)
+  process.trackWithVertexRefSelectorBeforeSorting.ptMin = cms.double(ptMin)
+  process.unsortedOfflinePrimaryVertices.TkFilterParameters.minPt = cms.double(ptMin)
+  return process
+
 if opts.reco == 'HLT_TRKv06p1':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p1_cfg import cms, process
 elif opts.reco == 'HLT_TRKv06p1_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p1_TICL_cfg import cms, process
 elif opts.reco == 'HLT_75e33':
   from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg import cms, process
-  #from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg_JECS import cms, process
+  # optimal tracking thresholds for MET
+  process = customisePhase2TrackingPtThresholds(process,1.8)
+  #process.schedule_().append(process.MC_JME)
 else:
    raise RuntimeError('invalid argument for option "reco": "'+opts.reco+'"')
 
@@ -95,9 +129,10 @@ for algorithm in [
   getattr(process, algorithm).deltaRMax = 0.1
 
 ## update process.GlobalTag.globaltag
-#if opts.globalTag is not None:
-#   from Configuration.AlCa.GlobalTag import GlobalTag
-#   process.GlobalTag = GlobalTag(process.GlobalTag, opts.globalTag, '')
+if opts.globalTag is not None:
+   from Configuration.AlCa.GlobalTag import GlobalTag
+   process.GlobalTag = GlobalTag(process.GlobalTag, opts.globalTag, '')
+
 
 # max number of events to be processed
 process.maxEvents.input = opts.maxEvents
