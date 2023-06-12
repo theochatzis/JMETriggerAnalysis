@@ -65,6 +65,9 @@ protected:
   std::vector<std::string> const TriggerResultsFilterAND_;
 
   std::vector<std::string> const outputBranchesToBeDropped_;
+  // std::vector<uint> const SelectionRun_;
+  // std::vector<uint> const SelectionLumi_;
+  // std::vector<uint> const SelectionEvent_;
 
   std::unordered_map<std::string, std::string> stringCutObjectSelectors_map_;
 
@@ -180,6 +183,9 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
       TriggerResultsFilterOR_(iConfig.getParameter<std::vector<std::string>>("TriggerResultsFilterOR")),
       TriggerResultsFilterAND_(iConfig.getParameter<std::vector<std::string>>("TriggerResultsFilterAND")),
       outputBranchesToBeDropped_(iConfig.getParameter<std::vector<std::string>>("outputBranchesToBeDropped")) {
+      // SelectionRun_(iConfig.getParameter<std::vector<uint>>("SelectionRun")),
+      // SelectionLumi_(iConfig.getParameter<std::vector<uint>>("SelectionLumi")),
+      // SelectionEvent_(iConfig.getParameter<std::vector<uint>>("SelectionEvent")) {
   const auto& TriggerResultsInputTag = iConfig.getParameter<edm::InputTag>("TriggerResults");
   const auto& TriggerResultsCollections = iConfig.getParameter<std::vector<std::string>>("TriggerResultsCollections");
 
@@ -421,24 +427,26 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   this->addBranch("run", &run_);
   this->addBranch("luminosityBlock", &luminosityBlock_);
   this->addBranch("event", &event_);
+  
+  if(iConfig.exists("HepMCProduct")){
+    this->addBranch("HepMCGenEvent_scale", &hepMCGenEvent_scale_);
+    this->addBranch("GenEventInfo_qScale", &genEventInfo_qScale_);
 
-  this->addBranch("HepMCGenEvent_scale", &hepMCGenEvent_scale_);
-  this->addBranch("GenEventInfo_qScale", &genEventInfo_qScale_);
+    this->addBranch("pileupInfo_BX0_numPUInteractions", &pileupInfo_BX0_numPUInteractions_);
+    this->addBranch("pileupInfo_BX0_numTrueInteractions", &pileupInfo_BX0_numTrueInteractions_);
+    this->addBranch("pileupInfo_BX0_max_pT_hats", &pileupInfo_BX0_max_pT_hats_);
 
-  this->addBranch("pileupInfo_BX0_numPUInteractions", &pileupInfo_BX0_numPUInteractions_);
-  this->addBranch("pileupInfo_BX0_numTrueInteractions", &pileupInfo_BX0_numTrueInteractions_);
-  this->addBranch("pileupInfo_BX0_max_pT_hats", &pileupInfo_BX0_max_pT_hats_);
-
-  this->addBranch("pileupInfo_BX0_n_pThat000to020", &pileupInfo_BX0_n_pThat000to020_);
-  this->addBranch("pileupInfo_BX0_n_pThat020to030", &pileupInfo_BX0_n_pThat020to030_);
-  this->addBranch("pileupInfo_BX0_n_pThat030to050", &pileupInfo_BX0_n_pThat030to050_);
-  this->addBranch("pileupInfo_BX0_n_pThat050to080", &pileupInfo_BX0_n_pThat050to080_);
-  this->addBranch("pileupInfo_BX0_n_pThat080to120", &pileupInfo_BX0_n_pThat080to120_);
-  this->addBranch("pileupInfo_BX0_n_pThat120to170", &pileupInfo_BX0_n_pThat120to170_);
-  this->addBranch("pileupInfo_BX0_n_pThat170to300", &pileupInfo_BX0_n_pThat170to300_);
-  this->addBranch("pileupInfo_BX0_n_pThat300to470", &pileupInfo_BX0_n_pThat300to470_);
-  this->addBranch("pileupInfo_BX0_n_pThat470to600", &pileupInfo_BX0_n_pThat470to600_);
-  this->addBranch("pileupInfo_BX0_n_pThat600toInf", &pileupInfo_BX0_n_pThat600toInf_);
+    this->addBranch("pileupInfo_BX0_n_pThat000to020", &pileupInfo_BX0_n_pThat000to020_);
+    this->addBranch("pileupInfo_BX0_n_pThat020to030", &pileupInfo_BX0_n_pThat020to030_);
+    this->addBranch("pileupInfo_BX0_n_pThat030to050", &pileupInfo_BX0_n_pThat030to050_);
+    this->addBranch("pileupInfo_BX0_n_pThat050to080", &pileupInfo_BX0_n_pThat050to080_);
+    this->addBranch("pileupInfo_BX0_n_pThat080to120", &pileupInfo_BX0_n_pThat080to120_);
+    this->addBranch("pileupInfo_BX0_n_pThat120to170", &pileupInfo_BX0_n_pThat120to170_);
+    this->addBranch("pileupInfo_BX0_n_pThat170to300", &pileupInfo_BX0_n_pThat170to300_);
+    this->addBranch("pileupInfo_BX0_n_pThat300to470", &pileupInfo_BX0_n_pThat300to470_);
+    this->addBranch("pileupInfo_BX0_n_pThat470to600", &pileupInfo_BX0_n_pThat470to600_);
+    this->addBranch("pileupInfo_BX0_n_pThat600toInf", &pileupInfo_BX0_n_pThat600toInf_);
+  }
 
   for (const auto& triggerEntry_i : triggerResultsContainer_ptr_->entries()) {
     this->addBranch(triggerEntry_i.name, const_cast<bool*>(&triggerEntry_i.accept));
@@ -817,6 +825,20 @@ void JMETriggerNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   run_ = iEvent.id().run();
   luminosityBlock_ = iEvent.id().luminosityBlock();
   event_ = iEvent.id().event();
+
+  // use specific events to fill ////////////////////////////////////////////
+  // bool foundEvent=false;
+  // for(unsigned int i=0;i<SelectionRun_.size();i++){
+  //   //std::cout << SelectionRun_[i] << std::endl;
+  //   if(run_==SelectionRun_[i] && luminosityBlock_==SelectionLumi_[i] && event_==SelectionEvent_[i]){
+  //     foundEvent=true;
+  //   }
+  // }
+
+  // if(!foundEvent){
+  //   return;
+  // }
+  ///////////////////////////////////////////////////////////////////////////
 
   // MC: HepMCProduct
   hepMCGenEvent_scale_ = -1.f;
