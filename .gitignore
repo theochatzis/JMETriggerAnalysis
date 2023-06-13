@@ -43,3 +43,5 @@ out*
 condor.sub
 configDump*
 *_old*
+triggerEff*.C
+ntuples
