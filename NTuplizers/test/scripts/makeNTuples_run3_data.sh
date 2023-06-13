@@ -7,7 +7,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-NEVT=500000
+NEVT=1000000
 
 OUTPUT_DIR_EOS=/eos/user/t/tchatzis/samples2023
 ODIR=${1}
@@ -15,14 +15,15 @@ ODIR=${1}
 
 declare -A samplesMap
 
-# QCD 
-samplesMap["Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65"]='/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter23MiniAOD-126X_mcRun3_2023_forPU65_v1-v2/MINIAODSIM'
-
-# VBF H(125)->Invisible
-samplesMap["Run3Winter23_VBF_HToInvisible_13p6TeV_PU65"]="/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter23MiniAOD-126X_mcRun3_2023_forPU65_v1-v2/MINIAODSIM"
+# data 
+#samplesMap["data"]='/JetMET/Run2022G-PromptReco-v1/MINIAOD'
+#samplesMap["data"]='/Muon/Run2022G-PromptReco-v1/MINIAOD'
+samplesMap["data"]='/JetMET1/Run2023B-PromptReco-v1/MINIAOD'
 
 recoKeys=(
-  HLT_Run3TRK
+  #default
+  hcal_jecs2022
+  hcal_jecs2023
 )
 
 if [ -d ${OUTPUT_DIR_EOS}/${ODIR} ]; then
@@ -42,7 +43,7 @@ fi
 
 
 for recoKey in "${recoKeys[@]}"; do
-  python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple_cfg.py dumpPython=.tmp_cfg.py 
+  python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple2023Data_cfg.py reco=${recoKey} dumpPython=.tmp_cfg.py #lumis=${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/Cert_Collisions2022_eraG_362433_362760_Golden.json 
 
   for sampleKey in ${!samplesMap[@]}; do
     sampleName=${samplesMap[${sampleKey}]}
@@ -60,8 +61,8 @@ for recoKey in "${recoKeys[@]}"; do
     
     if [ -d ${ODIR}/${recoKey}/${sampleKey} ]; then rm -rf ${ODIR}/${recoKey}/${sampleKey}; fi
     
-    bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 1000 --memory 2G --time 02:00:00 \
-      -d ${sampleName} -p 2 -o ${ODIR}/${recoKey}/${sampleKey} \
+    bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 5000 --memory 2G --time 01:00:00 \
+      -d ${sampleName} -p 1 -o ${ODIR}/${recoKey}/${sampleKey} \
       --final-output ${FINAL_OUTPUT_DIR} \
       --submit \
       --customise-commands \

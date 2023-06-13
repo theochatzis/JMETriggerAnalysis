@@ -1,5 +1,6 @@
 import os
 import fnmatch
+import csv 
 
 from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
 
@@ -43,8 +44,7 @@ opts.register('wantSummary', False,
 #              vpo.VarParsing.multiplicity.singleton,
 #              vpo.VarParsing.varType.string,
 #              'argument of process.GlobalTag.globaltag')
-
-opts.register('reco', 'HLT_Run3TRK',
+opts.register('reco', 'hcal_jecs2023',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
               'keyword to define HLT reconstruction')
@@ -74,18 +74,32 @@ opts.parseArguments()
 ###
 ### HLT configuration
 ###
-if opts.reco == 'HLT_oldJECs':
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_3_0_GRun_configDump import cms, process
-  update_jmeCalibs = False
 
-elif opts.reco == 'HLT_Run3TRK':
-  # from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
-  # update_jmeCalibs = True
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump_noCustom import cms, process
+update_jmeCalibs = False
+
+if opts.reco == 'default':
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump_data import cms, process
   update_jmeCalibs = False
+elif opts.reco == 'hcal_jecs2023':
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump_data import cms, process
+  # customizations
+  from HLTrigger.Configuration.customizeHLTFor2023 import customizeHLTFor2023_v4
+  process = customizeHLTFor2023_v4(process)
+  update_jmeCalibs = True
+elif opts.reco == 'hcal_jecs2022':
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump_data import cms, process
+  # customizations
+  from HLTrigger.Configuration.customizeHLTFor2023 import customizeHCALFor2023
+  process = customizeHCALFor2023(process)
+  from HLTrigger.Configuration.customizeHLTFor2023 import customizeHCALinCaloJetsFor2023_v4
+  process = customizeHCALinCaloJetsFor2023_v4(process)
+  update_jmeCalibs = False
+  
 
 else:
   raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
+
+
 
 # remove cms.OutputModule objects from HLT config-dump
 for _modname in process.outputModules_():
@@ -113,12 +127,14 @@ keepPaths = [
   'MC_*Jets*',
   'MC_*MET*',
   'MC_*AK8Calo*',
+  'MC_*HT*',
   'HLT_PFJet*_v*',
   'HLT_AK4PFJet*_v*',
   'HLT_AK8PFJet*_v*',
+  'AlCa_*Jet*',
   'HLT_PFHT*_v*',
   'HLT_PFMET*_PFMHT*_v*',
-  'AlCa_*'
+  'HLT_IsoMu27_v*',
 ]
 
 vetoPaths = [
@@ -150,19 +166,55 @@ for _modname in sorted(process.paths_()):
       print('{:<99} | {:<4} |'.format(_modname, ''))
 print('-'*108)
 
-
 # remove FastTimerService
 if hasattr(process, 'FastTimerService'):
   del process.FastTimerService
+
+###
+### customisations
+###
+
+## customised JME collections
+from JMETriggerAnalysis.Common.customise_hlt import *
+#process = addPaths_MC_JMECalo(process)
+#process = addPaths_MC_JMEPFCluster(process)
+#process = addPaths_MC_JMEPF(process)
+#process = addPaths_MC_JMEPFCHS(process)
+#process = addPaths_MC_JMEPFPuppi(process)
+
+process.MC_PFMET_v20 = cms.Path(
+    process.SimL1Emulator
+  +process.HLTBeginSequence
+  +process.hltPreMCPFMET
+  +process.HLTAK4PFJetsSequence
+  +process.hltPFMETProducer
+  +process.hltcorrPFMETTypeOne
+  +process.hltPFMETTypeOne
+  +process.hltPFMETOpenFilter
+  +process.HLTEndSequence
+)
+
+#process.MC_CaloHT_v11 = cms.Path(process.SimL1Emulator+process.HLTBeginSequence+process.hltPreMCCaloHT+process.HLTAK4CaloJetsSequence+process.hltHtMhtForMC+process.hltHtMhtJet30+process.hltCaloHTOpenFilter+process.HLTEndSequence)
+#process.MC_PFHT_v19 = cms.Path(process.SimL1Emulator+process.HLTBeginSequence+process.hltPreMCPFHT+process.HLTAK4PFJetsSequence+process.hltPFHTForMC+process.hltPFHTJet30+process.hltPFHTOpenFilter+process.HLTEndSequence)
+
+# check using only L1T for one path:
+# process.HLT_PFJet140_v22 = cms.Path(
+#   process.SimL1Emulator
+# + process.HLTBeginSequence
+# + process.hltL1sSingleJet90
+# + process.HLTEndSequence
+# )
+
 
 if update_jmeCalibs:
   ## ES modules for PF-Hadron Calibrations
   process.pfhcESSource = cms.ESSource('PoolDBESSource',
     _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/PFCalibration.db'),
+    #_CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('PFCalibrationRcd'),
-        tag = cms.string('PFCalibration_CMSSW_13_0_0_HLT_126X_mcRun3_2023'),
+        tag = cms.string('PFCalibration_CMSSW_13_0_0_HLT_126X_v4_mcRun3_2023'),
         label = cms.untracked.string('HLT'),
       ),
     ),
@@ -170,9 +222,10 @@ if update_jmeCalibs:
   process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
   #process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
 
-  ## ES modules for HLT JECs
+  ##ES modules for HLT JECs
   process.jescESSource = cms.ESSource('PoolDBESSource',
     _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Run3Winter23Digi.db'),
+    #_CondDB.clone(connect = 'sqlite_file:Run3Winter23Digi.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
@@ -198,25 +251,72 @@ if update_jmeCalibs:
   )
   process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
 
-# else:
-#   ## ES modules for HLT JECs
-#   process.jescESSource = cms.ESSource('PoolDBESSource',
-#     _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/JESC_Run3Winter23Digi.db'),
-#     toGet = cms.VPSet(
-#       cms.PSet(
-#         record = cms.string('JetCorrectionsRecord'),
-#         tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK4PFHLT'),#!!
-#         label = cms.untracked.string('AK4PFchsHLT'),
-#       ),
-#       cms.PSet(
-#         record = cms.string('JetCorrectionsRecord'),
-#         tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK8PFHLT'),#!!
-#         label = cms.untracked.string('AK8PFchsHLT'),
-#       ),
-#     ),
-#   )
-#   process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
+# -- adding the offline jecs separately
+process.offlinejescESSource = cms.ESSource('PoolDBESSource',
+  _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Winter23Prompt23_RunA_V1_DATA.db'),
+  #_CondDB.clone(connect = 'sqlite_file:Winter23Prompt23_RunA_V1_DATA.db'),
+  toGet = cms.VPSet(
+    cms.PSet(
+      record = cms.string('JetCorrectionsRecord'),
+      tag = cms.string('JetCorrectorParametersCollection_Winter23Prompt23_RunA_V1_DATA_AK4PFPuppi'),
+      label = cms.untracked.string('AK4PFPuppi'),
+    ),
+    cms.PSet(
+      record = cms.string('JetCorrectionsRecord'),
+      tag = cms.string('JetCorrectorParametersCollection_Winter23Prompt23_RunA_V1_DATA_AK8PFPuppi'),
+      label = cms.untracked.string('AK8PFPuppi'),
+    ),
+  ),
+)
+process.offlinejescESPrefer = cms.ESPrefer('PoolDBESSource', 'offlinejescESSource')
 
+#--- Updating offline JECs 
+from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
+# Load JECs
+jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute','L2L3Residual']
+jecToUse = cms.vstring(jecLevels)
+updateJetCollection(
+    process,
+    jetSource=cms.InputTag("slimmedJetsPuppi"),  # Input PAT jet collection
+    labelName="AK4PFPuppi",  # Label for the updated jet collection - will become patJetCorrFactors[labelName]
+    jetCorrections=("AK4PFPuppi", jecToUse, "None"),  # JECs to be applied
+)
+
+updateJetCollection(
+    process,
+    jetSource=cms.InputTag("slimmedJetsAK8"),  # Input PAT jet collection
+    labelName="AK8PFPuppi",  # Label for the updated jet collection - will become patJetCorrFactors[labelName]
+    jetCorrections=("AK8PFPuppi", jecToUse, "None"),  # JECs to be applied
+)
+
+process.jecSequence = cms.Sequence(process.patJetCorrFactorsAK4PFPuppi * process.updatedPatJetsAK4PFPuppi * process.patJetCorrFactorsAK8PFPuppi * process.updatedPatJetsAK8PFPuppi)
+process.offlineJecPath = cms.Path(process.jecSequence)
+process.schedule.append(process.offlineJecPath)
+
+
+
+
+# ### selection of specific events to fill
+# # CSV file with columns:
+# #Run,Lumi,Event
+# specificEventsFile = os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/events_tr_fail_ht1050.csv'
+
+# # Open the CSV file
+# with open(specificEventsFile,'r') as file:
+#     # Create a CSV reader object
+#     reader = csv.reader(file)
+    
+#     # Read the first row to get the column names
+#     headers = next(reader)
+    
+#     # Create empty lists for each column
+#     columns = [[] for _ in headers]
+    
+#     # Iterate over each row in the CSV file
+#     for row in reader:
+#         # Iterate over each value in the row and append it to the respective column list
+#         for i, value in enumerate(row):
+#             columns[i].append(int(value)) # convert string to int and append to each column
 
 ## Output NTuple
 process.TFileService = cms.Service('TFileService', fileName = cms.string(opts.output))
@@ -229,17 +329,21 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   TriggerResultsCollections = cms.vstring(
     sorted(list(set([(_tmp[:_tmp.rfind('_v')] if '_v' in _tmp else _tmp) for _tmp in listOfPaths])))
   ),
+  # SelectionRun = cms.vuint32(columns[0]),
+  # SelectionLumi = cms.vuint32(columns[1]),
+  # SelectionEvent = cms.vuint32(columns[2]),
   outputBranchesToBeDropped = cms.vstring(),
 
-  HepMCProduct = cms.InputTag('generatorSmeared'),
-  GenEventInfoProduct = cms.InputTag('generator'),
-  PileupSummaryInfo = cms.InputTag('addPileupInfo'),
+  #HepMCProduct = cms.InputTag('generatorSmeared'),
+  #GenEventInfoProduct = cms.InputTag('generator'),
+  #PileupSummaryInfo = cms.InputTag('addPileupInfo'),
 
   doubles = cms.PSet(
 
-    hltFixedGridRhoFastjetAllCalo = cms.InputTag('hltFixedGridRhoFastjetAllCalo'),
+    #hltFixedGridRhoFastjetAllCalo = cms.InputTag('hltFixedGridRhoFastjetAllCalo'),
     #hltFixedGridRhoFastjetAllPFCluster = cms.InputTag('hltFixedGridRhoFastjetAllPFCluster'),
-    hltFixedGridRhoFastjetAll = cms.InputTag('hltFixedGridRhoFastjetAll'),
+    #hltFixedGridRhoFastjetAll = cms.InputTag('hltFixedGridRhoFastjetAll'),
+    
     offlineFixedGridRhoFastjetAll = cms.InputTag('fixedGridRhoFastjetAll::RECO'),
 
     #hltPixelClustersMultiplicity = cms.InputTag('hltPixelClustersMultiplicity'),
@@ -250,8 +354,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoVertexCollections = cms.PSet(
 
-    hltPixelVertices = cms.InputTag('hltPixelVertices'),
-    hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
+    #hltPixelVertices = cms.InputTag('hltPixelVertices'),
+    #hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
     #hltVerticesPF = cms.InputTag('hltVerticesPF'),
     offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
   ),
@@ -261,31 +365,31 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoGenJetCollections = cms.PSet(
 
-    ak4GenJetsNoNu = cms.InputTag('ak4GenJetsNoNu::HLT'),
-    ak8GenJetsNoNu = cms.InputTag('ak8GenJetsNoNu::HLT'),
+    #ak4GenJetsNoNu = cms.InputTag('ak4GenJetsNoNu::HLT'),
+    #ak8GenJetsNoNu = cms.InputTag('ak8GenJetsNoNu::HLT'),
   ),
 
   recoCaloJetCollections = cms.PSet(
 
-    hltAK4CaloJets = cms.InputTag('hltAK4CaloJets'),
+    #hltAK4CaloJets = cms.InputTag('hltAK4CaloJets'),
     hltAK4CaloJetsCorrected = cms.InputTag('hltAK4CaloJetsCorrected'),
 
-    hltAK8CaloJets = cms.InputTag('hltAK8CaloJets'),
+    #hltAK8CaloJets = cms.InputTag('hltAK8CaloJets'),
     hltAK8CaloJetsCorrected = cms.InputTag('hltAK8CaloJetsCorrected'),
   ),
 
-# recoPFClusterJetCollections = cms.PSet(
+  recoPFClusterJetCollections = cms.PSet(
 
-#   hltAK4PFClusterJets = cms.InputTag('hltAK4PFClusterJets'),
-#   hltAK4PFClusterJetsCorrected = cms.InputTag('hltAK4PFClusterJetsCorrected'),
+    #hltAK4PFClusterJets = cms.InputTag('hltAK4PFClusterJets'),
+    #hltAK4PFClusterJetsCorrected = cms.InputTag('hltAK4PFClusterJetsCorrected'),
 
-#   hltAK8PFClusterJets = cms.InputTag('hltAK8PFClusterJets'),
-#   hltAK8PFClusterJetsCorrected = cms.InputTag('hltAK8PFClusterJetsCorrected'),
-# ),
+    #hltAK8PFClusterJets = cms.InputTag('hltAK8PFClusterJets'),
+    #hltAK8PFClusterJetsCorrected = cms.InputTag('hltAK8PFClusterJetsCorrected'),
+  ),
 
   recoPFJetCollections = cms.PSet(
 
-    hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
+    #hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
     hltAK4PFJetsCorrected = cms.InputTag('hltAK4PFJetsCorrected'),
 
     #hltAK4PFCHSJets = cms.InputTag('hltAK4PFCHSJets'),
@@ -294,7 +398,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     #hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
     #hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
 
-    hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
+    #hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
     hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
 
     #hltAK8PFCHSJets = cms.InputTag('hltAK8PFCHSJets'),
@@ -302,37 +406,40 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
     #hltAK8PFPuppiJets = cms.InputTag('hltAK8PFPuppiJets'),
     #hltAK8PFPuppiJetsCorrected = cms.InputTag('hltAK8PFPuppiJetsCorrected'),
+
   ),
 
   patJetCollections = cms.PSet(
-
     offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
-    offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
-    offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
+    offlineAK4PFPuppiJetsCorrected = cms.InputTag('updatedPatJetsAK4PFPuppi'),
+    offlineAK8PFPuppiJetsCorrected = cms.InputTag('updatedPatJetsAK8PFPuppi'),
   ),
 
   recoGenMETCollections = cms.PSet(
 
-    genMETCalo = cms.InputTag('genMetCalo::HLT'),
-    genMETTrue = cms.InputTag('genMetTrue::HLT'),
+    #genMETCalo = cms.InputTag('genMetCalo::HLT'),
+    #genMETTrue = cms.InputTag('genMetTrue::HLT'),
   ),
-
+  # recoMETCollections = cms.PSet (
+  #   hltCaloHT = cms.InputTag('hltHtMhtJet30'),
+  #   hltPFHT = cms.InputTag('hltPFHTJet30')
+  # ),
   recoCaloMETCollections = cms.PSet(
 
-    #hltCaloMET = cms.InputTag('hltMet'),
+    hltCaloMET = cms.InputTag('hltMet'),
     #hltCaloMETTypeOne = cms.InputTag('hltCaloMETTypeOne'),
   ),
 
-# recoPFClusterMETCollections = cms.PSet(
+  recoPFClusterMETCollections = cms.PSet(
 
-#   hltPFClusterMET = cms.InputTag('hltPFClusterMET'),
-#   hltPFClusterMETTypeOne = cms.InputTag('hltPFClusterMETTypeOne'),
-# ),
+    #hltPFClusterMET = cms.InputTag('hltPFClusterMET'),
+    #hltPFClusterMETTypeOne = cms.InputTag('hltPFClusterMETTypeOne'),
+  ),
 
   recoPFMETCollections = cms.PSet(
 
     hltPFMET = cms.InputTag('hltPFMETProducer'),
-    #hltPFMETTypeOne = cms.InputTag('hltPFMETTypeOne'),
+    hltPFMETTypeOne = cms.InputTag('hltPFMETTypeOne'),
 
     #hltPFCHSMET = cms.InputTag('hltPFCHSMET'),
     #hltPFCHSMETTypeOne = cms.InputTag('hltPFCHSMETTypeOne'),
@@ -375,8 +482,8 @@ process.maxEvents.input = opts.maxEvents
 process.source.skipEvents = cms.untracked.uint32(opts.skipEvents)
 
 # multi-threading settings
-process.options.numberOfThreads = max(opts.numThreads, 8)
-process.options.numberOfStreams = max(opts.numStreams, 0)
+process.options.numberOfThreads = opts.numThreads
+process.options.numberOfStreams = opts.numStreams
 
 # show cmsRun summary at job completion
 process.options.wantSummary = cms.untracked.bool(opts.wantSummary)
@@ -396,11 +503,9 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
-    #'/store/mc/Run3Winter23MiniAOD/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/MINIAODSIM/FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v2/2540000/10e9c9ff-b431-42c5-a1ec-e3143eafee20.root',
-    '/store/mc/Run3Winter23MiniAOD/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/MINIAODSIM/126X_mcRun3_2023_forPU65_v1-v2/2550000/19e43825-6b8e-426e-9cca-e23cf318737c.root',
-    #'',
-    #'',
-    #'',
+    '/store/data/Run2022G/Muon/MINIAOD/PromptReco-v1/000/362/362/00000/f6126759-0090-43f1-9746-f012d665b19d.root'
+    #'/store/data/Run2023B/Muon0/RAW/v1/000/366/895/00000/8c846177-ca3d-4c0f-a602-b401cb32b041.root'
+
   ]
 
 # input EDM files [secondary]
@@ -411,15 +516,10 @@ if opts.secondaryInputFiles:
   process.source.secondaryFileNames = opts.secondaryInputFiles
 else:
   process.source.secondaryFileNames = [
-    #'/store/mc/Run3Winter23Digi/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1/2560000/00d203d8-3ef3-4ca2-884d-a6b2f3bfbb6e.root',
-    #'',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/f61dc979-f42d-443f-8a1f-587b3353b109.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/e465ec59-571a-4dd5-b429-93b2b55f643b.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/f90d178a-8997-43ca-b9c9-edc49b733fcb.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/572aa6f8-a7a2-4db2-b332-5729c37ba743.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/5d2ccf3f-7f9f-4237-b210-a48c838dfa6a.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/b17347c9-536a-4b06-9a68-f8199e76ddf2.root',
+    '/store/data/Run2022G/Muon/RAW/v1/000/362/362/00000/fe383907-a8c5-4f53-80a8-d11efe8b0d9e.root'
   ]
+
+#process.source.eventsToProcess = cms.untracked.VEventRange("325057:61751881")
 
 # dump content of cms.Process to python file
 if opts.dumpPython is not None:
