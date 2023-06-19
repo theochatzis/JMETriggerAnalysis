@@ -21,11 +21,12 @@ public:
 
   class Entry {
   public:
-    explicit Entry(const std::string& name, const bool res) : name(name), accept(res) {}
+    explicit Entry(const std::string& name, const bool res) : name(name), accept(res), wasrun(res) {}
     virtual ~Entry() {}
 
     const std::string name;
-    bool accept;
+    bool accept; // shows if trigger trigger accepts the event
+    bool wasrun; // shows if trigger is available to "decide" due to prescales (unprescaled triggers are always ON)
   };
 
   const std::vector<Entry>& entries() { return entries_; }

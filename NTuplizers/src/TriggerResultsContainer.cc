@@ -29,7 +29,9 @@ TriggerResultsContainer::TriggerResultsContainer(const std::vector<std::string>&
 
 void TriggerResultsContainer::clear() {
   for (auto& entry_i : entries_) {
+    // default values are set to false
     entry_i.accept = false;
+    entry_i.wasrun = false;
   }
 }
 
@@ -66,6 +68,28 @@ void TriggerResultsContainer::fill(const edm::TriggerResults& triggerResults, co
           LogDebug("Value") << "path = " << triggerName << ", path (un-versioned) = " << triggerName_unv
                             << ", accept = " << triggerResults.at(idx).accept()
                             << ", matched to entry with name = " << entry_i.name << " (accept = " << entry_i.accept
+                            << ")";
+        }
+      }
+    }
+    
+    // change "wasrun" values for triggers that were available to decide    
+    if (triggerResults.at(idx).wasrun()) {
+      const auto& triggerName = triggerNames.at(idx);
+      const auto triggerName_unv = triggerName.substr(0, triggerName.rfind("_v"));
+
+      LogDebug("Value") << "path = " << triggerName << ", path (un-versioned) = " << triggerName_unv
+                        << ", wasrun = " << triggerResults.at(idx).wasrun();
+
+      for (auto& entry_i : entries_) {
+        // require Entry::name to match either full name (e.g. "HLT_IsoMu24_v10")
+        // or name without version (e.g. "HLT_IsoMu24")
+        if ((entry_i.name == triggerName_unv) || (entry_i.name == triggerName)) {
+          entry_i.wasrun = triggerResults.at(idx).wasrun();
+
+          LogDebug("Value") << "path = " << triggerName << ", path (un-versioned) = " << triggerName_unv
+                            << ", wasrun = " << triggerResults.at(idx).wasrun()
+                            << ", matched to entry with name = " << entry_i.name << " (wasrun = " << entry_i.wasrun
                             << ")";
         }
       }
