@@ -112,13 +112,13 @@ print('-'*108)
 keepPaths = [
   'MC_*Jets*',
   'MC_*MET*',
-  'MC_*AK8Calo*',
-  'HLT_PFJet*_v*',
-  'HLT_AK4PFJet*_v*',
-  'HLT_AK8PFJet*_v*',
-  'HLT_PFHT*_v*',
-  'HLT_PFMET*_PFMHT*_v*',
-  'AlCa_*',
+  #'MC_*AK8Calo*',
+  #'HLT_PFJet*_v*',
+  #'HLT_AK4PFJet*_v*',
+  #'HLT_AK8PFJet*_v*',
+  #'HLT_PFHT*_v*',
+  #'HLT_PFMET*_PFMHT*_v*',
+  #'AlCa_*',
   'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*'
 ]
 
@@ -240,7 +240,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   doubles = cms.PSet(
 
-    hltFixedGridRhoFastjetAllCalo = cms.InputTag('hltFixedGridRhoFastjetAllCalo'),
+    #hltFixedGridRhoFastjetAllCalo = cms.InputTag('hltFixedGridRhoFastjetAllCalo'),
     #hltFixedGridRhoFastjetAllPFCluster = cms.InputTag('hltFixedGridRhoFastjetAllPFCluster'),
     hltFixedGridRhoFastjetAll = cms.InputTag('hltFixedGridRhoFastjetAll'),
     #offlineFixedGridRhoFastjetAll = cms.InputTag('fixedGridRhoFastjetAll::RECO'),
@@ -254,8 +254,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   recoVertexCollections = cms.PSet(
 
     hltPixelVertices = cms.InputTag('hltPixelVertices'),
-    hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
-    #hltVerticesPF = cms.InputTag('hltVerticesPF'),
+    #hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
+    hltVerticesPF = cms.InputTag('hltVerticesPF'),
     #offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
   ),
 
@@ -265,7 +265,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   recoGenJetCollections = cms.PSet(
 
     ak4GenJetsNoNu = cms.InputTag('ak4GenJetsNoNu::HLT'),
-    ak8GenJetsNoNu = cms.InputTag('ak8GenJetsNoNu::HLT'),
+    #ak8GenJetsNoNu = cms.InputTag('ak8GenJetsNoNu::HLT'),
   ),
 
   recoCaloJetCollections = cms.PSet(
@@ -273,8 +273,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     hltAK4CaloJets = cms.InputTag('hltAK4CaloJets'),
     hltAK4CaloJetsCorrected = cms.InputTag('hltAK4CaloJetsCorrected'),
 
-    hltAK8CaloJets = cms.InputTag('hltAK8CaloJets'),
-    hltAK8CaloJetsCorrected = cms.InputTag('hltAK8CaloJetsCorrected'),
+    #hltAK8CaloJets = cms.InputTag('hltAK8CaloJets'),
+    #hltAK8CaloJetsCorrected = cms.InputTag('hltAK8CaloJetsCorrected'),
   ),
 
 # recoPFClusterJetCollections = cms.PSet(
@@ -297,8 +297,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     #hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
     #hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
 
-    hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
-    hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
+    #hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
+    #hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
 
     #hltAK8PFCHSJets = cms.InputTag('hltAK8PFCHSJets'),
     #hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
@@ -316,8 +316,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoGenMETCollections = cms.PSet(
 
-    genMETCalo = cms.InputTag('genMetCalo::HLT'),
-    genMETTrue = cms.InputTag('genMetTrue::HLT'),
+    #genMETCalo = cms.InputTag('genMetCalo::HLT'),
+    #genMETTrue = cms.InputTag('genMetTrue::HLT'),
   ),
 
   recoCaloMETCollections = cms.PSet(
@@ -334,7 +334,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoPFMETCollections = cms.PSet(
 
-    hltPFMET = cms.InputTag('hltPFMETProducer'),
+    #hltPFMET = cms.InputTag('hltPFMETProducer'),
     #hltPFMETTypeOne = cms.InputTag('hltPFMETTypeOne'),
 
     #hltPFCHSMET = cms.InputTag('hltPFCHSMET'),
@@ -351,7 +351,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   ),
 
   recoMuonCollections = cms.PSet(
-    hltMuons = cms.InputTag('hltIterL3Muons'),
+    hltMuons = cms.InputTag('hltIterL3Muons'), # this collection uses the miniAOD definition muon::isLooseTriggerMuon(reco::Muon)
   )
 )
 
