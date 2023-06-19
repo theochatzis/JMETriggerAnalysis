@@ -79,10 +79,10 @@ if opts.reco == 'HLT_oldJECs':
   update_jmeCalibs = False
 
 elif opts.reco == 'HLT_Run3TRK':
-  # from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
-  # update_jmeCalibs = True
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump_noCustom import cms, process
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
   update_jmeCalibs = False
+  #from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump_noCustom import cms, process
+  #update_jmeCalibs = False
 
 else:
   raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
@@ -118,7 +118,8 @@ keepPaths = [
   'HLT_AK8PFJet*_v*',
   'HLT_PFHT*_v*',
   'HLT_PFMET*_PFMHT*_v*',
-  'AlCa_*'
+  'AlCa_*',
+  'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*'
 ]
 
 vetoPaths = [
@@ -159,10 +160,11 @@ if update_jmeCalibs:
   ## ES modules for PF-Hadron Calibrations
   process.pfhcESSource = cms.ESSource('PoolDBESSource',
     _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/PFCalibration.db'),
+    #_CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('PFCalibrationRcd'),
-        tag = cms.string('PFCalibration_CMSSW_13_0_0_HLT_126X_mcRun3_2023'),
+        tag = cms.string('PFCalibration_CMSSW_13_0_0_HLT_126X_v4_mcRun3_2023'),
         label = cms.untracked.string('HLT'),
       ),
     ),
@@ -170,9 +172,10 @@ if update_jmeCalibs:
   process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
   #process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
 
-  ## ES modules for HLT JECs
+  ##ES modules for HLT JECs
   process.jescESSource = cms.ESSource('PoolDBESSource',
     _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Run3Winter23Digi.db'),
+    #_CondDB.clone(connect = 'sqlite_file:Run3Winter23Digi.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
@@ -240,7 +243,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     hltFixedGridRhoFastjetAllCalo = cms.InputTag('hltFixedGridRhoFastjetAllCalo'),
     #hltFixedGridRhoFastjetAllPFCluster = cms.InputTag('hltFixedGridRhoFastjetAllPFCluster'),
     hltFixedGridRhoFastjetAll = cms.InputTag('hltFixedGridRhoFastjetAll'),
-    offlineFixedGridRhoFastjetAll = cms.InputTag('fixedGridRhoFastjetAll::RECO'),
+    #offlineFixedGridRhoFastjetAll = cms.InputTag('fixedGridRhoFastjetAll::RECO'),
 
     #hltPixelClustersMultiplicity = cms.InputTag('hltPixelClustersMultiplicity'),
   ),
@@ -253,7 +256,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     hltPixelVertices = cms.InputTag('hltPixelVertices'),
     hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
     #hltVerticesPF = cms.InputTag('hltVerticesPF'),
-    offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    #offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
   ),
 
   recoPFCandidateCollections = cms.PSet(
@@ -306,9 +309,9 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   patJetCollections = cms.PSet(
 
-    offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
-    offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
-    offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
+    #offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
+    #offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
+    #offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
   ),
 
   recoGenMETCollections = cms.PSet(
@@ -343,9 +346,13 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   patMETCollections = cms.PSet(
 
-    offlinePFMET = cms.InputTag('slimmedMETs'),
-    offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
+    #offlinePFMET = cms.InputTag('slimmedMETs'),
+    #offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
   ),
+
+  recoMuonCollections = cms.PSet(
+    hltMuons = cms.InputTag('hltIterL3Muons'),
+  )
 )
 
 if opts.keepPFPuppi:
@@ -397,7 +404,8 @@ if opts.inputFiles:
 else:
   process.source.fileNames = [
     #'/store/mc/Run3Winter23MiniAOD/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/MINIAODSIM/FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v2/2540000/10e9c9ff-b431-42c5-a1ec-e3143eafee20.root',
-    '/store/mc/Run3Winter23MiniAOD/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/MINIAODSIM/126X_mcRun3_2023_forPU65_v1-v2/2550000/19e43825-6b8e-426e-9cca-e23cf318737c.root',
+    '/store/mc/Run3Winter23Digi/DYToMuMu_M-20_TuneCP5_13p6TeV-pythia8/GEN-SIM-RAW/GTv4Digi_126X_mcRun3_2023_forPU65_v4-v2/2820000/0070321e-e4e6-4769-900f-0c0ad3831215.root'
+    #'/store/mc/Run3Winter23MiniAOD/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/MINIAODSIM/126X_mcRun3_2023_forPU65_v1-v2/2550000/19e43825-6b8e-426e-9cca-e23cf318737c.root',
     #'',
     #'',
     #'',
@@ -412,13 +420,13 @@ if opts.secondaryInputFiles:
 else:
   process.source.secondaryFileNames = [
     #'/store/mc/Run3Winter23Digi/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1/2560000/00d203d8-3ef3-4ca2-884d-a6b2f3bfbb6e.root',
-    #'',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/f61dc979-f42d-443f-8a1f-587b3353b109.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/e465ec59-571a-4dd5-b429-93b2b55f643b.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/f90d178a-8997-43ca-b9c9-edc49b733fcb.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/572aa6f8-a7a2-4db2-b332-5729c37ba743.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/5d2ccf3f-7f9f-4237-b210-a48c838dfa6a.root',
-    '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/b17347c9-536a-4b06-9a68-f8199e76ddf2.root',
+    #
+    # '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/f61dc979-f42d-443f-8a1f-587b3353b109.root',
+    # '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/e465ec59-571a-4dd5-b429-93b2b55f643b.root',
+    # '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/f90d178a-8997-43ca-b9c9-edc49b733fcb.root',
+    # '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/572aa6f8-a7a2-4db2-b332-5729c37ba743.root',
+    # '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/5d2ccf3f-7f9f-4237-b210-a48c838dfa6a.root',
+    # '/store/mc/Run3Winter23Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/126X_mcRun3_2023_forPU65_v1-v2/40000/b17347c9-536a-4b06-9a68-f8199e76ddf2.root',
   ]
 
 # dump content of cms.Process to python file

@@ -30,6 +30,7 @@
 #include "JMETriggerAnalysis/NTuplizers/interface/RecoPFMETCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/PATMETCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/PATMuonCollectionContainer.h"
+#include "JMETriggerAnalysis/NTuplizers/interface/RecoMuonCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/PATElectronCollectionContainer.h"
 
 #include <string>
@@ -101,6 +102,7 @@ protected:
   std::vector<RecoPFMETCollectionContainer> v_recoPFMETCollectionContainer_;
   std::vector<PATMETCollectionContainer> v_patMETCollectionContainer_;
   std::vector<PATMuonCollectionContainer> v_patMuonCollectionContainer_;
+  std::vector<RecoMuonCollectionContainer> v_recoMuonCollectionContainer_;
   std::vector<PATElectronCollectionContainer> v_patElectronCollectionContainer_;
 
   TTree* ttree_ = nullptr;
@@ -398,6 +400,17 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   for (auto& cc_i : v_patMuonCollectionContainer_) {
     cc_i.orderByHighestPt(true);
   }
+
+  // reco::MuonCollection
+  initCollectionContainer<RecoMuonCollectionContainer, reco::Muon>(iConfig,
+                                                                 v_recoMuonCollectionContainer_,
+                                                                 "recoMuonCollections",
+                                                                 "reco::MuonCollection",
+                                                                 stringCutObjectSelectors_map_);
+  for (auto& cc_i : v_recoMuonCollectionContainer_) {
+    cc_i.orderByHighestPt(true);
+  }
+
 
   // pat::ElectronCollection
   initCollectionContainer<PATElectronCollectionContainer, pat::Electron>(iConfig,
@@ -789,6 +802,17 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
     this->addBranch(patMuonCollectionContainer_i.name() + "_pfIso", &patMuonCollectionContainer_i.vec_pfIso());
   }
 
+  for (auto& recoMuonCollectionContainer_i : v_recoMuonCollectionContainer_) {
+    this->addBranch(recoMuonCollectionContainer_i.name() + "_pdgId", &recoMuonCollectionContainer_i.vec_pdgId());
+    this->addBranch(recoMuonCollectionContainer_i.name() + "_pt", &recoMuonCollectionContainer_i.vec_pt());
+    this->addBranch(recoMuonCollectionContainer_i.name() + "_eta", &recoMuonCollectionContainer_i.vec_eta());
+    this->addBranch(recoMuonCollectionContainer_i.name() + "_phi", &recoMuonCollectionContainer_i.vec_phi());
+    this->addBranch(recoMuonCollectionContainer_i.name() + "_mass", &recoMuonCollectionContainer_i.vec_mass());
+    this->addBranch(recoMuonCollectionContainer_i.name() + "_vx", &recoMuonCollectionContainer_i.vec_vx());
+    this->addBranch(recoMuonCollectionContainer_i.name() + "_vy", &recoMuonCollectionContainer_i.vec_vy());
+    this->addBranch(recoMuonCollectionContainer_i.name() + "_vz", &recoMuonCollectionContainer_i.vec_vz());
+  }
+
   for (auto& patElectronCollectionContainer_i : v_patElectronCollectionContainer_) {
     this->addBranch(patElectronCollectionContainer_i.name() + "_pdgId", &patElectronCollectionContainer_i.vec_pdgId());
     this->addBranch(patElectronCollectionContainer_i.name() + "_pt", &patElectronCollectionContainer_i.vec_pt());
@@ -1040,6 +1064,10 @@ void JMETriggerNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   // pat::MuonCollection
   this->fillCollectionContainer<PATMuonCollectionContainer, pat::Muon>(
       iEvent, v_patMuonCollectionContainer_, fillCollectionConditionMap_);
+  
+  // reco::MuonCollection
+  this->fillCollectionContainer<RecoMuonCollectionContainer, reco::Muon>(
+      iEvent, v_recoMuonCollectionContainer_, fillCollectionConditionMap_);
 
   // pat::ElectronCollection
   this->fillCollectionContainer<PATElectronCollectionContainer, pat::Electron>(
