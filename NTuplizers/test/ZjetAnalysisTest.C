@@ -98,12 +98,12 @@ void ZjetAnalysisTest(){
 
     //jets cuts
     cut_kinematics_jet = ( fabs((*hltAK4PFJetsCorrected_eta)[0]) < 1.3 ) 
-                    and  ( (*hltAK4PFJetsCorrected_pt)[0] > 30. ) 
+                    and  ( (*hltAK4PFJetsCorrected_pt)[0] > 12. ) 
                     and  ( ( Njets > 1 ) ? (*hltAK4PFJetsCorrected_pt)[1]/(*hltAK4PFJetsCorrected_pt)[0] < 1.0 : true);
     if (!cut_kinematics_jet) continue;
 
     //Z (dimuon) cuts
-    cut_dimuon = ( p4_Z.DeltaPhi(p4_jet)< 0.44 ) and ( fabs(p4_Z.M() - 90) < 20 ) and ( p4_Z.Pt() > 50 );
+    cut_dimuon = ( p4_Z.DeltaPhi(p4_jet) > 2.7 ) and ( fabs(p4_Z.M() - 90) < 20 ) and ( p4_Z.Pt() > 15 );
     if (!cut_dimuon) continue; 
     
     h_ptResponse -> Fill(p4_jet.Pt()/p4_Z.Pt());
