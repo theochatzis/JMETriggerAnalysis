@@ -116,16 +116,16 @@ process.pfHadCalibNTuple = cms.EDAnalyzer('PFHadCalibNTuple',
   genParticlePdgId = cms.int32(-211), # pdgID of selected GEN particles
   genParticleIsoMinDeltaR = cms.double(1.0), # min deltaR between "isolated" GEN particles and other GEN particles
 
-  minPt = cms.double(0.01), # min pt
-  minTrackP = cms.double(0.01), # min track momentum
-  minTrackPt = cms.double(0.01), # min track transverse momentum
-  minCaloEnergy = cms.double(0.0), # min ecal+hcal energy
+  minPt = cms.double(1.00), # min pt
+  minTrackP = cms.double(1.00), # min track momentum
+  minTrackPt = cms.double(1.00), # min track transverse momentum
+  minCaloEnergy = cms.double(0.5), # min ecal+hcal energy
   maxECalEnergy = cms.double(1e12), # max ecal energy
 
   # min nb of pixel and pixel+strip hits (per track-eta range)
   minPixelHits = cms.vuint32(2, 2, 2, 2, 2),
-  minTrackerHits = cms.vuint32(2, 2, 2, 2, 2),
-  maxEtaForMinTrkHitsCuts = cms.vdouble(1.4, 1.6, 2.0, 2.5, 999.0),
+  minTrackerHits = cms.vuint32(14, 17, 20, 17, 10),
+  maxEtaForMinTrkHitsCuts = cms.vdouble(1.4, 1.6, 2.0, 2.4, 2.6),
 
   usePFBlockElements = cms.bool(True),
 )
