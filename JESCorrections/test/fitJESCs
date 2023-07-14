@@ -6,8 +6,10 @@ set -euo pipefail
 ## -------------------------
 JESC_BASE=${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test
 
-JRANTuple_NoPU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jec/jmeTriggerNTuple_NoPU.root
-JRANTuple_PU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jec/jmeTriggerNTuple_PU0to120.root
+JRANTuple_NoPU=/eos/cms/store/user/chuh/jec/v6/jmeTriggerNTuple_EpsilonPU.root
+JRANTuple_PU=/eos/cms/store/user/chuh/jec/v6/jmeTriggerNTuple_PU0to80.root
+#JRANTuple_NoPU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jec/jmeTriggerNTuple_NoPU.root
+#JRANTuple_PU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jec/jmeTriggerNTuple_PU0to120.root
 
 ERA=Run3Winter23Digi
 
@@ -16,6 +18,8 @@ JET_TYPES=(
   ak8pfHLT
   ak4caloHLT
   ak8caloHLT
+  ak4pfchsHLT
+  ak8pfchsHLT
 )
 #JET_TYPES=(
 #  ak4pfHLT

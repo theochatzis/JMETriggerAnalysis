@@ -124,7 +124,8 @@ process.pfHadCalibNTuple = cms.EDAnalyzer('PFHadCalibNTuple',
 
   # min nb of pixel and pixel+strip hits (per track-eta range)
   minPixelHits = cms.vuint32(2, 2, 2, 2, 2),
-  minTrackerHits = cms.vuint32(14, 17, 20, 17, 10),
+  #minTrackerHits = cms.vuint32(14, 17, 20, 17, 10),
+  minTrackerHits = cms.vuint32(2, 2, 2, 2, 2),
   maxEtaForMinTrkHitsCuts = cms.vdouble(1.4, 1.6, 2.0, 2.4, 2.6),
 
   usePFBlockElements = cms.bool(True),
