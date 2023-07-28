@@ -27,6 +27,9 @@ public:
   std::vector<float>& vec_vx() { return vx_; }
   std::vector<float>& vec_vy() { return vy_; }
   std::vector<float>& vec_vz() { return vz_; }
+  std::vector<bool>& vec_isTightID() { return isTightID_; }
+  std::vector<float>& vec_pfIso() { return pfIso_; }
+  std::vector<float>& vec_trkIso() { return trkIso_; }
 
 
 protected:
@@ -38,6 +41,9 @@ protected:
   std::vector<float> vx_;
   std::vector<float> vy_;
   std::vector<float> vz_;
+   std::vector<bool> isTightID_;
+  std::vector<float> pfIso_;
+  std::vector<float> trkIso_;
 };
 
 #endif

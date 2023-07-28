@@ -23,11 +23,14 @@ public:
   virtual void emplace_back(const T&) = 0;
 
   void orderByHighestPt(const bool foo) { orderByHighestPt_ = foo; }
+  int  &getCollectionSize() {  return jetCollectionSize_; }
 
 protected:
   // ordering
   std::vector<size_t> idxs_;  // vector of indeces (used for ordering)
   bool orderByHighestPt_;     // order objects by decreasing pT values
+  // this is the size of the collection - used for multiplicity of objects
+  int jetCollectionSize_;     
 };
 
 template <class T>
@@ -45,7 +48,9 @@ void VRecoCandidateCollectionContainer<T>::fill(const std::vector<T>& coll, cons
   if (clear_before_filling) {
     this->clear();
   }
-
+  
+  jetCollectionSize_ = coll.size();
+  
   this->reserve(coll.size());
 
   if (orderByHighestPt_) {

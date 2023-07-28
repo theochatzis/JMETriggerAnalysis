@@ -16,7 +16,7 @@ public:
   void clear() override;
   void reserve(const size_t) override;
   void emplace_back(const pat::Jet&) override;
-
+  
   std::vector<float>& vec_pt() { return pt_; }
   std::vector<float>& vec_eta() { return eta_; }
   std::vector<float>& vec_phi() { return phi_; }
@@ -25,6 +25,7 @@ public:
   std::vector<float>& vec_jesc() { return jesc_; }
   std::vector<float>& vec_jetArea() { return jetArea_; }
   std::vector<uint>& vec_numberOfDaughters() { return numberOfDaughters_; }
+  std::vector<uint>& vec_jetID() { return jetID_; }
 
   std::vector<float>& vec_chargedHadronEnergyFraction() { return chargedHadronEnergyFraction_; }
   std::vector<float>& vec_neutralHadronEnergyFraction() { return neutralHadronEnergyFraction_; }
@@ -38,6 +39,8 @@ public:
   std::vector<int>& vec_photonMultiplicity() { return photonMultiplicity_; }
   std::vector<int>& vec_muonMultiplicity() { return muonMultiplicity_; }
 
+  
+
 protected:
   std::vector<float> pt_;
   std::vector<float> eta_;
@@ -47,6 +50,7 @@ protected:
   std::vector<float> jesc_;
   std::vector<float> jetArea_;
   std::vector<uint> numberOfDaughters_;
+  std::vector<uint> jetID_;
 
   std::vector<float> chargedHadronEnergyFraction_;
   std::vector<float> neutralHadronEnergyFraction_;

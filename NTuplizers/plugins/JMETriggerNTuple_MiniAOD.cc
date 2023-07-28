@@ -660,14 +660,16 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
   }
 
   for (auto& patJetCollectionContainer_i : v_patJetCollectionContainer_) {
+    this->addBranch(patJetCollectionContainer_i.name() + "_multiplicity",
+                    &patJetCollectionContainer_i.getCollectionSize());
     this->addBranch(patJetCollectionContainer_i.name() + "_pt", &patJetCollectionContainer_i.vec_pt());
     this->addBranch(patJetCollectionContainer_i.name() + "_eta", &patJetCollectionContainer_i.vec_eta());
     this->addBranch(patJetCollectionContainer_i.name() + "_phi", &patJetCollectionContainer_i.vec_phi());
     this->addBranch(patJetCollectionContainer_i.name() + "_mass", &patJetCollectionContainer_i.vec_mass());
     this->addBranch(patJetCollectionContainer_i.name() + "_jesc", &patJetCollectionContainer_i.vec_jesc());
     this->addBranch(patJetCollectionContainer_i.name() + "_jetArea", &patJetCollectionContainer_i.vec_jetArea());
-    this->addBranch(patJetCollectionContainer_i.name() + "_numberOfDaughters",
-                    &patJetCollectionContainer_i.vec_numberOfDaughters());
+    this->addBranch(patJetCollectionContainer_i.name() + "_numberOfDaughters", &patJetCollectionContainer_i.vec_numberOfDaughters());
+    this->addBranch(patJetCollectionContainer_i.name() + "_jetID", &patJetCollectionContainer_i.vec_jetID());
     this->addBranch(patJetCollectionContainer_i.name() + "_chargedHadronEnergyFraction",
                     &patJetCollectionContainer_i.vec_chargedHadronEnergyFraction());
     this->addBranch(patJetCollectionContainer_i.name() + "_neutralHadronEnergyFraction",
@@ -779,6 +781,8 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
   }
 
   for (auto& patMuonCollectionContainer_i : v_patMuonCollectionContainer_) {
+    this->addBranch(patMuonCollectionContainer_i.name() + "_multiplicity",
+                    &patMuonCollectionContainer_i.getCollectionSize());
     this->addBranch(patMuonCollectionContainer_i.name() + "_pdgId", &patMuonCollectionContainer_i.vec_pdgId());
     this->addBranch(patMuonCollectionContainer_i.name() + "_pt", &patMuonCollectionContainer_i.vec_pt());
     this->addBranch(patMuonCollectionContainer_i.name() + "_eta", &patMuonCollectionContainer_i.vec_eta());

@@ -38,6 +38,8 @@ public:
   std::vector<int>& vec_photonMultiplicity() { return photonMultiplicity_; }
   std::vector<int>& vec_muonMultiplicity() { return muonMultiplicity_; }
 
+  std::vector<bool>& vec_jetID() { return jetID_; }
+
 protected:
   std::vector<float> pt_;
   std::vector<float> eta_;
@@ -59,6 +61,8 @@ protected:
   std::vector<int> electronMultiplicity_;
   std::vector<int> photonMultiplicity_;
   std::vector<int> muonMultiplicity_;
+
+  std::vector<bool> jetID_;
 };
 
 #endif

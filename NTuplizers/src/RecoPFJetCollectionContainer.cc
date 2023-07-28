@@ -28,6 +28,8 @@ void RecoPFJetCollectionContainer::clear() {
   electronMultiplicity_.clear();
   photonMultiplicity_.clear();
   muonMultiplicity_.clear();
+
+  jetID_.clear();
 }
 
 void RecoPFJetCollectionContainer::reserve(const size_t vec_size) {
@@ -39,7 +41,6 @@ void RecoPFJetCollectionContainer::reserve(const size_t vec_size) {
   jesc_.reserve(vec_size);
   jetArea_.reserve(vec_size);
   numberOfDaughters_.reserve(vec_size);
-  ;
 
   chargedHadronEnergyFraction_.reserve(vec_size);
   neutralHadronEnergyFraction_.reserve(vec_size);
@@ -52,6 +53,8 @@ void RecoPFJetCollectionContainer::reserve(const size_t vec_size) {
   electronMultiplicity_.reserve(vec_size);
   photonMultiplicity_.reserve(vec_size);
   muonMultiplicity_.reserve(vec_size);
+
+  jetID_.reserve(vec_size);
 }
 
 void RecoPFJetCollectionContainer::emplace_back(const reco::PFJet& obj) {
@@ -81,4 +84,24 @@ void RecoPFJetCollectionContainer::emplace_back(const reco::PFJet& obj) {
   electronMultiplicity_.emplace_back(obj.electronMultiplicity());
   photonMultiplicity_.emplace_back(obj.photonMultiplicity());
   muonMultiplicity_.emplace_back(obj.muonMultiplicity());
+  
+  float eta = obj.eta();
+  float CEMF = (obj.electronEnergyFraction() + obj.photonEnergyFraction()) * jesc;
+  float CHM  = obj.chargedHadronMultiplicity();
+  float CHF  = obj.chargedHadronEnergyFraction() * jesc;
+  float NumConst = obj.numberOfDaughters();
+  float NEMF = obj.photonEnergyFraction() * jesc;
+  float MUF = obj.muonEnergyFraction() * jesc;
+  float NHF = obj.neutralHadronEnergyFraction() * jesc;
+  float NumNeutralParticle = obj.neutralHadronMultiplicity() + obj.photonMultiplicity();
+
+  jetID_.emplace_back(
+  (abs(eta)<=2.4 && CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && MUF <0.8 && NHF < 0.9 )
+  or
+  ( abs(eta)>2.4 && abs(eta)<=2.7 && NEMF<0.99 && NHF < 0.98 )
+  or 
+  ( NumNeutralParticle>=1 && abs(eta)>2.7 && abs(eta)<=3.0 )
+  or 
+  (NEMF<0.90 && NumNeutralParticle>2 && abs(eta)>3.0 )
+  );
 }

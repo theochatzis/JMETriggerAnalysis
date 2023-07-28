@@ -186,10 +186,11 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
         if ((hltL1TSeedModuleIndex < 0) and (hltPrescaleModuleIndex < 0)) {
           hltL1TSeedModuleIndex = idx;
         } else if (hltL1TSeedModuleIndex >= 0) {
-          throw cms::Exception("InputError") << "found more than one match for L1T-Seed module of HLT-Path"
-                                             << " (1st match = \"" << moduleLabels.at(hltL1TSeedModuleIndex)
-                                             << "\", 2nd match = \"" << moduleLabel << "\")"
-                                             << ", HLT-Path = \"" << iPathName << "\"";
+          hltL1TSeedModuleIndex = -1;
+          // throw cms::Exception("InputError") << "found more than one match for L1T-Seed module of HLT-Path"
+          //                                    << " (1st match = \"" << moduleLabels.at(hltL1TSeedModuleIndex)
+          //                                    << "\", 2nd match = \"" << moduleLabel << "\")"
+          //                                    << ", HLT-Path = \"" << iPathName << "\"";
         } else {
           throw cms::Exception("InputError")
               << "found L1T-Seed module of HLT-Path after its HLT-Prescale module"
@@ -219,15 +220,19 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 
     if (hltPathLastModuleIndex < 0) {
       throw cms::Exception("InputError") << "failed to find last module executed in the HLT-Path: " << iPathName;
-    } else if (hltL1TSeedModuleIndex < 0) {
-      throw cms::Exception("InputError") << "failed to find L1T-Seed module of HLT-Path: " << iPathName;
-    } else if (hltPrescaleModuleIndex < 0) {
+    } 
+    // else if (hltL1TSeedModuleIndex < 0) {
+    //   throw cms::Exception("InputError") << "failed to find L1T-Seed module of HLT-Path: " << iPathName;
+    // } 
+    else if (hltPrescaleModuleIndex < 0) {
       throw cms::Exception("InputError") << "failed to find HLT-Prescale module of HLT-Path: " << iPathName;
     }
 
-    LogTrace("") << "[TriggerFlagsProducer::produce]       "
+    if(hltL1TSeedModuleIndex>=0){
+      LogTrace("") << "[TriggerFlagsProducer::produce]       "
                  << "hltL1TSeedModuleIndex = " << hltL1TSeedModuleIndex << " (\""
                  << moduleLabels.at(hltL1TSeedModuleIndex) << "\")";
+    }
 
     LogTrace("") << "[TriggerFlagsProducer::produce]       "
                  << "hltPrescaleModuleIndex = " << hltPrescaleModuleIndex << " (\""
@@ -236,10 +241,14 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
     LogTrace("") << "[TriggerFlagsProducer::produce]       "
                  << "hltPathLastModuleIndex = " << hltPathLastModuleIndex << " (\""
                  << moduleLabels.at(hltPathLastModuleIndex) << "\")";
-
-    l1tSeedAccept = (hltL1TSeedModuleIndex == hltPathLastModuleIndex)
+    if(hltL1TSeedModuleIndex<0){
+      l1tSeedAccept = false;
+    }else{
+      l1tSeedAccept = (hltL1TSeedModuleIndex == hltPathLastModuleIndex)
                         ? triggerResults->accept(iPathIndex)
                         : (hltL1TSeedModuleIndex < hltPathLastModuleIndex);
+    }
+    
     hltPathPrescaled =
         (hltPrescaleModuleIndex == hltPathLastModuleIndex) ? (not triggerResults->accept(iPathIndex)) : false;
     hltPathAccept = triggerResults->accept(iPathIndex);
@@ -344,9 +353,11 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
         // consistency check between HLT-Path and L1GlobalUtil
         if (hltL1TSeedModuleIndex <= hltPathLastModuleIndex) {
           if (l1tSeedAccept != l1tSeedAcceptFromL1GlobalUtilFinal) {
-            throw cms::Exception("Input") << "Return value of L1T-Seed module of HLT-Path (" << l1tSeedAccept
+            if(hltL1TSeedModuleIndex>=0){
+              throw cms::Exception("Input") << "Return value of L1T-Seed module of HLT-Path (" << l1tSeedAccept
                                           << ") differs from value returned by the HLTPrescaleProvider::l1tGlobalUtil ("
                                           << l1tSeedAcceptFromL1GlobalUtilFinal << "): " << iPathName;
+            }
           }
         }
 

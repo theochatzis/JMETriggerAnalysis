@@ -52,29 +52,32 @@ void PATMuonCollectionContainer::emplace_back(const pat::Muon& obj) {
 
   uint obj_id(0);
   if (obj.hasUserInt("IDLoose") && (obj.userInt("IDLoose") > 0)) {
-    obj_id |= (1u << 0);
+    obj_id = 0;
+    //obj_id |= (1u << 0);
   }
   if (obj.hasUserInt("IDMedium") && (obj.userInt("IDMedium") > 0)) {
-    obj_id |= (1u << 1);
+    obj_id = 1;
+    //obj_id |= (1u << 1);
   }
   if (obj.hasUserInt("IDTight") && (obj.userInt("IDTight") > 0)) {
-    obj_id |= (1u << 2);
+    obj_id = 2;
+    //obj_id |= (1u << 2);
   }
-  if (obj.hasUserInt("IDSoft") && (obj.userInt("IDSoft") > 0)) {
-    obj_id |= (1u << 3);
-  }
-  if (obj.hasUserInt("IDHighPt") && (obj.userInt("IDHighPt") > 0)) {
-    obj_id |= (1u << 4);
-  }
-  if (obj.hasUserInt("IDHighPtTRK") && (obj.userInt("IDHighPtTRK") > 0)) {
-    obj_id |= (1u << 5);
-  }
-  if (obj.hasUserInt("IDLooseHZZ") && (obj.userInt("IDLooseHZZ") > 0)) {
-    obj_id |= (1u << 6);
-  }
-  if (obj.hasUserInt("IDTightHZZ") && (obj.userInt("IDTightHZZ") > 0)) {
-    obj_id |= (1u << 7);
-  }
+  // if (obj.hasUserInt("IDSoft") && (obj.userInt("IDSoft") > 0)) {
+  //   obj_id |= (1u << 3);
+  // }
+  // if (obj.hasUserInt("IDHighPt") && (obj.userInt("IDHighPt") > 0)) {
+  //   obj_id |= (1u << 4);
+  // }
+  // if (obj.hasUserInt("IDHighPtTRK") && (obj.userInt("IDHighPtTRK") > 0)) {
+  //   obj_id |= (1u << 5);
+  // }
+  // if (obj.hasUserInt("IDLooseHZZ") && (obj.userInt("IDLooseHZZ") > 0)) {
+  //   obj_id |= (1u << 6);
+  // }
+  // if (obj.hasUserInt("IDTightHZZ") && (obj.userInt("IDTightHZZ") > 0)) {
+  //   obj_id |= (1u << 7);
+  // }
   id_.emplace_back(obj_id);
 
   pfIso_.emplace_back(obj.hasUserFloat("pfIsoR04") ? obj.userFloat("pfIsoR04") : -9999.);
