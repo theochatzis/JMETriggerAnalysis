@@ -13,13 +13,23 @@ JRANTuple_PU=/eos/cms/store/user/chuh/jec/v6/jmeTriggerNTuple_PU0to80.root
 
 ERA=Run3Winter23Digi
 
+# Check this out for L1 correction - this defines the binning of mu
+# if for example your sample has flat PU0to80 use the binning such that the maximum is 80
+# Typically a bin width of ~ 10-15 is good enough, no need to be too detailed in this partition.
+# e.g. in this case an option is:
+# L1_CORRECTION_NBINS=8
+# L1_CORRECTION_BIN_WIDTH=10
+
+L1_CORRECTION_NBINS=8
+L1_CORRECTION_BIN_WIDTH=10
+
 JET_TYPES=(
   ak4pfHLT
   ak8pfHLT
   ak4caloHLT
   ak8caloHLT
-  ak4pfchsHLT
-  ak8pfchsHLT
+  #ak4pfchsHLT
+  #ak8pfchsHLT
 )
 #JET_TYPES=(
 #  ak4pfHLT
@@ -137,7 +147,7 @@ runJECWorflowForOneAlgo(){
 
     stepNameOld=${stepName} && ((++stepN)) && stepName="step"$(printf "%02d" ${stepN})
     if [ ! -f ${stepName}.done ]; then
-      CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU} -NBinsNpvRhoNpu 8 -npvRhoNpuBinWidth 15"
+      CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU} -NBinsNpvRhoNpu ${L1_CORRECTION_NBINS} -npvRhoNpuBinWidth ${L1_CORRECTION_BIN_WIDTH}"
       #CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU}"
       CMD_STEP+=" -ApplyJEC false"
       CMD_STEP+=" -ignoreNPV true -overwriteNPVwithNPUInTime true"
@@ -148,7 +158,7 @@ runJECWorflowForOneAlgo(){
 
     stepNameOld=${stepName} && ((++stepN)) && stepName="step"$(printf "%02d" ${stepN})
     if [ ! -f ${stepName}.done ]; then
-      CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true -NBinsNpvRhoNpu 8 -npvRhoNpuBinWidth 15"
+      CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true -NBinsNpvRhoNpu ${L1_CORRECTION_NBINS} -npvRhoNpuBinWidth ${L1_CORRECTION_BIN_WIDTH}"
       #CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true"
       CMD_STEP+=" -inputDir ./ -outDir plots_${stepName} -outputFormat .png"
       stepCmd "mkdir -p plots_${stepName}\n\n${CMD_STEP}" ${stepName}
@@ -162,7 +172,7 @@ runJECWorflowForOneAlgo(){
 
     stepNameOld=${stepName} && ((++stepN)) && stepName="step"$(printf "%02d" ${stepN})
     if [ ! -f ${stepName}.done ]; then
-      CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU} -NBinsNpvRhoNpu 8 -npvRhoNpuBinWidth 15"
+      CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU} -NBinsNpvRhoNpu ${L1_CORRECTION_NBINS} -npvRhoNpuBinWidth ${L1_CORRECTION_BIN_WIDTH}"
       #CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU}"
       CMD_STEP+=" -ApplyJEC true -JECpar ./${ERA}_L1FastJet_*.txt"
       CMD_STEP+=" -ignoreNPV true -overwriteNPVwithNPUInTime true"
@@ -173,7 +183,7 @@ runJECWorflowForOneAlgo(){
 
     stepNameOld=${stepName} && ((++stepN)) && stepName="step"$(printf "%02d" ${stepN})
     if [ ! -f ${stepName}.done ]; then
-      CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true -NBinsNpvRhoNpu 8 -npvRhoNpuBinWidth 15"
+      CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true -NBinsNpvRhoNpu ${L1_CORRECTION_NBINS} -npvRhoNpuBinWidth ${L1_CORRECTION_BIN_WIDTH}"
       #CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true"
       CMD_STEP+=" -inputDir plots_${stepNameOld} -outDir plots_${stepName} -outputFormat .png"
       stepCmd "mkdir -p plots_${stepName}\n\n${CMD_STEP}" ${stepName}
