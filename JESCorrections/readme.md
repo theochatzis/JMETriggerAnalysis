@@ -12,15 +12,40 @@ eval `scram runtime -sh`
 git cms-merge-topic  silviodonato:customizeHLTfor2023
 
 git clone https://github.com/cghuh/JetMETAnalysis.git -b hlt_run3
-git clone https://github.com/cghuh/JMETriggerAnalysis.git -b run3_13_0_X
+git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b run3_13_0_X_jecs
 scram b -j 8
 ```
 
 #### Produce JRA NTuples with HLT Jets
+First test your setup locally: 
+```bash
+# First make your way to the 'test' directory
+cd JMETriggerAnalysis/JESCorrections/test/
+cmsRun jescJRA_cfg.py  maxEvents=1000  output=test_jra_step.root 
+```
+Note: You might want to double check that what is set in the `jescJRA_cfg.py`, such as the `.root` file matches the sample you want to use, or that the `.db` file of the PFHCs is up-to-date.  
 
- * How to run the JRA step locally and with crab
- * Which samples to use, how to find them in DAS
- * What to do if a sample is not available at a Tier-2 (transfer request, Rucio rule)
+If the test runs sucessfuly, you can then inspect the output root file `test_jra_step.root`  and make sure the contents are as expected.
+
+Once all looks good you can submit your crab jobs. 
+```bash
+crab submit -c crab/my_crab_submission_file.py
+```
+You need generally 2 submissions:
+- one for `QCD with noPU` (or equivalently Epsilon PU) sample,
+- and one for a `flatPT spectrum QCD` (so there isn't a bias in the pT for the corrections derivation).
+The noPU sample is used for the L1 Offset correction. If you intend to only derive corrections for PUPPI, and you don't think you need this type of corrections, you may ommit this file production.
+
+Note: You might need to change the line where the `.db` file of the PFHCs is picked up so that CRAB can find the file. 
+
+Once the crab jobs are finished, the output `.root` files can be found in the Tier2 (T2) specified in the configuration file,
+and then transferred over to `eos` for the next steps.
+
+**Note** that in order to run the ntuple-making process on CRAB, there needs to be a copy of them on **a** T2. You can request to transfer them to your local T2 by requesting it through `rucio` (find more info in the [CMS Rucio Twiki](https://twiki.cern.ch/twiki/bin/viewauth/CMS/Rucio)):
+```bash
+rucio add-rule cms:/QCD_Pt-15to7000_TuneCP5_Flat_14TeV_pythia8/Run3Winter20DRMiniAOD-FlatPU0to80_110X_mcRun3_2021_realistic_v6_ext1-v1/GEN-SIM-RAW  1 T2_BE_IIHE --asynchronous  --ask-approval --lifetime 5184000
+```
+replacing the necessary dataset name, T2 name, lifetime, etc. 
 
 #### Derive Jet Energy Scale Corrections from JRA NTuples
 
@@ -37,8 +62,48 @@ The `fitJESCs` script is an example of
 a wrapper executing the various steps of the JESCs derivation
 (caveat: the script presently includes several hard-coded parameters).
 
-List of Run-3 HLT JESCs:
+##### Run on HTCondor
+The `-b` and `-j` flags can be used to run one HTCondor job for each jet collection's correction (see the submission script `test/sub_jecs.htc` for an example). 
 
+##### Sample information
+The necessary samples are large QCD simulated datasets with a flat p<sub>T</sub> over a large range.
+The `L1` correction needs to match jets from samples generated with and without pileup, so we will need to produce two JRANtuples. 
+The samples used for the latest run 3 preliminary JECs are the following:
+```
+# FlatPU
+/QCD_Pt-15to7000_TuneCP5_Flat_14TeV_pythia8/Run3Winter20DRMiniAOD-FlatPU0to80_110X_mcRun3_2021_realistic_v6_ext1-v1/GEN-SIM-RAW
+# NoPU
+QCD_Pt-15to7000_TuneCP5_Flat_14TeV_pythia8/Run3Winter20DRMiniAOD-NoPU_110X_mcRun3_2021_realistic_v6_ext1-v1/GEN-SIM-RAW
+```
+You can find them in DAS searching for:
+```
+dataset=/QCD_Pt-15to7000_TuneCP5_Flat_14TeV_pythia8/Run3Winter20DRMiniAOD-*0to80_110X_mcRun3_2021_realistic_v6_ext1-v1/GEN-SIM-RAW
+```
+You can also find similar samples doing something like:
+```
+dataset=/QCD*_Pt*/*/GEN-SIM*RAW
+```
+
+##### List of Run-3 HLT JESCs:
+
+  * `Run3Winter21_V2_MC`:
+
+    - Description: preliminary HLT JESCs for Run-3 studies
+
+    - Tag of `sparedes/JMETriggerAnalysis`: `HLT_JESCs_Run3Winter21_V2`
+
+    - Tag of `sparedes/JetMETAnalysis`: `Run3Winter21_V2`
+
+    - JRA NTuples:
+      ```
+      root://cms-xrd-global.cern.ch//store/group/phys_jetmet/saparede/runIII_hlt_jec/jra_ntuples/jescs_dec_PFHC_E2to500_noPU.root
+      root://cms-xrd-global.cern.ch//store/group/phys_jetmet/saparede/runIII_hlt_jec/jra_ntuples/jecs_dec_PFHC_E2to500_flatPU.root      
+      ```
+
+    - executable for JESCs fits (contains settings of all JESCs fits):
+      [`JESCorrections/test/fitJESCs`](https://github.com/sparedes/JMETriggerAnalysis/blob/HLT_JESCs_Run3Winter21_V2/JESCorrections/test/fitJESCs)
+
+      
   * `Run3Winter20_V2_MC`:
 
     - Description: preliminary HLT JESCs for Run-3 studies
@@ -57,6 +122,10 @@ List of Run-3 HLT JESCs:
       [`JESCorrections/test/fitJESCs`](https://github.com/missirol/JMETriggerAnalysis/blob/hltJESCs_Run3Winter20_V2_MC/JESCorrections/test/fitJESCs)
 
     - Notes:
+
+      - JRA NTuples affected by a bug in the `rho` value saved for Calo and PFCluster (AK4 and AK8) HLT jets:
+        the `rho` based on PF-candidates was erronously used,
+        instead of the `rho` values calculated from calo-towers and PFClusters, respectively.
 
       - JRA NTuples affected by a bug in the `rho` value saved for Calo and PFCluster (AK4 and AK8) HLT jets:
         the `rho` based on PF-candidates was erronously used,
