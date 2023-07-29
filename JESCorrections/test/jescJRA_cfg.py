@@ -125,20 +125,20 @@ if hasattr(process, 'FastTimerService'):
 ## ES modules for PF-Hadron Calibrations
 import os
 
-from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
-process.pfhcESSource = cms.ESSource('PoolDBESSource',
-  _CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
-  #_CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/JESCorrections/test/PFCalibration.db'),
-  toGet = cms.VPSet(
-    cms.PSet(
-      record = cms.string('PFCalibrationRcd'),
-      tag = cms.string('PFCalibration_CMSSW_13_0_0_HLT_126X_fixEE_mcRun3_2023'),
-      label = cms.untracked.string('HLT'),
-    ),
-  ),
-)
-process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
-#process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
+# from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
+# process.pfhcESSource = cms.ESSource('PoolDBESSource',
+#   _CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
+#   #_CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/JESCorrections/test/PFCalibration.db'),
+#   toGet = cms.VPSet(
+#     cms.PSet(
+#       record = cms.string('PFCalibrationRcd'),
+#       tag = cms.string('PFCalibration_CMSSW_13_0_0_HLT_126X_fixEE_mcRun3_2023'),
+#       label = cms.untracked.string('HLT'),
+#     ),
+#   ),
+# )
+# process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
+process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
 
 ###
 ### Jet Response Analyzer (JRA) NTuple
@@ -192,7 +192,7 @@ if opts.inputFiles:
    process.source.fileNames = opts.inputFiles
 else:
    process.source.fileNames = [
-     '/store/mc/Run3Winter23Digi/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80GTv3_126X_mcRun3_2023_forPU65_v3-v2/2540000/0013ccc0-e679-47bb-97a8-cf2497c71502.root',
+     '/store/mc/Run3Winter23Digi/QCD_PT-15to7000_TuneCP5_Flat2022_13p6TeV_pythia8/GEN-SIM-RAW/FlPU0to80GTv6HC_126X_mcRun3_2023_forPU65_v6_withHCALResCor_ext1-v2/2810000/003655be-3929-4737-ad1e-7656ce6c7132.root',
    ]
 
 # input EDM files [secondary]
