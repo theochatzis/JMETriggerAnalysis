@@ -18,10 +18,8 @@ git cms-merge-topic  silviodonato:customizeHLTfor2023
 git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b run3_13_0_X
 
 # PFHC: preliminary HLT-PFHC for Run-3
-<<<<<<< HEAD
 cp /afs/cern.ch/user/c/chuh/public/PFCalibration/CMSSW_1300_126X/PFCalibration.db ${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/
-=======
->>>>>>> 99f6750c1d15adb4a5891431db67c72ad09825ac
+
 
 scram b -j 12
 ```
