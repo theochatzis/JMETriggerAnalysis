@@ -138,7 +138,12 @@ import os
 #   ),
 # )
 # process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
+
+
 process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
+
+# Test option to skip forward PFHC application (after eta = 2.5)
+process.hltParticleFlow.skipForwardCalibrations = cms.bool(True)
 
 ###
 ### Jet Response Analyzer (JRA) NTuple

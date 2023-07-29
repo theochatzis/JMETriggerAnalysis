@@ -8,7 +8,10 @@ Instructions to set up the CMSSW area to produce JRA NTuples, and derive JESCs:
 ```
 cmsrel CMSSW_13_0_7_patch1
 cd CMSSW_13_0_7_patch1/src
-git cms-merge-topic  silviodonato:customizeHLTfor2023
+cmsenv
+git cms-init
+#git cms-merge-topic  silviodonato:customizeHLTfor2023
+git cms-merge-topic theochatzis:optionForSkipForwardPFHC
 
 git clone https://github.com/cghuh/JetMETAnalysis.git -b hlt_run3
 git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b run3_13_0_X_jecs
