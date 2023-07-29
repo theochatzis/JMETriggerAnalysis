@@ -37,7 +37,7 @@ The noPU sample is used for the L1 Offset correction. If you intend to only deri
 Examples for crab submission scripts are:
 ```bash
 #example for noPU crab script
-sub_noPU.py
+crab/sub_noPU.py
 #example for flatPT crab script
 crab/sub_flatPU.py 
 ```
