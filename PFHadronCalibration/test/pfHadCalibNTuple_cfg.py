@@ -116,16 +116,17 @@ process.pfHadCalibNTuple = cms.EDAnalyzer('PFHadCalibNTuple',
   genParticlePdgId = cms.int32(-211), # pdgID of selected GEN particles
   genParticleIsoMinDeltaR = cms.double(1.0), # min deltaR between "isolated" GEN particles and other GEN particles
 
-  minPt = cms.double(0.01), # min pt
-  minTrackP = cms.double(0.01), # min track momentum
-  minTrackPt = cms.double(0.01), # min track transverse momentum
-  minCaloEnergy = cms.double(0.0), # min ecal+hcal energy
+  minPt = cms.double(1.00), # min pt
+  minTrackP = cms.double(1.00), # min track momentum
+  minTrackPt = cms.double(1.00), # min track transverse momentum
+  minCaloEnergy = cms.double(0.5), # min ecal+hcal energy
   maxECalEnergy = cms.double(1e12), # max ecal energy
 
   # min nb of pixel and pixel+strip hits (per track-eta range)
   minPixelHits = cms.vuint32(2, 2, 2, 2, 2),
+  #minTrackerHits = cms.vuint32(14, 17, 20, 17, 10),
   minTrackerHits = cms.vuint32(2, 2, 2, 2, 2),
-  maxEtaForMinTrkHitsCuts = cms.vdouble(1.4, 1.6, 2.0, 2.5, 999.0),
+  maxEtaForMinTrkHitsCuts = cms.vdouble(1.4, 1.6, 2.0, 2.4, 2.6),
 
   usePFBlockElements = cms.bool(True),
 )
@@ -167,10 +168,7 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
-    #'/store/mc/Run3Winter21DRMiniAOD/SinglePion_PT0to200/GEN-SIM-DIGI-RAW/NoPUFEVT_112X_mcRun3_2021_realistic_v16-v2/140000/53fc39b0-c12c-419f-ba73-78c4d032ff3e.root',
-		#'/store/mc/Run3Summer21DR/Single_Pion_gun_E_2to200_14TeV_pythia8/GEN-SIM-RAW/NoPURAWRECO_120X_mcRun3_2021_realistic_v6-v2/270000/49a1fc5f-af28-4189-9842-399295b12d9e.root',
-		#'/store/mc/Run3Winter20DRMiniAOD/SinglePion_PT0to200/GEN-SIM-RAW/NoPU_110X_mcRun3_2021_realistic_v6-v3/10000/037D66E6-1789-3741-9DC4-669B2EDDA263.root',
-		'/store/mc/Run3Winter23Digi/SinglePionGun_E0p2to200/GEN-SIM-RAW/NoPU_126X_mcRun3_2023_forPU65_v1-v2/40000/00045a90-b54d-429d-8494-4d6d5148bbb4.root',
+		'/store/mc/Run3Winter23Digi/SinglePionGun_E0p2to200/GEN-SIM-RAW/NoPUGTv3_126X_mcRun3_2023_forPU65_v3-v2/2560000/01723c2c-b1fa-456f-9102-c8781ee0e36d.root',
   ]
 
 # output file

@@ -46,10 +46,10 @@ if __name__ == '__main__':
      ['HLT_PFMET120_PFMHT120_IDTight', 'genMETTrue_pt', 'HLT_PFMET120_PFMHT120_IDTight == 1'],
      ['HLT_PFMET130_PFMHT130_IDTight', 'genMETTrue_pt', 'HLT_PFMET130_PFMHT130_IDTight == 1'],
      ['HLT_PFMET140_PFMHT140_IDTight', 'genMETTrue_pt', 'HLT_PFMET140_PFMHT140_IDTight == 1'],
-     ['HLT_PFMETTypeOne110_PFMHT110_IDTight', 'genMETTrue_pt', 'HLT_PFMETTypeOne110_PFMHT110_IDTight == 1'],
-     ['HLT_PFMETTypeOne120_PFMHT120_IDTight', 'genMETTrue_pt', 'HLT_PFMETTypeOne120_PFMHT120_IDTight == 1'],
-     ['HLT_PFMETTypeOne130_PFMHT130_IDTight', 'genMETTrue_pt', 'HLT_PFMETTypeOne130_PFMHT130_IDTight == 1'],
-     ['HLT_PFMETTypeOne140_PFMHT140_IDTight', 'genMETTrue_pt', 'HLT_PFMETTypeOne140_PFMHT140_IDTight == 1'],
+     #['HLT_PFMETTypeOne110_PFMHT110_IDTight', 'genMETTrue_pt', 'HLT_PFMETTypeOne110_PFMHT110_IDTight == 1'],
+     #['HLT_PFMETTypeOne120_PFMHT120_IDTight', 'genMETTrue_pt', 'HLT_PFMETTypeOne120_PFMHT120_IDTight == 1'],
+     #['HLT_PFMETTypeOne130_PFMHT130_IDTight', 'genMETTrue_pt', 'HLT_PFMETTypeOne130_PFMHT130_IDTight == 1'],
+     #['HLT_PFMETTypeOne140_PFMHT140_IDTight', 'genMETTrue_pt', 'HLT_PFMETTypeOne140_PFMHT140_IDTight == 1'],
    ]:
      hname = 'h'+str(len(histograms.keys()))
      h0 = ROOT.TH1D(hname, hname, len(bins_met)-1, bins_met)

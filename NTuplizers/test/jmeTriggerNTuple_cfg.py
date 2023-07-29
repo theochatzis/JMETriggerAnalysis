@@ -124,6 +124,7 @@ keepPaths = [
 
 vetoPaths = [
   'HLT_*ForPPRef_v*',
+	'AlCa_*',
 ]
 
 # list of paths that are kept
@@ -322,8 +323,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoCaloMETCollections = cms.PSet(
 
-    #hltCaloMET = cms.InputTag('hltMet'),
-    #hltCaloMETTypeOne = cms.InputTag('hltCaloMETTypeOne'),
+    hltCaloMET = cms.InputTag('hltMet'),
+    hltCaloMETTypeOne = cms.InputTag('hltCaloMETTypeOne'),
   ),
 
 # recoPFClusterMETCollections = cms.PSet(
@@ -370,10 +371,6 @@ if opts.keepPFPuppi:
 
 process.analysisNTupleEndPath = cms.EndPath(process.JMETriggerNTuple)
 process.schedule.append(process.analysisNTupleEndPath)
-
-###
-### standard options
-###
 
 # max number of events to be processed
 process.maxEvents.input = opts.maxEvents

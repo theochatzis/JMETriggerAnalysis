@@ -20,6 +20,8 @@ bool JMETriggerAnalysisDriverRun3::jetBelongsToCategory(const std::string& categ
   else if(categLabel == "_Eta2p5"){ ret = (jetAbsEta < 2.5); }
   else if(categLabel == "_HB"){ ret = (jetAbsEta < 1.3); }
   else if(categLabel == "_HE"){ ret = (1.3 <= jetAbsEta) and (jetAbsEta < 3.0); }
+  else if(categLabel == "_HE1"){ ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5); }
+  else if(categLabel == "_HE2"){ ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0); }
   else if(categLabel == "_HF"){ ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0); }
   return ret;
 }
@@ -31,6 +33,8 @@ void JMETriggerAnalysisDriverRun3::init(){
     "_Eta2p5",
     "_HB",
     "_HE",
+    "_HE1",
+    "_HE2",
     "_HF",
   };
 
@@ -93,8 +97,8 @@ void JMETriggerAnalysisDriverRun3::init(){
 
     {"offlinePFMET_Raw"       , {{"GEN", "genMETTrue"}}},
     {"offlinePFMET_Type1"     , {{"GEN", "genMETTrue"}}},
-    {"offlinePFPuppiMET_Raw"  , {{"GEN", "genMETTrue"}}},
-    {"offlinePFPuppiMET_Type1", {{"GEN", "genMETTrue"}}},
+    //{"offlinePFPuppiMET_Raw"  , {{"GEN", "genMETTrue"}}},
+    //{"offlinePFPuppiMET_Type1", {{"GEN", "genMETTrue"}}},
   };
 
   for(auto const& selLabel : {
@@ -105,8 +109,8 @@ void JMETriggerAnalysisDriverRun3::init(){
       bookHistograms_Jets(selLabel, jetLabel.first, utils::mapKeys(jetLabel.second));
     }
 
-    bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFJetsCorrected", "offlineAK4PFCHSJetsCorrected");
-    bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFPuppiJetsCorrected", "offlineAK4PFPuppiJetsCorrected");
+    //bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFJetsCorrected", "offlineAK4PFCHSJetsCorrected");
+    //bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFPuppiJetsCorrected", "offlineAK4PFPuppiJetsCorrected");
 
     // histograms: AK8 Jets
     for(auto const& jetLabel : labelMap_jetAK8_){
@@ -149,14 +153,14 @@ void JMETriggerAnalysisDriverRun3::init(){
     for(auto const& jetLabel : labelMap_jetAK4_){
       bookHistograms_Jets(selLabel, jetLabel.first, utils::mapKeys(jetLabel.second));
     }
-    bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFJetsCorrected", "offlineAK4PFCHSJetsCorrected");
-    bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFPuppiJetsCorrected", "offlineAK4PFPuppiJetsCorrected");
+    //bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFJetsCorrected", "offlineAK4PFCHSJetsCorrected");
+    //bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFPuppiJetsCorrected", "offlineAK4PFPuppiJetsCorrected");
   }
 
   mettriggers = {
   "HLT_PFMET120_PFMHT120_IDTight",
   "HLT_PFMET140_PFMHT140_IDTight",
-  "HLT_PFMETTypeOne140_PFMHT140_IDTight",
+  //"HLT_PFMETTypeOne140_PFMHT140_IDTight",
   };
 
   for(auto const& selLabel : mettriggers){
@@ -173,6 +177,9 @@ void JMETriggerAnalysisDriverRun3::init(){
   "PU0to20_HLT",
   "PU20to40_HLT",
   "PUgt40_HLT",
+  //"PU0to20_HLT_TypeOne",
+  //"PU20to40_HLT_TypeOne",
+  //"PUgt40_HLT_TypeOne",
   //"PU0to20_HLT_TypeOne",
   //"PU20to40_HLT_TypeOne",
   //"PUgt40_HLT_TypeOne",
@@ -251,7 +258,8 @@ void JMETriggerAnalysisDriverRun3::analyze(){
   }
 
   // HT
-  for(std::string const& jetType : {"PF", "PFPuppi"}){
+  for(std::string const& jetType : {"PF"}){
+  //for(std::string const& jetType : {"PF", "PFPuppi"}){
 
     fillHistoDataJets fhDataHLTAK4Jets;
     fhDataHLTAK4Jets.jetCollection = "hltAK4"+jetType+"JetsCorrected";
@@ -259,8 +267,8 @@ void JMETriggerAnalysisDriverRun3::analyze(){
     fhDataHLTAK4Jets.jetAbsEtaMax = 5.0;
 
     fillHistoDataJets fhDataOffAK4Jets;
-    if(jetType == "PF") fhDataOffAK4Jets.jetCollection = "offlineAK4PFCHSJetsCorrected";
-    else if(jetType == "PFPuppi") fhDataOffAK4Jets.jetCollection = "offlineAK4PFPuppiJetsCorrected";
+    if(jetType == "PF") fhDataOffAK4Jets.jetCollection = "offlineAK4PFJetsCorrected";
+    //else if(jetType == "PFPuppi") fhDataOffAK4Jets.jetCollection = "offlineAK4PFPuppiJetsCorrected";
     //fhDataOffAK4Jets.jetCollection = "offlineAK4"+jetType+"JetsCorrected";
     fhDataOffAK4Jets.jetPtMin = minAK4JetPt;
     fhDataOffAK4Jets.jetAbsEtaMax = 5.0;
@@ -366,7 +374,7 @@ bool JMETriggerAnalysisDriverRun3::hltHTTrigger(std::string const& key) const {
 bool JMETriggerAnalysisDriverRun3::hltMETTrigger(std::string const& key) const {
   if(key == "HLT_PFMET120_PFMHT120_IDTight") return value<bool>("HLT_PFMET120_PFMHT120_IDTight");
   else if(key == "HLT_PFMET140_PFMHT140_IDTight") return value<bool>("HLT_PFMET140_PFMHT140_IDTight");
-  else if(key == "HLT_PFMETTypeOne140_PFMHT140_IDTight") return value<bool>("HLT_PFMETTypeOne140_PFMHT140_IDTight");
+  //else if(key == "HLT_PFMETTypeOne140_PFMHT140_IDTight") return value<bool>("HLT_PFMETTypeOne140_PFMHT140_IDTight");
   else
     throw std::runtime_error("JMETriggerAnalysisDriverRun3::hltMETTrigger(\""+key+"\") -- invalid key");
 
@@ -380,6 +388,9 @@ bool JMETriggerAnalysisDriverRun3::pileupintervals(std::string const& key) const
   if(key == "PU0to20_HLT") return (value<int>("pileupInfo_BX0_numPUInteractions") > 0 && value<int>("pileupInfo_BX0_numPUInteractions") <= 20 && value<bool>("HLT_PFMET120_PFMHT120_IDTight"));
   if(key == "PU20to40_HLT") return (value<int>("pileupInfo_BX0_numPUInteractions") > 20 && value<int>("pileupInfo_BX0_numPUInteractions") <= 40 && value<bool>("HLT_PFMET120_PFMHT120_IDTight"));
   if(key == "PUgt40_HLT") return(value<int>("pileupInfo_BX0_numPUInteractions") > 40 && value<bool>("HLT_PFMET120_PFMHT120_IDTight"));
+  //if(key == "PU0to20_HLT_TypeOne") return (value<int>("pileupInfo_BX0_numPUInteractions") > 0 && value<int>("pileupInfo_BX0_numPUInteractions") <= 20 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));
+  //if(key == "PU20to40_HLT_TypeOne") return (value<int>("pileupInfo_BX0_numPUInteractions") > 20 && value<int>("pileupInfo_BX0_numPUInteractions") <= 40 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));
+  //if(key == "PUgt40_HLT_TypeOne") return(value<int>("pileupInfo_BX0_numPUInteractions") > 40 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));
   //if(key == "PU0to20_HLT_TypeOne") return (value<int>("pileupInfo_BX0_numPUInteractions") > 0 && value<int>("pileupInfo_BX0_numPUInteractions") <= 20 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));
   //if(key == "PU20to40_HLT_TypeOne") return (value<int>("pileupInfo_BX0_numPUInteractions") > 20 && value<int>("pileupInfo_BX0_numPUInteractions") <= 40 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));
   //if(key == "PUgt40_HLT_TypeOne") return(value<int>("pileupInfo_BX0_numPUInteractions") > 40 && value<bool>("HLT_PFMETTypeOne120_PFMHT120_IDTight"));

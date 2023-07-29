@@ -6,8 +6,10 @@ set -euo pipefail
 ## -------------------------
 JESC_BASE=${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test
 
-JRANTuple_NoPU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jmeTriggerNTuple_NoPU.root
-JRANTuple_PU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jmeTriggerNTuple_PU0to80.root
+JRANTuple_NoPU=/eos/cms/store/user/chuh/jec/v6/jmeTriggerNTuple_EpsilonPU.root
+JRANTuple_PU=/eos/cms/store/user/chuh/jec/v6/jmeTriggerNTuple_PU0to80.root
+#JRANTuple_NoPU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jec/jmeTriggerNTuple_NoPU.root
+#JRANTuple_PU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jec/jmeTriggerNTuple_PU0to120.root
 
 ERA=Run3Winter23Digi
 
@@ -16,6 +18,8 @@ JET_TYPES=(
   ak8pfHLT
   ak4caloHLT
   ak8caloHLT
+  ak4pfchsHLT
+  ak8pfchsHLT
 )
 #JET_TYPES=(
 #  ak4pfHLT
@@ -133,7 +137,8 @@ runJECWorflowForOneAlgo(){
 
     stepNameOld=${stepName} && ((++stepN)) && stepName="step"$(printf "%02d" ${stepN})
     if [ ! -f ${stepName}.done ]; then
-      CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU} -NBinsNpvRhoNpu 13"
+      CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU} -NBinsNpvRhoNpu 8 -npvRhoNpuBinWidth 15"
+      #CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU}"
       CMD_STEP+=" -ApplyJEC false"
       CMD_STEP+=" -ignoreNPV true -overwriteNPVwithNPUInTime true"
       CMD_STEP+=" -useweight false -doNotSave true"
@@ -143,7 +148,8 @@ runJECWorflowForOneAlgo(){
 
     stepNameOld=${stepName} && ((++stepN)) && stepName="step"$(printf "%02d" ${stepN})
     if [ ! -f ${stepName}.done ]; then
-      CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true -NBinsNpvRhoNpu 13"
+      CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true -NBinsNpvRhoNpu 8 -npvRhoNpuBinWidth 15"
+      #CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true"
       CMD_STEP+=" -inputDir ./ -outDir plots_${stepName} -outputFormat .png"
       stepCmd "mkdir -p plots_${stepName}\n\n${CMD_STEP}" ${stepName}
     fi
@@ -156,7 +162,8 @@ runJECWorflowForOneAlgo(){
 
     stepNameOld=${stepName} && ((++stepN)) && stepName="step"$(printf "%02d" ${stepN})
     if [ ! -f ${stepName}.done ]; then
-      CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU} -NBinsNpvRhoNpu 13"
+      CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU} -NBinsNpvRhoNpu 8 -npvRhoNpuBinWidth 15"
+      #CMD_STEP="jet_synchtest_x -algo1 ${jetType} -algo2 ${jetType} -sampleNoPU ${JRANTuple_NoPU} -samplePU ${JRANTuple_PU}"
       CMD_STEP+=" -ApplyJEC true -JECpar ./${ERA}_L1FastJet_*.txt"
       CMD_STEP+=" -ignoreNPV true -overwriteNPVwithNPUInTime true"
       CMD_STEP+=" -useweight false -doNotSave true"
@@ -166,7 +173,8 @@ runJECWorflowForOneAlgo(){
 
     stepNameOld=${stepName} && ((++stepN)) && stepName="step"$(printf "%02d" ${stepN})
     if [ ! -f ${stepName}.done ]; then
-      CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true -NBinsNpvRhoNpu 13"
+      CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true -NBinsNpvRhoNpu 8 -npvRhoNpuBinWidth 15"
+      #CMD_STEP="jet_synchplot_x -algo1 ${jetType} -algo2 ${jetType} -fixedRange false -tdr true"
       CMD_STEP+=" -inputDir plots_${stepNameOld} -outDir plots_${stepName} -outputFormat .png"
       stepCmd "mkdir -p plots_${stepName}\n\n${CMD_STEP}" ${stepName}
     fi
