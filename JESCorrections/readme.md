@@ -6,8 +6,8 @@ for the jets used in the High-Level Trigger (HLT).
 
 Instructions to set up the CMSSW area to produce JRA NTuples, and derive JESCs:
 ```
-scram project CMSSW_13_0_0
-cd CMSSW_13_0_0/src
+cmsrel CMSSW_13_0_7_patch1
+cd CMSSW_13_0_7_patch1/src
 eval `scram runtime -sh`
 git cms-merge-topic  silviodonato:customizeHLTfor2023
 
