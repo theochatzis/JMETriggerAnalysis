@@ -8,7 +8,6 @@ Instructions to set up the CMSSW area to produce JRA NTuples, and derive JESCs:
 ```
 cmsrel CMSSW_13_0_7_patch1
 cd CMSSW_13_0_7_patch1/src
-eval `scram runtime -sh`
 git cms-merge-topic  silviodonato:customizeHLTfor2023
 
 git clone https://github.com/cghuh/JetMETAnalysis.git -b hlt_run3
@@ -35,7 +34,13 @@ You need generally 2 submissions:
 - one for `QCD with noPU` (or equivalently Epsilon PU) sample,
 - and one for a `flatPT spectrum QCD` (so there isn't a bias in the pT for the corrections derivation).
 The noPU sample is used for the L1 Offset correction. If you intend to only derive corrections for PUPPI, and you don't think you need this type of corrections, you may ommit this file production.
-
+Examples for crab submission scripts are:
+```bash
+#example for noPU crab script
+sub_noPU.py
+#example for flatPT crab script
+crab/sub_flatPU.py 
+```
 Note: You might need to change the line where the `.db` file of the PFHCs is picked up so that CRAB can find the file. 
 
 Once the crab jobs are finished, the output `.root` files can be found in the Tier2 (T2) specified in the configuration file,
