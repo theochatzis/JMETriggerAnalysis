@@ -13,7 +13,7 @@ git cms-init
 #git cms-merge-topic  silviodonato:customizeHLTfor2023
 git cms-merge-topic theochatzis:optionForSkipForwardPFHC
 
-git clone https://github.com/cghuh/JetMETAnalysis.git -b hlt_run3
+git clone https://github.com/theochatzis/JetMETAnalysis.git -b hlt_run3
 git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b run3_13_0_X_jecs
 scram b -j 8
 ```
