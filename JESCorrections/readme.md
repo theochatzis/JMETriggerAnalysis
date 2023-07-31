@@ -49,12 +49,6 @@ Note: You might need to change the line where the `.db` file of the PFHCs is pic
 Once the crab jobs are finished, the output `.root` files can be found in the Tier2 (T2) specified in the configuration file,
 and then transferred over to `eos` for the next steps.
 
-**Note** that in order to run the ntuple-making process on CRAB, there needs to be a copy of them on **a** T2. You can request to transfer them to your local T2 by requesting it through `rucio` (find more info in the [CMS Rucio Twiki](https://twiki.cern.ch/twiki/bin/viewauth/CMS/Rucio)):
-```bash
-rucio add-rule cms:/QCD_Pt-15to7000_TuneCP5_Flat_14TeV_pythia8/Run3Winter20DRMiniAOD-FlatPU0to80_110X_mcRun3_2021_realistic_v6_ext1-v1/GEN-SIM-RAW  1 T2_BE_IIHE --asynchronous  --ask-approval --lifetime 5184000
-```
-replacing the necessary dataset name, T2 name, lifetime, etc. 
-
 #### Derive Jet Energy Scale Corrections from JRA NTuples
 
 Once JRA NTuples have been produced,
@@ -64,11 +58,17 @@ the executables of the `JetMETAnalysis` package.
 An example of how to do this is given below:
 ```
 cd ${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/
-./fitJESCs -o output_tmp1 -n -1
+./fitJESCs -o output_dir -n -1
 ```
 The `fitJESCs` script is an example of
-a wrapper executing the various steps of the JESCs derivation
+a wrapper executing the various steps of the JESCs derivation. You need to define the `JRA NTuples` at the beginning of the script.
 (caveat: the script presently includes several hard-coded parameters).
+Some basic options are:
+`-o`: output directory
+`-n`: number of events to run
+`--skip-L1-PFPuppi`: in case you want to skip the L1 step for PUPPI
+`-j`: execute only for one type of collection e.g. `ak4pfHLT`
+`-b`: for batch mode 
 
 ##### Run on HTCondor
 The `-b` and `-j` flags can be used to run one HTCondor job for each jet collection's correction (see the submission script `test/sub_jecs.htc` for an example). 
@@ -91,6 +91,31 @@ You can also find similar samples doing something like:
 ```
 dataset=/QCD*_Pt*/*/GEN-SIM*RAW
 ```
+#### Create the `db` files
+To create the `.db` files for providing them to AlCa contact for upload in `confDB`(or load them locally in a configuration) you can use the `jescTxtToDBConverter_cfg.py` script, as follows:
+```bash
+## In this example the output_dir is the directory defined in -o option for fitJECs in previous step.
+
+# make a directory to save the db file. 
+mkdir ./output_dir/DBfile
+
+# run the jescTxtToDBConverter tool. 
+# as input it needs the .txt files in the jesc directory. It outputs an executable that will make the db file.
+python3 jescTxtToDBConverter_cfg.py input=${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/output_dir/ak4pf/jesc/ output=./output_dir/DBfile dumpPython=make_db_file_tmp.py
+
+# run the executable
+cmsRun make_db_file_tmp.py 
+
+# after the procedure is done this isn't needed, you can remove it
+rm make_db_file_tmp.py
+``` 
+##### Reading the tags of the `.db` files
+If you want to check the tags registered to the `.db` files you can use the following command:
+```bash
+## check the db file
+conddb --db ./output_dir/DBfile/Run3Winter23_MC.db search JetCorr
+```
+where here the `search` option is for identifying the desired tag. `JetCorr` is a good example cause usually those start like `JetCorrection...`
 
 ##### List of Run-3 HLT JESCs:
 
