@@ -125,6 +125,9 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
   bool l1tSeedAccept(false);
   bool hltPathPrescaled(false);
   bool hltPathAccept(false);
+  
+  // std::cout << "------------" << std::endl;
+  // std::cout << "pathName: " << pathName_ << std::endl;
 
   auto const& triggerNames(hltPrescaleProvider_.hltConfigProvider().triggerNames());
   for (auto const& iPathName : triggerNames) {
@@ -138,6 +141,8 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
         continue;
       }
     }
+    
+    // std::cout << "iPathName: " << iPathName << std::endl;
 
     ++numMatches;
 
@@ -168,11 +173,13 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 
     auto const lastModuleExecutedInPath(
         hltPrescaleProvider_.hltConfigProvider().moduleLabel(iPathIndex, triggerResults->index(iPathIndex)));
+    
+    // std::cout << "lastModuleExecutedInPath: " << lastModuleExecutedInPath << std::endl;
 
     auto const& moduleLabels(hltPrescaleProvider_.hltConfigProvider().moduleLabels(iPathIndex));
     for (size_t idx = 0; idx < moduleLabels.size(); ++idx) {
-      auto const& moduleLabel(moduleLabels.at(idx));
-
+      auto const& moduleLabel(moduleLabels.at(idx));  
+      
       if (moduleLabel == lastModuleExecutedInPath) {
         hltPathLastModuleIndex = idx;
       }
@@ -182,15 +189,14 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
         continue;
       }
 
-      if (moduleLabel.find("hltL1", 0) == 0) {
+      if (moduleLabel.find("hltL1s", 0) == 0) {
         if ((hltL1TSeedModuleIndex < 0) and (hltPrescaleModuleIndex < 0)) {
           hltL1TSeedModuleIndex = idx;
         } else if (hltL1TSeedModuleIndex >= 0) {
-          hltL1TSeedModuleIndex = -1;
-          // throw cms::Exception("InputError") << "found more than one match for L1T-Seed module of HLT-Path"
-          //                                    << " (1st match = \"" << moduleLabels.at(hltL1TSeedModuleIndex)
-          //                                    << "\", 2nd match = \"" << moduleLabel << "\")"
-          //                                    << ", HLT-Path = \"" << iPathName << "\"";
+          throw cms::Exception("InputError") << "found more than one match for L1T-Seed module of HLT-Path"
+                                             << " (1st match = \"" << moduleLabels.at(hltL1TSeedModuleIndex)
+                                             << "\", 2nd match = \"" << moduleLabel << "\")"
+                                             << ", HLT-Path = \"" << iPathName << "\"";
         } else {
           throw cms::Exception("InputError")
               << "found L1T-Seed module of HLT-Path after its HLT-Prescale module"
@@ -202,6 +208,7 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 
       if (moduleLabel.find("hltPre", 0) == 0) {
         if ((hltL1TSeedModuleIndex >= 0) and (hltPrescaleModuleIndex < 0)) {
+          // std::cout << "prescale moduleLabel: " << moduleLabel << std::endl;
           hltPrescaleModuleIndex = idx;
         } else if (hltPrescaleModuleIndex >= 0) {
           throw cms::Exception("InputError") << "found more than one match for HLT-Prescale module of HLT-Path"
@@ -220,11 +227,9 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 
     if (hltPathLastModuleIndex < 0) {
       throw cms::Exception("InputError") << "failed to find last module executed in the HLT-Path: " << iPathName;
-    } 
-    // else if (hltL1TSeedModuleIndex < 0) {
-    //   throw cms::Exception("InputError") << "failed to find L1T-Seed module of HLT-Path: " << iPathName;
-    // } 
-    else if (hltPrescaleModuleIndex < 0) {
+    } else if (hltL1TSeedModuleIndex < 0) {
+      throw cms::Exception("InputError") << "failed to find L1T-Seed module of HLT-Path: " << iPathName;
+    } else if (hltPrescaleModuleIndex < 0) {
       throw cms::Exception("InputError") << "failed to find HLT-Prescale module of HLT-Path: " << iPathName;
     }
 
@@ -249,6 +254,8 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
                         : (hltL1TSeedModuleIndex < hltPathLastModuleIndex);
     }
     
+    // std::cout << "hltPrescaleModuleIndex: " << hltPrescaleModuleIndex << std::endl;
+    // std::cout << "hltPathLastModuleIndex: " << hltPathLastModuleIndex << std::endl;
     hltPathPrescaled =
         (hltPrescaleModuleIndex == hltPathLastModuleIndex) ? (not triggerResults->accept(iPathIndex)) : false;
     hltPathAccept = triggerResults->accept(iPathIndex);
@@ -395,6 +402,11 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
                << "Path = \"" << originalMatch << ", l1tSeedAccept = " << l1tSeedAccept
                << ", l1tSeedPrescaledOrMasked = " << l1tSeedPrescaledOrMasked
                << ", hltPathPrescaled = " << hltPathPrescaled << ", hltPathAccept = " << hltPathAccept;
+  
+  // std::cout << "l1tSeedPrescaledOrMasked: " << l1tSeedPrescaledOrMasked << std::endl;
+  // std::cout << "l1tSeedAccept: " << l1tSeedAccept << std::endl;
+  // std::cout << "hltPathPrescaled: " << hltPathPrescaled << std::endl;
+  // std::cout << "hltPathAccept: " << hltPathAccept << std::endl;
 
   auto out_l1tSeedAccept = std::make_unique<bool>(l1tSeedAccept);
   auto out_l1tSeedPrescaledOrMasked = std::make_unique<bool>(l1tSeedPrescaledOrMasked);

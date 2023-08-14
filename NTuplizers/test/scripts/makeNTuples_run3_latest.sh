@@ -16,11 +16,15 @@ ODIR=${1}
 declare -A samplesMap
 
 # QCD 
-samplesMap["Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65"]='/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter23MiniAOD-126X_mcRun3_2023_forPU65_v1-v2/MINIAODSIM'
-
+#samplesMap["Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65"]='/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter23MiniAOD-126X_mcRun3_2023_forPU65_v1-v2/MINIAODSIM'
+samplesMap["Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65"]='/QCD_PT-15to7000_TuneCP5_Flat2022_13p6TeV_pythia8/Run3Winter23Digi-EpsPUGTv6HCAL_126X_mcRun3_2023_forPU65_v6_withHCALResCor_ext1-v2/GEN-SIM-RAW'
+#samplesMap["Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65"]='/QCD_PT-15to7000_TuneCP5_Flat2022_13p6TeV_pythia8/Run3Winter23Digi-EpsPUGTv6HCAL_126X_mcRun3_2023_forPU65_v6_withHCALResCor_ext1-v2/GEN-SIM-RAW'
 # VBF H(125)->Invisible
-samplesMap["Run3Winter23_VBF_HToInvisible_13p6TeV_PU65"]="/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter23MiniAOD-126X_mcRun3_2023_forPU65_v1-v2/MINIAODSIM"
+#samplesMap["Run3Winter23_VBF_HToInvisible_13p6TeV_PU65"]="/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter23MiniAOD-126X_mcRun3_2023_forPU65_v1-v2/MINIAODSIM"
 
+# DY
+#samplesMap["DYToMuMu_M-20_TuneCP5_13p6TeV-pythia8"]=""
+#samplesMap["DYToMuMu_M-20_TuneCP5_13p6TeV-pythia8"]="/Muon0/Run2023C-ZMu-PromptReco-v4/RAW-RECO"
 recoKeys=(
   HLT_Run3TRK
 )
@@ -61,7 +65,7 @@ for recoKey in "${recoKeys[@]}"; do
     if [ -d ${ODIR}/${recoKey}/${sampleKey} ]; then rm -rf ${ODIR}/${recoKey}/${sampleKey}; fi
     
     bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 1000 --memory 2G --time 02:00:00 \
-      -d ${sampleName} -p 2 -o ${ODIR}/${recoKey}/${sampleKey} \
+      -d ${sampleName} -p 0 -o ${ODIR}/${recoKey}/${sampleKey} \
       --final-output ${FINAL_OUTPUT_DIR} \
       --submit \
       --customise-commands \

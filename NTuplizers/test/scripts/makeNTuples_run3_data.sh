@@ -7,7 +7,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-NEVT=1000000
+NEVT=10000000
 
 OUTPUT_DIR_EOS=/eos/user/t/tchatzis/samples2023
 ODIR=${1}
@@ -18,12 +18,12 @@ declare -A samplesMap
 # data 
 #samplesMap["data"]='/JetMET/Run2022G-PromptReco-v1/MINIAOD'
 #samplesMap["data"]='/Muon/Run2022G-PromptReco-v1/MINIAOD'
-samplesMap["data"]='/JetMET1/Run2023B-PromptReco-v1/MINIAOD'
+samplesMap["data"]='/Muon0/Run2023C-ZMu-PromptReco-v4/RAW-RECO'
 
 recoKeys=(
-  #default
-  hcal_jecs2022
-  hcal_jecs2023
+  default
+  #option5
+  #option3
 )
 
 if [ -d ${OUTPUT_DIR_EOS}/${ODIR} ]; then
@@ -43,7 +43,7 @@ fi
 
 
 for recoKey in "${recoKeys[@]}"; do
-  python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple2023Data_cfg.py reco=${recoKey} dumpPython=.tmp_cfg.py #lumis=${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/Cert_Collisions2022_eraG_362433_362760_Golden.json 
+  python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple2023Data_compare_cfg.py reco=${recoKey} dumpPython=.tmp_cfg.py #lumis=${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/Cert_Collisions2022_eraG_362433_362760_Golden.json 
 
   for sampleKey in ${!samplesMap[@]}; do
     sampleName=${samplesMap[${sampleKey}]}
@@ -61,8 +61,8 @@ for recoKey in "${recoKeys[@]}"; do
     
     if [ -d ${ODIR}/${recoKey}/${sampleKey} ]; then rm -rf ${ODIR}/${recoKey}/${sampleKey}; fi
     
-    bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 5000 --memory 2G --time 01:00:00 \
-      -d ${sampleName} -p 1 -o ${ODIR}/${recoKey}/${sampleKey} \
+    bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 5000 --memory 2G --time 02:00:00 \
+      -d ${sampleName} -p 0 -o ${ODIR}/${recoKey}/${sampleKey} \
       --final-output ${FINAL_OUTPUT_DIR} \
       --submit \
       --customise-commands \

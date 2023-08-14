@@ -1,24 +1,51 @@
 void ZjetAnalysisTest(){
+  
+  float minPtZ = 100.;
+  
   //--- file open ---
-  TFile *inf = TFile::Open("testZjet.root");
+  TFile *inf = TFile::Open("/eos/user/t/tchatzis/samples2023/test_DYToMuMu//HLT_Run3TRK/samples_merged/DYToMuMu_M-20_TuneCP5_13p6TeV-pythia8.root");
   TTree *tree = (TTree*) inf -> Get("JMETriggerNTuple/Events");
   
+  bool makeGenPlots = true; 
   //--- get tree variables ---
 
   // trigger
   bool DimuonTriggerVLL;
   tree -> SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8", &DimuonTriggerVLL);
-
+  
   // HLT AK4 PF jets
   vector<double> *hltAK4PFJetsCorrected_pt(0);
   vector<double> *hltAK4PFJetsCorrected_eta(0);
   vector<double> *hltAK4PFJetsCorrected_phi(0);
   vector<double> *hltAK4PFJetsCorrected_mass(0);
+  vector<double> *hltAK4PFJetsCorrected_chargedHadronEnergyFraction(0);
+  vector<double> *hltAK4PFJetsCorrected_neutralHadronEnergyFraction(0);
+  vector<double> *hltAK4PFJetsCorrected_photonEnergyFraction(0);
 
   tree -> SetBranchAddress("hltAK4PFJetsCorrected_pt", &hltAK4PFJetsCorrected_pt);
   tree -> SetBranchAddress("hltAK4PFJetsCorrected_eta", &hltAK4PFJetsCorrected_eta);
   tree -> SetBranchAddress("hltAK4PFJetsCorrected_phi", &hltAK4PFJetsCorrected_phi);
   tree -> SetBranchAddress("hltAK4PFJetsCorrected_mass", &hltAK4PFJetsCorrected_mass);
+  tree -> SetBranchAddress("hltAK4PFJetsCorrected_chargedHadronEnergyFraction", &hltAK4PFJetsCorrected_chargedHadronEnergyFraction);
+  tree -> SetBranchAddress("hltAK4PFJetsCorrected_neutralHadronEnergyFraction", &hltAK4PFJetsCorrected_neutralHadronEnergyFraction);
+  tree -> SetBranchAddress("hltAK4PFJetsCorrected_photonEnergyFraction", &hltAK4PFJetsCorrected_photonEnergyFraction);
+  
+  vector<double> *hltAK4GenJets_pt(0);
+  vector<double> *hltAK4GenJets_eta(0);
+  vector<double> *hltAK4GenJets_phi(0);
+  vector<double> *hltAK4GenJets_mass(0);
+  vector<double> *hltAK4GenJets_chargedHadronEnergyFraction(0);
+  vector<double> *hltAK4GenJets_neutralHadronEnergyFraction(0);
+  vector<double> *hltAK4GenJets_photonEnergyFraction(0);
+  if (makeGenPlots){
+    tree -> SetBranchAddress("ak4GenJetsNoNu_pt", &hltAK4GenJets_pt);
+    tree -> SetBranchAddress("ak4GenJetsNoNu_eta", &hltAK4GenJets_eta);
+    tree -> SetBranchAddress("ak4GenJetsNoNu_phi", &hltAK4GenJets_phi);
+    tree -> SetBranchAddress("ak4GenJetsNoNu_mass", &hltAK4GenJets_mass);
+    tree -> SetBranchAddress("ak4GenJetsNoNu_chargedHadronEnergyFraction", &hltAK4GenJets_chargedHadronEnergyFraction);
+    tree -> SetBranchAddress("ak4GenJetsNoNu_neutralHadronEnergyFraction", &hltAK4GenJets_neutralHadronEnergyFraction);
+    tree -> SetBranchAddress("ak4GenJetsNoNu_photonEnergyFraction", &hltAK4GenJets_photonEnergyFraction);
+  }
 
   // HLT muons (Loose ID)
   vector<double> *hltMuons_pt(0);
@@ -53,13 +80,31 @@ void ZjetAnalysisTest(){
 
 
   // histograms definitions
-  TH1F *h_ptResponse = new TH1F("h_ptResponse","h_ptResponse",50,0.,2.);
+  TH1F *h_ptResponse_Barrel = new TH1F("h_ptResponse_Barrel","h_ptResponse_Barrel",50,0.,2.);
+  TH1F *h_chf_Barrel = new TH1F("h_chf_Barrel","h_chf_Barrel",50,0.,1.);
+  TH1F *h_nhf_Barrel = new TH1F("h_nhf_Barrel","h_nhf_Barrel",50,0.,1.);
+  TH1F *h_pf_Barrel = new TH1F("h_pf_Barrel","h_pf_Barrel",50,0.,1.);
+  TH1F *h_ptResponse_Endcap = new TH1F("h_ptResponse_Endcap","h_ptResponse_Endcap",50,0.,2.);
+  TH1F *h_chf_Endcap = new TH1F("h_chf_Endcap","h_chf_Endcap",50,0.,1.);
+  TH1F *h_nhf_Endcap = new TH1F("h_nhf_Endcap","h_nhf_Endcap",50,0.,1.);
+  TH1F *h_pf_Endcap = new TH1F("h_pf_Endcap","h_pf_Endcap",50,0.,1.);
+  TH1F *h_ptResponse_Barrel_0p0_0p8 = new TH1F("h_ptResponse_Barrel_0p0_0p8","h_ptResponse_Barrel_0p0_0p8",50,0.,2.);
+  TH1F *h_chf_Barrel_0p0_0p8 = new TH1F("h_chf_Barrel_0p0_0p8","h_chf_Barrel_0p0_0p8",50,0.,1.);
+  TH1F *h_nhf_Barrel_0p0_0p8 = new TH1F("h_nhf_Barrel_0p0_0p8","h_nhf_Barrel_0p0_0p8",50,0.,1.);
+  TH1F *h_pf_Barrel_0p0_0p8 = new TH1F("h_pf_Barrel_0p0_0p8","h_pf_Barrel_0p0_0p8",50,0.,1.);
+  TH1F *h_ptResponse_Barrel_0p8_1p3 = new TH1F("h_ptResponse_Barrel_0p8_1p3","h_ptResponse_Barrel_0p8_1p3",50,0.,2.);
+  TH1F *h_chf_Barrel_0p8_1p3 = new TH1F("h_chf_Barrel_0p8_1p3","h_chf_Barrel_0p8_1p3",50,0.,1.);
+  TH1F *h_nhf_Barrel_0p8_1p3 = new TH1F("h_nhf_Barrel_0p8_1p3","h_nhf_Barrel_0p8_1p3",50,0.,1.);
+  TH1F *h_pf_Barrel_0p8_1p3 = new TH1F("h_pf_Barrel_0p8_1p3","h_pf_Barrel_0p8_1p3",50,0.,1.);
+
+  TH1F *h_ptResponseGen_Barrel = new TH1F("h_ptResponseGen_Barrel","h_ptResponseGen_Barrel",50,0.,2.);
+  TH1F *h_ptResponseGen_Endcap = new TH1F("h_ptResponseGen_Endcap","h_ptResponseGen_Endcap",50,0.,2.);
 
 
   
 
 
-  unsigned int Nevents = tree -> GetEntries();
+  unsigned int Nevents = 4000000;//tree -> GetEntries();
   cout <<"# of events: " << Nevents << endl;
   Float_t PROCESS_COUNTER = 0.;
 
@@ -67,7 +112,7 @@ void ZjetAnalysisTest(){
   for (unsigned int i=0;i<Nevents;i++){
     if (i/(Nevents*1.)>PROCESS_COUNTER){
 	  cout << PROCESS_COUNTER*100. << " %" << endl;
-	  PROCESS_COUNTER += 0.1;
+	  PROCESS_COUNTER += 0.01;
     }
     
     tree -> GetEntry(i);
@@ -97,21 +142,72 @@ void ZjetAnalysisTest(){
     if (!cut_kinematics_muons) continue;
 
     //jets cuts
-    cut_kinematics_jet = ( fabs((*hltAK4PFJetsCorrected_eta)[0]) < 1.3 ) 
-                    and  ( (*hltAK4PFJetsCorrected_pt)[0] > 12. ) 
-                    and  ( ( Njets > 1 ) ? (*hltAK4PFJetsCorrected_pt)[1]/(*hltAK4PFJetsCorrected_pt)[0] < 1.0 : true);
+    cut_kinematics_jet = ( fabs((*hltAK4PFJetsCorrected_eta)[0]) < 2.5 ) 
+                    and  ( (*hltAK4PFJetsCorrected_pt)[0] > 0.8*minPtZ ) 
+                    and  ( ( Njets > 1 ) ? (*hltAK4PFJetsCorrected_pt)[1]/p4_Z.Pt() < 1.0 : true );
     if (!cut_kinematics_jet) continue;
 
     //Z (dimuon) cuts
-    cut_dimuon = ( p4_Z.DeltaPhi(p4_jet) > 2.7 ) and ( fabs(p4_Z.M() - 90) < 20 ) and ( p4_Z.Pt() > 15 );
+    cut_dimuon = ( p4_Z.DeltaPhi(p4_jet) > 2.7 ) and ( fabs(p4_Z.M() - 90) < 20 ) and ( p4_Z.Pt() > minPtZ );
     if (!cut_dimuon) continue; 
     
-    h_ptResponse -> Fill(p4_jet.Pt()/p4_Z.Pt());
+    if (fabs(p4_jet.Eta())<1.3){
+      h_ptResponse_Barrel -> Fill(p4_jet.Pt()/p4_Z.Pt());
+      h_chf_Barrel -> Fill((*hltAK4PFJetsCorrected_chargedHadronEnergyFraction)[0]);
+      h_nhf_Barrel -> Fill((*hltAK4PFJetsCorrected_neutralHadronEnergyFraction)[0]);
+      h_pf_Barrel -> Fill((*hltAK4PFJetsCorrected_photonEnergyFraction)[0]);
+      if(fabs(p4_jet.Eta())<0.8){
+        h_ptResponse_Barrel_0p0_0p8 -> Fill(p4_jet.Pt()/p4_Z.Pt());
+        h_chf_Barrel_0p0_0p8 -> Fill((*hltAK4PFJetsCorrected_chargedHadronEnergyFraction)[0]);
+        h_nhf_Barrel_0p0_0p8 -> Fill((*hltAK4PFJetsCorrected_neutralHadronEnergyFraction)[0]);
+        h_pf_Barrel_0p0_0p8 -> Fill((*hltAK4PFJetsCorrected_photonEnergyFraction)[0]);
+      }else{
+        h_ptResponse_Barrel_0p8_1p3 -> Fill(p4_jet.Pt()/p4_Z.Pt());
+        h_chf_Barrel_0p8_1p3 -> Fill((*hltAK4PFJetsCorrected_chargedHadronEnergyFraction)[0]);
+        h_nhf_Barrel_0p8_1p3 -> Fill((*hltAK4PFJetsCorrected_neutralHadronEnergyFraction)[0]);
+        h_pf_Barrel_0p8_1p3 -> Fill((*hltAK4PFJetsCorrected_photonEnergyFraction)[0]);
+      }
+      if (makeGenPlots){
+        h_ptResponseGen_Barrel -> Fill((*hltAK4GenJets_pt)[0]/p4_Z.Pt());
+      }
+    }else{
+      h_ptResponse_Endcap -> Fill(p4_jet.Pt()/p4_Z.Pt());
+      h_chf_Endcap -> Fill((*hltAK4PFJetsCorrected_chargedHadronEnergyFraction)[0]);
+      h_nhf_Endcap -> Fill((*hltAK4PFJetsCorrected_neutralHadronEnergyFraction)[0]);
+      h_pf_Endcap -> Fill((*hltAK4PFJetsCorrected_photonEnergyFraction)[0]);
+      if (makeGenPlots){
+        h_ptResponseGen_Endcap -> Fill((*hltAK4GenJets_pt)[0]/p4_Z.Pt());
+      }
+    }
+    
 
     
     
   } // end on events loop
   
-  h_ptResponse -> Draw();
+  TFile *outf = TFile::Open("output_Zjet_MCgen_latest2.root","RECREATE");
+  h_ptResponse_Barrel -> Write();
+  h_chf_Barrel -> Write();
+  h_nhf_Barrel -> Write();
+  h_pf_Barrel -> Write();
+  h_ptResponse_Endcap -> Write();
+  h_chf_Endcap -> Write();
+  h_nhf_Endcap -> Write();
+  h_pf_Endcap -> Write();
+  h_ptResponse_Barrel_0p0_0p8 -> Write();
+  h_chf_Barrel_0p0_0p8 -> Write();
+  h_nhf_Barrel_0p0_0p8 -> Write();
+  h_pf_Barrel_0p0_0p8 -> Write();
+  h_ptResponse_Barrel_0p8_1p3 -> Write();
+  h_chf_Barrel_0p8_1p3 -> Write();
+  h_nhf_Barrel_0p8_1p3 -> Write();
+  h_pf_Barrel_0p8_1p3 -> Write();
+  if (makeGenPlots){
+    h_ptResponseGen_Barrel -> Write();
+    h_ptResponseGen_Endcap -> Write();
+  }
+
+  outf -> Close();
+  inf -> Close();
   
 }

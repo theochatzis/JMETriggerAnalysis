@@ -2,10 +2,10 @@
 source env.sh
 
 # directory with input(s) 
-INPDIR=/eos/user/t/tchatzis/samples2023/test_dataG_2023eta2p4
+INPDIR=/eos/user/t/tchatzis/samples2023/
 
 
-OUTDIR=./versionCheckPlots_2023Data_fix_150GeV
+OUTDIR=./plots_pfhc_test_offline
 
 
 # jmePlots.py -k version_check  \
@@ -31,12 +31,16 @@ rm -rf ${OUTDIR}
 # -i /eos/user/t/tchatzis/samples2023/test_dataG_new2023/hcal_jecs2023/harvesting/data.root:'HCAL update+jec/pfhc2023':600:1:26 \
 # -l '#font[61]{CMS} #font[52]{Run-3 Data} JetMET 2022 RunG'
 
-
-jmePlots.py -k version_check_data  \
+jmePlots.py -k compare_PFCalo_PFHC_withOffline  \
 -o ${OUTDIR} \
--i /eos/user/t/tchatzis/samples2023/test_dataG_new2023/hcal_jecs2023/harvesting/data.root:'PFHC |#eta|<2.75':1:1:26 \
-   /eos/user/t/tchatzis/samples2023/test_dataG_2023eta2p4/hcal_jecs2023/harvesting/data.root:'PFHC |#eta|<2.4':632:1:26 \
--l '#font[61]{CMS} #font[52]{Run-3 Data} JetMET 2022 RunG'
+-i ${INPDIR}/pfhc_test_offline/HLT_Run3TRK/harvesting/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65.root:'HLT PFHC':1:1:26 
+-l '#font[61]{CMS} #font[52]{Run-3 Simulation} QCD Winter23 FlatPt'
+
+# jmePlots.py -k compare_PFCalo_PFHC  \
+# -o ${OUTDIR} \
+# -i ${INPDIR}/test_hlt_pfhc/HLT_Run3TRK/harvesting/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65.root:'HLT PFHC':1:1:26 \
+#    ${INPDIR}/test_offline_pfhc/HLT_Run3TRK/harvesting/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65.root:'Offline PFHC':632:1:26 \
+# -l '#font[61]{CMS} #font[52]{Run-3 Simulation} QCD Winter23 FlatPt'
 
 # organize plots into folders
 
@@ -46,7 +50,7 @@ HB
 HE1
 HE2
 HF
-MET
+#MET
 )
 
 

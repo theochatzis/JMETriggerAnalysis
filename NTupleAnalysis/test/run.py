@@ -172,7 +172,11 @@ if __name__ == '__main__':
           print('skipEvents =', skipEvents)
           print('maxEvents =', i_maxEvents)
           print('-'*50)
-
+       
+       print(i_inpFile)
+       print(i_inpTree)
+       print(skipEvents)
+       print(i_maxEvents)
        analyzer.setInputTTree(i_inpFile, i_inpTree)
        analyzer.process(skipEvents, i_maxEvents)
 

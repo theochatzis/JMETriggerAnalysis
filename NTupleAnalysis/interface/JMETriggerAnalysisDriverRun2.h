@@ -20,7 +20,7 @@ public:
 
 protected:
   std::vector<std::string> jetCategoryLabels_;
-  virtual bool jetBelongsToCategory(const std::string& categLabel, const float jetPt, const float jetAbsEta) const;
+  virtual bool jetBelongsToCategory(const std::string& categLabel, const float jetPt, const float jetAbsEta, const float jetPhi, const float jetEta) const;
 
   std::vector<std::string> hltPaths_PFMET_;
 

@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 hltGetConfiguration /dev/CMSSW_13_0_0/GRun \
-   --globaltag 126X_mcRun3_2023_forPU65_v5 \
+   --globaltag 126X_mcRun3_2023_forPU65_v7 \
    --mc \
    --unprescale \
    --output minimal \

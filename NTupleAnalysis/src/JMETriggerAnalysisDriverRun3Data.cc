@@ -14,7 +14,7 @@ JMETriggerAnalysisDriverRun3Data::JMETriggerAnalysisDriverRun3Data(const std::st
 JMETriggerAnalysisDriverRun3Data::JMETriggerAnalysisDriverRun3Data(const std::string& outputFilePath, const std::string& outputFileMode)
   : JMETriggerAnalysisDriverData(outputFilePath, outputFileMode) {}
 
-bool JMETriggerAnalysisDriverRun3Data::jetBelongsToCategory(const std::string& jetCollection, const std::string& categLabel, const float jetPt, const float jetAbsEta) const {
+bool JMETriggerAnalysisDriverRun3Data::jetBelongsToCategory(const std::string& jetCollection, const std::string& categLabel, const float jetPt, const float jetAbsEta, const float jetPhi, const float jetEta) const {
 
   bool ret(false);
 
@@ -149,9 +149,10 @@ void JMETriggerAnalysisDriverRun3Data::init(){
   }
 
   jettriggers = {
-  //"HLT_PFJet140",
-  //"HLT_PFJet320",
-  //"HLT_PFJet500",
+  "HLT_PFJet60",
+  "HLT_PFJet140",
+  "HLT_PFJet320",
+  "HLT_PFJet500",
   };
 
   for(auto const& selLabel : jettriggers){
@@ -161,9 +162,9 @@ void JMETriggerAnalysisDriverRun3Data::init(){
   }
 
   httriggers = {
-  //"HLT_PFHT780",
-  //"HLT_PFHT890",
-  //"HLT_PFHT1050",
+  "HLT_PFHT780",
+  "HLT_PFHT890",
+  "HLT_PFHT1050",
   };
 
   for(auto const& selLabel : httriggers){
@@ -175,10 +176,10 @@ void JMETriggerAnalysisDriverRun3Data::init(){
   }
 
   mettriggers = {
-  //"HLT_PFMET120_PFMHT120_IDTight",
-  //"HLT_PFMETTypeOne120_PFMHT120_IDTight",
-  //"HLT_PFMET140_PFMHT140_IDTight",
-  //"HLT_PFMETTypeOne140_PFMHT140_IDTight",
+  "HLT_PFMET120_PFMHT120_IDTight",
+  "HLT_PFMETTypeOne120_PFMHT120_IDTight",
+  "HLT_PFMET140_PFMHT140_IDTight",
+  "HLT_PFMETTypeOne140_PFMHT140_IDTight",
   };
 
   for(auto const& selLabel : mettriggers){
@@ -405,6 +406,7 @@ bool JMETriggerAnalysisDriverRun3Data::hltJetTrigger(std::string const& key) con
   if(key == "HLT_PFJet140") return value<bool>("HLT_PFJet140");
   else if(key == "HLT_PFJet320") return value<bool>("HLT_PFJet320");
   else if(key == "HLT_PFJet500") return value<bool>("HLT_PFJet500");
+  else if(key == "HLT_PFJet60") return value<bool>("HLT_PFJet60");
   else
     throw std::runtime_error("JMETriggerAnalysisDriverRun3Data::hltJetTrigger(\""+key+"\") -- invalid key");
 

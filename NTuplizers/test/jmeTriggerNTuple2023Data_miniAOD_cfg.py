@@ -195,6 +195,11 @@ process.TFileService = cms.Service('TFileService', fileName = cms.string(opts.ou
 
 process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple_MiniAOD',
   TTreeName = cms.string('Events'),
+  createSkim = cms.untracked.bool(True), # applies selection of events based on collections jets,met,muons etc bellow - Note: could add typesOfSelections based on target e.f. 'WmunuJet'
+  createTriggerQuantities = cms.untracked.bool(True), # creates branches needed for trigger efficiencies like leadingJetPt, HT, MET based on the collections bellow
+  jets = cms.InputTag(userJetsAK4PFPuppiCollection),
+  muons = cms.InputTag(userMuonsCollection),
+  met = cms.InputTag('slimmedMETsPuppi'),
   TriggerResults = cms.InputTag('TriggerResults::HLT'),
   TriggerResultsFilterOR = cms.vstring(
     'HLT_IsoMu27'
@@ -335,7 +340,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple_MiniAOD',
 
   patJetCollections = cms.PSet(
     #offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
-    offlineAK4PFPuppiJetsCorrected = cms.InputTag(userJetsAK4PFPuppiCollection), # instead of slimmedJetsPuppi 
+    ##offlineAK4PFPuppiJetsCorrected = cms.InputTag(userJetsAK4PFPuppiCollection), # instead of slimmedJetsPuppi 
     #offlineAK4PFPuppiJetsCorrected = cms.InputTag('updatedPatJetsAK4PFPuppi'),
     #offlineAK8PFPuppiJetsCorrected = cms.InputTag('updatedPatJetsAK8PFPuppi'),
   ),
@@ -375,11 +380,11 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple_MiniAOD',
   patMETCollections = cms.PSet(
 
     #offlinePFMET = cms.InputTag('slimmedMETs'),
-    offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
+    ##offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
   ),
 
   patMuonCollections = cms.PSet(
-    offlineMuons = cms.InputTag(userMuonsCollection)
+    ##offlineMuons = cms.InputTag(userMuonsCollection)
   )
 )
 

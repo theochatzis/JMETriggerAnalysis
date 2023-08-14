@@ -811,6 +811,9 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
     this->addBranch(recoMuonCollectionContainer_i.name() + "_vx", &recoMuonCollectionContainer_i.vec_vx());
     this->addBranch(recoMuonCollectionContainer_i.name() + "_vy", &recoMuonCollectionContainer_i.vec_vy());
     this->addBranch(recoMuonCollectionContainer_i.name() + "_vz", &recoMuonCollectionContainer_i.vec_vz());
+    this->addBranch(recoMuonCollectionContainer_i.name() + "_isTightID", &recoMuonCollectionContainer_i.vec_isTightID());
+    this->addBranch(recoMuonCollectionContainer_i.name() + "_pfIso", &recoMuonCollectionContainer_i.vec_pfIso());
+    this->addBranch(recoMuonCollectionContainer_i.name() + "_trkIso", &recoMuonCollectionContainer_i.vec_trkIso());
   }
 
   for (auto& patElectronCollectionContainer_i : v_patElectronCollectionContainer_) {

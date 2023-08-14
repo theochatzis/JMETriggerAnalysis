@@ -2,16 +2,18 @@
 source env.sh
 
 # directory with input JMETriggerNTuple(s)
-INPDIR=/eos/user/t/tchatzis/samples2023/test_dataG_new2023/hcal_jecs2023/samples_merged/
+NAME=data_BPixIssue_eraC
+RECO=default
+INPDIR=/eos/user/t/tchatzis/samples2023/${NAME}/${RECO}/samples_merged/
 
 #directory with outputs of NTupleAnalysis
-OUTDIR=test_dataG_new2023_hcal_jecs2023
-OUTPUTDIR=/eos/user/t/tchatzis/samples2023/test_dataG_new2023/hcal_jecs2023/
+OUTDIR=${NAME}_${RECO}
+OUTPUTDIR=/eos/user/t/tchatzis/samples2023/${NAME}/${RECO}/
 
 # mkdir -p ${OUTDIR}
 # [ -d ${OUTDIR}/ntuples ] || (ln -sf ${INPDIR} ${OUTDIR}/ntuples)
 
-# batch_driver.py -l 1 -n 5000 -p JMETriggerAnalysisDriverRun3Data \
+# batch_driver.py -l 1 -n 50000 -p JMETriggerAnalysisDriverRun3 \
 #  -i ${OUTDIR}/ntuples/*.root -o ${OUTDIR}/jobs \
 #  -od ${OUTPUTDIR} \
 #  --JobFlavour espresso

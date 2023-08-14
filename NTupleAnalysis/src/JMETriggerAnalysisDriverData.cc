@@ -16,7 +16,7 @@ JMETriggerAnalysisDriverData::JMETriggerAnalysisDriverData(const std::string& ou
 bool JMETriggerAnalysisDriverData::jetBelongsToCategory(const std::string& jetCollection,
                                                     const std::string& categLabel,
                                                     const float jetPt,
-                                                    const float jetAbsEta) const {
+                                                    const float jetAbsEta, const float jetPhi, const float jetEta) const {
   bool ret(false);
   
   // modification start
@@ -1004,7 +1004,7 @@ void JMETriggerAnalysisDriverData::fillHistograms_Jets(const std::string& dir,
         continue;
       }
 
-      if (jetBelongsToCategory(fhData.jetCollection ,catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)))) {
+      if (jetBelongsToCategory(fhData.jetCollection ,catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)), v_phi->at(idx), v_eta->at(idx))) {
         jetIndices.emplace_back(idx);
         if ((jetIndices.size() == 1) or (v_pt->at(idx) > jetPtMax)) {
           jetPtMax = v_pt->at(idx);
@@ -1160,7 +1160,7 @@ void JMETriggerAnalysisDriverData::fillHistograms_Jets(const std::string& dir,
           continue;
         }
 
-        if (jetBelongsToCategory(fhData.jetCollection, catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)))) {
+        if (jetBelongsToCategory(fhData.jetCollection, catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)), v_phi->at(idx), v_eta->at(idx))) {
           jetIndices.emplace_back(idx);
         }
       }
@@ -1173,7 +1173,7 @@ void JMETriggerAnalysisDriverData::fillHistograms_Jets(const std::string& dir,
           continue;
         }
 
-        if (jetBelongsToCategory(fhData.jetCollection, catLabel, v_match_pt->at(idx), std::abs(v_match_eta->at(idx)))) {
+        if (jetBelongsToCategory(fhData.jetCollection, catLabel, v_match_pt->at(idx), std::abs(v_match_eta->at(idx)), v_phi->at(idx), v_eta->at(idx))) {
           jetMatchRefIndices.emplace_back(idx);
         }
       }

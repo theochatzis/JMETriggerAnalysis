@@ -5,3 +5,4 @@ crab.log
 crab_*/
 out_*/
 output_*/
+*.root

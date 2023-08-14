@@ -2,18 +2,18 @@
 source env.sh
 
 # directory with input(s) 
-INPDIR=/eos/user/t/tchatzis/samples2023/test_dataG_2023eta2p4
+INPDIR=/eos/user/t/tchatzis/CoffteaNTuples/muon2023C_CoffteaNTuple
 recoKeys=(
-    #default
-    hcal_jecs2023
-    #hcal_jecs2023
+    default
+    #option5
+    #option3
 )
 
 for recoKey in "${recoKeys[@]}"; do
-    mkdir -p ${INPDIR}/${recoKey}/samples_merged
+    mkdir -p ${INPDIR}/samples_merged
 
-    hadd_ntuples.py -i ${INPDIR}/${recoKey}/data \
-    -o ${INPDIR}/${recoKey}/samples_merged -l 0
+    hadd_ntuples.py -i ${INPDIR}/data \
+    -o ${INPDIR}/samples_merged -l 0
 done
 
 

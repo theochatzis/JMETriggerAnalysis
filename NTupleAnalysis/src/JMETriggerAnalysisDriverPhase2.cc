@@ -19,7 +19,9 @@ JMETriggerAnalysisDriverPhase2::JMETriggerAnalysisDriverPhase2(const std::string
 
 bool JMETriggerAnalysisDriverPhase2::jetBelongsToCategory(const std::string& categLabel,
                                                           const float jetPt,
-                                                          const float jetAbsEta) const {
+                                                          const float jetAbsEta,
+                                                          const float jetPhi,
+                                                          const float jetEta) const {
   bool ret(false);
   if (categLabel == "_EtaIncl") {
     ret = (jetAbsEta < 5.0);

@@ -81,8 +81,8 @@ if opts.reco == 'HLT_oldJECs':
 elif opts.reco == 'HLT_Run3TRK':
   from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
   update_jmeCalibs = False
+  #process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
   #from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump_noCustom import cms, process
-  #update_jmeCalibs = False
 
 else:
   raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
@@ -112,14 +112,14 @@ print('-'*108)
 keepPaths = [
   'MC_*Jets*',
   'MC_*MET*',
-  #'MC_*AK8Calo*',
+  'MC_*AK8Calo*',
   #'HLT_PFJet*_v*',
   #'HLT_AK4PFJet*_v*',
   #'HLT_AK8PFJet*_v*',
   #'HLT_PFHT*_v*',
   #'HLT_PFMET*_PFMHT*_v*',
   #'AlCa_*',
-  'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*'
+  #'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*'
 ]
 
 vetoPaths = [
@@ -164,7 +164,7 @@ if update_jmeCalibs:
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('PFCalibrationRcd'),
-        tag = cms.string('PFCalibration_CMSSW_13_0_0_HLT_126X_v4_mcRun3_2023'),
+        tag = cms.string('PFCalibration_CMSSW_13_0_0_HLT_126X_v6_mcRun3_2023'),
         label = cms.untracked.string('HLT'),
       ),
     ),
@@ -174,7 +174,7 @@ if update_jmeCalibs:
 
   ##ES modules for HLT JECs
   process.jescESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Run3Winter23Digi.db'),
+    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Run3Winter23Digi_OfflinePFHC.db'),
     #_CondDB.clone(connect = 'sqlite_file:Run3Winter23Digi.db'),
     toGet = cms.VPSet(
       cms.PSet(
@@ -232,7 +232,161 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   TriggerResultsCollections = cms.vstring(
     sorted(list(set([(_tmp[:_tmp.rfind('_v')] if '_v' in _tmp else _tmp) for _tmp in listOfPaths])))
   ),
-  outputBranchesToBeDropped = cms.vstring(),
+  outputBranchesToBeDropped = cms.vstring(
+  'hltAK4PFJets_jetArea',
+  'hltAK4PFJets_jesc',
+  'hltAK4PFJets_numberOfDaughters',
+  'hltAK4PFJets_chargedHadronEnergyFraction',
+  'hltAK4PFJets_neutralHadronEnergyFraction',
+  'hltAK4PFJets_photonEnergyFraction',
+  'hltAK4PFJets_muonEnergyFraction',
+  'hltAK4PFJets_electronEnergyFraction',
+  'hltAK4PFJets_chargedHadronMultiplicity',
+  'hltAK4PFJets_neutralHadronMultiplicity',
+  'hltAK4PFJets_photonMultiplicity',
+  'hltAK4PFJets_muonMultiplicity',
+  'hltAK4PFJets_electronMultiplicity',
+
+  'hltAK4PFJetsCorrected_jetArea',
+  'hltAK4PFJetsCorrected_jesc',
+  'hltAK4PFJetsCorrected_numberOfDaughters',
+  'hltAK4PFJetsCorrected_chargedHadronEnergyFraction',
+  'hltAK4PFJetsCorrected_neutralHadronEnergyFraction',
+  'hltAK4PFJetsCorrected_photonEnergyFraction',
+  'hltAK4PFJetsCorrected_muonEnergyFraction',
+  'hltAK4PFJetsCorrected_electronEnergyFraction',
+  'hltAK4PFJetsCorrected_chargedHadronMultiplicity',
+  'hltAK4PFJetsCorrected_neutralHadronMultiplicity',
+  'hltAK4PFJetsCorrected_photonMultiplicity',
+  'hltAK4PFJetsCorrected_muonMultiplicity',
+  'hltAK4PFJetsCorrected_electronMultiplicity',
+
+  'hltAK4CaloJets_jetArea',
+  'hltAK4CaloJets_jesc',
+  'hltAK4CaloJets_numberOfDaughters',
+  'hltAK4CaloJets_chargedHadronEnergyFraction',
+  'hltAK4CaloJets_neutralHadronEnergyFraction',
+  'hltAK4CaloJets_photonEnergyFraction',
+  'hltAK4CaloJets_muonEnergyFraction',
+  'hltAK4CaloJets_electronEnergyFraction',
+  'hltAK4CaloJets_chargedHadronMultiplicity',
+  'hltAK4CaloJets_neutralHadronMultiplicity',
+  'hltAK4CaloJets_photonMultiplicity',
+  'hltAK4CaloJets_muonMultiplicity',
+  'hltAK4CaloJets_electronMultiplicity',
+
+  'hltAK4CaloJetsCorrected_jetArea',
+  'hltAK4CaloJetsCorrected_jesc',
+  'hltAK4CaloJetsCorrected_numberOfDaughters',
+  'hltAK4CaloJetsCorrected_chargedHadronEnergyFraction',
+  'hltAK4CaloJetsCorrected_neutralHadronEnergyFraction',
+  'hltAK4CaloJetsCorrected_photonEnergyFraction',
+  'hltAK4CaloJetsCorrected_muonEnergyFraction',
+  'hltAK4CaloJetsCorrected_electronEnergyFraction',
+  'hltAK4CaloJetsCorrected_chargedHadronMultiplicity',
+  'hltAK4CaloJetsCorrected_neutralHadronMultiplicity',
+  'hltAK4CaloJetsCorrected_photonMultiplicity',
+  'hltAK4CaloJetsCorrected_muonMultiplicity',
+  'hltAK4CaloJetsCorrected_electronMultiplicity',
+
+  'hltAK8PFJets_jetArea',
+  'hltAK8PFJets_jesc',
+  'hltAK8PFJets_numberOfDaughters',
+  'hltAK8PFJets_chargedHadronEnergyFraction',
+  'hltAK8PFJets_neutralHadronEnergyFraction',
+  'hltAK8PFJets_photonEnergyFraction',
+  'hltAK8PFJets_muonEnergyFraction',
+  'hltAK8PFJets_electronEnergyFraction',
+  'hltAK8PFJets_chargedHadronMultiplicity',
+  'hltAK8PFJets_neutralHadronMultiplicity',
+  'hltAK8PFJets_photonMultiplicity',
+  'hltAK8PFJets_muonMultiplicity',
+  'hltAK8PFJets_electronMultiplicity',
+
+  'hltAK8PFJetsCorrected_jetArea',
+  'hltAK8PFJetsCorrected_jesc',
+  'hltAK8PFJetsCorrected_numberOfDaughters',
+  'hltAK8PFJetsCorrected_chargedHadronEnergyFraction',
+  'hltAK8PFJetsCorrected_neutralHadronEnergyFraction',
+  'hltAK8PFJetsCorrected_photonEnergyFraction',
+  'hltAK8PFJetsCorrected_muonEnergyFraction',
+  'hltAK8PFJetsCorrected_electronEnergyFraction',
+  'hltAK8PFJetsCorrected_chargedHadronMultiplicity',
+  'hltAK8PFJetsCorrected_neutralHadronMultiplicity',
+  'hltAK8PFJetsCorrected_photonMultiplicity',
+  'hltAK8PFJetsCorrected_muonMultiplicity',
+  'hltAK8PFJetsCorrected_electronMultiplicity',
+
+  'hltAK8CaloJets_jetArea',
+  'hltAK8CaloJets_jesc',
+  'hltAK8CaloJets_numberOfDaughters',
+  'hltAK8CaloJets_chargedHadronEnergyFraction',
+  'hltAK8CaloJets_neutralHadronEnergyFraction',
+  'hltAK8CaloJets_photonEnergyFraction',
+  'hltAK8CaloJets_muonEnergyFraction',
+  'hltAK8CaloJets_electronEnergyFraction',
+  'hltAK8CaloJets_chargedHadronMultiplicity',
+  'hltAK8CaloJets_neutralHadronMultiplicity',
+  'hltAK8CaloJets_photonMultiplicity',
+  'hltAK8CaloJets_muonMultiplicity',
+  'hltAK8CaloJets_electronMultiplicity',
+
+  'hltAK8CaloJetsCorrected_jetArea',
+  'hltAK8CaloJetsCorrected_jesc',
+  'hltAK8CaloJetsCorrected_numberOfDaughters',
+  'hltAK8CaloJetsCorrected_chargedHadronEnergyFraction',
+  'hltAK8CaloJetsCorrected_neutralHadronEnergyFraction',
+  'hltAK8CaloJetsCorrected_photonEnergyFraction',
+  'hltAK8CaloJetsCorrected_muonEnergyFraction',
+  'hltAK8CaloJetsCorrected_electronEnergyFraction',
+  'hltAK8CaloJetsCorrected_chargedHadronMultiplicity',
+  'hltAK8CaloJetsCorrected_neutralHadronMultiplicity',
+  'hltAK8CaloJetsCorrected_photonMultiplicity',
+  'hltAK8CaloJetsCorrected_muonMultiplicity',
+  'hltAK8CaloJetsCorrected_electronMultiplicity',
+
+  'offlineAK4PFPuppiJets_jetArea',
+  'offlineAK4PFPuppiJets_jesc',
+  'offlineAK4PFPuppiJets_numberOfDaughters',
+  'offlineAK4PFPuppiJets_chargedHadronEnergyFraction',
+  'offlineAK4PFPuppiJets_neutralHadronEnergyFraction',
+  'offlineAK4PFPuppiJets_photonEnergyFraction',
+  'offlineAK4PFPuppiJets_muonEnergyFraction',
+  'offlineAK4PFPuppiJets_electronEnergyFraction',
+  'offlineAK4PFPuppiJets_chargedHadronMultiplicity',
+  'offlineAK4PFPuppiJets_neutralHadronMultiplicity',
+  'offlineAK4PFPuppiJets_photonMultiplicity',
+  'offlineAK4PFPuppiJets_muonMultiplicity',
+  'offlineAK4PFPuppiJets_electronMultiplicity',
+
+  'ak4GenJetsNoNu_jetArea',
+  'ak4GenJetsNoNu_jesc',
+  'ak4GenJetsNoNu_numberOfDaughters',
+  'ak4GenJetsNoNu_chargedHadronEnergyFraction',
+  'ak4GenJetsNoNu_neutralHadronEnergyFraction',
+  'ak4GenJetsNoNu_photonEnergyFraction',
+  'ak4GenJetsNoNu_muonEnergyFraction',
+  'ak4GenJetsNoNu_electronEnergyFraction',
+  'ak4GenJetsNoNu_chargedHadronMultiplicity',
+  'ak4GenJetsNoNu_neutralHadronMultiplicity',
+  'ak4GenJetsNoNu_photonMultiplicity',
+  'ak4GenJetsNoNu_muonMultiplicity',
+  'ak4GenJetsNoNu_electronMultiplicity',
+
+  'ak8GenJetsNoNu_jetArea',
+  'ak8GenJetsNoNu_jesc',
+  'ak8GenJetsNoNu_numberOfDaughters',
+  'ak8GenJetsNoNu_chargedHadronEnergyFraction',
+  'ak8GenJetsNoNu_neutralHadronEnergyFraction',
+  'ak8GenJetsNoNu_photonEnergyFraction',
+  'ak8GenJetsNoNu_muonEnergyFraction',
+  'ak8GenJetsNoNu_electronEnergyFraction',
+  'ak8GenJetsNoNu_chargedHadronMultiplicity',
+  'ak8GenJetsNoNu_neutralHadronMultiplicity',
+  'ak8GenJetsNoNu_photonMultiplicity',
+  'ak8GenJetsNoNu_muonMultiplicity',
+  'ak8GenJetsNoNu_electronMultiplicity',
+  ),
 
   HepMCProduct = cms.InputTag('generatorSmeared'),
   GenEventInfoProduct = cms.InputTag('generator'),
@@ -255,7 +409,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
     hltPixelVertices = cms.InputTag('hltPixelVertices'),
     #hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
-    hltVerticesPF = cms.InputTag('hltVerticesPF'),
+    #hltVerticesPF = cms.InputTag('hltVerticesPF'),
     #offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
   ),
 
@@ -265,7 +419,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   recoGenJetCollections = cms.PSet(
 
     ak4GenJetsNoNu = cms.InputTag('ak4GenJetsNoNu::HLT'),
-    #ak8GenJetsNoNu = cms.InputTag('ak8GenJetsNoNu::HLT'),
+    ak8GenJetsNoNu = cms.InputTag('ak8GenJetsNoNu::HLT'),
   ),
 
   recoCaloJetCollections = cms.PSet(
@@ -273,8 +427,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     hltAK4CaloJets = cms.InputTag('hltAK4CaloJets'),
     hltAK4CaloJetsCorrected = cms.InputTag('hltAK4CaloJetsCorrected'),
 
-    #hltAK8CaloJets = cms.InputTag('hltAK8CaloJets'),
-    #hltAK8CaloJetsCorrected = cms.InputTag('hltAK8CaloJetsCorrected'),
+    hltAK8CaloJets = cms.InputTag('hltAK8CaloJets'),
+    hltAK8CaloJetsCorrected = cms.InputTag('hltAK8CaloJetsCorrected'),
   ),
 
 # recoPFClusterJetCollections = cms.PSet(
@@ -290,15 +444,15 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
     hltAK4PFJets = cms.InputTag('hltAK4PFJets'),
     hltAK4PFJetsCorrected = cms.InputTag('hltAK4PFJetsCorrected'),
-
+    #offlineAK4PFPuppiJets = cms.InputTag('ak4PFJetsPuppi'),
     #hltAK4PFCHSJets = cms.InputTag('hltAK4PFCHSJets'),
     #hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
 
     #hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
     #hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
 
-    #hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
-    #hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
+    hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
+    hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
 
     #hltAK8PFCHSJets = cms.InputTag('hltAK8PFCHSJets'),
     #hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
@@ -351,7 +505,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   ),
 
   recoMuonCollections = cms.PSet(
-    hltMuons = cms.InputTag('hltIterL3Muons'), # this collection uses the miniAOD definition muon::isLooseTriggerMuon(reco::Muon)
+    #hltMuons = cms.InputTag('hltIterL3Muons'), # this collection uses the miniAOD definition muon::isLooseTriggerMuon(reco::Muon)
   )
 )
 

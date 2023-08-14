@@ -60,7 +60,7 @@ protected:
   bool const consumeHepMCProduct_;
   bool const consumeGenEventInfoProduct_;
   bool const consumePileupSummaryInfo_;
-
+  
   std::vector<std::string> const TriggerResultsFilterOR_;
   std::vector<std::string> const TriggerResultsFilterAND_;
 
@@ -104,6 +104,22 @@ protected:
   std::vector<PATElectronCollectionContainer> v_patElectronCollectionContainer_;
 
   TTree* ttree_ = nullptr;
+  
+  bool createSkim_;
+  bool createTriggerQuantities_;
+
+  edm::EDGetTokenT<pat::JetCollection> jetsToken;
+  edm::EDGetTokenT<pat::MuonCollection> muonsToken;
+  edm::EDGetTokenT<pat::METCollection> metToken;
+
+  edm::Handle<pat::JetCollection> jets;
+  edm::Handle<pat::MuonCollection> muons;
+  edm::Handle<pat::METCollection> met;
+
+  // quantities for branches in case createTriggerQuantities_ is used
+  double leadingJetPt_ = 0.;
+  double met_ = 0.;
+  double ht_ = 0.;
 
   unsigned int run_ = 0;
   unsigned int luminosityBlock_ = 0;
@@ -201,6 +217,13 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
     fillCollectionConditionMap_.init(iConfig.getParameter<edm::ParameterSet>("fillCollectionConditions"));
   }
 
+  // make skim
+  createSkim_= iConfig.getUntrackedParameter<bool>("createSkim",false);
+  createTriggerQuantities_ = iConfig.getUntrackedParameter<bool>("createTriggerQuantities",false);
+  jetsToken             = consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("jets"));
+  muonsToken            = consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muons"));
+  metToken              = consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("met"));
+  
   // stringCutObjectSelectors
   stringCutObjectSelectors_map_.clear();
 
@@ -423,10 +446,18 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
   if (not ttree_) {
     throw edm::Exception(edm::errors::Configuration, "failed to create TTree via TFileService::make<TTree>");
   }
+  
+  // add branches for trigger if option is activated
+  if(createTriggerQuantities_){
+    this->addBranch("leadingJet_pt", &leadingJetPt_);
+    this->addBranch("met",&met_);
+    this->addBranch("ht",&ht_);
+  }
 
   this->addBranch("run", &run_);
   this->addBranch("luminosityBlock", &luminosityBlock_);
   this->addBranch("event", &event_);
+  
   
   if(iConfig.exists("HepMCProduct")){
     this->addBranch("HepMCGenEvent_scale", &hepMCGenEvent_scale_);
@@ -847,6 +878,50 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
   //   return;
   // }
   ///////////////////////////////////////////////////////////////////////////
+  
+  // get objects 
+  iEvent.getByToken(jetsToken,jets);
+  iEvent.getByToken(muonsToken,muons);
+  iEvent.getByToken(metToken,met);
+  
+  leadingJetPt_ = 0.;
+  met_ = 0.;
+  ht_ = 0.;
+
+  // Assisting variables
+  bool leadingJetIsGood=false; // this checks if the leading jet has tightID - if not event will be rejected
+  
+  // if create skim is used then return for events that don't pass the selections
+  if(createSkim_){
+    // muons selections
+    // pt>30GeV , abs(eta) < 2.4, ID tight , pfIso < 0.15 are assumed to exist from the filter on the collection
+    // so needs only to require one such muon
+    if(!( muons->size()==1 )) return;
+    
+    // jets have looser requirements ((pt > 30.) && (abs(eta) < 5.0) so we can also calculate the ht quantity
+    // note: ht triggers use abs(eta)<2.5 and pt>30GeV 
+    // initially require a jet to exist
+    if(!( jets->size()>0 )) return;
+    
+    // loop over jets to find leadingJet_pt and calculate ht
+    for(pat::JetCollection::const_iterator ijet =jets->begin();ijet != jets->end(); ++ijet) {
+      if(fabs(ijet->eta())<2.5){
+        ht_ += ijet->pt();
+      }
+
+      if( ijet->pt()>leadingJetPt_ ){
+        leadingJetPt_ = ijet->pt();
+        leadingJetIsGood =  (ijet->hasUserInt("PFJetIDTightLepVeto") && (ijet->userInt("PFJetIDTightLepVeto") > 0));
+      }
+    } 
+  }
+
+  // leading jet is tight ID cut
+  if (!leadingJetIsGood) return;
+  
+  // calculate MET
+  met_ = (*met)[0].et();
+
 
   // MC: HepMCProduct
   hepMCGenEvent_scale_ = -1.f;

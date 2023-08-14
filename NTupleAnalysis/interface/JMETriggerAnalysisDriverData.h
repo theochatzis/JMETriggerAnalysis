@@ -21,7 +21,7 @@ public:
 protected:
   std::vector<std::string> jetCategoryLabels_;
   // modification start
-  virtual bool jetBelongsToCategory(const std::string& jetCollection, const std::string& categLabel, const float jetPt, const float jetAbsEta) const;
+  virtual bool jetBelongsToCategory(const std::string& jetCollection, const std::string& categLabel, const float jetPt, const float jetAbsEta, const float jetPhi, const float jetEta) const;
   // modification end
   class fillHistoDataJets {
   public:

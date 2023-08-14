@@ -8,7 +8,7 @@ if [ $# -ne 1 ]; then
 fi
 
 # number of total events to run 
-NEVT=5000
+NEVT=1000000000
 
 # directory in EOS space
 OUTPUT_DIR_EOS=/eos/user/t/tchatzis/CoffteaNTuples
@@ -56,7 +56,7 @@ for sampleKey in ${!samplesMap[@]}; do
   
   # Create condor scripts and submit them (if --submit is used)
   # if --submit not used here you can submit the job later with bmonitor script (see bellow) 
-  bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 1000000 --memory 2G --time 00:20:00 \
+  bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 10000000 --memory 2G --time 02:00:00 \
     -d ${sampleName} -p 0 -o ${ODIR}/${sampleKey} \
     --final-output ${FINAL_OUTPUT_DIR} \
     --submit \

@@ -13,14 +13,20 @@ JMETriggerAnalysisDriverRun3::JMETriggerAnalysisDriverRun3(const std::string& tf
 JMETriggerAnalysisDriverRun3::JMETriggerAnalysisDriverRun3(const std::string& outputFilePath, const std::string& outputFileMode)
   : JMETriggerAnalysisDriver(outputFilePath, outputFileMode) {}
 
-bool JMETriggerAnalysisDriverRun3::jetBelongsToCategory(const std::string& categLabel, const float jetPt, const float jetAbsEta) const {
+bool JMETriggerAnalysisDriverRun3::jetBelongsToCategory(const std::string& categLabel, const float jetPt, const float jetAbsEta, const float jetPhi, const float jetEta) const {
 
   bool ret(false);
   if(categLabel == "_EtaIncl"){ ret = (jetAbsEta < 5.0); }
-  else if(categLabel == "_Eta2p5"){ ret = (jetAbsEta < 2.5); }
+  //else if(categLabel == "_Eta2p5"){ ret = (jetAbsEta < 2.5); }
   else if(categLabel == "_HB"){ ret = (jetAbsEta < 1.3); }
-  else if(categLabel == "_HE"){ ret = (1.3 <= jetAbsEta) and (jetAbsEta < 3.0); }
+  //else if(categLabel == "_HE"){ ret = (1.3 <= jetAbsEta) and (jetAbsEta < 3.0); }
+  else if(categLabel == "_HE1"){ ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5); }
+  else if(categLabel == "_HE2"){ ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0); }
   else if(categLabel == "_HF"){ ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0); }
+  else if(categLabel == "_HE21"){ ret = (2.5 <= jetAbsEta) and (jetAbsEta < 2.7); }
+  else if(categLabel == "_HE22"){ ret = (2.7 <= jetAbsEta) and (jetAbsEta < 3.0); }
+  //else if(categLabel == "_BPix"){ ret = (jetEta < 0.) and (jetEta>-1.5) and (jetPhi<-0.8) and (jetPhi>-1.2);}
+  //else if(categLabel == "_BPixVeto"){ ret = !((jetEta < 0.) and (jetEta>-1.5) and (jetPhi<-0.8) and (jetPhi>-1.2));}
   return ret;
 }
 
@@ -28,10 +34,15 @@ void JMETriggerAnalysisDriverRun3::init(){
 
   jetCategoryLabels_ = {
     "_EtaIncl",
-    "_Eta2p5",
+    //"_Eta2p5",
     "_HB",
-    "_HE",
+    "_HE1",
+    "_HE2",
+    "_HE21",
+    "_HE22",
     "_HF",
+    //"_BPix",
+    //"_BPixVeto",
   };
 
   // histogram: events counter
@@ -47,16 +58,17 @@ void JMETriggerAnalysisDriverRun3::init(){
     //        {"offlPFCorr", "offlineAK4PFCHSJetsCorrected"},
     //        //{"hltPFPuppiCorr", "hltAK4PFPuppiJetsCorrected"},
     //        {"offlPFPuppiCorr", "offlineAK4PFPuppiJetsCorrected"}}},
-    //{"hltAK4CaloJets"              , {{"GEN", "ak4GenJetsNoNu"}}},
-    {"hltAK4CaloJetsCorrected"     , {{"GEN", "ak4GenJetsNoNu"}}},
+    {"hltAK4CaloJets"              , {{"GEN", "ak4GenJetsNoNu"}}},
+    //{"hltAK4CaloJetsCorrected"     , {{"GEN", "ak4GenJetsNoNu"}}},
     //{"hltAK4PFClusterJets"         , {{"GEN", "ak4GenJetsNoNu"}}},
     //{"hltAK4PFClusterJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}}},
-    //{"hltAK4PFJets"                , {{"GEN", "ak4GenJetsNoNu"}}},
-    {"hltAK4PFJetsCorrected"       , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
+    {"hltAK4PFJets"                , {{"GEN", "ak4GenJetsNoNu"}}},
+    //{"hltAK4PFJetsCorrected"       , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
     //{"hltAK4PFPuppiJets"           , {{"GEN", "ak4GenJetsNoNu"}}},
     //{"hltAK4PFPuppiJetsCorrected"  , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
-    {"offlineAK4PFCHSJetsCorrected"   , {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
-    {"offlineAK4PFPuppiJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
+    //{"offlineAK4PFCHSJetsCorrected"   , {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
+    //{"offlineAK4PFPuppiJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
+    // {"offlineAK4PFPuppiJets", {{"GEN", "ak4GenJetsNoNu"}}},
   };
 
   labelMap_jetAK8_.clear();
@@ -90,11 +102,11 @@ void JMETriggerAnalysisDriverRun3::init(){
     //{"hltPFMETTypeOne"        , {{"GEN", "genMETTrue"}}},
     //{"hltPFPuppiMET"          , {{"GEN", "genMETTrue"}}},
     //{"hltPFPuppiMETTypeOne"   , {{"GEN", "genMETTrue"}}},
-
-    {"offlinePFMET_Raw"       , {{"GEN", "genMETTrue"}}},
-    {"offlinePFMET_Type1"     , {{"GEN", "genMETTrue"}}},
-    {"offlinePFPuppiMET_Raw"  , {{"GEN", "genMETTrue"}}},
-    {"offlinePFPuppiMET_Type1", {{"GEN", "genMETTrue"}}},
+    //{"offlinePFPuppiMET", {}}
+    //{"offlinePFMET_Raw"       , {{"GEN", "genMETTrue"}}},
+    //{"offlinePFMET_Type1"     , {{"GEN", "genMETTrue"}}},
+    //{"offlinePFPuppiMET_Raw"  , {{"GEN", "genMETTrue"}}},
+    //{"offlinePFPuppiMET_Type1", {{"GEN", "genMETTrue"}}},
   };
 
   for(auto const& selLabel : {
@@ -122,11 +134,11 @@ void JMETriggerAnalysisDriverRun3::init(){
   }
 
   jettriggers = {
-  "HLT_PFJet60",
-  "HLT_PFJet110",
-  "HLT_PFJet140",
-  "HLT_PFJet320",
-  "HLT_PFJet500",
+  // "HLT_PFJet60",
+  // //"HLT_PFJet110",
+  // "HLT_PFJet140",
+  // "HLT_PFJet320",
+  // "HLT_PFJet500",
   };
 
   for(auto const& selLabel : jettriggers){
@@ -136,13 +148,13 @@ void JMETriggerAnalysisDriverRun3::init(){
   }
 
   httriggers = {
-  "HLT_PFHT180",
-  "HLT_PFHT250",
-  "HLT_PFHT350",
-  "HLT_PFHT510",
-  "HLT_PFHT780",
-  "HLT_PFHT890",
-  "HLT_PFHT1050",
+  // //"HLT_PFHT180",
+  // //"HLT_PFHT250",
+  // //"HLT_PFHT350",
+  // //"HLT_PFHT510",
+  // "HLT_PFHT780",
+  // "HLT_PFHT890",
+  // "HLT_PFHT1050",
   };
 
   for(auto const& selLabel : httriggers){
@@ -154,9 +166,9 @@ void JMETriggerAnalysisDriverRun3::init(){
   }
 
   mettriggers = {
-  "HLT_PFMET120_PFMHT120_IDTight",
-  "HLT_PFMET140_PFMHT140_IDTight",
-  "HLT_PFMETTypeOne140_PFMHT140_IDTight",
+  // "HLT_PFMET120_PFMHT120_IDTight",
+  // "HLT_PFMET140_PFMHT140_IDTight",
+  // "HLT_PFMETTypeOne140_PFMHT140_IDTight",
   };
 
   for(auto const& selLabel : mettriggers){
@@ -167,12 +179,12 @@ void JMETriggerAnalysisDriverRun3::init(){
   }
 
   puintervals = {
-  "PU0to20",
-  "PU20to40",
-  "PUgt40",
-  "PU0to20_HLT",
-  "PU20to40_HLT",
-  "PUgt40_HLT",
+  // "PU0to20",
+  // "PU20to40",
+  // "PUgt40",
+  // "PU0to20_HLT",
+  // "PU20to40_HLT",
+  // "PUgt40_HLT",
   //"PU0to20_HLT_TypeOne",
   //"PU20to40_HLT_TypeOne",
   //"PUgt40_HLT_TypeOne",

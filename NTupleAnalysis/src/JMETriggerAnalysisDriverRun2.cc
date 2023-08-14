@@ -16,7 +16,9 @@ JMETriggerAnalysisDriverRun2::JMETriggerAnalysisDriverRun2(const std::string& ou
 
 bool JMETriggerAnalysisDriverRun2::jetBelongsToCategory(const std::string& categLabel,
                                                         const float jetPt,
-                                                        const float jetAbsEta) const {
+                                                        const float jetAbsEta,
+                                                        const float jetPhi,
+                                                        const float jetEta) const {
   bool ret(false);
   if (categLabel == "_EtaIncl") {
     ret = (jetAbsEta < 5.0);
@@ -658,7 +660,7 @@ void JMETriggerAnalysisDriverRun2::fillHistograms_Jets(const std::string& dir, c
         continue;
       }
 
-      if (jetBelongsToCategory(catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)))) {
+      if (jetBelongsToCategory(catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)), v_phi->at(idx), v_eta->at(idx))) {
         jetIndices.emplace_back(idx);
         if ((jetIndices.size() == 1) or (v_pt->at(idx) > jetPtMax)) {
           jetPtMax = v_pt->at(idx);
@@ -741,7 +743,7 @@ void JMETriggerAnalysisDriverRun2::fillHistograms_Jets(const std::string& dir, c
           continue;
         }
 
-        if (jetBelongsToCategory(catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)))) {
+        if (jetBelongsToCategory(catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)), v_phi->at(idx), v_eta->at(idx))) {
           jetIndices.emplace_back(idx);
         }
       }
