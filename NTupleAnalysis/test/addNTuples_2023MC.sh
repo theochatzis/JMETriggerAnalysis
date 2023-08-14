@@ -2,17 +2,18 @@
 source env.sh
 
 # directory with input(s) 
-INPDIR=/eos/user/t/tchatzis/samples2023/test_noCustom
+INPDIR=/eos/user/a/aakpinar/nanopost/hlt_run3_JECs
 
-mkdir -p ${INPDIR}/HLT_Run3TRK/samples_merged
+mkdir -p ${INPDIR}/samples_merged/QCD_FlatPUGTv6HCAL_126X_withForwardPFHCs
+mkdir -p ${INPDIR}/samples_merged/QCD_EpsPUGTv6HCAL_126X_withForwardPFHCs
 
-# QCD
-hadd_ntuples.py -i ${INPDIR}/HLT_Run3TRK/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65 \
--o ${INPDIR}/HLT_Run3TRK/samples_merged -l 0
+# QCD flat PU sample
+hadd_ntuples.py -i ${INPDIR}/QCD_FlatPUGTv6HCAL_126X_withForwardPFHCs/QCD_PT-15to7000_TuneCP5_Flat2022_13p6TeV_pythia8/crab_jmeTriggerNTuple_QCD_FlatPUGTv6HCAL_126X_withForwardPFHCs/230802_122038/0000 \
+-o ${INPDIR}/samples_merged/QCD_FlatPUGTv6HCAL_126X_withForwardPFHCs -l 0
 
-# VBF HToInvisible
-hadd_ntuples.py -i ${INPDIR}/HLT_Run3TRK/Run3Winter23_VBF_HToInvisible_13p6TeV_PU65 \
--o ${INPDIR}/HLT_Run3TRK/samples_merged -l 0
+# QCD epsilon PU sample
+hadd_ntuples.py -i ${INPDIR}/QCD_EpsPUGTv6HCAL_126X_withForwardPFHCs/QCD_PT-15to7000_TuneCP5_Flat2022_13p6TeV_pythia8/crab_jmeTriggerNTuple_QCD_EpsPUGTv6HCAL_126X_withForwardPFHCs/230802_121934/0000 \
+-o ${INPDIR}/samples_merged/QCD_EpsPUGTv6HCAL_126X_withForwardPFHCs -l 0
 
 
 
