@@ -6,8 +6,14 @@ set -euo pipefail
 ## -------------------------
 JESC_BASE=${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test
 
-JRANTuple_NoPU=/eos/cms/store/user/chuh/jec/v6/jmeTriggerNTuple_EpsilonPU.root
-JRANTuple_PU=/eos/cms/store/user/chuh/jec/v6/jmeTriggerNTuple_PU0to80.root
+# Merged samples without forward (|eta| > 2.5) PFHCs applied
+JRANTuple_NoPU=/eos/user/a/aakpinar/nanopost/hlt_run3_JECs/samples_merged/QCD_EpsPUGTv6HCAL_126X/0000.root
+JRANTuple_PU=/eos/user/a/aakpinar/nanopost/hlt_run3_JECs/samples_merged/QCD_FlatPUGTv6HCAL_126X/0000.root
+
+# Merged samples with forward (|eta| > 2.5) PFHCs applied
+# JRANTuple_NoPU=/eos/user/a/aakpinar/nanopost/hlt_run3_JECs/samples_merged/QCD_EpsPUGTv6HCAL_126X_withForwardPFHCs/0000.root
+# JRANTuple_PU=/eos/user/a/aakpinar/nanopost/hlt_run3_JECs/samples_merged/QCD_FlatPUGTv6HCAL_126X_withForwardPFHCs/0000.root
+
 #JRANTuple_NoPU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jec/jmeTriggerNTuple_NoPU.root
 #JRANTuple_PU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jec/jmeTriggerNTuple_PU0to120.root
 
@@ -211,7 +217,7 @@ runJECWorflowForOneAlgo(){
     CMD_STEP="jet_l2_correction_x -algs ${jetType} -era ${ERA} -l2l3 true"
     CMD_STEP+=" -input plots_${stepNameOld}/histogram_${jetType}l1_${stepNameOld}.root -outputDir ./ -output l2p3.root"
     CMD_STEP+=" -makeCanvasVariable AbsCorVsJetPt:JetEta -batch true -histMet median -l2pffit standard+Gaussian -maxFitIter 50"
-    CMD_STEP+=" -ptclipfit true -ptclip 10.0"
+    CMD_STEP+=" -ptclipfit false -ptclip 10.0"
     stepCmd "mkdir -p plots_${stepName}\n\n${CMD_STEP}" ${stepName}
   fi
 
