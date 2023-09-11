@@ -101,10 +101,16 @@ if opts.reco == 'HLT_TRKv06p1':
 elif opts.reco == 'HLT_TRKv06p1_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p1_TICL_cfg import cms, process
 elif opts.reco == 'HLT_75e33':
-  from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg import cms, process
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_ticlv3_cfg import cms, process
   # optimal tracking thresholds for MET
-  process = customisePhase2TrackingPtThresholds(process,1.8)
+  #process = customisePhase2TrackingPtThresholds(process,1.8)
   #process.schedule_().append(process.MC_JME)
+  # Input source
+  process.source.inputCommands = cms.untracked.vstring(
+        'keep *',
+        'drop *_hlt*_*_HLT',
+        'drop triggerTriggerFilterObjectWithRefs_l1t*_*_HLT'
+  )
 else:
    raise RuntimeError('invalid argument for option "reco": "'+opts.reco+'"')
 
@@ -206,7 +212,7 @@ if opts.inputFiles:
 else:
    process.source.fileNames = [
      #'/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v2/280000/015FB6F1-59B4-304C-B540-2392A983A97D.root',
-     '/store/mc/PhaseIISpring22DRMiniAOD/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_castor_123X_mcRun4_realistic_v11-v1/40000/009871c5-babe-40aa-9e82-7d91f772b3e4.root',
+     '/store/mc/Phase2Spring23DIGIRECOMiniAOD/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_Trk1GeV_131X_mcRun4_realistic_v5-v2/50000/00158fbd-efe4-4454-9d7c-8a0266757074.root',
    ]
 
 # dump content of cms.Process to python file

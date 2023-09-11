@@ -4,14 +4,14 @@
 #run simplified menu
 cmsDriver.py Phase2 -s HLT:75e33 --processName=HLTX \
 --conditions auto:phase2_realistic_T21 \
---geometry Extended2026D88 \
+--geometry Extended2026D95 \
 --era Phase2C17I13M9 \
---eventcontent FEVTDEBUGHLT \
 --customise SLHCUpgradeSimulations/Configuration/aging.customise_aging_1000 \
---filein=/store/relval/CMSSW_13_1_0_pre3/RelValTTbar_14TeV/GEN-SIM-RECO/131X_mcRun4_realistic_v2_2026D95noPU-v1/00000/23d1df90-bf0e-4277-bcc9-02da47a5e493.root \
--n 1000 --nThreads 1 --no_exec
+--eventcontent FEVTDEBUGHLT \
+--filein=/store/mc/Phase2Spring23DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_Trk1GeV_131X_mcRun4_realistic_v5-v1/30000/01607282-0427-4687-a122-ef0a41220590.root \
+-n 100 --nThreads 1 --no_exec
 
-edmConfigDump Phase2_HLT.py > HLT_75e33_cfg.py
+#edmConfigDump Phase2_HLT.py > HLT_75e33_ticlv3_cfg.py
 
 #add: process.MessageLogger.HLTrigReport = cms.untracked.PSet()
 

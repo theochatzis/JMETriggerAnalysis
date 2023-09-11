@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: Phase2 -s HLT:75e33 --processName=HLTX --conditions auto:phase2_realistic_T21 --geometry Extended2026D88 --era Phase2C17I13M9 --eventcontent FEVTDEBUGHLT --filein=/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-RECO/123X_mcRun4_realistic_v11_2026D88noPU-v1/2580000/4cb86d46-f780-4ce7-94df-9e0039e1953b.root -n 100 --nThreads 1 --no_exec
+# with command line options: Phase2 -s HLT:75e33 --processName=HLTX --conditions auto:phase2_realistic_T21 --geometry Extended2026D95 --era Phase2C17I13M9 --customise SLHCUpgradeSimulations/Configuration/aging.customise_aging_1000 --eventcontent FEVTDEBUGHLT --filein=/store/mc/Phase2Spring23DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_Trk1GeV_131X_mcRun4_realistic_v5-v1/30000/01607282-0427-4687-a122-ef0a41220590.root -n 100 --nThreads 1 --no_exec
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Phase2C17I13M9_cff import Phase2C17I13M9
@@ -15,7 +15,7 @@ process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
-process.load('Configuration.Geometry.GeometryExtended2026D88Reco_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D95Reco_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('HLTrigger.Configuration.HLT_75e33_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
@@ -28,7 +28,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('/store/relval/CMSSW_12_4_0_pre3/RelValTTbar_14TeV/GEN-SIM-RECO/123X_mcRun4_realistic_v11_2026D88noPU-v1/2580000/4cb86d46-f780-4ce7-94df-9e0039e1953b.root'),
+    fileNames = cms.untracked.vstring('/store/mc/Phase2Spring23DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_Trk1GeV_131X_mcRun4_realistic_v5-v1/30000/01607282-0427-4687-a122-ef0a41220590.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -51,7 +51,9 @@ process.options = cms.untracked.PSet(
     ),
     fileMode = cms.untracked.string('FULLMERGE'),
     forceEventSetupCacheClearOnNewRun = cms.untracked.bool(False),
+    holdsReferencesToDeleteEarly = cms.untracked.VPSet(),
     makeTriggerResults = cms.obsolete.untracked.bool,
+    modulesToIgnoreForDeleteEarly = cms.untracked.vstring(),
     numberOfConcurrentLuminosityBlocks = cms.untracked.uint32(0),
     numberOfConcurrentRuns = cms.untracked.uint32(1),
     numberOfStreams = cms.untracked.uint32(0),
@@ -71,15 +73,15 @@ process.configurationMetadata = cms.untracked.PSet(
 
 # Output definition
 
-process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string(''),
-        filterName = cms.untracked.string('')
-    ),
-    fileName = cms.untracked.string('Phase2_HLT.root'),
-    outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
-    splitLevel = cms.untracked.int32(0)
-)
+#process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
+#    dataset = cms.untracked.PSet(
+#        dataTier = cms.untracked.string(''),
+#        filterName = cms.untracked.string('')
+#    ),
+#    fileName = cms.untracked.string('Phase2_HLT.root'),
+#    outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
+#    splitLevel = cms.untracked.int32(0)
+#)
 
 # Additional output definition
 
@@ -94,24 +96,27 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_T21', ''
 process.L1T_DoubleNNTau52 = cms.Path(process.HLTL1Sequence+process.hltL1DoubleNNTau52)
 process.L1T_SingleNNTau150 = cms.Path(process.HLTL1Sequence+process.hltL1SingleNNTau150)
 process.endjob_step = cms.EndPath(process.endOfProcess)
-process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
+#process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 
 # Schedule definition
 # process.schedule imported from cff in HLTrigger.Configuration
-process.schedule.extend([process.endjob_step,process.FEVTDEBUGHLToutput_step])
+process.schedule.extend([process.endjob_step])
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
 # customisation of the process.
+
+# Automatic addition of the customisation function from SLHCUpgradeSimulations.Configuration.aging
+from SLHCUpgradeSimulations.Configuration.aging import customise_aging_1000 
+
+#call to customisation function customise_aging_1000 imported from SLHCUpgradeSimulations.Configuration.aging
+process = customise_aging_1000(process)
 
 # Automatic addition of the customisation function from HLTrigger.Configuration.customizeHLTforMC
 from HLTrigger.Configuration.customizeHLTforMC import customizeHLTforMC 
 
 #call to customisation function customizeHLTforMC imported from HLTrigger.Configuration.customizeHLTforMC
 process = customizeHLTforMC(process)
-
-from SLHCUpgradeSimulations.Configuration.aging import customise_aging_1000
-process = customise_aging_1000(process) 
 
 # End of customisation functions
 

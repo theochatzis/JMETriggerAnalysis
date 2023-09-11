@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#!/usr/bin/env python3
 """
 script to create area for submission of batch jobs
 (supported batch systems: HTCondor, SLURM)
@@ -31,10 +30,8 @@ if __name__ == '__main__':
 
    parser.add_argument('-o', '--output', dest='output', action='store', default=None, required=True,
                        help='path to output directory')
-   
    parser.add_argument('-fo', '--final-output', dest='final_output', action='store', default='./', required=False,
                        help='path to final output directory i.e. directory with the NTuples')
-
    parser.add_argument('--customize-cfg', dest='customize_cfg', action='store_true', default=False,
                        help='append minimal customization to cmsRun-cfg required by the driver')
 
@@ -63,7 +60,6 @@ if __name__ == '__main__':
                        help='job max memory (HTCondor: "RequestMemory"; SLURM: "--mem")')
 
    parser.add_argument('-t', '--time', dest='time', action='store', default='01:00:00',
-                       help='job runtime in number of seconds or HH:MM:SS format (HTCondor: "+MaxRuntime"; SLURM: "--time")')
                        help='job runtime in number of seconds or HH:MM:SS format (HTCondor: "+MaxRuntime"; SLURM: "--time")')
 
    parser.add_argument('-q', '--queue', dest='queue', action='store', default='standard',
@@ -133,20 +129,21 @@ if __name__ == '__main__':
      except:
        KILL(log_prx+'invalid format for maximum runtime [--time/-t]: '+opts.time)
    
-   # in case memory is given in HTC form (bytes number) -> also make conversion to slurm (G,M)
-   try:
-     memory_htc = int(opts.memory)
-     memory_htc_str = str(memory_htc)
-     memory_slurm_str = str(int(memory_htc/1000))+'G' if ((memory_htc)%1000==0 or (memory_htc)%1024==0) else memory_htc_str +'M'
-   except:
-     try:# in case memory is given in slurm form (G,M)->  also convert it to HTC form (bytes number) 
-       memory_dictionary = {'M':1,'G':1000}
-       memory_htc = int(opts.memory[0:(len(opts.memory)-1)])*memory_dictionary[opts.memory[len(opts.memory)-1]]
+      # in case memory is given in HTC form (bytes number) -> also make conversion to slurm (G,M)
+     try:
+       memory_htc = int(opts.memory)
        memory_htc_str = str(memory_htc)
-       memory_slurm_str = opts.memory
+       memory_slurm_str = str(int(memory_htc/1000))+'G' if ((memory_htc)%1000==0 or (memory_htc)%1024==0) else memory_htc_str +'M'
      except:
-       KILL(log_prx+'invalid format for requested memory [--memory]: '+opts.memory)
+       try:# in case memory is given in slurm form (G,M)->  also convert it to HTC form (bytes number) 
+         memory_dictionary = {'M':1,'G':1000}
+         memory_htc = int(opts.memory[0:(len(opts.memory)-1)])*memory_dictionary[opts.memory[len(opts.memory)-1]]
+         memory_htc_str = str(memory_htc)
+         memory_slurm_str = opts.memory
+       except:
+         KILL(log_prx+'invalid format for requested memory [--memory]: '+opts.memory)
    # --------------------------------------------------------------------------------------------------------------
+
 
    if opts.batch_system == 'htc':
      try: which('condor_q')
@@ -174,10 +171,6 @@ if __name__ == '__main__':
    cmsRun_addopts = opts_unknown[:]
 
    if opts.verbosity > 0 and len(cmsRun_addopts):
-     print('-'*50)
-     print(colored_text('additional cmsRun command-line arguments:', ['1']))
-     for _tmp in cmsRun_addopts: print(' '+str(_tmp))
-     print('-'*50)
      print('-'*50)
      print(colored_text('additional cmsRun command-line arguments:', ['1']))
      for _tmp in cmsRun_addopts: print(' '+str(_tmp))
