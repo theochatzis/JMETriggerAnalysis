@@ -101,7 +101,7 @@ if opts.reco == 'HLT_TRKv06p1':
 elif opts.reco == 'HLT_TRKv06p1_TICL':
   from JMETriggerAnalysis.Common.configs.hltPhase2_TRKv06p1_TICL_cfg import cms, process
 elif opts.reco == 'HLT_75e33':
-  from JMETriggerAnalysis.Common.configs.HLT_75e33_ticlv3_cfg import cms, process
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_ticlv4_cfg import cms, process
   # optimal tracking thresholds for MET
   #process = customisePhase2TrackingPtThresholds(process,1.8)
   #process.schedule_().append(process.MC_JME)

@@ -11,8 +11,8 @@
 ### Test setup 
 
 ```shell
-cmsrel CMSSW_13_1_0_pre3
-cd CMSSW_13_1_0_pre3/src
+cmsrel CMSSW_13_1_0
+cd CMSSW_13_1_0/src
 
 git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b phase2_13_X
 scram b -j 12

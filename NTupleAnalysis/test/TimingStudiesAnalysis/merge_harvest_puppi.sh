@@ -33,7 +33,8 @@ for key in "${keys[@]}"; do
   # ouput dir: if already exists remove it
   if [ -d ./${ODIR}/${key} ]; then rm -rf ./${ODIR}/${key}; fi
   # run the harvester to make profiles, efficiencies etc.
-  jmeAnalysisHarvester.py -l 0 \
+  #jmeAnalysisHarvester.py -l 0 \
+  jmeAnalysisHarvester_experimental2.py -pc gausfit -l 0 \
     -i ./${IDIR}/${key}/*.root \
     -o ./${ODIR}/${key}      
   

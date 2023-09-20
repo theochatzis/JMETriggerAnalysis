@@ -73,15 +73,15 @@ process.configurationMetadata = cms.untracked.PSet(
 
 # Output definition
 
-#process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
-#    dataset = cms.untracked.PSet(
-#        dataTier = cms.untracked.string(''),
-#        filterName = cms.untracked.string('')
-#    ),
-#    fileName = cms.untracked.string('Phase2_HLT.root'),
-#    outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
-#    splitLevel = cms.untracked.int32(0)
-#)
+process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
+    dataset = cms.untracked.PSet(
+        dataTier = cms.untracked.string(''),
+        filterName = cms.untracked.string('')
+    ),
+    fileName = cms.untracked.string('Phase2_HLT.root'),
+    outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
+    splitLevel = cms.untracked.int32(0)
+)
 
 # Additional output definition
 
@@ -96,7 +96,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_T21', ''
 process.L1T_DoubleNNTau52 = cms.Path(process.HLTL1Sequence+process.hltL1DoubleNNTau52)
 process.L1T_SingleNNTau150 = cms.Path(process.HLTL1Sequence+process.hltL1SingleNNTau150)
 process.endjob_step = cms.EndPath(process.endOfProcess)
-#process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
+process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 
 # Schedule definition
 # process.schedule imported from cff in HLTrigger.Configuration

@@ -30,9 +30,10 @@ for key in "${keys[@]}"; do
   
   # make the plotting
 
-  jmePlots.py -k phase2_jme_puppi -o ./${ODIR}/${key}/QCD \
-  -i ./${IDIR}/${key}/Phase2HLTTDR_QCD_Flat_Pt-15to3000_14TeV_PU200__0.root:'simplified menu':600:1:24 \
-  -l 'Phase2HLTTDR_QCD_Flat_Pt-15to3000_14TeV_PU200'
+  jmePlots.py -k phase2_jme_puppi_new -o ./${ODIR}/${key}/QCD \
+  -i ./${IDIR}/${key}/Phase2HLTTDR_QCD_Flat_Pt-15to3000_14TeV_PU200__0.root:'TICLv4':600:1:24 \
+  /afs/cern.ch/work/t/tchatzis/private/phase2_upgrade_test/TiclV3vsV4/CMSSW_13_1_0/src/JMETriggerAnalysis/NTupleAnalysis/test/TimingStudiesAnalysis/test_JECS_TICLV3/harvester_output/Phase2HLTTDR_QCD_Flat_Pt-15to3000_14TeV_PU200/Phase2HLTTDR_QCD_Flat_Pt-15to3000_14TeV_PU200__0.root:'TICLv3':632:1:24
+  -l 'QCD_Flat_Pt-15to3000_14TeV_PU200'
   
   #jmePlots.py -k phase2_jme_puppi -o ./${ODIR}/${key}/VBF_HToInv \
   #-i ./${IDIR}/${key}/Run3Winter21_VBF_HToInvisible_14TeV_PU__0.root:'nominal':600:1:24 \
