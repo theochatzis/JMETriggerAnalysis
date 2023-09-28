@@ -40,7 +40,7 @@ opts.register('wantSummary', False,
               vpo.VarParsing.varType.bool,
               'show cmsRun summary at job completion')
 
-opts.register('globalTag', '130X_dataRun3_Prompt_v3',
+opts.register('globalTag', '130X_dataRun3_Prompt_v2',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
               'argument of process.GlobalTag.globaltag')
@@ -82,7 +82,7 @@ process.load('Configuration.Geometry.GeometryDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 
 
-update_jmeCalibs = False
+update_jmeCalibs = True
 
 ###
 ### PoolSource (EDM input)
@@ -135,8 +135,8 @@ if hasattr(process, 'FastTimerService'):
 
 if update_jmeCalibs:
   process.offlinejescESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Winter23Prompt23_RunA_V1_DATA.db'),
-    #_CondDB.clone(connect = 'sqlite_file:Winter23Prompt23_RunA_V1_DATA.db'),
+    #_CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Winter23Prompt23_RunA_V1_DATA.db'),
+    _CondDB.clone(connect = 'sqlite_file:Winter23Prompt23_RunA_V1_DATA.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
@@ -152,28 +152,6 @@ if update_jmeCalibs:
   )
   process.offlinejescESPrefer = cms.ESPrefer('PoolDBESSource', 'offlinejescESSource')
 
-#--- Updating offline JECs 
-  from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
-  #Load JECs
-  jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute','L2L3Residual']
-  jecToUse = cms.vstring(jecLevels)
-  updateJetCollection(
-      process,
-      jetSource=cms.InputTag("slimmedJetsPuppi"),  #Input PAT jet collection
-      labelName="AK4PFPuppi",  #Label for the updated jet collection - will become patJetCorrFactors[labelName]
-      jetCorrections=("AK4PFPuppi", jecToUse, "None"),  #JECs to be applied
-  )
-
-  updateJetCollection(
-      process,
-      jetSource=cms.InputTag("slimmedJetsAK8"),  #Input PAT jet collection
-      labelName="AK8PFPuppi",  #Label for the updated jet collection - will become patJetCorrFactors[labelName]
-      jetCorrections=("AK8PFPuppi", jecToUse, "None"),  #JECs to be applied
-  )
-
-  process.jecSequence = cms.Sequence(process.patJetCorrFactorsAK4PFPuppi * process.updatedPatJetsAK4PFPuppi * process.patJetCorrFactorsAK8PFPuppi * process.updatedPatJetsAK8PFPuppi)
-  process.offlineJecPath = cms.Path(process.jecSequence)
-  process.schedule.append(process.offlineJecPath)
 
 ###
 ### Customized objects modules
@@ -183,11 +161,9 @@ if update_jmeCalibs:
 from JMETriggerAnalysis.NTuplizers.userMuons_cff import userMuons
 process, userMuonsCollection = userMuons(process)
 
-## Electrons
+## Jets
 from JMETriggerAnalysis.NTuplizers.userJets_cff import userJets
 process, userJetsAK4PFPuppiCollection = userJets(process)
-
-
 
 
 ## Output NTuple
@@ -340,9 +316,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple_MiniAOD',
 
   patJetCollections = cms.PSet(
     #offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
-    ##offlineAK4PFPuppiJetsCorrected = cms.InputTag(userJetsAK4PFPuppiCollection), # instead of slimmedJetsPuppi 
-    #offlineAK4PFPuppiJetsCorrected = cms.InputTag('updatedPatJetsAK4PFPuppi'),
-    #offlineAK8PFPuppiJetsCorrected = cms.InputTag('updatedPatJetsAK8PFPuppi'),
+    offlineAK4PFPuppiJetsCorrected = cms.InputTag(userJetsAK4PFPuppiCollection), # instead of slimmedJetsPuppi 
   ),
 
   recoGenMETCollections = cms.PSet(
@@ -435,11 +409,12 @@ for _hltPathUnv in hltPathsWithTriggerFlags:
       pathName = _hltPathUnv,
     ))
     process.triggerFlagsTask.add(getattr(process, _triggerFlagsModName))
-
     setattr(process.JMETriggerNTuple.bools, _hltPathUnv+'_L1TSeedAccept', cms.InputTag(_triggerFlagsModName+':L1TSeedAccept'))
     setattr(process.JMETriggerNTuple.bools, _hltPathUnv+'_L1TSeedPrescaledOrMasked', cms.InputTag(_triggerFlagsModName+':L1TSeedPrescaledOrMasked'))
     setattr(process.JMETriggerNTuple.bools, _hltPathUnv+'_HLTPathPrescaled', cms.InputTag(_triggerFlagsModName+':HLTPathPrescaled'))
     setattr(process.JMETriggerNTuple.bools, _hltPathUnv+'_HLTPathAccept', cms.InputTag(_triggerFlagsModName+':HLTPathAccept'))
+    setattr(process.JMETriggerNTuple.bools, _hltPathUnv+'_L1TSeedInitialDecision', cms.InputTag(_triggerFlagsModName+':L1TSeedInitialDecision'))
+    setattr(process.JMETriggerNTuple.bools, _hltPathUnv+'_L1TSeedFinalDecision', cms.InputTag(_triggerFlagsModName+':L1TSeedFinalDecision'))
 
 process.triggerFlagsSeq = cms.Sequence(process.triggerFlagsTask)
 
@@ -483,7 +458,7 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
-    '/store/data/Run2023C/Muon0/MINIAOD/PromptReco-v3/000/367/661/00000/0beb0ba1-3a03-497f-9808-c35d1c4c609b.root'
+    '/store/data/Run2022G/Muon/MINIAOD/PromptReco-v1/000/362/362/00000/f6126759-0090-43f1-9746-f012d665b19d.root'
     #'/store/data/Run2023B/Muon0/RAW/v1/000/366/895/00000/8c846177-ca3d-4c0f-a602-b401cb32b041.root'
 
   ]

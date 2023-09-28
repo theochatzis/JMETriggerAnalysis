@@ -86,10 +86,10 @@ if opts.reco == 'HLT_oldJECs':
 elif opts.reco == 'HLT_Run3TRK':
   from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump_dataZjet import cms, process
   #from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
-  update_jmeCalibs = False
+  update_jmeCalibs = True
   #from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump_noCustom import cms, process
   #update_jmeCalibs = False
-
+  #process.hltParticleFlow.calibrationsLabel = ''
 else:
   raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
 
@@ -166,23 +166,23 @@ if hasattr(process, 'FastTimerService'):
 
 if update_jmeCalibs:
   ## ES modules for PF-Hadron Calibrations
-  process.pfhcESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/PFCalibration.db'),
-    #_CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
-    toGet = cms.VPSet(
-      cms.PSet(
-        record = cms.string('PFCalibrationRcd'),
-        tag = cms.string('PFCalibration_CMSSW_13_0_0_HLT_126X_v4_mcRun3_2023'),
-        label = cms.untracked.string('HLT'),
-      ),
-    ),
-  )
-  process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
+  # process.pfhcESSource = cms.ESSource('PoolDBESSource',
+  #   _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/PFCalibration.db'),
+  #   #_CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
+  #   toGet = cms.VPSet(
+  #     cms.PSet(
+  #       record = cms.string('PFCalibrationRcd'),
+  #       tag = cms.string('PFCalibration_CMSSW_13_0_0_HLT_126X_v4_mcRun3_2023'),
+  #       label = cms.untracked.string('HLT'),
+  #     ),
+  #   ),
+  # )
+  # process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
   #process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
 
   ##ES modules for HLT JECs
   process.jescESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Run3Winter23Digi.db'),
+    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Run3Winter23Digi_OfflinePFHC.db'),
     #_CondDB.clone(connect = 'sqlite_file:Run3Winter23Digi.db'),
     toGet = cms.VPSet(
       cms.PSet(

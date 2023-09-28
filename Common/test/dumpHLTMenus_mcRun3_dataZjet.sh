@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 hltGetConfiguration /dev/CMSSW_13_0_0/GRun \
-   --globaltag 130X_dataRun3_HLT_HCALResCorr_v2 \
+   --globaltag 132X_dataRun3_HLT_v2 \
    --data \
    --unprescale \
    --output minimal \
@@ -11,7 +11,7 @@ hltGetConfiguration /dev/CMSSW_13_0_0/GRun \
    > tmp.py
 
 # dump configuration 
-edmConfigDump tmp.py > "${CMSSW_BASE}"/src/JMETriggerAnalysis/Common/python/configs/HLT_dev_CMSSW_13_0_0_GRun_configDump_dataZjet_hcal.py
+edmConfigDump tmp.py > "${CMSSW_BASE}"/src/JMETriggerAnalysis/Common/python/configs/HLT_dev_CMSSW_13_0_0_GRun_configDump_dataZjet.py
 
 #test running it
 #cmsRun tmp.py &> test.log

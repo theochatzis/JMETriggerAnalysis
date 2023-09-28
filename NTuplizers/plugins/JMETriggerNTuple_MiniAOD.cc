@@ -115,6 +115,9 @@ protected:
   edm::Handle<pat::JetCollection> jets;
   edm::Handle<pat::MuonCollection> muons;
   edm::Handle<pat::METCollection> met;
+  
+  // function that checks for JetID 
+  bool  isGoodJet(const pat::Jet &jet);
 
   // quantities for branches in case createTriggerQuantities_ is used
   double leadingJetPt_ = 0.;
@@ -860,6 +863,36 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
   }
 }
 
+bool JMETriggerNTuple_MiniAOD::isGoodJet(const pat::Jet &jet){
+  float chf = jet.chargedHadronEnergyFraction();
+  float nhf = jet.neutralHadronEnergyFraction();
+  float phf = jet.photonEnergyFraction();
+  float muf = jet.muonEnergyFraction();
+  float elf = jet.electronEnergyFraction();
+  int chm   = jet.chargedHadronMultiplicity();
+  int neutral_npr = jet.neutralMultiplicity();
+  int charged_npr = jet.chargedMultiplicity();
+  int npr = neutral_npr + charged_npr;
+  float eta = fabs(jet.eta());
+  // note: these are the 2022 BCDE jetID criteria
+  bool idTightLepVeto = ((eta<=2.6 && nhf<0.90 && phf<0.90 && npr>1 && muf<0.80  && chf>0.01 && chm>0 && elf<0.80) || 
+  ((eta>2.6 && eta<=2.7 ) && nhf<0.90 && phf<0.99 && muf<0.80 && elf<0.80) ||
+  ((eta>2.7 && eta<=3.0 ) && nhf<0.9999) ||
+  ((eta>3.0 && eta<=5.0 ) && phf<0.90 && neutral_npr>2) ||
+  (eta>5.0)
+  );
+  // if you want the FG you can use the one bellow instead
+  /*
+  bool idTightLepVeto = ((eta<=2.6 && nhf<0.99 && phf<0.90 && npr>1 && muf<0.80  && chf>0.01 && chm>0 && elf<0.80) || 
+  ((eta>2.6 && eta<=2.7 ) && nhf<0.90 && phf<0.99 && muf<0.80 && elf<0.80) ||
+  ((eta>2.7 && eta<=3.0 ) && nhf<0.9999) ||
+  ((eta>3.0 && eta<=5.0 ) && phf<0.90 && neutral_npr>2) ||
+  (eta>5.0)
+  );
+  */
+  return idTightLepVeto;
+}
+
 void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   run_ = iEvent.id().run();
   luminosityBlock_ = iEvent.id().luminosityBlock();
@@ -889,8 +922,10 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
   ht_ = 0.;
 
   // Assisting variables
-  bool leadingJetIsGood=false; // this checks if the leading jet has tightID - if not event will be rejected
-  
+  bool leadingJetIsGood=false; // this checks if the leading jet has tightID - if not event will be rejected.
+  bool isLeptonMatched=false; // this checks if the leading jet is matched to the selected muon(s) (userMuons)
+  float DRmax = 0.4; // maximum DR for matching
+
   // if create skim is used then return for events that don't pass the selections
   if(createSkim_){
     // muons selections
@@ -911,7 +946,12 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
 
       if( ijet->pt()>leadingJetPt_ ){
         leadingJetPt_ = ijet->pt();
-        leadingJetIsGood =  (ijet->hasUserInt("PFJetIDTightLepVeto") && (ijet->userInt("PFJetIDTightLepVeto") > 0));
+        // check if leading jet is matched to a Lepton
+        for(pat::MuonCollection::const_iterator mu =muons->begin();mu != muons->end(); ++mu) if (deltaR(mu->eta(),mu->phi(),ijet->eta(),ijet->phi()) < DRmax) isLeptonMatched = true;
+        // check if leading jet passes tightLepVeto ID
+        leadingJetIsGood = (ijet->hasUserInt("PFJetIDTightLepVeto") && (ijet->userInt("PFJetIDTightLepVeto") > 0));
+        //leadingJetIsGood = isGoodJet(*ijet); // the same but using the custom function not miniAOD tools
+        leadingJetIsGood = leadingJetIsGood && !isLeptonMatched;
       }
     } 
   }
