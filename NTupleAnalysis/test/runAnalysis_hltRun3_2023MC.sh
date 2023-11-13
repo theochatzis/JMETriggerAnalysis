@@ -2,7 +2,7 @@
 source env.sh
 
 # directory with input JMETriggerNTuple(s)
-NAME=pfhc_test_offline #test_hlt_pfhc
+NAME=test_defaultJECs #test_hlt_pfhc
 RECO=HLT_Run3TRK
 INPDIR=/eos/user/t/tchatzis/samples2023/${NAME}/${RECO}/samples_merged/
 
@@ -19,23 +19,23 @@ batch_driver.py -l 1 -n 50000 -p JMETriggerAnalysisDriverRun3 \
  -od ${OUTPUTDIR} \
  --JobFlavour espresso
 
-# batch_monitor.py -i ${OUTDIR}/jobs -r #--repe -f 1200
+batch_monitor.py -i ${OUTDIR}/jobs -r --repe -f 1200
 
-# echo "merging jobs outputs..."
+echo "merging jobs outputs..."
 
-# merge_batchOutputs.py -l 0 -i ${OUTPUTDIR}/*.root -o ${OUTPUTDIR}/outputs
+merge_batchOutputs.py -l 0 -i ${OUTPUTDIR}/*.root -o ${OUTPUTDIR}/outputs
 
-# NUM_PROC=$(nproc)
-# if [[ ${HOSTNAME} == lxplus* ]]; then NUM_PROC=2; fi; # process NUM_PROC files each time
-# for rootfile_i in ${OUTPUTDIR}/outputs/*.root; do
-#   while [ $(jobs -p | wc -l) -ge ${NUM_PROC} ]; do sleep 5; done
-#   echo ${rootfile_i}
-#   jmeAnalysisHarvester.py -l 0 -i ${rootfile_i} -o ${OUTPUTDIR}/harvesting || true &
-# done
-# unset rootfile_i
+NUM_PROC=$(nproc)
+if [[ ${HOSTNAME} == lxplus* ]]; then NUM_PROC=2; fi; process NUM_PROC files each time
+for rootfile_i in ${OUTPUTDIR}/outputs/*.root; do
+  while [ $(jobs -p | wc -l) -ge ${NUM_PROC} ]; do sleep 5; done
+  echo ${rootfile_i}
+  jmeAnalysisHarvester.py -l 0 -i ${rootfile_i} -o ${OUTPUTDIR}/harvesting || true &
+done
+unset rootfile_i
 
-# jobs
-# wait || true
+jobs
+wait || true
 
 
 

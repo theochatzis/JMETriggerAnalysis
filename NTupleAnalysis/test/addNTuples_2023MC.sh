@@ -2,7 +2,7 @@
 source env.sh
 
 # directory with input(s) 
-INPDIR=/eos/user/t/tchatzis/samples2023/pfhc_test_offline/
+INPDIR=/eos/user/t/tchatzis/samples2023/test_defaultJECs/
 
 mkdir -p ${INPDIR}/HLT_Run3TRK/samples_merged
 
