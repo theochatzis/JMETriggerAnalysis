@@ -16,4 +16,5 @@
   <use name="SimDataFormats/PileupSummaryInfo"/>
   <use name="rootmath"/>
   <use name="root"/>
+  <use name="CommonTools/TriggerUtils"/>
 </library>

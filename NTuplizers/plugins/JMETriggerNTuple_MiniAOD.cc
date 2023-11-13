@@ -111,18 +111,27 @@ protected:
   edm::EDGetTokenT<pat::JetCollection> jetsToken;
   edm::EDGetTokenT<pat::MuonCollection> muonsToken;
   edm::EDGetTokenT<pat::METCollection> metToken;
+  edm::EDGetTokenT<reco::VertexCollection> recVtxsToken;
+  edm::EDGetTokenT<edm::TriggerResults> metFilterBitsTagToken;
 
   edm::Handle<pat::JetCollection> jets;
   edm::Handle<pat::MuonCollection> muons;
   edm::Handle<pat::METCollection> met;
+  edm::Handle<reco::VertexCollection> recVtxs;
+  edm::Handle<edm::TriggerResults> metFilterBits;
   
   // function that checks for JetID 
   bool  isGoodJet(const pat::Jet &jet);
 
   // quantities for branches in case createTriggerQuantities_ is used
   double leadingJetPt_ = 0.;
+  double leadingJetEta_ = 0.;
+  double leadingJetPhi_ = 0.;
   double met_ = 0.;
+  double metPhi_ = 0.;
+  double metNoMu_ = 0.;
   double ht_ = 0.;
+  int nVtx_ = 0;
 
   unsigned int run_ = 0;
   unsigned int luminosityBlock_ = 0;
@@ -226,7 +235,9 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
   jetsToken             = consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("jets"));
   muonsToken            = consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muons"));
   metToken              = consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("met"));
-  
+  recVtxsToken          = consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertices"));
+  metFilterBitsTagToken = consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("metFilterBitsTag"));
+
   // stringCutObjectSelectors
   stringCutObjectSelectors_map_.clear();
 
@@ -453,8 +464,13 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
   // add branches for trigger if option is activated
   if(createTriggerQuantities_){
     this->addBranch("leadingJet_pt", &leadingJetPt_);
+    this->addBranch("leadingJet_eta", &leadingJetEta_);
+    this->addBranch("leadingJet_phi", &leadingJetPhi_);
     this->addBranch("met",&met_);
+    this->addBranch("met_phi",&metPhi_);
+    this->addBranch("metNoMu",&metNoMu_);
     this->addBranch("ht",&ht_);
+    this->addBranch("nVertices",&nVtx_);
   }
 
   this->addBranch("run", &run_);
@@ -916,16 +932,57 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
   iEvent.getByToken(jetsToken,jets);
   iEvent.getByToken(muonsToken,muons);
   iEvent.getByToken(metToken,met);
-  
+  iEvent.getByToken(recVtxsToken,recVtxs);  
+  iEvent.getByToken(metFilterBitsTagToken, metFilterBits);  
+
   leadingJetPt_ = 0.;
+  leadingJetEta_ = 0.;
+  leadingJetPhi_ = 0.;
   met_ = 0.;
+  metPhi_ = 0.;
+  metNoMu_ = 0.;
   ht_ = 0.;
+  nVtx_ = 0;
+  
+  bool passMETFilters(true);
+  
+  // met filters
+  const edm::TriggerNames &metNames = iEvent.triggerNames(*metFilterBits);
+  for(unsigned int i = 0, n = metFilterBits->size(); i < n; ++i) {
+      if(strcmp(metNames.triggerName(i).c_str(), 	 "Flag_goodVertices") == 0){
+          passMETFilters &= metFilterBits->accept(i);
+      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalSuperTightHalo2016Filter") == 0){
+          passMETFilters &= metFilterBits->accept(i);
+      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseFilter") == 0){
+         passMETFilters &= metFilterBits->accept(i);
+      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseIsoFilter") == 0){
+         passMETFilters &= metFilterBits->accept(i);
+      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_EcalDeadCellTriggerPrimitiveFilter") == 0){
+          passMETFilters &= metFilterBits->accept(i);
+      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadPFMuonFilter") == 0){
+          passMETFilters &= metFilterBits->accept(i);
+      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadPFMuonDzFilter") == 0){
+          passMETFilters &= metFilterBits->accept(i);
+      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_hfNoisyHitsFilter") == 0){
+          passMETFilters &= metFilterBits->accept(i);
+      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_eeBadScFilter") == 0){
+          passMETFilters &= metFilterBits->accept(i);
+      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibFilter") == 0){
+          passMETFilters &= metFilterBits->accept(i);
+      }
+      // else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadChargedCandidateFilter") == 0){
+      //     passMETFilters &= metFilterBits->accept(i);
+      // }
+  }
+
+  if(!passMETFilters) return;
 
   // Assisting variables
   bool leadingJetIsGood=false; // this checks if the leading jet has tightID - if not event will be rejected.
   bool isLeptonMatched=false; // this checks if the leading jet is matched to the selected muon(s) (userMuons)
   float DRmax = 0.4; // maximum DR for matching
-
+  
+  
   // if create skim is used then return for events that don't pass the selections
   if(createSkim_){
     // muons selections
@@ -933,6 +990,9 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
     // so needs only to require one such muon
     if(!( muons->size()==1 )) return;
     
+    // get the muon px and py for calculating metNoMu later:
+    
+
     // jets have looser requirements ((pt > 30.) && (abs(eta) < 5.0) so we can also calculate the ht quantity
     // note: ht triggers use abs(eta)<2.5 and pt>30GeV 
     // initially require a jet to exist
@@ -946,6 +1006,8 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
 
       if( ijet->pt()>leadingJetPt_ ){
         leadingJetPt_ = ijet->pt();
+        leadingJetEta_ = ijet->eta();
+        leadingJetPhi_ = ijet->phi();
         // check if leading jet is matched to a Lepton
         for(pat::MuonCollection::const_iterator mu =muons->begin();mu != muons->end(); ++mu) if (deltaR(mu->eta(),mu->phi(),ijet->eta(),ijet->phi()) < DRmax) isLeptonMatched = true;
         // check if leading jet passes tightLepVeto ID
@@ -961,7 +1023,13 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
   
   // calculate MET
   met_ = (*met)[0].et();
-
+  metPhi_ = (*met)[0].phi();
+  
+  // here we should have exactly one event muon
+  metNoMu_ = sqrt(pow((*met)[0].px()+(*muons)[0].px(),2) + pow((*met)[0].py()+(*muons)[0].py(),2));
+  
+  // calculate the number of vertices
+  nVtx_   = recVtxs->size();
 
   // MC: HepMCProduct
   hepMCGenEvent_scale_ = -1.f;
