@@ -18,10 +18,11 @@ declare -A samplesMap
 # data 
 #samplesMap["data"]='/JetMET/Run2022G-PromptReco-v1/MINIAOD'
 #samplesMap["data"]='/Muon/Run2022G-PromptReco-v1/MINIAOD'
-samplesMap["data"]='/Muon0/Run2023C-ZMu-PromptReco-v4/RAW-RECO'
+samplesMap["data"]='/Muon0/Run2023D-ZMu-PromptReco-v2/RAW-RECO'
 
 recoKeys=(
-  default
+  HLT_Run3TRK
+  #default
   #option5
   #option3
 )
@@ -43,7 +44,7 @@ fi
 
 
 for recoKey in "${recoKeys[@]}"; do
-  python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple2023Data_compare_cfg.py reco=${recoKey} dumpPython=.tmp_cfg.py #lumis=${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/Cert_Collisions2022_eraG_362433_362760_Golden.json 
+  python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple_Zjet_cfg.py reco=${recoKey} dumpPython=.tmp_cfg.py #lumis=${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/Cert_Collisions2022_eraG_362433_362760_Golden.json 
 
   for sampleKey in ${!samplesMap[@]}; do
     sampleName=${samplesMap[${sampleKey}]}
