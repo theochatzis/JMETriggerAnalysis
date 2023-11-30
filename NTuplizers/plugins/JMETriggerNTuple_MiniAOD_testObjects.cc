@@ -496,19 +496,19 @@ JMETriggerNTuple_MiniAOD_testObjects::JMETriggerNTuple_MiniAOD_testObjects(const
   
   // add branches for trigger if option is activated
   if(createTriggerQuantities_){
-    this->addBranch("offlineAK4PFPuppiJetsCorrected_pt", &leadingJetPt_);
-    this->addBranch("offlineAK4PFPuppiJetsCorrected_eta", &leadingJetEta_);
-    this->addBranch("offlineAK4PFPuppiJetsCorrected_phi", &leadingJetPhi_);
-    this->addBranch("offlineAK4PFPuppiJetsCorrected_mass", &leadingJetMass_);
+    this->addBranch("offlineAK4PFPuppiJetsCorrected_pt", &offlineAK4PFPuppiJetsCorrected_pt);
+    this->addBranch("offlineAK4PFPuppiJetsCorrected_eta", &offlineAK4PFPuppiJetsCorrected_eta);
+    this->addBranch("offlineAK4PFPuppiJetsCorrected_phi", &offlineAK4PFPuppiJetsCorrected_phi);
+    this->addBranch("offlineAK4PFPuppiJetsCorrected_mass", &offlineAK4PFPuppiJetsCorrected_mass);
     this->addBranch("met",&met_);
     this->addBranch("met_phi",&metPhi_);
     this->addBranch("metNoMu",&metNoMu_);
     this->addBranch("ht",&ht_);
     this->addBranch("nVertices",&nVtx_);
-    this->addBranch("hltAK4PFJetsCorrected_pt", &onlineLeadingJetPt_);
-    this->addBranch("hltAK4PFJetsCorrected_eta", &onlineLeadingJetEta_);
-    this->addBranch("hltAK4PFJetsCorrected_phi", &onlineLeadingJetPhi_);
-    this->addBranch("hltAK4PFJetsCorrected_mass", &onlineLeadingJetMass_);
+    this->addBranch("hltAK4PFJetsCorrected_pt", &hltAK4PFJetsCorrected_pt);
+    this->addBranch("hltAK4PFJetsCorrected_eta", &hltAK4PFJetsCorrected_eta);
+    this->addBranch("hltAK4PFJetsCorrected_phi", &hltAK4PFJetsCorrected_phi);
+    this->addBranch("hltAK4PFJetsCorrected_mass", &hltAK4PFJetsCorrected_mass);
   }
 
   this->addBranch("run", &run_);
@@ -972,7 +972,8 @@ void JMETriggerNTuple_MiniAOD_testObjects::analyze(const edm::Event& iEvent, con
   iEvent.getByToken(metToken,met);
   iEvent.getByToken(recVtxsToken,recVtxs);  
   iEvent.getByToken(metFilterBitsTagToken, metFilterBits);  
-
+  
+  
   leadingJetPt_ = 0.;
   leadingJetEta_ = 0.;
   leadingJetPhi_ = 0.;
@@ -987,6 +988,15 @@ void JMETriggerNTuple_MiniAOD_testObjects::analyze(const edm::Event& iEvent, con
   onlineLeadingJetPt_ = 0.;
   onlineLeadingJetPt_ = 0.;
   onlineLeadingJetPt_ = 0.;
+  
+  offlineAK4PFPuppiJetsCorrected_pt.clear();
+  offlineAK4PFPuppiJetsCorrected_eta.clear();
+  offlineAK4PFPuppiJetsCorrected_phi.clear();
+  offlineAK4PFPuppiJetsCorrected_mass.clear();
+  hltAK4PFJetsCorrected_pt.clear();
+  hltAK4PFJetsCorrected_eta.clear();
+  hltAK4PFJetsCorrected_phi.clear();
+  hltAK4PFJetsCorrected_mass.clear();
   
   bool passMETFilters(true);
   
@@ -1064,6 +1074,7 @@ void JMETriggerNTuple_MiniAOD_testObjects::analyze(const edm::Event& iEvent, con
     } 
   }
 
+
   // leading jet is tight ID cut
   if (!leadingJetIsGood) return;
   
@@ -1076,6 +1087,11 @@ void JMETriggerNTuple_MiniAOD_testObjects::analyze(const edm::Event& iEvent, con
   
   // calculate the number of vertices
   nVtx_   = recVtxs->size();
+
+  offlineAK4PFPuppiJetsCorrected_pt.emplace_back(leadingJetPt_);
+  offlineAK4PFPuppiJetsCorrected_eta.emplace_back(leadingJetEta_);
+  offlineAK4PFPuppiJetsCorrected_phi.emplace_back(leadingJetPhi_);
+  offlineAK4PFPuppiJetsCorrected_mass.emplace_back(leadingJetMass_);
 
   // MC: HepMCProduct
   hepMCGenEvent_scale_ = -1.f;
@@ -1224,6 +1240,11 @@ void JMETriggerNTuple_MiniAOD_testObjects::analyze(const edm::Event& iEvent, con
         break;
       }
     }
+
+    hltAK4PFJetsCorrected_pt.emplace_back(onlineLeadingJetPt_);
+    hltAK4PFJetsCorrected_eta.emplace_back(onlineLeadingJetEta_);
+    hltAK4PFJetsCorrected_phi.emplace_back(onlineLeadingJetPhi_);
+    hltAK4PFJetsCorrected_mass.emplace_back(onlineLeadingJetMass_);
   }
 
   
