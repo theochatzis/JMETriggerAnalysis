@@ -72,7 +72,7 @@ void JMETriggerAnalysisDriverRun3::init(){
     //{"offlineAK4PFPuppiJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
     // {"offlineAK4PFPuppiJets", {{"GEN", "ak4GenJetsNoNu"}}},
     {"hltAK4PFJetsCorrected"                , {{"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
-    {"offlineAK4PFPuppiJetsCorrected"       , {{"HLT", "hltAK4PFPuppiJetsCorrected"}}},
+    {"offlineAK4PFPuppiJetsCorrected"       , {{"HLT", "hltAK4PFJetsCorrected"}}},
   };
 
   labelMap_jetAK8_.clear();
