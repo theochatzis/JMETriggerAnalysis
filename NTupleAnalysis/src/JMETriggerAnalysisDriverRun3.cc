@@ -23,10 +23,10 @@ bool JMETriggerAnalysisDriverRun3::jetBelongsToCategory(const std::string& categ
   else if(categLabel == "_HE1"){ ret = (1.3 <= jetAbsEta) and (jetAbsEta < 2.5); }
   else if(categLabel == "_HE2"){ ret = (2.5 <= jetAbsEta) and (jetAbsEta < 3.0); }
   else if(categLabel == "_HF"){ ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0); }
-  else if(categLabel == "_HE21"){ ret = (2.5 <= jetAbsEta) and (jetAbsEta < 2.7); }
-  else if(categLabel == "_HE22"){ ret = (2.7 <= jetAbsEta) and (jetAbsEta < 3.0); }
-  //else if(categLabel == "_BPix"){ ret = (jetEta < 0.) and (jetEta>-1.5) and (jetPhi<-0.8) and (jetPhi>-1.2);}
-  //else if(categLabel == "_BPixVeto"){ ret = !((jetEta < 0.) and (jetEta>-1.5) and (jetPhi<-0.8) and (jetPhi>-1.2));}
+  //else if(categLabel == "_HE21"){ ret = (2.5 <= jetAbsEta) and (jetAbsEta < 2.7); }
+  //else if(categLabel == "_HE22"){ ret = (2.7 <= jetAbsEta) and (jetAbsEta < 3.0); }
+  else if(categLabel == "_BPix"){ ret = (jetEta < 0.) and (jetEta>-1.5) and (jetPhi<-0.8) and (jetPhi>-1.2);}
+  else if(categLabel == "_BPixVeto"){ ret = !((jetEta < 0.) and (jetEta>-1.5) and (jetPhi<-0.8) and (jetPhi>-1.2));}
   return ret;
 }
 
@@ -38,11 +38,11 @@ void JMETriggerAnalysisDriverRun3::init(){
     "_HB",
     "_HE1",
     "_HE2",
-    "_HE21",
-    "_HE22",
+    //"_HE21",
+    //"_HE22",
     "_HF",
-    //"_BPix",
-    //"_BPixVeto",
+    "_BPix",
+    "_BPixVeto",
   };
 
   // histogram: events counter
@@ -58,19 +58,21 @@ void JMETriggerAnalysisDriverRun3::init(){
     //        {"offlPFCorr", "offlineAK4PFCHSJetsCorrected"},
     //        //{"hltPFPuppiCorr", "hltAK4PFPuppiJetsCorrected"},
     //        {"offlPFPuppiCorr", "offlineAK4PFPuppiJetsCorrected"}}},
-    {"hltAK4CaloJets"              , {{"GEN", "ak4GenJetsNoNu"}}},
-    {"hltAK4CaloJetsCorrected"              , {{"GEN", "ak4GenJetsNoNu"}}},
+    //{"hltAK4CaloJets"              , {{"GEN", "ak4GenJetsNoNu"}}}, ##
+    //{"hltAK4CaloJetsCorrected"              , {{"GEN", "ak4GenJetsNoNu"}}}, ##
     //{"hltAK4CaloJetsCorrected"     , {{"GEN", "ak4GenJetsNoNu"}}},
     //{"hltAK4PFClusterJets"         , {{"GEN", "ak4GenJetsNoNu"}}},
     //{"hltAK4PFClusterJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}}},
-    {"hltAK4PFJets"                , {{"GEN", "ak4GenJetsNoNu"}}},
-    {"hltAK4PFJetsCorrected"                , {{"GEN", "ak4GenJetsNoNu"}}},
+    //{"hltAK4PFJets"                , {{"GEN", "ak4GenJetsNoNu"}}}, ##
+    //{"hltAK4PFJetsCorrected"                , {{"GEN", "ak4GenJetsNoNu"}}}, ##
     //{"hltAK4PFJetsCorrected"       , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
     //{"hltAK4PFPuppiJets"           , {{"GEN", "ak4GenJetsNoNu"}}},
     //{"hltAK4PFPuppiJetsCorrected"  , {{"GEN", "ak4GenJetsNoNu"}, {"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
     //{"offlineAK4PFCHSJetsCorrected"   , {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
     //{"offlineAK4PFPuppiJetsCorrected", {{"GEN", "ak4GenJetsNoNu"}, {"HLT", "hltAK4PFJetsCorrected"}}},
     // {"offlineAK4PFPuppiJets", {{"GEN", "ak4GenJetsNoNu"}}},
+    {"hltAK4PFJetsCorrected"                , {{"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
+    {"offlineAK4PFPuppiJetsCorrected"       , {{"HLT", "hltAK4PFPuppiJetsCorrected"}}},
   };
 
   labelMap_jetAK8_.clear();
@@ -91,9 +93,9 @@ void JMETriggerAnalysisDriverRun3::init(){
     //{"hltAK8PFPuppiJets"           , {{"GEN", "ak8GenJetsNoNu"}}},
     //{"hltAK8PFPuppiJetsCorrected"  , {{"GEN", "ak8GenJetsNoNu"}}},
     //{"hltAK8CaloJets"              , {{"GEN", "ak4GenJetsNoNu"}}},
-    {"hltAK8CaloJetsCorrected"              , {{"GEN", "ak4GenJetsNoNu"}}},
     //{"hltAK8PFJets"                , {{"GEN", "ak4GenJetsNoNu"}}},
-    {"hltAKPFJetsCorrected"                , {{"GEN", "ak4GenJetsNoNu"}}},
+    // {"hltAK8CaloJetsCorrected"              , {{"GEN", "ak4GenJetsNoNu"}}},
+    // {"hltAKPFJetsCorrected"                , {{"GEN", "ak4GenJetsNoNu"}}},
   };
 
   labelMap_MET_.clear();
@@ -123,8 +125,8 @@ void JMETriggerAnalysisDriverRun3::init(){
       bookHistograms_Jets(selLabel, jetLabel.first, utils::mapKeys(jetLabel.second));
     }
 
-    bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFJetsCorrected", "offlineAK4PFCHSJetsCorrected");
-    bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFPuppiJetsCorrected", "offlineAK4PFPuppiJetsCorrected");
+    //bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFJetsCorrected", "offlineAK4PFCHSJetsCorrected");
+    //bookHistograms_Jets_2DMaps(selLabel, "hltAK4PFPuppiJetsCorrected", "offlineAK4PFPuppiJetsCorrected");
 
     // histograms: AK8 Jets
     for(auto const& jetLabel : labelMap_jetAK8_){
@@ -141,10 +143,21 @@ void JMETriggerAnalysisDriverRun3::init(){
 
   jettriggers = {
   // "HLT_PFJet60",
-  // //"HLT_PFJet110",
+  // "HLT_PFJet110",
   // "HLT_PFJet140",
   // "HLT_PFJet320",
   // "HLT_PFJet500",
+    "HLT_PFJet40",
+    "HLT_PFJet60",
+    "HLT_PFJet80",
+    "HLT_PFJet110",
+    "HLT_PFJet140",
+    "HLT_PFJet200",
+    "HLT_PFJet260",
+    "HLT_PFJet320",
+    "HLT_PFJet400",
+    "HLT_PFJet450",
+    "HLT_PFJet500",
   };
 
   for(auto const& selLabel : jettriggers){
