@@ -17,7 +17,7 @@ JRANTuple_PU=/eos/user/a/aakpinar/nanopost/hlt_run3_JECs/samples_merged/QCD_Flat
 #JRANTuple_NoPU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jec/jmeTriggerNTuple_NoPU.root
 #JRANTuple_PU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jec/jmeTriggerNTuple_PU0to120.root
 
-ERA=Run3Winter23Digi
+ERA=Run3Winter24Digi
 
 # Check this out for L1 correction - this defines the binning of mu
 # if for example your sample has flat PU0to80 use the binning such that the maximum is 80
@@ -26,12 +26,16 @@ ERA=Run3Winter23Digi
 # L1_CORRECTION_NBINS=8
 # L1_CORRECTION_BIN_WIDTH=10
 
-L1_CORRECTION_NBINS=8
+L1_CORRECTION_NBINS=12
 L1_CORRECTION_BIN_WIDTH=10
 
 JET_TYPES=(
   ak4pfHLT
+  ak4pfHLTBPix
+  ak4pfHLTNoBPix
   ak8pfHLT
+  ak4pfHLTBPix
+  ak4pfHLTNoBPix
   ak4caloHLT
   ak8caloHLT
   #ak4pfchsHLT

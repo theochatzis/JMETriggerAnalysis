@@ -6,15 +6,16 @@ for the jets used in the High-Level Trigger (HLT).
 
 Instructions to set up the CMSSW area to produce JRA NTuples, and derive JESCs:
 ```
-cmsrel CMSSW_13_0_7_patch1
-cd CMSSW_13_0_7_patch1/src
+cmsrel CMSSW_13_3_1_patch1
+cd CMSSW_13_3_1_patch1/src
 cmsenv
 git cms-init
-#git cms-merge-topic  silviodonato:customizeHLTfor2023
-git cms-merge-topic theochatzis:optionForSkipForwardPFHC
+
+# Was used to test skipping forward PFHC corrections application.  
+#git cms-merge-topic theochatzis:optionForSkipForwardPFHC
 
 git clone https://github.com/theochatzis/JetMETAnalysis.git -b hlt_run3
-git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b run3_13_0_X_jecs
+git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b run3_13_3_X_jecs
 scram b -j 8
 ```
 
@@ -79,17 +80,14 @@ The `L1` correction needs to match jets from samples generated with and without 
 The samples used for the latest run 3 preliminary JECs are the following:
 ```
 # FlatPU
-/QCD_Pt-15to7000_TuneCP5_Flat_14TeV_pythia8/Run3Winter20DRMiniAOD-FlatPU0to80_110X_mcRun3_2021_realistic_v6_ext1-v1/GEN-SIM-RAW
+/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter24Digi-FlatPU0to120_133X_mcRun3_2024_realistic_v9-v3/GEN-SIM-RAW
+
 # NoPU
-QCD_Pt-15to7000_TuneCP5_Flat_14TeV_pythia8/Run3Winter20DRMiniAOD-NoPU_110X_mcRun3_2021_realistic_v6_ext1-v1/GEN-SIM-RAW
+/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter24Digi-NoPU_133X_mcRun3_2024_realistic_v9-v3/GEN-SIM-RAW
 ```
 You can find them in DAS searching for:
 ```
-dataset=/QCD_Pt-15to7000_TuneCP5_Flat_14TeV_pythia8/Run3Winter20DRMiniAOD-*0to80_110X_mcRun3_2021_realistic_v6_ext1-v1/GEN-SIM-RAW
-```
-You can also find similar samples doing something like:
-```
-dataset=/QCD*_Pt*/*/GEN-SIM*RAW
+dasgoclient -query="/QCD*15to7000*/Run3Winter24*/*RAW*"
 ```
 #### Create the `db` files
 To create the `.db` files for providing them to AlCa contact for upload in `confDB`(or load them locally in a configuration) you can use the `jescTxtToDBConverter_cfg.py` script, as follows:
