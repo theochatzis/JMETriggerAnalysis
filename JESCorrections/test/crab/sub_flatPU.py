@@ -1,8 +1,10 @@
-from CRABClient.UserUtilities import config
+from CRABClient.UserUtilities import config, getUsernameFromCRIC
 
-sample_name = 'QCD_FlatPUGTv6HCAL_126X_withForwardPFHCs'
+#sample_name = 'QCD_FlatPUGTv6HCAL_126X_withForwardPFHCs'
+sample_name = 'QCD_FlatPU0to120_133X'
 
-RAW_DSET = '/QCD_PT-15to7000_TuneCP5_Flat2022_13p6TeV_pythia8/Run3Winter23Digi-FlPU0to80GTv6HC_126X_mcRun3_2023_forPU65_v6_withHCALResCor_ext1-v2/GEN-SIM-RAW'
+#RAW_DSET = '/QCD_PT-15to7000_TuneCP5_Flat2022_13p6TeV_pythia8/Run3Winter23Digi-FlPU0to80GTv6HC_126X_mcRun3_2023_forPU65_v6_withHCALResCor_ext1-v2/GEN-SIM-RAW'
+RAW_DSET = '/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter24Digi-FlatPU0to120_133X_mcRun3_2024_realistic_v9-v3/GEN-SIM-RAW'
 
 config = config()
 
@@ -24,7 +26,7 @@ config.Data.publication = False
 config.Data.ignoreLocality = False
 config.Data.splitting = 'Automatic'
 config.Data.inputDataset = RAW_DSET
-config.Data.outLFNDirBase = '/store/user/aakpinar/nanopost/hlt_run3_JECs/'+sample_name
+config.Data.outLFNDirBase = '/store/user/%s/nanopost/hlt_run3_JECs/%s'%(getUsernameFromCRIC(),sample_name)
 config.Data.unitsPerJob = 200
 config.Data.totalUnits = -1
 
