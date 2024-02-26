@@ -19,7 +19,9 @@ For the last two there is available documentation in the subdirectories. (Note: 
 ----------
 
 **Note**: for instructions on HLT PF-Hadron calibrations and Jet Energy Scale Corrections,
-please ignore this `readme`, and follow the instructions in the dedicated `readme` files.
+please ignore this `readme`, and follow the instructions in the dedicated `readme` files:
+- [JECs instructions](https://github.com/theochatzis/JMETriggerAnalysis/tree/run3_13_3_X_jecs/JESCorrections/readme.md)
+- [PFHCs instructions](https://github.com/theochatzis/JMETriggerAnalysis/blob/run3_13_3_X_jecs/PFHadronCalibration/readme.md)
 
 ----------
 ----------
@@ -60,6 +62,7 @@ cmsRun jmeTriggerNTuple_cfg.py maxEvents=10 output=out_HLT_Run3TRK.root
 
 ### Tools for JME studies on the Run-3 HLT reconstruction
 
+<<<<<<< HEAD
 Here the main structure of the logic in the framework and the production of NTuples scripts is decribed. 
 To begin with, there are 2 ways that we access the information for HLT objects.
 1. Re-run HLT configuration: This way is the slowest since we need to run the whole reconstruction from `RAW` datasets (for data or `GEN-SIM-RAW` in MC). In this way the full HLT info gets available. This is essential if you want to test something that is not available in the deployed HLT reconstruction. 

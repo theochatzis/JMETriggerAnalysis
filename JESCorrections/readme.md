@@ -19,6 +19,12 @@ git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b run3_13_3_X_j
 scram b -j 8
 ```
 
+Note: 
+Currently working on `LXPLUS8` so use:
+```
+ssh -Y user@lxplus8.cern.ch
+```
+
 #### Produce JRA NTuples with HLT Jets
 First test your setup locally: 
 ```bash
@@ -48,21 +54,19 @@ crab/sub_flatPU.py
 Note: You might need to change the line where the `.db` file of the PFHCs is picked up so that CRAB can find the file. 
 
 Once the crab jobs are finished, the output `.root` files can be found in the Tier2 (T2) specified in the configuration file,
-and then transferred over to `eos` for the next steps.
+and then transferred over to `eos` for the next steps. 
+
+The output files need to be merged using `hadd` into one single file for the next steps to work.
 
 #### Derive Jet Energy Scale Corrections from JRA NTuples
 
 Once JRA NTuples have been produced,
 JESCs can be derived from them by running
-the executables of the `JetMETAnalysis` package.
-
-An example of how to do this is given below:
-```
-cd ${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/
-./fitJESCs -o output_dir -n -1
-```
+the executables of the `JetMETAnalysis` package. 
 The `fitJESCs` script is an example of
-a wrapper executing the various steps of the JESCs derivation. You need to define the `JRA NTuples` at the beginning of the script.
+a wrapper executing the various steps of the JESCs derivation.
+The `fitJESCs` script is an example of
+a wrapper executing the various steps of the JESCs derivation. 
 (caveat: the script presently includes several hard-coded parameters).
 Some basic options are:
 `-o`: output directory \
@@ -71,8 +75,25 @@ Some basic options are:
 `-j`: execute only for one type of collection e.g. `ak4pfHLT` \
 `-b`: for batch mode 
 
+You need to define the `JRA NTuples` at the beginning of the script.
+Note that the NTuples need to be single files, so you should have added the files from the CRAB jobs.
+
+The corrections usually take some time, so best is to run condor jobs. The `-b` and `-j` flags can be used to run one HTCondor job for each jet collection's correction (see the submission script `test/sub_jecs.htc` for an example). 
+```
+condor_submit sub_jecs.htc
+```
+
+A local example of running the whole procedure is the following:
+
+```
+cd ${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/
+./fitJESCs -o output_dir -n -1
+```
+
+
+
 ##### Run on HTCondor
-The `-b` and `-j` flags can be used to run one HTCondor job for each jet collection's correction (see the submission script `test/sub_jecs.htc` for an example). 
+
 
 ##### Sample information
 The necessary samples are large QCD simulated datasets with a flat p<sub>T</sub> over a large range.
