@@ -6,16 +6,8 @@ set -euo pipefail
 ## -------------------------
 JESC_BASE=${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test
 
-# Merged samples without forward (|eta| > 2.5) PFHCs applied
-JRANTuple_NoPU=/eos/user/a/aakpinar/nanopost/hlt_run3_JECs/samples_merged/QCD_EpsPUGTv6HCAL_126X/0000.root
-JRANTuple_PU=/eos/user/a/aakpinar/nanopost/hlt_run3_JECs/samples_merged/QCD_FlatPUGTv6HCAL_126X/0000.root
-
-# Merged samples with forward (|eta| > 2.5) PFHCs applied
-# JRANTuple_NoPU=/eos/user/a/aakpinar/nanopost/hlt_run3_JECs/samples_merged/QCD_EpsPUGTv6HCAL_126X_withForwardPFHCs/0000.root
-# JRANTuple_PU=/eos/user/a/aakpinar/nanopost/hlt_run3_JECs/samples_merged/QCD_FlatPUGTv6HCAL_126X_withForwardPFHCs/0000.root
-
-#JRANTuple_NoPU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jec/jmeTriggerNTuple_NoPU.root
-#JRANTuple_PU=root://eoscms.cern.ch//eos/cms/store/user/chuh/jec/jmeTriggerNTuple_PU0to120.root
+JRANTuple_NoPU=/eos/user/t/tchatzis/nanopost/hlt_run3_JECs/QCD_NoPU_133X_nophi_ext.root
+JRANTuple_PU=/eos/user/t/tchatzis/nanopost/hlt_run3_JECs/QCD_FlatPU0to120_133X_nophi_ext.root
 
 ERA=Run3Winter24Digi
 
@@ -26,20 +18,14 @@ ERA=Run3Winter24Digi
 # L1_CORRECTION_NBINS=8
 # L1_CORRECTION_BIN_WIDTH=10
 
-L1_CORRECTION_NBINS=12
+L1_CORRECTION_NBINS=8
 L1_CORRECTION_BIN_WIDTH=10
 
 JET_TYPES=(
   ak4pfHLT
-  ak4pfHLTBPix
-  ak4pfHLTNoBPix
   ak8pfHLT
-  ak4pfHLTBPix
-  ak4pfHLTNoBPix
   ak4caloHLT
   ak8caloHLT
-  #ak4pfchsHLT
-  #ak8pfchsHLT
 )
 #JET_TYPES=(
 #  ak4pfHLT
@@ -47,8 +33,6 @@ JET_TYPES=(
 #  ak8pfpuppiHLT
 #  ak4pfchsHLT
 #  ak8pfchsHLT
-#  ak4pfclusterHLT
-#  ak8pfclusterHLT
 #)
 ### -------------------------
 
