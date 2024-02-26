@@ -3,7 +3,8 @@
 
 **Note**: for instructions on HLT PF-Hadron calibrations and Jet Energy Scale Corrections,
 please ignore this `readme`, and follow the instructions in the dedicated `readme` files:
-
+- [JECs instructions](https://github.com/theochatzis/JMETriggerAnalysis/tree/run3_13_3_X_jecs/JESCorrections/readme.md)
+- [PFHCs instructions](https://github.com/theochatzis/JMETriggerAnalysis/blob/run3_13_3_X_jecs/PFHadronCalibration/readme.md)
 
 ----------
 ----------
@@ -11,15 +12,12 @@ please ignore this `readme`, and follow the instructions in the dedicated `readm
 ### Tools for JME studies on the Run-3 HLT reconstruction
 
 ```
-cmsrel CMSSW_13_0_7_patch1
-cd CMSSW_13_0_7_patch1/src
+cmsrel CMSSW_13_3_1_patch1
+cd CMSSW_13_3_1_patch1/src
 cmsenv
-#git cms-merge-topic  silviodonato:customizeHLTfor2023
-git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b run3_13_0_X_jecs
+git cms-init
 
-# PFHC: preliminary HLT-PFHC for Run-3
-cp /afs/cern.ch/user/c/chuh/public/PFCalibration/CMSSW_1300_126X/PFCalibration.db ${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/
-
+git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b run3_13_3_X_jecs
 
 scram b -j 12
 ```
