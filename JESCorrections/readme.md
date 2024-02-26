@@ -136,6 +136,26 @@ conddb --db ./output_dir/DBfile/Run3Winter23_MC.db search JetCorr
 ```
 where here the `search` option is for identifying the desired tag. `JetCorr` is a good example cause usually those start like `JetCorrection...`
 
+##### For BPix issue treatment
+For the BPix area one has to split the corrections based on the eta *and phi*. The procedure currently done is to define for separate phi cases the eta pT rho ... corrections (L1FastJet and L2Relative). To do so there are 2 steps. One is creating the JRA Ntuples separately for the `NoBPix` and `BPix` case i.e. for the PF jets to have phi in/out the affected one. For Calo jets nothing changes since these are not affected by this. 
+1. **JRA Files** : One has to produce 2 types of JRA files, one for BPix and one for NoBPix. These can be given by the option `bpixMode`. 
+For example if we want to keep only BPix jets:
+```
+cmsRun jescJRA_cfg.py  maxEvents=1000  output=test_jra_step.root bpixMode=BPix
+```
+you can check and see the output contains only jets in phi < -0.8 and phi  > -1.2. If you put `bpixMode=noBPix` the opposite should happen.
+
+In the crab directory there are scripts that apply this option to submit crab jobs. One is `sub_BPix.py` and the other `sub_NoBPix.py`. Note that we want 4 files for each case. Normally we want a noPU and one flatPU sample but this year in Winter24 we have 2 files for each - for full stats need to merge both. For flatPU the `PU 0 to 80` are the ones for usage, and for noPU the `NoPU`.
+
+2. **Corrections derivation** : After the JRA NTuples are ready one there are 2 separate submissions for making the corrections. One for the BPix case and one for the NoBPix, and the corresponding condor scripts are `sub_jecs_total_bpix.htc`, `sub_jecs_total_nobpix`. Make sure to keep the output name as is, otherwise the next step won't work (also in case one changes the parametrizations functions should change again the next step script).
+Make sure before you submit each case that you have changed the input flatPU and NoPU samples in `fitJESCs` script.
+
+3. **Corrections merging** : In the end we want a single .db file where the .txts for NoBPix and BPix are merged into one, and there is a separate treatment for the affected eta-phi region. To achieve this one can use the `createTxtFilesBPix` as:
+```
+./createTxtFilesBPix 
+``` 
+This file is consistent with the previous steps naming, and should produce a directory `corrections_2024` where inside it has the `.txt` files and a sqlit file `DBfile/Run3Winter24Digi.db`. The conddb command is used to verify this file was created successfuly. 
+
 ##### List of Run-3 HLT JESCs:
 
   * `Run3Winter21_V2_MC`:
