@@ -1,0 +1,37 @@
+executable            = fitJESCs
+getenv                = True
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+transfer_output_files = JESCs_2024_NoBPix
+output_destination = /afs/cern.ch/work/t/tchatzis/private/run3_2023/CMSSW_13_2_3/src/JMETriggerAnalysis/JESCorrections/test
+
+MY.XRDCP_CREATE_DIR = True
+MY.WantOS = "el8"
+
+arguments             =  -o JESCs_2024_NoBPix -b -j ak4pfHLT -n 10000000
+output                = htc_out_2024/ak4pfHLT.out
+error                 = htc_out_2024/ak4pfHLT.err
+log                   = htc_out_2024/ak4pfHLT.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o JESCs_2024_NoBPix -b -j ak8pfHLT -n 10000000
+output                = htc_out_2024/ak8pfHLT.out
+error                 = htc_out_2024/ak8pfHLT.err
+log                   = htc_out_2024/ak8pfHLT.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o JESCs_2024 -b -j ak4caloHLT -n 1000000
+output                = htc_out_2024/ak4caloHLT.out
+error                 = htc_out_2024/ak4caloHLT.err
+log                   = htc_out_2024/ak4caloHLT.log
++JobFlavour           = "workday"
+queue
+
+arguments             =  -o JESCs_2024 -b -j ak8caloHLT -n 1000000
+output                = htc_out_2024/ak8caloHLT.out
+error                 = htc_out_2024/ak8caloHLT.err
+log                   = htc_out_2024/ak8caloHLT.log
++JobFlavour           = "workday"
+queue
