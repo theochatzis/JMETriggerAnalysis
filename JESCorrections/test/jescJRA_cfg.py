@@ -130,8 +130,8 @@ if hasattr(process, 'FastTimerService'):
 ## ES modules for PF-Hadron Calibrations
 import os
 
- from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
- ## ES modules for PF-Hadron Calibrations
+from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
+## ES modules for PF-Hadron Calibrations
 process.pfhcESSource = cms.ESSource('PoolDBESSource',
    _CondDB.clone(connect = 'sqlite_file:/afs/cern.ch/user/t/tchatzis/public/PFHC2024/PFCalibration.db'),
    toGet = cms.VPSet(
