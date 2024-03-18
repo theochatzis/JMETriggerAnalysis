@@ -6,8 +6,8 @@ set -euo pipefail
 ## -------------------------
 JESC_BASE=${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test
 
-JRANTuple_NoPU=/eos/user/t/tchatzis/nanopost/hlt_run3_JECs/QCD_NoPU_133X_nophi_ext.root
-JRANTuple_PU=/eos/user/t/tchatzis/nanopost/hlt_run3_JECs/QCD_FlatPU0to120_133X_nophi_ext.root
+#JRANTuple_NoPU=/eos/user/t/tchatzis/nanopost/hlt_run3_JECs/QCD_NoPU_133X_nophi_ext.root
+#JRANTuple_PU=/eos/user/t/tchatzis/nanopost/hlt_run3_JECs/QCD_FlatPU0to120_133X_nophi_ext.root
 
 ERA=Run3Winter24Digi
 
@@ -24,8 +24,8 @@ L1_CORRECTION_BIN_WIDTH=10
 JET_TYPES=(
   ak4pfHLT
   ak8pfHLT
-  ak4caloHLT
-  ak8caloHLT
+  #ak4caloHLT
+  #ak8caloHLT
 )
 #JET_TYPES=(
 #  ak4pfHLT
@@ -54,14 +54,16 @@ Usage:
 > ./fitJESCs [-h] [-o output_dir] [-n maxEvents] [-p]
 
 Options:
-  -h, --help          Show this help message
-  -o, --output-dir    Path to output directory          [Default: .]
-  -n, --maxEvents     Max number of events to process   [Default: -1]
-  -b, --batch-mode    Run on batch mode (see htc scritp)[Default: true]
-  -j, --jet-type      Jet name for batch (e.g. ak4pfpuppiHLT)   
-  -p, --parallelise   Parallelise by jet algorithm      [Default: false]
-  --skip-L1-PFPuppi   Skip L1FastJet for PFPuppi jets   [Default: false]
-  -d, --dry-run       Enable dry-run mode               [Default: false]
+  -h, --help                  Show this help message
+  -i_nopu, --input-nopu       Path of the no PU sample
+  -i_flatpu, --input-flatpu   Path of the flat PU sample
+  -o, --output-dir            Path to output directory          [Default: .]
+  -n, --maxEvents             Max number of events to process   [Default: -1]
+  -b, --batch-mode            Run on batch mode (see htc scritp)[Default: true]
+  -j, --jet-type              Jet name for batch (e.g. ak4pfpuppiHLT)   
+  -p, --parallelise           Parallelise by jet algorithm      [Default: false]
+  --skip-L1-PFPuppi           Skip L1FastJet for PFPuppi jets   [Default: false]
+  -d, --dry-run               Enable dry-run mode               [Default: false]
 @EOF
 }
 
@@ -75,6 +77,8 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     -h|-khelp) showHelpMsg=true; shift;;
     -j|--jet-type) batchJetType=$2; shift; shift;;
+    -i_nopu| --input-nopu) JRANTuple_NoPU=$2; shift; shift;;
+    -i_flatpu| --input-flatpu) JRANTuple_PU=$2; shift; shift;;
     -o|--output-dir) outputDir=$2; shift; shift;;
     -n|--maxEvents) maxEvents=$2; shift; shift;;
     -p|--parallelise) paralleliseByAlgo=true; shift;;
