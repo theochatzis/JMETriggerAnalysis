@@ -110,7 +110,7 @@ You can find them in DAS searching for:
 ```
 dasgoclient -query="/QCD*15to7000*/Run3Winter24*/*RAW*"
 ```
-#### Create the `db` files
+##### Create the `db` files
 To create the `.db` files for providing them to AlCa contact for upload in `confDB`(or load them locally in a configuration) you can use the `jescTxtToDBConverter_cfg.py` script, as follows:
 ```bash
 ## In this example the output_dir is the directory defined in -o option for fitJECs in previous step.
@@ -135,6 +135,57 @@ If you want to check the tags registered to the `.db` files you can use the foll
 conddb --db ./output_dir/DBfile/Run3Winter23_MC.db search JetCorr
 ```
 where here the `search` option is for identifying the desired tag. `JetCorr` is a good example cause usually those start like `JetCorrection...`
+##### For BPix issue treatment (Updated)
+For the BPix area one has to split the corrections based on the eta *and phi*. The procedure currently done is to define for separate phi cases the eta pT rho ... corrections (L1FastJet and L2Relative). To do so there are 2 steps. One is creating the JRA Ntuples separately for the regions of interest e.g. `NoBPix` are jets not affected from the BPix issue. 
+For Calo jets nothing changes since these are not affected by this. 
+1. **JRA Files** : One has to produce types of JRA files, depending on how much the PF jets are affected by BPIX. These can be given by the option `bpixMode`. 
+For example if we want to keep only BPix jets:
+```
+cmsRun jescJRA_cfg.py  maxEvents=100  output=test_jra_step.root bpixMode=BPix
+```
+supported options are: 
+"noBPix": jets are far enough from BPix in phi. (the jet axis is more than half a radius away)
+"BPix": jet axis falls inside the BPix region.
+"BPixPlus" : jet axis falls less than half a radius from BPIX region, from the "positive phi" side.
+ "BPixMinus" : jet axis falls less than half a radius from BPIX region, from the "positive phi" side.
+
+To do batch submissions for producing the JRA NTuples you can use the `./crab/multicrab_bpix.py`. This can be done as follows : 
+First make sure there exists the directory `/eos/user/t/[username]/JRA_NTuples_Winter24`. If it doesn't or you prefer to use another script you can change the `JRA_NTuples_Winter24` part, although note that will be needed to change in next steps. 
+Then execute the multi-CRAB command:
+```
+python3 multicrab_bpix.py
+```
+this should automatically create all the jobs you need.
+
+After the jobs have ended you need to add the output ntuples. For this one can use :
+```
+./merge_root_files.sh 
+```
+where again if you have changed the output dir of the crab jobs you need to modify the input files directory.
+
+
+2. **Corrections derivation** :
+After the JRA NTuples are ready you can make the submission script for condor that will push the jobs to derive different corrections for each case. This is done by `make_condor_scripts_bpix.py`, which makes a single HTC Condor configuration file (`sub_jecs_total_forBPix.htc`) that can submit all the possible cases jobs. 
+You can inspect it and for example make sure that the `CaloJets` are produced only in the `noBPix` case.
+
+To use this script do:
+```
+python3 make_condor_scripts_bpix.py 
+condor_submit sub_jecs_total_forBPix.htc
+```
+You should see that the jobs are submitted.
+
+Again the only assumption is that you have used `/eos/user/t/[username]/JRA_NTuples_Winter24` as directory.
+
+3. **Corrections merging** : In the end we want a single `.db` file where the .txts for all categories (BPix, NoBpix etc.) are merged into one, and there is a separate treatment for the affected eta-phi region. To achieve this one can use the `createTxtFilesBPix` as:
+```
+./createTxtFilesBPix 
+``` 
+This file is consistent with the previous steps naming, and should produce a directory `corrections_2024` where inside it has the `.txt` files and a sqlit file `DBfile/Run3Winter24Digi.db`. The conddb command is used to verify this file was created successfuly. 
+
+The assumption in the above file is the condor jobs output directories from the previous step.
+
+
 
 ##### For BPix issue treatment
 For the BPix area one has to split the corrections based on the eta *and phi*. The procedure currently done is to define for separate phi cases the eta pT rho ... corrections (L1FastJet and L2Relative). To do so there are 2 steps. One is creating the JRA Ntuples separately for the `NoBPix` and `BPix` case i.e. for the PF jets to have phi in/out the affected one. For Calo jets nothing changes since these are not affected by this. 
