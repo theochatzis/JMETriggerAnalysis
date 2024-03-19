@@ -22,6 +22,8 @@ with open("sub_jecs_total_forBPix.htc", "w") as job_script:
     
 
     for bpix_cat in bpix_categories:
+        job_script.write("\n"*5)
+        job_script.write(f"transfer_output_files = JESCs_2024_{bpix_cat}\n")
         jet_categories = ['ak4pfHLT','ak8pfHLT']
         if bpix_cat == 'noBPix':
             jet_categories = ['ak4pfHLT','ak8pfHLT','ak4caloHLT','ak8caloHLT']
