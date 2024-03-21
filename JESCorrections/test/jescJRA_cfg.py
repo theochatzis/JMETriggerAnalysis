@@ -49,7 +49,7 @@ opts.register('output', 'out.root',
 opts.register('bpixMode', None,
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
-              'if stated as noBPix removes -1.2<phi<-0.8 , else if BPix keeps only this phi region')
+              'if stated as noBPix removes -1.2<phi<-0.8 , else if BPix keeps only this phi region, or BPixPlus/BPixMinus which is the BPix +/- half jet radius')
 
 opts.register('verbosity', 0,
               vpo.VarParsing.multiplicity.singleton,
@@ -57,6 +57,12 @@ opts.register('verbosity', 0,
               'level of output verbosity')
 
 opts.parseArguments()
+
+
+supported_bpix_options = ['noBPix', 'BPix', 'BPixPlus', 'BPixMinus']
+
+if opts.bpixMode is not None and opts.bpixMode not in supported_bpix_options:
+    raise ValueError("Error: The bpixMode value provided is not one of the supported options.")
 
 ###
 ### HLT configuration
@@ -133,7 +139,7 @@ import os
 from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
 ## ES modules for PF-Hadron Calibrations
 process.pfhcESSource = cms.ESSource('PoolDBESSource',
-   _CondDB.clone(connect = 'sqlite_file:/afs/cern.ch/user/t/tchatzis/public/PFHC2024/PFCalibration.db'),
+   _CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
    toGet = cms.VPSet(
      cms.PSet(
        record = cms.string('PFCalibrationRcd'),
@@ -151,37 +157,71 @@ process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
 #process.hltParticleFlow.skipForwardCalibrations = cms.bool(True)
 
 
-## Modification to select jets 
+## Modification to select jets 4
+# [-1.20 , -0.80]
 process.hltAK4PFJetsBPix = cms.EDFilter( "PFJetSelector",
     src = cms.InputTag("hltAK4PFJets"),
     filter = cms.bool(False),
     cut = cms.string("phi<-0.80 && phi>-1.20")
 )
+# [-0.80 , -0.60]
+process.hltAK4PFJetsBPixPlus = cms.EDFilter( "PFJetSelector",
+    src = cms.InputTag("hltAK4PFJets"),
+    filter = cms.bool(False),
+    cut = cms.string("phi<-0.60 && phi>-0.80")
+)
 
+# [-1.40 , -1.20]
+process.hltAK4PFJetsBPixMinus = cms.EDFilter( "PFJetSelector",
+    src = cms.InputTag("hltAK4PFJets"),
+    filter = cms.bool(False),
+    cut = cms.string("phi<-1.20 && phi>-1.40")
+)
+
+# Not in [-1.40 , -0.60]
 process.hltAK4PFJetsNoBPix = cms.EDFilter( "PFJetSelector",
     src = cms.InputTag("hltAK4PFJets"),
     filter = cms.bool(False),
-    cut = cms.string("!(phi<-0.80 && phi>-1.20)")
+    cut = cms.string("!(phi<-0.60 && phi>-1.40)")
 )
 
 
 process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsBPix
+process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsBPixPlus
+process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsBPixMinus
 process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsNoBPix
 
+# [-1.20 , -0.80]
 process.hltAK8PFJetsBPix = cms.EDFilter( "PFJetSelector",
     src = cms.InputTag("hltAK8PFJets"),
     filter = cms.bool(False),
     cut = cms.string("phi<-0.80 && phi>-1.20")
 )
+# [-0.80 , -0.40]
+process.hltAK8PFJetsBPixPlus = cms.EDFilter( "PFJetSelector",
+    src = cms.InputTag("hltAK8PFJets"),
+    filter = cms.bool(False),
+    cut = cms.string("phi<-0.40 && phi>-0.80")
+)
 
+# [-1.60 , -1.20]
+process.hltAK8PFJetsBPixMinus = cms.EDFilter( "PFJetSelector",
+    src = cms.InputTag("hltAK8PFJets"),
+    filter = cms.bool(False),
+    cut = cms.string("phi<-1.20 && phi>-1.60")
+)
+
+# Not in [-1.60 , -0.40]
 process.hltAK8PFJetsNoBPix = cms.EDFilter( "PFJetSelector",
     src = cms.InputTag("hltAK8PFJets"),
     filter = cms.bool(False),
-    cut = cms.string("!(phi<-0.80 && phi>-1.20)")
+    cut = cms.string("!(phi<-0.40 && phi>-1.60)")
 )
 
 
 process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsBPix
+process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsBPixPlus
+process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsBPixMinus
 process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsNoBPix
 
 ak4hltCollectionName_ = 'hltAK4PFJets'
@@ -194,20 +234,32 @@ if opts.bpixMode == 'BPix':
    ak4hltCollectionName_ = 'hltAK4PFJetsBPix'
    ak8hltCollectionName_ = 'hltAK8PFJetsBPix'
 
+if opts.bpixMode == 'BPixPlus':
+   ak4hltCollectionName_ = 'hltAK4PFJetsBPixPlus'
+   ak8hltCollectionName_ = 'hltAK8PFJetsBPixPlus'
+
+if opts.bpixMode == 'BPixMinus':
+   ak4hltCollectionName_ = 'hltAK4PFJetsBPixMinus'
+   ak8hltCollectionName_ = 'hltAK8PFJetsBPixMinus'
+
 ###
 ### Jet Response Analyzer (JRA) NTuple
 ###
 from JMETriggerAnalysis.JESCorrections.jescJRA_utils import addJRAPath
 
-addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4caloHLT'     , recoJets = 'hltAK4CaloJets'      , rho = 'hltFixedGridRhoFastjetAllCalo')
+
 addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfHLT'       , recoJets = ak4hltCollectionName_ , rho = 'hltFixedGridRhoFastjetAll')
 #addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfchsHLT'    , recoJets = 'hltAK4PFCHSJets'    , rho = 'hltFixedGridRhoFastjetAll')
 #addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfpuppiHLT'  , recoJets = 'hltAK4PFPuppiJets'  , rho = 'hltFixedGridRhoFastjetAll')
 
-addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8caloHLT'     , recoJets = 'hltAK8CaloJets'      , rho = 'hltFixedGridRhoFastjetAllCalo')
+
 addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfHLT'       , recoJets = ak8hltCollectionName_ , rho = 'hltFixedGridRhoFastjetAll')
 #addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfchsHLT'    , recoJets = 'hltAK8PFCHSJets'    , rho = 'hltFixedGridRhoFastjetAll')
 #addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfpuppiHLT'  , recoJets = 'hltAK8PFPuppiJets'  , rho = 'hltFixedGridRhoFastjetAll')
+
+if (opts.bpixMode is None) or (opts.bpixMode == 'noBPix'):  
+  addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4caloHLT'     , recoJets = 'hltAK4CaloJets'      , rho = 'hltFixedGridRhoFastjetAllCalo')
+  addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8caloHLT'     , recoJets = 'hltAK8CaloJets'      , rho = 'hltFixedGridRhoFastjetAllCalo')
 
 ###
 ### standard options
