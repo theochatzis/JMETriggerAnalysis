@@ -92,7 +92,7 @@ class JEC:
 
         return 1.0
 
-def plot(x,y,xlabel,ylable,filename):
+def plot(x,y,xlabel,ylable,filename,customtext=""):
 
     colors = [ROOT.kBlack,ROOT.kRed,ROOT.kBlue,ROOT.kMagenta]
     
@@ -108,7 +108,7 @@ def plot(x,y,xlabel,ylable,filename):
         graphpad.SetTopMargin(0.04)
         graphpad.SetRightMargin(0.04)
         graphpad.SetLeftMargin(0.14)
-        graphpad.SetBottomMargin(bottomMargin)
+        graphpad.SetBottomMargin(0)
         graphpad.Draw()
         graphpad.cd()
     else:
@@ -116,6 +116,7 @@ def plot(x,y,xlabel,ylable,filename):
         canvas.SetRightMargin(0.04)
         canvas.SetLeftMargin(0.14)
         canvas.SetBottomMargin(0.14)
+
 
     graphFrame = ROOT.TH2F("frame","",len(x),min(x),max(x),2,0,2)
     graphFrame.SetStats(0)
@@ -127,6 +128,10 @@ def plot(x,y,xlabel,ylable,filename):
     graphFrame.GetYaxis().SetTitle(ylable)
     graphFrame.Draw()
 
+    if len(customtext) > 0:
+        text = ROOT.TText(0.2,0.9,customtext)
+        text.SetNDC(True)
+        text.Draw()
 
     jec_re = re.compile("(?P<jec>\S+)_(?P<level>L\w+)_(?P<jet>\w+)\.txt")
 
@@ -143,10 +148,20 @@ def plot(x,y,xlabel,ylable,filename):
         if y_reference == None:
             y_reference = y_values
         else:
+            gtr1 = False
             ratios = []
-            for j in range(len(y_reference)):
+            for j in reversed(range(len(y_reference))):
                 ratio = y_values[j]/y_reference[j]
+                if y_values[j] < 0.0002:
+                    ratio = y_values[j]
+                if y_reference[j] < 0.0002 and gtr1:
+                    ratio = 999
+                if ratio > 1:
+                    gtr1 = True
+                else:
+                    gtr1 = False
                 ratios.append(ratio)
+            ratios = list(reversed(ratios))
             y_ratios[key] = ratios
 
         graph = ROOT.TGraph(len(x),x_values,y_values)
@@ -188,7 +203,7 @@ def plot(x,y,xlabel,ylable,filename):
         ratioFrame.SetStats(0)
         ratioFrame.GetXaxis().SetTitle(xlabel)
         titlescale = 2
-        ratioFrame.GetXaxis().SetTitleSize(graphFrame.GetXaxis().GetTitleSize())
+        ratioFrame.GetXaxis().SetTitleSize(titlescale*graphFrame.GetXaxis().GetTitleSize())
         ratioFrame.GetXaxis().SetLabelSize(titlescale*graphFrame.GetXaxis().GetLabelSize())
         ratioFrame.GetYaxis().SetTitleSize(titlescale*graphFrame.GetYaxis().GetTitleSize())
         ratioFrame.GetYaxis().SetLabelSize(titlescale*graphFrame.GetYaxis().GetLabelSize())
@@ -228,34 +243,43 @@ def main(opts, args):
     y = {}
     if opts.pt:
         ptrange = range(1,500)
-        eta = 0
+        etarange = [0, 1.3, 2, 2.7, 3.5]
+
         phi = 0
         jetA = 5
         rho = 10
-        for fIN in correctionfiles:
-            jec = JEC(fIN)
-            x = []
-            y[fIN] = []
-            for pt in ptrange:
-                corr = jec.getCorrection(pt,eta,phi,jetA,rho)
-                x.append(pt)
-                y[fIN].append(corr)
-        plot(x,y,"Jet p_{T} (GeV)","JEC","jecs_pt")
+        for eta in etarange:
+            etastr = "eta%s"%eta
+            etastr = etastr.replace('.','p')
+            etatext = "Jet eta = %s"%eta
+            for fIN in correctionfiles:
+                jec = JEC(fIN)
+                x = []
+                y[fIN] = []
+                for pt in ptrange:
+                    corr = jec.getCorrection(pt,eta,phi,jetA,rho)
+                    x.append(pt)
+                    y[fIN].append(corr)
+            plot(x,y,"Jet p_{T} (GeV)","JEC","jecs_pt_"+etastr,etatext)
     if opts.eta:
         etarange = list(map(lambda x: x/100.0, range(-500, 501)))
-        pt = 100
+        ptrange = [30, 100, 300]
+
         phi = 0 
         jetA = 5
         rho = 10
-        for fIN in correctionfiles:
-            jec = JEC(fIN)
-            x = []
-            y[fIN] = [] 
-            for eta in etarange:
-                corr = jec.getCorrection(pt,eta,phi,jetA,rho)
-                x.append(eta)
-                y[fIN].append(corr)
-        plot(x,y,"Jet eta","JEC","jecs_eta")
+        for pt in ptrange:
+            ptstr = "pt%s"%pt
+            pttext = "Jet pt = %s GeV"%pt
+            for fIN in correctionfiles:
+                jec = JEC(fIN)
+                x = []
+                y[fIN] = [] 
+                for eta in etarange:
+                    corr = jec.getCorrection(pt,eta,phi,jetA,rho)
+                    x.append(eta)
+                    y[fIN].append(corr)
+            plot(x,y,"Jet eta","JEC","jecs_eta_"+ptstr,pttext)
 
 if __name__=="__main__":
 
