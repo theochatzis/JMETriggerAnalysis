@@ -23,7 +23,8 @@ def userJets(process):
     process.selectedJetsValueMapPFJetIDTightLepVeto = cms.EDProducer('PatJetIDValueMapProducer',
       src = cms.InputTag(_lastJetCollection),
       filterParams = cms.PSet(
-        version = cms.string('RUN3WINTER22PUPPI'), # if you give a wrong option it will show you available options
+        #version = cms.string('RUN3WINTER22PUPPI'), # if you give a wrong option it will show you available options
+        version = cms.string('RUN3PUPPIruns2022FGruns2023CD'),
         quality = cms.string('TIGHTLEPVETO')
       )
     )
