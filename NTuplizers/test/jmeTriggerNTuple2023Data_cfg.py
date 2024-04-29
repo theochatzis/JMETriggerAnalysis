@@ -503,9 +503,10 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
+    '/store/data/Run2023C/Muon0/MINIAOD/PromptReco-v4/000/368/822/00000/90e43ba3-ec5c-45b8-8a73-4b9dd2e16bba.root'
     #'/store/data/Run2022G/Muon/MINIAOD/PromptReco-v1/000/362/362/00000/f6126759-0090-43f1-9746-f012d665b19d.root'
     #'/store/data/Run2023B/Muon0/RAW/v1/000/366/895/00000/8c846177-ca3d-4c0f-a602-b401cb32b041.root'
-    '/store/data/Run2023C/Muon0/RAW-RECO/ZMu-PromptReco-v4/000/367/770/00000/166a8559-ebd1-449d-a065-52fa13ea0f13.root'
+    #'/store/data/Run2023C/Muon0/RAW-RECO/ZMu-PromptReco-v4/000/367/770/00000/166a8559-ebd1-449d-a065-52fa13ea0f13.root'
   ]
 
 # input EDM files [secondary]
@@ -517,6 +518,13 @@ if opts.secondaryInputFiles:
 else:
   process.source.secondaryFileNames = [
     #'/store/data/Run2022G/Muon/RAW/v1/000/362/362/00000/fe383907-a8c5-4f53-80a8-d11efe8b0d9e.root'
+    '/store/data/Run2023C/Muon0/RAW/v1/000/368/822/00000/02c24068-4351-4187-8be8-83b9a21b4abd.root',
+    '/store/data/Run2023C/Muon0/RAW/v1/000/368/822/00000/23021d71-81df-4308-b514-65be0ea98473.root',
+    '/store/data/Run2023C/Muon0/RAW/v1/000/368/822/00000/5311a08a-4819-4e4a-8dfb-2ccdc8d41558.root',
+    '/store/data/Run2023C/Muon0/RAW/v1/000/368/822/00000/598185ca-84eb-4729-957e-0a2fb26d4614.root',
+    '/store/data/Run2023C/Muon0/RAW/v1/000/368/822/00000/c82f892e-f2d7-48f3-95e4-e907b8b26a39.root',
+    '/store/data/Run2023C/Muon0/RAW/v1/000/368/822/00000/d151dd12-6faf-40b1-8ab7-a6d1a8c152d2.root',
+    '/store/data/Run2023C/Muon0/RAW/v1/000/368/822/00000/ff1abd12-d0d2-492b-b0cb-bb57100dba7b.root',
   ]
 
 #process.source.eventsToProcess = cms.untracked.VEventRange("325057:61751881")

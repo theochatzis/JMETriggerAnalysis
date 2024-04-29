@@ -59,6 +59,8 @@ TriggerFlagsProducer::TriggerFlagsProducer(const edm::ParameterSet& iConfig)
   produces<bool>("L1TSeedPrescaledOrMasked");
   produces<bool>("HLTPathPrescaled");
   produces<bool>("HLTPathAccept");
+  produces<bool>("L1TSeedInitialDecision");
+  produces<bool>("L1TSeedFinalDecision");
 }
 
 void TriggerFlagsProducer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup) {
@@ -122,6 +124,8 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
   std::string originalMatch("");
 
   bool l1tSeedPrescaledOrMasked(false);
+  bool l1tSeedInitialDecision(false);
+  bool l1tSeedFinalDecision(false);
   bool l1tSeedAccept(false);
   bool hltPathPrescaled(false);
   bool hltPathAccept(false);
@@ -283,6 +287,7 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
             l1tSeedAcceptFromL1GlobalUtilFinal(false);
 
         // GlobalLogicParser - Initial
+        //std::cout << l1tSeedExpr << std::endl;
         auto l1AlgoLogicParserInitial = GlobalLogicParser(l1tSeedExpr);
         auto& l1AlgoLogicParserInitial_opTokenVector = l1AlgoLogicParserInitial.operandTokenVector();
         for (auto& token_i : l1AlgoLogicParserInitial_opTokenVector) {
@@ -356,7 +361,7 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
                        << " getFinalDecisionByName = " << decFinal << " (valid = " << decFinalIsValid << ")";
         }
         l1tSeedAcceptFromL1GlobalUtilFinal = l1AlgoLogicParserFinal.expressionResult();
-
+        
         // consistency check between HLT-Path and L1GlobalUtil
         if (hltL1TSeedModuleIndex <= hltPathLastModuleIndex) {
           if (l1tSeedAccept != l1tSeedAcceptFromL1GlobalUtilFinal) {
@@ -369,7 +374,14 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
         }
 
         // l1tSeedPrescaledOrMasked
+        //std::cout << iPathName << std::endl;
+        // std::cout << l1tSeedAcceptFromL1GlobalUtilInitial << std::endl;
+        // std::cout << l1tSeedAcceptFromL1GlobalUtilInterm << std::endl;
+        // std::cout << l1tSeedAcceptFromL1GlobalUtilFinal << std::endl;
+        // modify this to get the prescale:
         l1tSeedPrescaledOrMasked = (l1tSeedAcceptFromL1GlobalUtilInitial != l1tSeedAcceptFromL1GlobalUtilFinal);
+        l1tSeedInitialDecision = l1tSeedAcceptFromL1GlobalUtilInitial;
+        l1tSeedFinalDecision = l1tSeedAcceptFromL1GlobalUtilFinal;
 
         LogTrace("") << "[TriggerFlagsProducer::produce]       " << l1tSeedExpr
                      << " l1tSeedAcceptFromL1GlobalUtilInitial = " << l1tSeedAcceptFromL1GlobalUtilInitial;
@@ -410,6 +422,8 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 
   auto out_l1tSeedAccept = std::make_unique<bool>(l1tSeedAccept);
   auto out_l1tSeedPrescaledOrMasked = std::make_unique<bool>(l1tSeedPrescaledOrMasked);
+  auto out_l1tSeedInitialDecision = std::make_unique<bool>(l1tSeedInitialDecision);
+  auto out_l1tSeedFinalDecision = std::make_unique<bool>(l1tSeedFinalDecision);
   auto out_hltPathPrescaled = std::make_unique<bool>(hltPathPrescaled);
   auto out_hltPathAccept = std::make_unique<bool>(hltPathAccept);
 
@@ -417,6 +431,8 @@ void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
   iEvent.put(std::move(out_l1tSeedPrescaledOrMasked), "L1TSeedPrescaledOrMasked");
   iEvent.put(std::move(out_hltPathPrescaled), "HLTPathPrescaled");
   iEvent.put(std::move(out_hltPathAccept), "HLTPathAccept");
+  iEvent.put(std::move(out_l1tSeedInitialDecision), "L1TSeedInitialDecision");
+  iEvent.put(std::move(out_l1tSeedFinalDecision), "L1TSeedFinalDecision");
 }
 
 void TriggerFlagsProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {

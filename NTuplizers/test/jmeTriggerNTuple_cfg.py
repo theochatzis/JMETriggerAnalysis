@@ -79,12 +79,14 @@ if opts.reco == 'HLT_oldJECs':
   update_jmeCalibs = False
 
 elif opts.reco == 'HLT_Run3TRK':
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_4_0_GRun_postEE_configDump import cms, process
-  #from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
-  update_jmeCalibs = False
+  #from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_4_0_GRun_postEE_configDump import cms, process
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
+  #from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_doubletRecovery_configDump import cms, process
+  update_jmeCalibs = True
+  #process.GlobalTag.globaltag = cms.string('126X_mcRun3_2023_forPU65_v7')
   #process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
   # Test option to skip forward PFHC application (after eta = 2.5)
-  process.hltParticleFlow.skipForwardCalibrations = cms.bool(True)
+  #process.hltParticleFlow.skipForwardCalibrations = cms.bool(True)
   #from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump_noCustom import cms, process
 
 else:
@@ -161,24 +163,24 @@ if hasattr(process, 'FastTimerService'):
 
 if update_jmeCalibs:
   ## ES modules for PF-Hadron Calibrations
-  #process.pfhcESSource = cms.ESSource('PoolDBESSource',
-  #  _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/PFCalibration.db'),
-  #  #_CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
-  #  toGet = cms.VPSet(
-  #    cms.PSet(
-  #      record = cms.string('PFCalibrationRcd'),
-  #      tag = cms.string('PFCalibration_CMSSW_13_0_0_HLT_126X_v6_mcRun3_2023'),
-  #      label = cms.untracked.string('HLT'),
-  #    ),
-  #  ),
-  #)
-  #process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
-  process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
+  process.pfhcESSource = cms.ESSource('PoolDBESSource',
+    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/PFCalibration.db'),
+    #_CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
+    toGet = cms.VPSet(
+      cms.PSet(
+        record = cms.string('PFCalibrationRcd'),
+        tag = cms.string('PFCalibration_CMSSW_13_0_0_HLT_126X_v6_mcRun3_2023'),
+        label = cms.untracked.string('HLT'),
+      ),
+    ),
+  )
+  process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
+  #process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
 
   ##ES modules for HLT JECs
   process.jescESSource = cms.ESSource('PoolDBESSource',
-    #_CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Run3Winter23Digi_OfflinePFHC.db'),
-    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Run3Winter23Digi_OfflinePFHC_skipFwd.db'),
+    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Run3Winter23Digi_OfflinePFHC.db'),
+    #_CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Run3Winter23Digi_OfflinePFHC_skipFwd.db'),
     #_CondDB.clone(connect = 'sqlite_file:Run3Winter23Digi.db'),
     toGet = cms.VPSet(
       cms.PSet(
@@ -561,12 +563,24 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
+    '/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2550000/000b8f39-b147-44c0-a2cb-a048abe5786c.root'
     #'/store/mc/Run3Winter23MiniAOD/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/MINIAODSIM/FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v2/2540000/10e9c9ff-b431-42c5-a1ec-e3143eafee20.root',
-    '/store/mc/Run3Winter23Digi/DYToMuMu_M-20_TuneCP5_13p6TeV-pythia8/GEN-SIM-RAW/GTv4Digi_126X_mcRun3_2023_forPU65_v4-v2/2820000/0070321e-e4e6-4769-900f-0c0ad3831215.root'
+    #'/store/mc/Run3Winter23Digi/DYToMuMu_M-20_TuneCP5_13p6TeV-pythia8/GEN-SIM-RAW/GTv4Digi_126X_mcRun3_2023_forPU65_v4-v2/2820000/0070321e-e4e6-4769-900f-0c0ad3831215.root'
     #'/store/mc/Run3Winter23MiniAOD/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/MINIAODSIM/126X_mcRun3_2023_forPU65_v1-v2/2550000/19e43825-6b8e-426e-9cca-e23cf318737c.root',
-    #'',
-    #'',
-    #'',
+    #'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/033373ea-6628-4bd0-b0ce-a35145622552.root',
+#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/1b0db43a-d38e-4e8b-8ad5-a2b255a54445.root',
+#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/6259374b-6865-4dd4-9414-25e393cb30ae.root',
+#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/8aae5414-96dc-414b-b277-e3da177b5fd6.root',
+#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/1b62be66-8f21-4c37-ada8-0e9094b754c3.root',
+#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/9292ed8b-e6e9-4e25-9ca2-bea39913b662.root',
+#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/7f0077e6-e6f7-45bb-8d09-688fbe898716.root',
+#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/33ca1f69-b3b2-4f6c-8505-66d405c7dc85.root',
+#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/0379f27a-2c28-4e23-9d1f-beb1fbae45dd.root',
+#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/216d41af-b3b1-4669-b496-682e7eefd6cb.root',
+#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/6ef59234-3b07-49e4-96b3-03b499901f22.root',
+#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/755f6116-2539-4d13-89cd-874fe989d755.root',
+#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/6137a5b1-f72c-4fd0-93e5-2f2eaa238dc0.root',
+
   ]
 
 # input EDM files [secondary]

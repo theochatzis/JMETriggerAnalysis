@@ -32,6 +32,28 @@
 #include "JMETriggerAnalysis/NTuplizers/interface/PATMuonCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/PATElectronCollectionContainer.h"
 
+
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "CommonTools/TriggerUtils/interface/GenericTriggerEventFlag.h"
+
+#include "FWCore/Framework/interface/Run.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/ESWatcher.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
+#include "FWCore/Utilities/interface/ESGetToken.h"
+#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
+#include "CondFormats/L1TObjects/interface/L1GtTriggerMenu.h"
+#include "CondFormats/DataRecord/interface/L1GtTriggerMenuRcd.h"
+#include "CondFormats/HLTObjects/interface/AlCaRecoTriggerBits.h"
+#include "CondFormats/DataRecord/interface/AlCaRecoTriggerBitsRcd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerEvmReadoutRecord.h"
+#include "DataFormats/Scalers/interface/DcsStatus.h"
+#include "DataFormats/OnlineMetaData/interface/DCSRecord.h"
+#include "L1Trigger/GlobalTriggerAnalyzer/interface/L1GtUtils.h"
+#include "L1Trigger/L1TGlobal/interface/L1TGlobalUtil.h"
+#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+
 #include <string>
 #include <vector>
 #include <memory>
@@ -41,9 +63,9 @@
 #include <Compression.h>
 #include <TTree.h>
 
-class JMETriggerNTuple_MiniAOD : public edm::one::EDAnalyzer<edm::one::SharedResources> {
+class JMETriggerNTuple_MiniAOD_testPS : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 public:
-  explicit JMETriggerNTuple_MiniAOD(const edm::ParameterSet&);
+  explicit JMETriggerNTuple_MiniAOD_testPS(const edm::ParameterSet&);
   static void fillDescriptions(edm::ConfigurationDescriptions&);
 
 protected:
@@ -111,33 +133,18 @@ protected:
   edm::EDGetTokenT<pat::JetCollection> jetsToken;
   edm::EDGetTokenT<pat::MuonCollection> muonsToken;
   edm::EDGetTokenT<pat::METCollection> metToken;
-  edm::EDGetTokenT<pat::METCollection> pfmetToken;
-  edm::EDGetTokenT<reco::VertexCollection> recVtxsToken;
-  edm::EDGetTokenT<edm::TriggerResults> metFilterBitsTagToken;
 
   edm::Handle<pat::JetCollection> jets;
   edm::Handle<pat::MuonCollection> muons;
   edm::Handle<pat::METCollection> met;
-  edm::Handle<pat::METCollection> pfmet;
-  edm::Handle<reco::VertexCollection> recVtxs;
-  edm::Handle<edm::TriggerResults> metFilterBits;
   
   // function that checks for JetID 
   bool  isGoodJet(const pat::Jet &jet);
 
   // quantities for branches in case createTriggerQuantities_ is used
   double leadingJetPt_ = 0.;
-  double leadingJetEta_ = 0.;
-  double leadingJetPhi_ = 0.;
-  double rawmet_ = 0.;
   double met_ = 0.;
-  double metPhi_ = 0.;
-  double pfmet_ = 0.;
-  double rawpfmet_ = 0.;
-  double pfmetPhi_ = 0.;
-  double metNoMu_ = 0.;
   double ht_ = 0.;
-  int nVtx_ = 0;
 
   unsigned int run_ = 0;
   unsigned int luminosityBlock_ = 0;
@@ -209,7 +216,7 @@ protected:
                                FillCollectionConditionsMap const&);
 };
 
-JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iConfig)
+JMETriggerNTuple_MiniAOD_testPS::JMETriggerNTuple_MiniAOD_testPS(const edm::ParameterSet& iConfig)
     : TTreeName_(iConfig.getParameter<std::string>("TTreeName")),
       consumeHepMCProduct_(iConfig.exists("HepMCProduct")),
       consumeGenEventInfoProduct_(iConfig.exists("GenEventInfoProduct")),
@@ -241,10 +248,7 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
   jetsToken             = consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("jets"));
   muonsToken            = consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muons"));
   metToken              = consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("met"));
-  pfmetToken              = consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("pfmet"));
-  recVtxsToken          = consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertices"));
-  metFilterBitsTagToken = consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("metFilterBitsTag"));
-
+  
   // stringCutObjectSelectors
   stringCutObjectSelectors_map_.clear();
 
@@ -471,17 +475,8 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
   // add branches for trigger if option is activated
   if(createTriggerQuantities_){
     this->addBranch("leadingJet_pt", &leadingJetPt_);
-    this->addBranch("leadingJet_eta", &leadingJetEta_);
-    this->addBranch("leadingJet_phi", &leadingJetPhi_);
     this->addBranch("met",&met_);
-    this->addBranch("rawmet",&rawmet_);
-    this->addBranch("met_phi",&metPhi_);
-    this->addBranch("pfmet",&pfmet_);
-    this->addBranch("rawpfmet",&rawpfmet_);
-    this->addBranch("pfmet_phi",&pfmetPhi_);
-    this->addBranch("metNoMu",&metNoMu_);
     this->addBranch("ht",&ht_);
-    this->addBranch("nVertices",&nVtx_);
   }
 
   this->addBranch("run", &run_);
@@ -890,7 +885,7 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
   }
 }
 
-bool JMETriggerNTuple_MiniAOD::isGoodJet(const pat::Jet &jet){
+bool JMETriggerNTuple_MiniAOD_testPS::isGoodJet(const pat::Jet &jet){
   float chf = jet.chargedHadronEnergyFraction();
   float nhf = jet.neutralHadronEnergyFraction();
   float phf = jet.photonEnergyFraction();
@@ -920,7 +915,7 @@ bool JMETriggerNTuple_MiniAOD::isGoodJet(const pat::Jet &jet){
   return idTightLepVeto;
 }
 
-void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
+void JMETriggerNTuple_MiniAOD_testPS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   run_ = iEvent.id().run();
   luminosityBlock_ = iEvent.id().luminosityBlock();
   event_ = iEvent.id().event();
@@ -943,62 +938,16 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
   iEvent.getByToken(jetsToken,jets);
   iEvent.getByToken(muonsToken,muons);
   iEvent.getByToken(metToken,met);
-  iEvent.getByToken(pfmetToken,pfmet);
-  iEvent.getByToken(recVtxsToken,recVtxs);  
-  iEvent.getByToken(metFilterBitsTagToken, metFilterBits);  
-
+  
   leadingJetPt_ = 0.;
-  leadingJetEta_ = 0.;
-  leadingJetPhi_ = 0.;
   met_ = 0.;
-  rawmet_ = 0.;
-  metPhi_ = 0.;
-  pfmet_ = 0.;
-  rawpfmet_ = 0.;
-  pfmetPhi_ = 0.;
-  metNoMu_ = 0.;
   ht_ = 0.;
-  nVtx_ = 0;
-  
-  bool passMETFilters(true);
-  
-  // met filters
-  const edm::TriggerNames &metNames = iEvent.triggerNames(*metFilterBits);
-  for(unsigned int i = 0, n = metFilterBits->size(); i < n; ++i) {
-      if(strcmp(metNames.triggerName(i).c_str(), 	 "Flag_goodVertices") == 0){
-          passMETFilters &= metFilterBits->accept(i);
-      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalSuperTightHalo2016Filter") == 0){
-          passMETFilters &= metFilterBits->accept(i);
-      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseFilter") == 0){
-         passMETFilters &= metFilterBits->accept(i);
-      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseIsoFilter") == 0){
-         passMETFilters &= metFilterBits->accept(i);
-      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_EcalDeadCellTriggerPrimitiveFilter") == 0){
-          passMETFilters &= metFilterBits->accept(i);
-      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadPFMuonFilter") == 0){
-          passMETFilters &= metFilterBits->accept(i);
-      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadPFMuonDzFilter") == 0){
-          passMETFilters &= metFilterBits->accept(i);
-      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_hfNoisyHitsFilter") == 0){
-          passMETFilters &= metFilterBits->accept(i);
-      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_eeBadScFilter") == 0){
-          passMETFilters &= metFilterBits->accept(i);
-      }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibFilter") == 0){
-          passMETFilters &= metFilterBits->accept(i);
-      }
-      // else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadChargedCandidateFilter") == 0){
-      //     passMETFilters &= metFilterBits->accept(i);
-      // }
-  }
-
-  if(!passMETFilters) return;
 
   // Assisting variables
   bool leadingJetIsGood=false; // this checks if the leading jet has tightID - if not event will be rejected.
   bool isLeptonMatched=false; // this checks if the leading jet is matched to the selected muon(s) (userMuons)
   float DRmax = 0.4; // maximum DR for matching
-  
-  
+
   // if create skim is used then return for events that don't pass the selections
   if(createSkim_){
     // muons selections
@@ -1019,13 +968,11 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
 
       if( ijet->pt()>leadingJetPt_ ){
         leadingJetPt_ = ijet->pt();
-        leadingJetEta_ = ijet->eta();
-        leadingJetPhi_ = ijet->phi();
         // check if leading jet is matched to a Lepton
         for(pat::MuonCollection::const_iterator mu =muons->begin();mu != muons->end(); ++mu) if (deltaR(mu->eta(),mu->phi(),ijet->eta(),ijet->phi()) < DRmax) isLeptonMatched = true;
         // check if leading jet passes tightLepVeto ID
         leadingJetIsGood = (ijet->hasUserInt("PFJetIDTightLepVeto") && (ijet->userInt("PFJetIDTightLepVeto") > 0));
-        //leadingJetIsGood = isGoodJet(*ijet); // the same but using the custom function not miniAOD tools
+        //leadingJetIsGood = isGoodJet(*ijet); // the same but using the custom function not MiniAOD_testPS tools
         leadingJetIsGood = leadingJetIsGood && !isLeptonMatched;
       }
     } 
@@ -1035,18 +982,8 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
   if (!leadingJetIsGood) return;
   
   // calculate MET
-  met_ = (*met)[0].shiftedPt(pat::MET::NoShift, pat::MET::Type1);//.et();
-  rawmet_ = (*met)[0].shiftedPt(pat::MET::NoShift, pat::MET::Raw);
-  metPhi_ = (*met)[0].shiftedPt(pat::MET::NoShift, pat::MET::Type1);//.phi();
-  
-  // here we should have exactly one event muon
-  metNoMu_ = sqrt(pow((*met)[0].px()+(*muons)[0].px(),2) + pow((*met)[0].py()+(*muons)[0].py(),2));
-  
-  pfmet_ = (*pfmet)[0].shiftedPt(pat::MET::NoShift, pat::MET::Type1);//.et();
-  rawpfmet_ = (*pfmet)[0].shiftedPt(pat::MET::NoShift, pat::MET::Raw);
-  pfmetPhi_ = (*pfmet)[0].shiftedPt(pat::MET::NoShift, pat::MET::Type1);//.phi();
-  // calculate the number of vertices
-  nVtx_   = recVtxs->size();
+  met_ = (*met)[0].et();
+
 
   // MC: HepMCProduct
   hepMCGenEvent_scale_ = -1.f;
@@ -1124,7 +1061,7 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
   iEvent.getByToken(triggerResultsContainer_ptr_->token(), triggerResults_handle);
 
   if (not triggerResults_handle.isValid()) {
-    edm::LogWarning("JMETriggerNTuple_MiniAOD::analyze")
+    edm::LogWarning("JMETriggerNTuple_MiniAOD_testPS::analyze")
         << "invalid handle for input collection: \"" << triggerResultsContainer_ptr_->inputTagLabel()
         << "\" (NTuple branches for HLT paths)";
 
@@ -1144,7 +1081,7 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
       }
     }
 
-    LogDebug("JMETriggerNTuple_MiniAOD::analyze") << "output collections will be saved to TTree";
+    LogDebug("JMETriggerNTuple_MiniAOD_testPS::analyze") << "output collections will be saved to TTree";
 
     // fill TriggerResultsContainer
     triggerResultsContainer_ptr_->fill(*triggerResults_handle, iEvent);
@@ -1258,33 +1195,33 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
 }
 
 template <typename... Args>
-void JMETriggerNTuple_MiniAOD::addBranch(const std::string& branch_name, Args... args) {
+void JMETriggerNTuple_MiniAOD_testPS::addBranch(const std::string& branch_name, Args... args) {
   if (ttree_) {
     if (std::find(outputBranchesToBeDropped_.begin(), outputBranchesToBeDropped_.end(), branch_name) ==
         outputBranchesToBeDropped_.end()) {
       if (ttree_->GetBranch(branch_name.c_str())) {
-        throw cms::Exception("JMETriggerNTuple_MiniAOD::addBranch")
+        throw cms::Exception("JMETriggerNTuple_MiniAOD_testPS::addBranch")
             << "output branch \"" << branch_name
             << "\" already exists (there was an attempt to create another TBranch with the same name)";
       } else {
         ttree_->Branch(branch_name.c_str(), args...);
       }
     } else {
-      edm::LogInfo("JMETriggerNTuple_MiniAOD::addBranch")
+      edm::LogInfo("JMETriggerNTuple_MiniAOD_testPS::addBranch")
           << "output branch \"" << branch_name
           << "\" will not be created (string appears in data member \"outputBranchesToBeDropped\")";
     }
   } else {
-    edm::LogWarning("JMETriggerNTuple_MiniAOD::addBranch")
+    edm::LogWarning("JMETriggerNTuple_MiniAOD_testPS::addBranch")
         << "pointer to TTree is null, output branch \"" << branch_name << "\" will not be created";
   }
 }
 
-bool JMETriggerNTuple_MiniAOD::passesTriggerResults_OR(const edm::TriggerResults& triggerResults,
+bool JMETriggerNTuple_MiniAOD_testPS::passesTriggerResults_OR(const edm::TriggerResults& triggerResults,
                                                const edm::Event& iEvent,
                                                const std::vector<std::string>& paths) {
   if (paths.empty()) {
-    edm::LogWarning("JMETriggerNTuple_MiniAOD::passesTriggerResults_OR")
+    edm::LogWarning("JMETriggerNTuple_MiniAOD_testPS::passesTriggerResults_OR")
         << "input error: empty list of paths for event selection, will return True";
     return true;
   }
@@ -1292,7 +1229,7 @@ bool JMETriggerNTuple_MiniAOD::passesTriggerResults_OR(const edm::TriggerResults
   const auto& triggerNames = iEvent.triggerNames(triggerResults).triggerNames();
 
   if (triggerResults.size() != triggerNames.size()) {
-    edm::LogWarning("JMETriggerNTuple_MiniAOD::passesTriggerResults_OR")
+    edm::LogWarning("JMETriggerNTuple_MiniAOD_testPS::passesTriggerResults_OR")
         << "input error: size of TriggerResults (" << triggerResults.size() << ") and TriggerNames ("
         << triggerNames.size() << ") differ, exiting function";
     return false;
@@ -1303,13 +1240,13 @@ bool JMETriggerNTuple_MiniAOD::passesTriggerResults_OR(const edm::TriggerResults
       const auto& triggerName = triggerNames.at(idx);
 
       if (std::find(paths.begin(), paths.end(), triggerName) != paths.end()) {
-        LogDebug("JMETriggerNTuple_MiniAOD::passesTriggerResults_OR") << "event accepted by path \"" << triggerName << "\"";
+        LogDebug("JMETriggerNTuple_MiniAOD_testPS::passesTriggerResults_OR") << "event accepted by path \"" << triggerName << "\"";
         return true;
       } else {
         const auto triggerName_unv = triggerName.substr(0, triggerName.rfind("_v"));
 
         if (std::find(paths.begin(), paths.end(), triggerName_unv) != paths.end()) {
-          LogDebug("JMETriggerNTuple_MiniAOD::passesTriggerResults_OR")
+          LogDebug("JMETriggerNTuple_MiniAOD_testPS::passesTriggerResults_OR")
               << "event accepted by path \"" << triggerName_unv << "\"";
           return true;
         }
@@ -1320,11 +1257,11 @@ bool JMETriggerNTuple_MiniAOD::passesTriggerResults_OR(const edm::TriggerResults
   return false;
 }
 
-bool JMETriggerNTuple_MiniAOD::passesTriggerResults_AND(const edm::TriggerResults& triggerResults,
+bool JMETriggerNTuple_MiniAOD_testPS::passesTriggerResults_AND(const edm::TriggerResults& triggerResults,
                                                 const edm::Event& iEvent,
                                                 const std::vector<std::string>& paths) {
   if (paths.empty()) {
-    edm::LogWarning("JMETriggerNTuple_MiniAOD::passesTriggerResults_AND")
+    edm::LogWarning("JMETriggerNTuple_MiniAOD_testPS::passesTriggerResults_AND")
         << "input error: empty list of paths for event selection, will return True";
     return true;
   }
@@ -1332,7 +1269,7 @@ bool JMETriggerNTuple_MiniAOD::passesTriggerResults_AND(const edm::TriggerResult
   const auto& triggerNames = iEvent.triggerNames(triggerResults).triggerNames();
 
   if (triggerResults.size() != triggerNames.size()) {
-    edm::LogWarning("JMETriggerNTuple_MiniAOD::passesTriggerResults_AND")
+    edm::LogWarning("JMETriggerNTuple_MiniAOD_testPS::passesTriggerResults_AND")
         << "input error: size of TriggerResults (" << triggerResults.size() << ") and TriggerNames ("
         << triggerNames.size() << ") differ, exiting function";
 
@@ -1344,14 +1281,14 @@ bool JMETriggerNTuple_MiniAOD::passesTriggerResults_AND(const edm::TriggerResult
       const auto& triggerName = triggerNames.at(idx);
 
       if (std::find(paths.begin(), paths.end(), triggerName) != paths.end()) {
-        LogDebug("JMETriggerNTuple_MiniAOD::passesTriggerResults_AND")
+        LogDebug("JMETriggerNTuple_MiniAOD_testPS::passesTriggerResults_AND")
             << "event not accepted by path \"" << triggerName << "\"";
         return false;
       } else {
         const auto triggerName_unv = triggerName.substr(0, triggerName.rfind("_v"));
 
         if (std::find(paths.begin(), paths.end(), triggerName_unv) != paths.end()) {
-          LogDebug("JMETriggerNTuple_MiniAOD::passesTriggerResults_AND")
+          LogDebug("JMETriggerNTuple_MiniAOD_testPS::passesTriggerResults_AND")
               << "event not accepted by path \"" << triggerName_unv << "\"";
           return false;
         }
@@ -1362,9 +1299,9 @@ bool JMETriggerNTuple_MiniAOD::passesTriggerResults_AND(const edm::TriggerResult
   return true;
 }
 
-JMETriggerNTuple_MiniAOD::FillCollectionConditionsMap::FillCollectionConditionsMap() { this->clear(); }
+JMETriggerNTuple_MiniAOD_testPS::FillCollectionConditionsMap::FillCollectionConditionsMap() { this->clear(); }
 
-int JMETriggerNTuple_MiniAOD::FillCollectionConditionsMap::init(const edm::ParameterSet& pset) {
+int JMETriggerNTuple_MiniAOD_testPS::FillCollectionConditionsMap::init(const edm::ParameterSet& pset) {
   this->clear();
 
   const auto& pset_strings = pset.getParameterNamesForType<std::string>();
@@ -1378,13 +1315,13 @@ int JMETriggerNTuple_MiniAOD::FillCollectionConditionsMap::init(const edm::Param
   return 0;
 }
 
-void JMETriggerNTuple_MiniAOD::FillCollectionConditionsMap::clear() { condMap_.clear(); }
+void JMETriggerNTuple_MiniAOD_testPS::FillCollectionConditionsMap::clear() { condMap_.clear(); }
 
-bool JMETriggerNTuple_MiniAOD::FillCollectionConditionsMap::has(const std::string& name) const {
+bool JMETriggerNTuple_MiniAOD_testPS::FillCollectionConditionsMap::has(const std::string& name) const {
   return (condMap_.find(name) != condMap_.end());
 }
 
-const JMETriggerNTuple_MiniAOD::FillCollectionConditionsMap::condition& JMETriggerNTuple_MiniAOD::FillCollectionConditionsMap::at(
+const JMETriggerNTuple_MiniAOD_testPS::FillCollectionConditionsMap::condition& JMETriggerNTuple_MiniAOD_testPS::FillCollectionConditionsMap::at(
     const std::string& name) const {
   if (not this->has(name)) {
     throw cms::Exception("LogicError") << "internal map has no entry associated to key \"" << name << "\"";
@@ -1393,7 +1330,7 @@ const JMETriggerNTuple_MiniAOD::FillCollectionConditionsMap::condition& JMETrigg
   return condMap_.at(name);
 }
 
-bool JMETriggerNTuple_MiniAOD::FillCollectionConditionsMap::accept(const std::string& name) const {
+bool JMETriggerNTuple_MiniAOD_testPS::FillCollectionConditionsMap::accept(const std::string& name) const {
   if (not this->has(name)) {
     throw cms::Exception("LogicError") << "internal map has no entry associated to key \"" << name << "\"";
   }
@@ -1401,7 +1338,7 @@ bool JMETriggerNTuple_MiniAOD::FillCollectionConditionsMap::accept(const std::st
   return this->at(name).accept;
 }
 
-int JMETriggerNTuple_MiniAOD::FillCollectionConditionsMap::update(const edm::TriggerResults& triggerResults,
+int JMETriggerNTuple_MiniAOD_testPS::FillCollectionConditionsMap::update(const edm::TriggerResults& triggerResults,
                                                           const edm::Event& iEvent) {
   for (auto& map_entry : condMap_) {
     map_entry.second.accept = false;
@@ -1443,7 +1380,7 @@ int JMETriggerNTuple_MiniAOD::FillCollectionConditionsMap::update(const edm::Tri
 }
 
 template <typename VAL_TYPE>
-int JMETriggerNTuple_MiniAOD::initValueContainers(std::vector<ValueContainer<VAL_TYPE>>& v_valContainers,
+int JMETriggerNTuple_MiniAOD_testPS::initValueContainers(std::vector<ValueContainer<VAL_TYPE>>& v_valContainers,
                                           const std::string& psetName,
                                           const edm::ParameterSet& iConfig,
                                           const VAL_TYPE defaultValue) {
@@ -1468,9 +1405,9 @@ int JMETriggerNTuple_MiniAOD::initValueContainers(std::vector<ValueContainer<VAL
 }
 
 template <typename VAL_TYPE>
-void JMETriggerNTuple_MiniAOD::fillValueContainers(
+void JMETriggerNTuple_MiniAOD_testPS::fillValueContainers(
     std::vector<ValueContainer<VAL_TYPE>>& v_valContainers,
-    const JMETriggerNTuple_MiniAOD::FillCollectionConditionsMap& fillCollectionConditionMap,
+    const JMETriggerNTuple_MiniAOD_testPS::FillCollectionConditionsMap& fillCollectionConditionMap,
     const edm::Event& iEvent) {
   for (auto& valueContainer_i : v_valContainers) {
     valueContainer_i.setValue(valueContainer_i.defaultValue());
@@ -1483,7 +1420,7 @@ void JMETriggerNTuple_MiniAOD::fillValueContainers(
     auto const& i_handle(iEvent.getHandle(valueContainer_i.token()));
 
     if (not i_handle.isValid()) {
-      edm::LogWarning("JMETriggerNTuple_MiniAOD::fillValueContainers")
+      edm::LogWarning("JMETriggerNTuple_MiniAOD_testPS::fillValueContainers")
           << "invalid handle for input collection: \"" << valueContainer_i.inputTagLabel() << "\" (NTuple branch: \""
           << valueContainer_i.name() << "\")";
     } else {
@@ -1493,7 +1430,7 @@ void JMETriggerNTuple_MiniAOD::fillValueContainers(
 }
 
 template <typename COLL_CONTAINER_TYPE, typename OBJ_TYPE>
-int JMETriggerNTuple_MiniAOD::initCollectionContainer(
+int JMETriggerNTuple_MiniAOD_testPS::initCollectionContainer(
     const edm::ParameterSet& iConfig,
     std::vector<COLL_CONTAINER_TYPE>& v_collContainer,
     std::string const& collPSetName,
@@ -1510,7 +1447,7 @@ int JMETriggerNTuple_MiniAOD::initCollectionContainer(
     for (auto const& label : inputTagLabels_collections) {
       auto const& inputTag(pset_collections.getParameter<edm::InputTag>(label));
 
-      LogDebug("JMETriggerNTuple_MiniAOD::initCollectionContainer")
+      LogDebug("JMETriggerNTuple_MiniAOD_testPS::initCollectionContainer")
           << "adding " << collTypeName << " \"" << inputTag.label() << "\" (NTuple branches: \"" << label << "_*\")";
 
       v_collContainer.emplace_back(
@@ -1528,9 +1465,9 @@ int JMETriggerNTuple_MiniAOD::initCollectionContainer(
 }
 
 template <typename COLL_CONTAINER_TYPE, typename OBJ_TYPE>
-void JMETriggerNTuple_MiniAOD::fillCollectionContainer(edm::Event const& iEvent,
+void JMETriggerNTuple_MiniAOD_testPS::fillCollectionContainer(edm::Event const& iEvent,
                                                std::vector<COLL_CONTAINER_TYPE>& v_collectionContainer,
-                                               JMETriggerNTuple_MiniAOD::FillCollectionConditionsMap const& fillConditionMap) {
+                                               JMETriggerNTuple_MiniAOD_testPS::FillCollectionConditionsMap const& fillConditionMap) {
   for (auto& collContainer_i : v_collectionContainer) {
     collContainer_i.clear();
 
@@ -1544,14 +1481,14 @@ void JMETriggerNTuple_MiniAOD::fillCollectionContainer(edm::Event const& iEvent,
     if (i_handle.isValid()) {
       collContainer_i.fill(*i_handle);
     } else {
-      edm::LogWarning("JMETriggerNTuple_MiniAOD::fillCollectionContainer")
+      edm::LogWarning("JMETriggerNTuple_MiniAOD_testPS::fillCollectionContainer")
           << "invalid handle for input collection: \"" << collContainer_i.inputTagLabel() << "\" (NTuple branches: \""
           << collContainer_i.name() << "_*\")";
     }
   }
 }
 
-void JMETriggerNTuple_MiniAOD::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+void JMETriggerNTuple_MiniAOD_testPS::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   edm::ParameterSetDescription desc;
   desc.setUnknown();
   //  desc.add<std::string>("TTreeName", "TTreeName")->setComment("Name of TTree");
@@ -1563,7 +1500,7 @@ void JMETriggerNTuple_MiniAOD::fillDescriptions(edm::ConfigurationDescriptions& 
 
   //  edm::ParameterSetDescription recoCaloMETCollections;
   //  desc.add<edm::ParameterSetDescription>("recoCaloMETCollections", recoCaloMETCollections);
-  descriptions.add("JMETriggerNTuple_MiniAOD", desc);
+  descriptions.add("JMETriggerNTuple_MiniAOD_testPS", desc);
 }
 
-DEFINE_FWK_MODULE(JMETriggerNTuple_MiniAOD);
+DEFINE_FWK_MODULE(JMETriggerNTuple_MiniAOD_testPS);

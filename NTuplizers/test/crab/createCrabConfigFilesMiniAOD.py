@@ -3,9 +3,10 @@
 crabSubmitFile = open("SubmitCrabJobsData.sh","w")
 crabSubmitFile.write("#!/bin/bash\n")
 
+storeDir = "TriggerObjects"
 
-samples = {
-  # 2022
+samples_muons = {
+  #2022
   '/Muon/Run2022C-PromptReco-v1/MINIAOD':["Muon0_Run2022CV1","Winter22Run3_RunC_V2_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
   '/Muon/Run2022D-PromptReco-v1/MINIAOD':["Muon0_Run2022DV1","Winter22Run3_RunD_V2_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
   '/Muon/Run2022D-PromptReco-v2/MINIAOD':["Muon0_Run2022DV2","Winter22Run3_RunD_V2_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
@@ -13,7 +14,7 @@ samples = {
   '/Muon/Run2022E-PromptReco-v1/MINIAOD':["Muon0_Run2022EV1","Winter22Run3_RunD_V2_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
   '/Muon/Run2022F-PromptReco-v1/MINIAOD':["Muon0_Run2022FV1","Summer22EEPrompt22_RunF_V1_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
   '/Muon/Run2022G-PromptReco-v1/MINIAOD':["Muon0_Run2022GV1","Summer22EEPrompt22_RunG_V1_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
-  # 2023 Muon0
+  #2023 Muon0
   '/Muon0/Run2023A-PromptReco-v2/MINIAOD':["Muon0_Run2023AV2","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
   '/Muon0/Run2023B-PromptReco-v1/MINIAOD':["Muon0_Run2023BV1","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
   '/Muon0/Run2023C-PromptReco-v1/MINIAOD':["Muon0_Run2023CV1","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
@@ -22,7 +23,7 @@ samples = {
   '/Muon0/Run2023C-PromptReco-v4/MINIAOD':["Muon0_Run2023CV4","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
   '/Muon0/Run2023D-PromptReco-v1/MINIAOD':["Muon0_Run2023DV1","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
   '/Muon0/Run2023D-PromptReco-v2/MINIAOD':["Muon0_Run2023DV2","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
-  # 2023 Muon1
+  #2023 Muon1
   '/Muon1/Run2023A-PromptReco-v2/MINIAOD':["Muon1_Run2023AV2","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
   '/Muon1/Run2023B-PromptReco-v1/MINIAOD':["Muon1_Run2023BV1","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
   '/Muon1/Run2023C-PromptReco-v1/MINIAOD':["Muon1_Run2023CV1","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
@@ -33,7 +34,34 @@ samples = {
   '/Muon1/Run2023D-PromptReco-v2/MINIAOD':["Muon1_Run2023DV2","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
 }
 
-# 124X_dataRun3_Prompt_v4 for 2022
+samples = {
+  #2022
+  '/JetMET/Run2022C-PromptReco-v1/MINIAOD':["JetMET0_Run2022CV1","Winter22Run3_RunC_V2_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
+  '/JetMET/Run2022D-PromptReco-v1/MINIAOD':["JetMET0_Run2022DV1","Winter22Run3_RunD_V2_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
+  '/JetMET/Run2022D-PromptReco-v2/MINIAOD':["JetMET0_Run2022DV2","Winter22Run3_RunD_V2_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
+  '/JetMET/Run2022D-PromptReco-v3/MINIAOD':["JetMET0_Run2022DV3","Winter22Run3_RunD_V2_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
+  '/JetMET/Run2022E-PromptReco-v1/MINIAOD':["JetMET0_Run2022EV1","Winter22Run3_RunD_V2_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
+  '/JetMET/Run2022F-PromptReco-v1/MINIAOD':["JetMET0_Run2022FV1","Summer22EEPrompt22_RunF_V1_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
+  '/JetMET/Run2022G-PromptReco-v1/MINIAOD':["JetMET0_Run2022GV1","Summer22EEPrompt22_RunG_V1_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
+  #2023 JetMET0
+  '/JetMET0/Run2023A-PromptReco-v2/MINIAOD':["JetMET0_Run2023AV2","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  '/JetMET0/Run2023B-PromptReco-v1/MINIAOD':["JetMET0_Run2023BV1","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  '/JetMET0/Run2023C-PromptReco-v1/MINIAOD':["JetMET0_Run2023CV1","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  '/JetMET0/Run2023C-PromptReco-v2/MINIAOD':["JetMET0_Run2023CV2","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  '/JetMET0/Run2023C-PromptReco-v3/MINIAOD':["JetMET0_Run2023CV3","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  '/JetMET0/Run2023C-PromptReco-v4/MINIAOD':["JetMET0_Run2023CV4","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  '/JetMET0/Run2023D-PromptReco-v1/MINIAOD':["JetMET0_Run2023DV1","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  '/JetMET0/Run2023D-PromptReco-v2/MINIAOD':["JetMET0_Run2023DV2","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  #2023 JetMET1
+  '/JetMET1/Run2023A-PromptReco-v2/MINIAOD':["JetMET1_Run2023AV2","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  '/JetMET1/Run2023B-PromptReco-v1/MINIAOD':["JetMET1_Run2023BV1","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  '/JetMET1/Run2023C-PromptReco-v1/MINIAOD':["JetMET1_Run2023CV1","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  '/JetMET1/Run2023C-PromptReco-v2/MINIAOD':["JetMET1_Run2023CV2","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  '/JetMET1/Run2023C-PromptReco-v3/MINIAOD':["JetMET1_Run2023CV3","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  '/JetMET1/Run2023C-PromptReco-v4/MINIAOD':["JetMET1_Run2023CV4","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  '/JetMET1/Run2023D-PromptReco-v1/MINIAOD':["JetMET1_Run2023DV1","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+  '/JetMET1/Run2023D-PromptReco-v2/MINIAOD':["JetMET1_Run2023DV2","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
+}
 
 for sample, sample_attributes in samples.items():
   name=sample_attributes[0]
@@ -51,7 +79,7 @@ for sample, sample_attributes in samples.items():
   file.write("from CRABClient.UserUtilities import config\n")
   file.write("config = config()")
   file.write("\n")
-  file.write("store_dir = \'CoffTeaNTuples\'\n")
+  file.write("store_dir = \'"+storeDir+"\'\n")
   file.write("sample_name = \'"+name+"\'\n")
   file.write("\n")
   file.write("input_file_dir = \'/afs/cern.ch/work/t/tchatzis/private/run3_2023/CMSSW_13_0_7_patch1/src/JMETriggerAnalysis/NTuplizers/test/\'\n")
@@ -64,7 +92,7 @@ for sample, sample_attributes in samples.items():
   file.write("config.section_(\'JobType\')\n")
   file.write("config.JobType.pluginName = \'Analysis\'\n")
   file.write("config.JobType.maxMemoryMB = 2500\n")
-  file.write("config.JobType.psetName = input_file_dir+\'jmeTriggerNTuple2023Data_miniAOD_cfg.py\'\n")
+  file.write("config.JobType.psetName = input_file_dir+\'jmeTriggerNTuple2023Data_miniAOD_testObjects_cfg.py\'\n")
   file.write("config.JobType.pyCfgParams = [\'offlineJecs="+jecsName+"\',\'globalTag="+globalTag+"\']\n")
   file.write("config.JobType.allowUndistributedCMSSW = True\n")
   file.write("config.JobType.inputFiles = [input_file_dir+\'"+jecsName+".db\']\n")
