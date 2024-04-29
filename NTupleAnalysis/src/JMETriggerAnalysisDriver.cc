@@ -839,7 +839,6 @@ void JMETriggerAnalysisDriver::bookHistograms_MET(const std::string& dir,
     binEdges_sumEt.at(idx) = idx * 50.;
   }
 
-
   //const std::vector<float> binEdges_simNPU({0,  10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 80, 100, 120, 140});
   const std::vector<float> binEdges_simNPU({20, 30, 40, 50, 60, 70});
   
@@ -1017,7 +1016,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
         continue;
       }
 
-      if (jetBelongsToCategory(catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)))) {
+      if (jetBelongsToCategory(catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)), v_phi->at(idx), v_eta->at(idx))) {
         jetIndices.emplace_back(idx);
         if ((jetIndices.size() == 1) or (v_pt->at(idx) > jetPtMax)) {
           jetPtMax = v_pt->at(idx);
@@ -1183,7 +1182,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
           continue;
         }
 
-        if (jetBelongsToCategory(catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)))) {
+        if (jetBelongsToCategory(catLabel, v_pt->at(idx), std::abs(v_eta->at(idx)), v_phi->at(idx), v_eta->at(idx))) {
           jetIndices.emplace_back(idx);
         }
       }
