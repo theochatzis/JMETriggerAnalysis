@@ -45,7 +45,6 @@ opts.register('wantSummary', False,
               vpo.VarParsing.varType.bool,
               'show cmsRun summary at job completion')
 
-
 opts.register('globalTag', '130X_dataRun3_Prompt_v3',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
