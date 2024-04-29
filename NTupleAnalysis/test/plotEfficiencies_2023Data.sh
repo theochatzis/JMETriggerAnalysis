@@ -6,5 +6,5 @@ source env.sh
 # which has reco's as subfolders
 INPDIR=/eos/user/t/tchatzis/samples2023
 
-python3 plot_hltRun3EffsData_2023_ratio.py -i ${INPDIR} -o ./effPlots_2023Data_BPix
+python3 plot_hltRun3EffsData_2023_ratio.py -i ${INPDIR} -o ./effPlots_2023Data_NoBPix
 
