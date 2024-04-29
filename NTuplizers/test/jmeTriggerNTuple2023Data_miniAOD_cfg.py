@@ -35,15 +35,22 @@ opts.register('lumis', None,
               vpo.VarParsing.varType.string,
               'path to .json with list of luminosity sections')
 
+opts.register('offlineJecs', 'Summer22EEPrompt22_RunG_V1_DATA',
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.string,
+              'path to .json with list of luminosity sections')
+
 opts.register('wantSummary', False,
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.bool,
               'show cmsRun summary at job completion')
 
+
 opts.register('globalTag', '130X_dataRun3_Prompt_v3',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
               'argument of process.GlobalTag.globaltag')
+
 opts.register('reco', 'default',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
@@ -134,9 +141,12 @@ if hasattr(process, 'FastTimerService'):
 ## Jets processing
 
 if update_jmeCalibs:
+  print('Using the offline corrections:'+opts.offlineJecs+'.db')
+  
   process.offlinejescESSource = cms.ESSource('PoolDBESSource',
-    _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Winter23Prompt23_RunA_V1_DATA.db'),
+    #_CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Winter23Prompt23_RunA_V1_DATA.db'),
     #_CondDB.clone(connect = 'sqlite_file:Winter23Prompt23_RunA_V1_DATA.db'),
+    _CondDB.clone(connect = 'sqlite_file:'+opts.offlineJecs+'.db'),
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
@@ -188,6 +198,20 @@ from JMETriggerAnalysis.NTuplizers.userJets_cff import userJets
 process, userJetsAK4PFPuppiCollection = userJets(process)
 
 
+## Update MET corrections based on new userJetsAK4PFPuppiCollection
+# link for recommendations : https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription
+## The three lines below should always be included
+
+# from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+# from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppiesFromMiniAOD
+# makePuppiesFromMiniAOD( process, True );
+
+# runMetCorAndUncFromMiniAOD(process,
+#                            isData=True,
+#                            metType="Puppi",
+#                            postfix="Puppi",
+#                            jetFlavor="AK4PFPuppi",
+#                            )
 
 
 ## Output NTuple
@@ -195,9 +219,18 @@ process.TFileService = cms.Service('TFileService', fileName = cms.string(opts.ou
 
 process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple_MiniAOD',
   TTreeName = cms.string('Events'),
+  createSkim = cms.untracked.bool(True), # applies selection of events based on collections jets,met,muons etc bellow - Note: could add typesOfSelections based on target e.f. 'WmunuJet'
+  createTriggerQuantities = cms.untracked.bool(True), # creates branches needed for trigger efficiencies like leadingJetPt, HT, MET based on the collections bellow
+  jets = cms.InputTag(userJetsAK4PFPuppiCollection),
+  muons = cms.InputTag(userMuonsCollection),
+  pfmet = cms.InputTag("slimmedMETs"),
+  met = cms.InputTag("slimmedMETsPuppi"),
+  #met = cms.InputTag("slimmedMETsPuppi","","MYANALYSIS"),
+  vertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+  metFilterBitsTag = cms.InputTag("TriggerResults::RECO"),
   TriggerResults = cms.InputTag('TriggerResults::HLT'),
   TriggerResultsFilterOR = cms.vstring(
-    'HLT_IsoMu27'
+   'HLT_IsoMu27'
   ),
   TriggerResultsFilterAND = cms.vstring(),
   TriggerResultsCollections = cms.vstring(
@@ -412,10 +445,17 @@ hltPathsWithTriggerFlags = [
     'HLT_PFHT510',
     'HLT_PFHT780',
     'HLT_PFHT1050',
-    # MET
+    # MET MHT
     'HLT_PFMET120_PFMHT120_IDTight',
     'HLT_PFMETNoMu120_PFMHTNoMu120_IDTight',
     'HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_FilterHF',
+    'HLT_PFMETNoMu140_PFMHTNoMu140_IDTight',
+    'HLT_PFMETNoMu140_PFMHTNoMu140_IDTight_FilterHF',
+    # MET Only
+    'HLT_PFMET200_BeamHaloCleaned',
+    'HLT_PFMET200_NotCleaned',
+    'HLT_PFMET250_NotCleaned',
+    'HLT_PFMET300_NotCleaned',
     # muon
     'HLT_IsoMu27', 
 ]
@@ -438,10 +478,13 @@ for _hltPathUnv in hltPathsWithTriggerFlags:
 
 process.triggerFlagsSeq = cms.Sequence(process.triggerFlagsTask)
 
+#process.fullPatMetSequencePuppi = cms.Sequence(process.fullPatMetTaskPuppi)
 
 process.analysisCollectionsPath = cms.Path(
   process.userMuonsSequence
   + process.userJetsSeq
+ # + process.puppiMETSequence
+  #+ process.fullPatMetSequencePuppi
   + process.triggerFlagsSeq
   + process.JMETriggerNTuple
 )
