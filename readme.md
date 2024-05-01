@@ -11,15 +11,12 @@ please ignore this `readme`, and follow the instructions in the dedicated `readm
 ### Tools for JME studies on the Run-3 HLT reconstruction
 
 ```
-cmsrel CMSSW_13_0_7_patch1
-cd CMSSW_13_0_7_patch1/src
+cmsrel CMSSW_14_0_5_patch1
+cd CMSSW_14_0_5_patch1/src
 cmsenv
-#git cms-merge-topic  silviodonato:customizeHLTfor2023
-git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b run3_13_0_X_jecs
+git cms-init
 
-# PFHC: preliminary HLT-PFHC for Run-3
-cp /afs/cern.ch/user/c/chuh/public/PFCalibration/CMSSW_1300_126X/PFCalibration.db ${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/
-
+git clone git@github.com:slehti/JMETriggerAnalysis.git -b run3_14_0_X
 
 scram b -j 12
 ```
