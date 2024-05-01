@@ -263,7 +263,7 @@ def status(opts,args):
             break
     taskdirs = GetDatasets(multicrabdir)
     reportDict = {}
-    status_re = re.compile("\s+(?P<report>(?P<string>failed|finished|idle|running)\s+\S+\s+\(\s*(?P<value>\d+)/(?P<all>\d+)\s*\))")
+    status_re = re.compile("\s+(?P<report>(?P<string>failed|finished|idle|transferring|running)\s+\S+\s+\(\s*(?P<value>\d+)/(?P<all>\d+)\s*\))")
     for taskdir in taskdirs:
         result = Execute("crab status %s"%taskdir)
         if not silent:
@@ -286,13 +286,14 @@ def status(opts,args):
             resubmit(taskdir)
 
         if not silent:
-            print("\033[1mDataset                  submitted     idle  running   failed finished\033[0m")
+            print("\033[1mDataset                  submitted     idle  running   failed transfr. finished\033[0m")
         for taskname in reportDict.keys():
-            submitted = '0'
-            idle      = '0'
-            running   = '0'
-            failed    = '0'
-            finished  = '0'
+            submitted     = '0'
+            idle          = '0'
+            running       = '0'
+            failed        = '0'
+            finished      = '0'
+            transferring  = '0'
             if "all" in reportDict[taskname].keys():
                 submitted = reportDict[taskname]["all"]
             if "idle" in reportDict[taskname].keys():
@@ -303,6 +304,8 @@ def status(opts,args):
                 failed = reportDict[taskname]["failed"]
             if "finished" in reportDict[taskname].keys():
                 finished = reportDict[taskname]["finished"]
+            if "transferring" in reportDict[taskname].keys():
+                transferring = reportDict[taskname]["transferring"]
             hspace = 8
             while len(taskname) < 25:
                 taskname += ' '
@@ -314,6 +317,8 @@ def status(opts,args):
                 running = ' '+running
             while len(failed) < hspace:
                 failed =' '+failed
+            while len(transferring) < hspace:
+                transferring =' '+transferring
             while len(finished) < hspace:
                 finished =' '+finished
             if int(failed) > 0:
@@ -322,7 +327,7 @@ def status(opts,args):
                 finished = "\033[32m%s\033[0m"%finished
 
             if not silent:
-                print(taskname,submitted,idle,running,failed,finished)
+                print(taskname,submitted,idle,running,failed,transferring,finished)
 
     return reportDict
 
