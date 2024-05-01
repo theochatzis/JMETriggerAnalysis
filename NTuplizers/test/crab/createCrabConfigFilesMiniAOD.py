@@ -62,9 +62,9 @@ samples = {
   '/JetMET1/Run2023D-PromptReco-v1/MINIAOD':["JetMET1_Run2023DV1","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
   '/JetMET1/Run2023D-PromptReco-v2/MINIAOD':["JetMET1_Run2023DV2","Winter23Prompt23_V2_MC","Cert_Collisions2023_366442_370790_Golden.json","130X_dataRun3_Prompt_v2"],
   #2024 JetMET0
-  '/JetMET0/Run2024C-PromptReco-v1/MINIAOD':["JetMET0_Run2024C","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_380074_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v2"],
+  '/JetMET0/Run2024C-PromptReco-v1/MINIAOD':["JetMET0_Run2024C","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_378981_379470_Golden.json","140X_dataRun3_Prompt_v2"],
   #2024 JetMET1
-  '/JetMET1/Run2024C-PromptReco-v1/MINIAOD':["JetMET1_Run2024C","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_380074_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v2"],
+  '/JetMET1/Run2024C-PromptReco-v1/MINIAOD':["JetMET1_Run2024C","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_378981_379470_Golden.json","140X_dataRun3_Prompt_v2"],
 }
 
 def main():
