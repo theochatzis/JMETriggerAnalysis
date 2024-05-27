@@ -1,9 +1,10 @@
 #! /usr/bin/env python3
 
 # Step1, create flat ntuple with crab
-# Usage:   multicrab.py --create <pset> [options|
-# Example: crab/multicrab.py --create jmeTriggerNTuple2023Data_miniAOD_testObjects_cfg.py -i 2023
+# Usage:   multicrab.py <pset> [options|
+# Example: crab/multicrab.py jmeTriggerNTuple2023Data_miniAOD_cfg.py -i 2024
 
+# Datasamples defined in createCrabConfigFilesMiniAOD.py
 
 import os,sys,re
 import datetime
@@ -12,6 +13,7 @@ import importlib
 import subprocess
 
 from CRABAPI.RawCommand import crabCommand
+
 
 def Execute(cmd):
     '''                                                                                                                                                  
@@ -105,8 +107,16 @@ def isData(datasetname):
         return True
     return False
 
+def getsamples():
+    returnsamples = {}
+    from createCrabConfigFilesMiniAOD import samples,samples_muons
+    returnsamples.update(samples)
+    returnsamples.update(samples_muons)    
+    return returnsamples
+
 def listdatasets(opts,args):
-    from createCrabConfigFilesMiniAOD import samples
+    #from createCrabConfigFilesMiniAOD import samples
+    samples = getsamples()
     print("Samples in crab/createCrabConfigFilesMiniAOD.py")
     samples = GetIncludeExcludeDatasets(samples, opts)
     for sample in samples.items():
@@ -116,12 +126,13 @@ def create(opts,args):
     time = datetime.datetime.now().strftime("%Y%m%dT%H%M")
     version = GetCMSSW()
 
-    PSET = args[0]
+    PSET = os.path.abspath(args[0])
 
-    from createCrabConfigFilesMiniAOD import samples
-    print(samples)
+    #from createCrabConfigFilesMiniAOD import samples
+    samples = getsamples()
+    #print(samples)
     samples = GetIncludeExcludeDatasets(samples, opts)
-    print(samples)
+    #print(samples)
     #sys.exit()
     run_re = re.compile("(?P<run>Run20\d\d)(?P<letter>\S)")
     runs = {}
@@ -156,6 +167,11 @@ def create(opts,args):
     
     for sample, sample_attributes in samples.items():
         name=sample_attributes[0]
+
+        isMuonData = "False"
+        if "Muon" in name:
+            isMuonData = "True"
+
         jecsName=sample_attributes[1]
         lumiJSON=sample_attributes[2]
         globalTag=sample_attributes[3]
@@ -189,8 +205,8 @@ def create(opts,args):
         file.write("config.JobType.maxMemoryMB = 2500\n")
         #  file.write("config.JobType.psetName = \'%s\'\n"%(os.path.join(dIN,'jmeTriggerNTuple2023Data_miniAOD_cfg.py')))
         file.write("config.JobType.psetName = \'%s\'\n"%(PSET))
-        file.write("config.JobType.pyCfgParams = [\'offlineJecs="+jecsName+"\',\'globalTag="+globalTag+"\']\n")
-        #file.write("config.JobType.pyCfgParams = [\'globalTag="+globalTag+"\']\n")
+        #file.write("config.JobType.pyCfgParams = [\'offlineJecs="+jecsName+"\',\'globalTag="+globalTag+"\',\'isMuonData="+isMuonData+"\']\n")
+        file.write("config.JobType.pyCfgParams = [\'globalTag="+globalTag+"\',\'isMuonData="+isMuonData+"\']\n")
         file.write("config.JobType.allowUndistributedCMSSW = True\n")
         file.write("config.JobType.inputFiles = [\'%s\']\n"%(os.path.join(dIN,jecsName+".db")))
         file.write("\n")
