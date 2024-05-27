@@ -31,6 +31,7 @@
 #include "JMETriggerAnalysis/NTuplizers/interface/PATMETCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/PATMuonCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/PATElectronCollectionContainer.h"
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
 
 #include <string>
 #include <vector>
@@ -63,8 +64,9 @@ protected:
 
   std::vector<std::string> const TriggerResultsFilterOR_;
   std::vector<std::string> const TriggerResultsFilterAND_;
-
   std::vector<std::string> const outputBranchesToBeDropped_;
+  std::vector<std::string> const TriggerResultsCollectionsForObjects_;
+
   // std::vector<uint> const SelectionRun_;
   // std::vector<uint> const SelectionLumi_;
   // std::vector<uint> const SelectionEvent_;
@@ -105,9 +107,14 @@ protected:
 
   TTree* ttree_ = nullptr;
   
-  bool createSkim_;
-  bool createTriggerQuantities_;
+  edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
+  edm::EDGetTokenT<edm::View<pat::TriggerObjectStandAlone>> triggerObjectsToken_;
 
+  bool createSkim_;
+  bool isMuonDataset_;
+  bool createTriggerQuantities_;
+  bool createOfflineQuantities_;
+  
   edm::EDGetTokenT<pat::JetCollection> jetsToken;
   edm::EDGetTokenT<pat::MuonCollection> muonsToken;
   edm::EDGetTokenT<pat::METCollection> metToken;
@@ -129,6 +136,7 @@ protected:
   double leadingJetPt_ = 0.;
   double leadingJetEta_ = 0.;
   double leadingJetPhi_ = 0.;
+  double leadingJetMass_ = 0.;
   double rawmet_ = 0.;
   double met_ = 0.;
   double metPhi_ = 0.;
@@ -138,6 +146,16 @@ protected:
   double metNoMu_ = 0.;
   double ht_ = 0.;
   int nVtx_ = 0;
+  float onlineLeadingJetPt_ = 0.;
+  float onlineLeadingJetEta_ = 0.;
+  float onlineLeadingJetPhi_ = 0.;
+  float onlineLeadingJetMass_ = 0.;
+  
+  std::vector<float> hltAK4PFJetsCorrected_pt;
+  std::vector<float> hltAK4PFJetsCorrected_eta;
+  std::vector<float> hltAK4PFJetsCorrected_phi;
+  std::vector<float> hltAK4PFJetsCorrected_mass;
+
 
   unsigned int run_ = 0;
   unsigned int luminosityBlock_ = 0;
@@ -216,12 +234,14 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
       consumePileupSummaryInfo_(iConfig.exists("PileupSummaryInfo")),
       TriggerResultsFilterOR_(iConfig.getParameter<std::vector<std::string>>("TriggerResultsFilterOR")),
       TriggerResultsFilterAND_(iConfig.getParameter<std::vector<std::string>>("TriggerResultsFilterAND")),
-      outputBranchesToBeDropped_(iConfig.getParameter<std::vector<std::string>>("outputBranchesToBeDropped")) {
+      outputBranchesToBeDropped_(iConfig.getParameter<std::vector<std::string>>("outputBranchesToBeDropped")),
+      TriggerResultsCollectionsForObjects_(iConfig.getParameter<std::vector<std::string>>("TriggerResultsCollectionsForObjects")) {
       // SelectionRun_(iConfig.getParameter<std::vector<uint>>("SelectionRun")),
       // SelectionLumi_(iConfig.getParameter<std::vector<uint>>("SelectionLumi")),
       // SelectionEvent_(iConfig.getParameter<std::vector<uint>>("SelectionEvent")) {
   const auto& TriggerResultsInputTag = iConfig.getParameter<edm::InputTag>("TriggerResults");
   const auto& TriggerResultsCollections = iConfig.getParameter<std::vector<std::string>>("TriggerResultsCollections");
+  const auto& TriggerObjectsInputTag = iConfig.getParameter<edm::InputTag>("TriggerObjects");
 
   triggerResultsContainer_ptr_.reset(
       new TriggerResultsContainer(TriggerResultsCollections,
@@ -234,10 +254,16 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
   if (iConfig.exists("fillCollectionConditions")) {
     fillCollectionConditionMap_.init(iConfig.getParameter<edm::ParameterSet>("fillCollectionConditions"));
   }
+  
+  // trigger objects
+  triggerResultsToken_ = consumes<edm::TriggerResults>(TriggerResultsInputTag);
+  triggerObjectsToken_ = consumes<edm::View<pat::TriggerObjectStandAlone>>(TriggerObjectsInputTag);
 
   // make skim
   createSkim_= iConfig.getUntrackedParameter<bool>("createSkim",false);
+  isMuonDataset_= iConfig.getUntrackedParameter<bool>("isMuonDataset",false);
   createTriggerQuantities_ = iConfig.getUntrackedParameter<bool>("createTriggerQuantities",false);
+  createOfflineQuantities_ = iConfig.getUntrackedParameter<bool>("createOfflineQuantities",false);
   jetsToken             = consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("jets"));
   muonsToken            = consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muons"));
   metToken              = consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("met"));
@@ -470,18 +496,25 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
   
   // add branches for trigger if option is activated
   if(createTriggerQuantities_){
-    this->addBranch("leadingJet_pt", &leadingJetPt_);
-    this->addBranch("leadingJet_eta", &leadingJetEta_);
-    this->addBranch("leadingJet_phi", &leadingJetPhi_);
-    this->addBranch("met",&met_);
-    this->addBranch("rawmet",&rawmet_);
-    this->addBranch("met_phi",&metPhi_);
-    this->addBranch("pfmet",&pfmet_);
-    this->addBranch("rawpfmet",&rawpfmet_);
-    this->addBranch("pfmet_phi",&pfmetPhi_);
-    this->addBranch("metNoMu",&metNoMu_);
-    this->addBranch("ht",&ht_);
-    this->addBranch("nVertices",&nVtx_);
+    this->addBranch("hltAK4PFJetsCorrected_pt", &hltAK4PFJetsCorrected_pt);
+    this->addBranch("hltAK4PFJetsCorrected_eta", &hltAK4PFJetsCorrected_eta);
+    this->addBranch("hltAK4PFJetsCorrected_phi", &hltAK4PFJetsCorrected_phi);
+    this->addBranch("hltAK4PFJetsCorrected_mass", &hltAK4PFJetsCorrected_mass);
+    if(createOfflineQuantities_){
+      this->addBranch("leadingJet_pt", &leadingJetPt_);
+      this->addBranch("leadingJet_eta", &leadingJetEta_);
+      this->addBranch("leadingJet_phi", &leadingJetPhi_);
+      this->addBranch("leadingJet_mass", &leadingJetMass_);
+      this->addBranch("met",&met_);
+      this->addBranch("rawmet",&rawmet_);
+      this->addBranch("met_phi",&metPhi_);
+      this->addBranch("pfmet",&pfmet_);
+      this->addBranch("rawpfmet",&rawpfmet_);
+      this->addBranch("pfmet_phi",&pfmetPhi_);
+      this->addBranch("metNoMu",&metNoMu_);
+      this->addBranch("ht",&ht_);
+      this->addBranch("nVertices",&nVtx_);
+    }
   }
 
   this->addBranch("run", &run_);
@@ -549,6 +582,8 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
   }
 
   for (auto& recoVertexCollectionContainer_i : v_recoVertexCollectionContainer_) {
+    //this->addBranch(recoVertexCollectionContainer_i.name() + "_multiplicity",
+                    &recoVertexCollectionContainer_i.getCollectionSize());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_tracksSize",
                     &recoVertexCollectionContainer_i.vec_tracksSize());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_isFake", &recoVertexCollectionContainer_i.vec_isFake());
@@ -889,6 +924,39 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
   }
 }
 
+bool JMETriggerNTuple_MiniAOD::isGoodJet(const pat::Jet &jet){
+  float chf = jet.chargedHadronEnergyFraction();
+  float nhf = jet.neutralHadronEnergyFraction();
+  float phf = jet.photonEnergyFraction();
+  float muf = jet.muonEnergyFraction();
+  float elf = jet.electronEnergyFraction();
+  int chm   = jet.chargedHadronMultiplicity();
+  int neutral_npr = jet.neutralMultiplicity();
+  int charged_npr = jet.chargedMultiplicity();
+  int npr = neutral_npr + charged_npr;
+  float eta = fabs(jet.eta());
+  // note: these are the 2022 BCDE jetID criteria
+  bool idTightLepVeto = ((eta<=2.6 && nhf<0.90 && phf<0.90 && npr>1 && muf<0.80  && chf>0.01 && chm>0 && elf<0.80) || 
+  ((eta>2.6 && eta<=2.7 ) && nhf<0.90 && phf<0.99 && muf<0.80 && elf<0.80) ||
+  ((eta>2.7 && eta<=3.0 ) && nhf<0.9999) ||
+  ((eta>3.0 && eta<=5.0 ) && phf<0.90 && neutral_npr>2) ||
+  (eta>5.0)
+  );
+  // if you want the FG you can use the one bellow instead
+  /*
+  bool idTightLepVeto = ((eta<=2.6 && nhf<0.99 && phf<0.90 && npr>1 && muf<0.80  && chf>0.01 && chm>0 && elf<0.80) || 
+  ((eta>2.6 && eta<=2.7 ) && nhf<0.90 && phf<0.99 && muf<0.80 && elf<0.80) ||
+  ((eta>2.7 && eta<=3.0 ) && nhf<0.9999) ||
+  ((eta>3.0 && eta<=5.0 ) && phf<0.90 && neutral_npr>2) ||
+  (eta>5.0)
+  );
+  */
+  return idTightLepVeto;
+}
+
+
+
+
 void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   run_ = iEvent.id().run();
   luminosityBlock_ = iEvent.id().luminosityBlock();
@@ -919,6 +987,7 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
   leadingJetPt_ = 0.;
   leadingJetEta_ = 0.;
   leadingJetPhi_ = 0.;
+  leadingJetMass_ = 0.;
   met_ = 0.;
   rawmet_ = 0.;
   metPhi_ = 0.;
@@ -929,6 +998,17 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
   ht_ = 0.;
   nVtx_ = 0;
   
+
+  onlineLeadingJetPt_ = 0.;
+  onlineLeadingJetPt_ = 0.;
+  onlineLeadingJetPt_ = 0.;
+  onlineLeadingJetPt_ = 0.;
+
+  hltAK4PFJetsCorrected_pt.clear();
+  hltAK4PFJetsCorrected_eta.clear();
+  hltAK4PFJetsCorrected_phi.clear();
+  hltAK4PFJetsCorrected_mass.clear();
+
   bool passMETFilters(true);
   
   // met filters
@@ -973,7 +1053,7 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
     // muons selections
     // pt>30GeV , abs(eta) < 2.4, ID tight , pfIso < 0.15 are assumed to exist from the filter on the collection
     // so needs only to require one such muon
-    if(!( muons->size()==1 )) return;
+    if(isMuonDataset_ && !( muons->size()==1 )) return;
     
     // jets have looser requirements ((pt > 30.) && (abs(eta) < 5.0) so we can also calculate the ht quantity
     // note: ht triggers use abs(eta)<2.5 and pt>30GeV 
@@ -990,30 +1070,45 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
         leadingJetPt_ = ijet->pt();
         leadingJetEta_ = ijet->eta();
         leadingJetPhi_ = ijet->phi();
-        // check if leading jet is matched to a Lepton
-        for(pat::MuonCollection::const_iterator mu =muons->begin();mu != muons->end(); ++mu) if (deltaR(mu->eta(),mu->phi(),ijet->eta(),ijet->phi()) < DRmax) isLeptonMatched = true;
+        leadingJetMass_ = ijet->mass();
+
         // check if leading jet passes tightLepVeto ID
         leadingJetIsGood = (ijet->hasUserInt("PFJetIDTightLepVeto") && (ijet->userInt("PFJetIDTightLepVeto") > 0));
         //leadingJetIsGood = isGoodJet(*ijet); // the same but using the custom function not miniAOD tools
-        leadingJetIsGood = leadingJetIsGood && !isLeptonMatched;
+        
+        // check if leading jet is matched to a Lepton in case of MuonDataset
+        if(isMuonDataset_){
+          for(pat::MuonCollection::const_iterator mu =muons->begin();mu != muons->end(); ++mu) if (deltaR(mu->eta(),mu->phi(),ijet->eta(),ijet->phi()) < DRmax) isLeptonMatched = true;
+          leadingJetIsGood = leadingJetIsGood && !isLeptonMatched;
+        }
       }
     } 
   }
 
   // leading jet is tight ID cut
   if (!leadingJetIsGood) return;
+
+  // extra dijet cuts in case the dataset is not Muon
+  // require subleading jet with also tight ID + deltaPhi > 2.7 from leading Jet
+  bool subleadingJetIsGood=true;
+  if(!isMuonDataset_){
+    subleadingJetIsGood = (jets -> size() > 1) ? (((*jets)[1].hasUserInt("PFJetIDTightLepVeto") && ((*jets)[1].userInt("PFJetIDTightLepVeto") > 0)) && deltaPhi((*jets)[0].phi(),(*jets)[1].phi()) > 2.7) : false; 
+  }
+
+  if(!subleadingJetIsGood) return;
+  
   
   // calculate MET
   met_ = (*met)[0].shiftedPt(pat::MET::NoShift, pat::MET::Type1);//.et();
   rawmet_ = (*met)[0].shiftedPt(pat::MET::NoShift, pat::MET::Raw);
-  metPhi_ = (*met)[0].shiftedPt(pat::MET::NoShift, pat::MET::Type1);//.phi();
+  metPhi_ = (*met)[0].phi();
   
-  // here we should have exactly one event muon
-  metNoMu_ = sqrt(pow((*met)[0].px()+(*muons)[0].px(),2) + pow((*met)[0].py()+(*muons)[0].py(),2));
+  // here we should have exactly one  muon event (it is for the isMuonDataset skim)
+  metNoMu_ = muons->size()>0 ? sqrt(pow((*met)[0].px()+(*muons)[0].px(),2) + pow((*met)[0].py()+(*muons)[0].py(),2)) : 0.;
   
   pfmet_ = (*pfmet)[0].shiftedPt(pat::MET::NoShift, pat::MET::Type1);//.et();
   rawpfmet_ = (*pfmet)[0].shiftedPt(pat::MET::NoShift, pat::MET::Raw);
-  pfmetPhi_ = (*pfmet)[0].shiftedPt(pat::MET::NoShift, pat::MET::Type1);//.phi();
+  pfmetPhi_ = (*pfmet)[0].phi();
   // calculate the number of vertices
   nVtx_   = recVtxs->size();
 
@@ -1120,6 +1215,69 @@ void JMETriggerNTuple_MiniAOD::analyze(const edm::Event& iEvent, const edm::Even
 
     // update fill-collection conditions
     fillCollectionConditionMap_.update(*triggerResults_handle, iEvent);
+  }
+
+
+  // ----------- Get the trigger objects
+  if(createTriggerQuantities_){
+    edm::Handle<edm::View<pat::TriggerObjectStandAlone>> triggerObjects;
+    iEvent.getByToken(triggerObjectsToken_, triggerObjects);
+    
+    // Get the trigger names for the event
+    const edm::TriggerNames& triggerNames = iEvent.triggerNames(*triggerResults_handle);
+    
+    // find the corresponding trigger names for the paths that we want the objects
+    std::vector<std::string> triggerNamesForObjects; 
+    for (unsigned int iName = 0; iName < triggerNames.size(); ++iName) {
+      auto const pathNameWithoutVersion(triggerNames.triggerName(iName).substr(0, triggerNames.triggerName(iName).rfind("_v")));
+      for (auto const& iTriggerPathNameForObjects : TriggerResultsCollectionsForObjects_) {
+        if(iTriggerPathNameForObjects == pathNameWithoutVersion){
+          triggerNamesForObjects.push_back(triggerNames.triggerName(iName));
+        }
+      }
+    }
+
+    // Loop over trigger objects
+    bool hasTriggerName = false;
+
+    for (const pat::TriggerObjectStandAlone& triggerObject : *triggerObjects) {
+      hasTriggerName = false;
+      pat::TriggerObjectStandAlone triggerObjectNonConst = triggerObject;
+      // Unpack trigger path names
+      triggerObjectNonConst.unpackPathNames(triggerNames);    
+      
+      // loop over trigger names and find if the object matches any of them and is in the final path
+      for (auto const& iTriggerPathName : triggerNamesForObjects) {
+        hasTriggerName |= triggerObjectNonConst.hasPathName(iTriggerPathName, true, true); // hasPathName(const std::string &pathName,bool pathLastFilterAccepted = false,bool pathL3FilterAccepted = true)
+        /*
+        // -- usefull outputs for checks (do not remove)
+        if(triggerObjectNonConst.hasPathName(iTriggerPathName, true, true)){
+          
+          std::cout << "path name: " << iTriggerPathName << std::endl;
+          std::cout << "pt: " << triggerObjectNonConst.pt() << std::endl;
+          std::cout << "eta: " << triggerObjectNonConst.eta() << std::endl;
+          std::cout << "phi: " << triggerObjectNonConst.phi() << std::endl;
+          std::cout << "mass: " << triggerObjectNonConst.mass() << std::endl;
+          std::cout << "pdgId: " << triggerObjectNonConst.pdgId() << std::endl;
+          std::cout << "collection: " << triggerObjectNonConst.collection() << std::endl;
+        }
+        */
+      }
+      
+      // if the object is found save the 4-vector quantities and break the loop
+      if (hasTriggerName){
+        onlineLeadingJetPt_ = triggerObject.pt();
+        onlineLeadingJetEta_ = triggerObject.eta();
+        onlineLeadingJetPhi_ = triggerObject.phi();
+        onlineLeadingJetMass_ = triggerObject.mass();
+        break;
+      }
+    }
+
+    hltAK4PFJetsCorrected_pt.emplace_back(onlineLeadingJetPt_);
+    hltAK4PFJetsCorrected_eta.emplace_back(onlineLeadingJetEta_);
+    hltAK4PFJetsCorrected_phi.emplace_back(onlineLeadingJetPhi_);
+    hltAK4PFJetsCorrected_mass.emplace_back(onlineLeadingJetMass_);
   }
 
   // fill boolContainers
