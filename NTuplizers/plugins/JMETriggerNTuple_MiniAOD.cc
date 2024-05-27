@@ -583,7 +583,7 @@ JMETriggerNTuple_MiniAOD::JMETriggerNTuple_MiniAOD(const edm::ParameterSet& iCon
 
   for (auto& recoVertexCollectionContainer_i : v_recoVertexCollectionContainer_) {
     //this->addBranch(recoVertexCollectionContainer_i.name() + "_multiplicity",
-                    &recoVertexCollectionContainer_i.getCollectionSize());
+    //                &recoVertexCollectionContainer_i.getCollectionSize());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_tracksSize",
                     &recoVertexCollectionContainer_i.vec_tracksSize());
     this->addBranch(recoVertexCollectionContainer_i.name() + "_isFake", &recoVertexCollectionContainer_i.vec_isFake());
