@@ -8,6 +8,7 @@
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/L1TGlobal/interface/GlobalLogicParser.h"
 #include "HLTrigger/HLTcore/interface/HLTPrescaleProvider.h"
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
 
 //#include <iostream>
 //#define LogTrace(X) std::cout << std::endl
@@ -23,15 +24,19 @@ private:
   void produce(edm::Event&, const edm::EventSetup&) override;
 
   const edm::InputTag triggerResultsInputTag_;
+  const edm::InputTag triggerObjectsInputTag_;
   const std::string pathName_;
   const std::string denominatorPathName_;
   const bool ignorePathVersion_;
+  const bool useEmulationFromDenominator_;
+  const double emulatedThreshold_;
 
   HLTPrescaleProvider hltPrescaleProvider_;
   bool initFailed_;
   bool skipRun_;
 
   edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
+  edm::EDGetTokenT<edm::View<pat::TriggerObjectStandAlone>> triggerObjectsToken_;
   
   // function to calculate the prescale weight
   // it uses the numerator trigger and the denominator trigger
@@ -45,9 +50,12 @@ private:
 
 TriggerFlagsPrescalesProducer::TriggerFlagsPrescalesProducer(const edm::ParameterSet& iConfig)
     : triggerResultsInputTag_(iConfig.getParameter<edm::InputTag>("triggerResults")),
+      triggerObjectsInputTag_(iConfig.getParameter<edm::InputTag>("triggerObjects")),
       pathName_(iConfig.getParameter<std::string>("pathName")),
       denominatorPathName_(iConfig.getParameter<std::string>("denominatorPathName")),
       ignorePathVersion_(iConfig.getParameter<bool>("ignorePathVersion")),
+      useEmulationFromDenominator_(iConfig.getParameter<bool>("useEmulationFromDenominator")),
+      emulatedThreshold_(iConfig.getParameter<double>("emulatedThreshold")),
       hltPrescaleProvider_(iConfig, consumesCollector(), *this),
       initFailed_(false),
       skipRun_(false) {
@@ -70,11 +78,27 @@ TriggerFlagsPrescalesProducer::TriggerFlagsPrescalesProducer(const edm::Paramete
   } else {
     triggerResultsToken_ = consumes<edm::TriggerResults>(triggerResultsInputTag_);
   }
+  
+
+  if(useEmulationFromDenominator_ && triggerResultsInputTag_.process().empty()){
+    edm::LogError("Input") << "Process name not specified in InputTag argument \"TriggerObjects\". Needed when \"useEmulationFromDenominator\" is used.";
+    initFailed_ = true;
+    return;
+  } else {
+    triggerObjectsToken_ = consumes<edm::View<pat::TriggerObjectStandAlone>>(triggerObjectsInputTag_);
+  }
+    
+  if(useEmulationFromDenominator_ && emulatedThreshold_ < 0.){
+    edm::LogError("Input") << "Invalid plugin argument \"emulatedThreshold\".";
+    initFailed_ = true;
+    return;
+  }
 
   produces<bool>("L1TSeedAccept");
   produces<bool>("L1TSeedPrescaledOrMasked");
   produces<bool>("HLTPathPrescaled");
   produces<bool>("HLTPathAccept");
+  produces<bool>("HLTDenPathAccept");
   produces<bool>("L1TSeedInitialDecision");
   produces<bool>("L1TSeedFinalDecision");
   produces<double>("HLTPathPrescaleWeight");
@@ -119,7 +143,6 @@ void TriggerFlagsPrescalesProducer::produce(edm::Event& iEvent, const edm::Event
 
   edm::Handle<edm::TriggerResults> triggerResults;
   iEvent.getByToken(triggerResultsToken_, triggerResults);
-
   if (not triggerResults.isValid()) {
     edm::LogWarning("Input") << "Invalid handle to edm::TriggerResults (InputTag: \"triggerResults\")"
                              << " -> plugin will not produce outputs for this event";
@@ -146,6 +169,7 @@ void TriggerFlagsPrescalesProducer::produce(edm::Event& iEvent, const edm::Event
   bool l1tSeedAccept(false);
   bool hltPathPrescaled(false);
   bool hltPathAccept(false);
+  bool hltDenPathAccept(false);
   double hltPathPrescaleWeight(1.0);
   
   // std::cout << "------------" << std::endl;
@@ -184,8 +208,9 @@ void TriggerFlagsPrescalesProducer::produce(edm::Event& iEvent, const edm::Event
         }
       }
     }
-    
+    // std::cout << "-------------------" << iPathName << std::endl;
     // std::cout << "iPathName: " << iPathName << std::endl;
+    // std::cout << "denPathName: " << denPathName << std::endl;
 
     ++numMatches;
 
@@ -204,6 +229,7 @@ void TriggerFlagsPrescalesProducer::produce(edm::Event& iEvent, const edm::Event
     //std::cout << hltPathPrescaleWeight << std::endl;
 
     const uint iPathIndex(hltPrescaleProvider_.hltConfigProvider().triggerIndex(iPathName));
+    
     if (iPathIndex >= triggerResults->size()) {
       edm::LogError("Logic") << "Index associated to path \"" << iPathName << "\" (" << iPathIndex
                              << ") is inconsistent with triggerResults::size() (" << triggerResults->size()
@@ -307,7 +333,6 @@ void TriggerFlagsPrescalesProducer::produce(edm::Event& iEvent, const edm::Event
     hltPathPrescaled =
         (hltPrescaleModuleIndex == hltPathLastModuleIndex) ? (not triggerResults->accept(iPathIndex)) : false;
     hltPathAccept = triggerResults->accept(iPathIndex);
-
     LogTrace("") << "[TriggerFlagsPrescalesProducer::produce]       hltL1TSeeds";
     auto const& hltL1TSeeds(hltPrescaleProvider_.hltConfigProvider().hltL1TSeeds(iPathIndex));
 
@@ -463,6 +488,105 @@ void TriggerFlagsPrescalesProducer::produce(edm::Event& iEvent, const edm::Event
   // std::cout << "l1tSeedAccept: " << l1tSeedAccept << std::endl;
   // std::cout << "hltPathPrescaled: " << hltPathPrescaled << std::endl;
   // std::cout << "hltPathAccept: " << hltPathAccept << std::endl;
+  
+
+
+
+  // in the same way search for the denominator path and just check if it was accepted or not.
+  // the final decision will be the denominator path*trigger path decision
+  for (auto const& iPathName : triggerNames) {
+    if (ignorePathVersion_) {
+      auto const iPathNameUnv(iPathName.substr(0, iPathName.rfind("_v")));
+      if (iPathNameUnv != denominatorPathName_) {
+        continue;
+      }
+    } else {
+      if (iPathName != denominatorPathName_) {
+        continue;
+      }
+    }
+  
+    const uint iPathIndex(hltPrescaleProvider_.hltConfigProvider().triggerIndex(iPathName));
+
+    if (iPathIndex >= triggerResults->size()) {
+      edm::LogError("Logic") << "Index associated to denominator path \"" << iPathName << "\" (" << iPathIndex
+                             << ") is inconsistent with triggerResults::size() (" << triggerResults->size()
+                             << ") -> path will be ignored";
+      continue;
+    }
+
+    LogTrace("") << "[TriggerFlagsPrescalesProducer::produce]       "
+                 << "Denominator Path = \"" << iPathName << "\", HLTConfigProvider::triggerIndex(\"" << iPathName
+                 << "\") = " << iPathIndex;
+
+    LogTrace("") << "[TriggerFlagsPrescalesProducer::produce]       moduleLabels";
+
+    auto const lastModuleExecutedInPath(
+        hltPrescaleProvider_.hltConfigProvider().moduleLabel(iPathIndex, triggerResults->index(iPathIndex)));
+    
+    hltDenPathAccept = triggerResults->accept(iPathIndex);
+    
+    
+
+    // in case the emulation method is used the trigger path decision is rewritten by the trigger object of the denominator path here
+    if(useEmulationFromDenominator_){
+      edm::Handle<edm::View<pat::TriggerObjectStandAlone>> triggerObjects;
+      iEvent.getByToken(triggerObjectsToken_, triggerObjects);
+      
+      // Get the trigger names for the event
+      const edm::TriggerNames& triggerNames = iEvent.triggerNames(*triggerResults);  
+
+      // Loop over trigger objects and see which one is corresponding to the denominator path name
+      //bool hasTriggerName = false;
+      double trigObjPt(0.);
+
+      for (const pat::TriggerObjectStandAlone& triggerObject : *triggerObjects) {
+        pat::TriggerObjectStandAlone triggerObjectNonConst = triggerObject;
+        // Unpack trigger path names and filters
+        triggerObjectNonConst.unpackPathNames(triggerNames);  
+        
+        // if the object is found change the decision of the trigger path based on the emulated threshold
+        // using the function hasPathName() with last filter to be accepted from the path:
+        // bool hasPathName(const std::string &pathName,
+        //              bool pathLastFilterAccepted = false,
+        //              bool pathL3FilterAccepted = true)
+        //if (triggerObjectNonConst.hasPathName(iPathName)){
+        if (triggerObjectNonConst.hasPathName(iPathName, true, true)){
+          triggerObjectNonConst.unpackFilterLabels(iEvent,*triggerResults);
+          /*
+          // -- usefull outputs for checks (do not remove)
+          std::cout << "path name: " << iPathName << std::endl;
+          std::cout << "pt: " << triggerObjectNonConst.pt() << std::endl;
+          std::cout << "eta: " << triggerObjectNonConst.eta() << std::endl;
+          std::cout << "phi: " << triggerObjectNonConst.phi() << std::endl;
+          std::cout << "mass: " << triggerObjectNonConst.mass() << std::endl;
+          std::cout << "pdgId: " << triggerObjectNonConst.pdgId() << std::endl;
+          std::cout << "collection: " << triggerObjectNonConst.collection() << std::endl;
+          */
+          if((iPathName.find("PFJet") != std::string::npos) && triggerObjectNonConst.pdgId()==0){
+            trigObjPt = triggerObjectNonConst.pt();
+            break; 
+          } else if((iPathName.find("PFHT") != std::string::npos) && triggerObjectNonConst.pdgId()==89){
+            trigObjPt = triggerObjectNonConst.pt();
+            break; 
+          }
+        }
+      }
+      
+      // std::cout << trigObjPt << std::endl;
+      hltPathAccept = (trigObjPt > emulatedThreshold_);
+    }
+  }
+  
+
+  // the trigger is considered accepted only if both the denominator trigger and the path are accepting the event
+  hltPathAccept = hltPathAccept && hltDenPathAccept;
+  
+  // in case you use the emulator method use the L1 seed to be accepting the events as well
+  if(useEmulationFromDenominator_){ 
+    hltPathAccept = l1tSeedAccept && hltPathAccept;
+    hltDenPathAccept = l1tSeedAccept && hltDenPathAccept;
+  }
 
   auto out_l1tSeedAccept = std::make_unique<bool>(l1tSeedAccept);
   auto out_l1tSeedPrescaledOrMasked = std::make_unique<bool>(l1tSeedPrescaledOrMasked);
@@ -470,12 +594,14 @@ void TriggerFlagsPrescalesProducer::produce(edm::Event& iEvent, const edm::Event
   auto out_l1tSeedFinalDecision = std::make_unique<bool>(l1tSeedFinalDecision);
   auto out_hltPathPrescaled = std::make_unique<bool>(hltPathPrescaled);
   auto out_hltPathAccept = std::make_unique<bool>(hltPathAccept);
+  auto out_hltDenPathAccept = std::make_unique<bool>(hltDenPathAccept);
   auto out_hltPathPrescaleWeight = std::make_unique<double>(hltPathPrescaleWeight);
 
   iEvent.put(std::move(out_l1tSeedAccept), "L1TSeedAccept");
   iEvent.put(std::move(out_l1tSeedPrescaledOrMasked), "L1TSeedPrescaledOrMasked");
   iEvent.put(std::move(out_hltPathPrescaled), "HLTPathPrescaled");
   iEvent.put(std::move(out_hltPathAccept), "HLTPathAccept");
+  iEvent.put(std::move(out_hltDenPathAccept), "HLTDenPathAccept");
   iEvent.put(std::move(out_l1tSeedInitialDecision), "L1TSeedInitialDecision");
   iEvent.put(std::move(out_l1tSeedFinalDecision), "L1TSeedFinalDecision");
   iEvent.put(std::move(out_hltPathPrescaleWeight), "HLTPathPrescaleWeight");
@@ -589,12 +715,17 @@ double TriggerFlagsPrescalesProducer::Prescale(const std::string hltpath1,
   return L1P * HLTP;
 }
 
+
+
 void TriggerFlagsPrescalesProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   edm::ParameterSetDescription desc;
   desc.add<edm::InputTag>("triggerResults", edm::InputTag("TriggerResults", "", "HLT"));
+  desc.add<edm::InputTag>("triggerObjects",edm::InputTag("slimmedPatTrigger"));
   desc.add<std::string>("pathName", "");
   desc.add<std::string>("denominatorPathName","");
   desc.add<bool>("ignorePathVersion", false);
+  desc.add<bool>("useEmulationFromDenominator", false);
+  desc.add<double>("emulatedThreshold",-1.);
   desc.add<uint>("stageL1Trigger", 2);
   descriptions.add("TriggerFlagsPrescalesProducer", desc);
 }
