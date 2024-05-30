@@ -2,7 +2,6 @@
 
 ## Multicrab
 
-
 **Usage**:\
 `multicrab.py <pset> [options]`\
 Datasamples defined in crab/createCrabConfigFilesMiniAOD.py
