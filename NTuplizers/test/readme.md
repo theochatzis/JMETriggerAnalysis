@@ -1,6 +1,7 @@
-# Multicrab
+# Step1: make flat ntuples with crab
 
-**Step1: make flat ntuples with crab**
+## Multicrab
+
 
 **Usage**:\
 `multicrab.py <pset> [options]`\
@@ -27,8 +28,8 @@ multicrab.py --resubmit [&lt;dir&gt;]
 |-h, --help   | Show this help message and exit |
 |--status     | Flag to check the status of CRAB jobs  |
 |--resubmit   | Flag to resubmit CRAB jobs |
-|-i, --include| Regexp for including tasks Only perform action for this dataset(s) [default: ""] |
-|-e, --exclude| Regexp for excluding tasks Exclude this dataset(s) from action [default: ""] |
+|-i, --include| Regexp for including tasks. Only perform action for this dataset(s) [default: ""] |
+|-e, --exclude| Regexp for excluding tasks. Exclude this dataset(s) from action [default: ""] |
 |-d, --dir    | Use existing multicrab [default: ""] |
 |-l, --list   | List datasets and exit  |
 
