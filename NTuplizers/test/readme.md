@@ -18,7 +18,7 @@ Datasamples defined in crab/createCrabConfigFilesMiniAOD.py
 
 `crab/multicrab.py -h`
 
-multicrab.py <pset> [-options]\
+multicrab.py &lt;pset&gt; [-options]\
 multicrab.py --status [&lt;dir&gt;]\
 multicrab.py --resubmit [&lt;dir&gt;]
 
