@@ -373,7 +373,7 @@ def main(opts,args):
 
 if __name__=="__main__":
 
-    parser = OptionParser(usage="Step1: make flat ntuples with crab\n      %prog --create <pset> [-options]\n      %prog --status [<dir>]\n      %prog --resubmit [<dir>]")
+    parser = OptionParser(usage="Step1: make flat ntuples with crab\n      %prog <pset> [-options]\n      %prog --status [<dir>]\n      %prog --resubmit [<dir>]")
     #parser.add_option("--create", dest="create", default=False, action="store_true",
     #                  help="Flag to create a CRAB job")
     parser.add_option("--status", dest="status", default=False, action="store_true",
