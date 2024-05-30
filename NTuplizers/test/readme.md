@@ -37,7 +37,7 @@ multicrab.py --resubmit [&lt;dir&gt;]
  - go to the multicrab dir
  - rm the problem dataset
  - cd ..
- - multicrab.py <pset> -d <the-multicrab-dir>
+ - multicrab.py &lt;pset&gt; -d &lt;the-multicrab-dir&gt;
 
 
 The script will submit only those datasets which are missing (=the one just removed)
