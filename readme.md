@@ -13,8 +13,10 @@
 ```shell
 cmsrel CMSSW_13_1_0
 cd CMSSW_13_1_0/src
-
-git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b phase2_13_X
+cmsenv
+git cms-init
+git cms-merge-topic theochatzis:trimmedTrackingPUPPI # add trimming from tracking + mixed tracks modifications for PUPPI.
+git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b phase2_14_X
 scram b -j 12
 ```
 ### Previous setup
