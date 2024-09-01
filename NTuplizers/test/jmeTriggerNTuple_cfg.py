@@ -274,7 +274,7 @@ process.hltPixelTracksCleanerMultiplicity = _hltTrackMultiplicityValueProducer.c
 process.hltPixelTracksMergerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracksMerger', defaultValue = -1.)
 process.hltTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'generalTracks', defaultValue = -1.)
 
-process.hltPixelVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'pixelVertices', defaultValue = -1.)
+process.hltPixelVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'hltPhase2PixelVertices', defaultValue = -1.)
 process.hltPrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'goodOfflinePrimaryVertices', defaultValue = -1.)
 process.offlinePrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'offlineSlimmedPrimaryVertices', defaultValue = -1.)
 
@@ -586,7 +586,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   recoVertexCollections = cms.PSet(
 
 #    hltPixelVertices = cms.InputTag('pixelVertices'),
-#    hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
+     hltPrimaryVertices = cms.InputTag('goodOfflinePrimaryVertices'),
 #    hltPrimaryVertices4D = cms.InputTag('goodOfflinePrimaryVertices4D'),
 #    hltUnsortedPrimaryVertices4D = cms.InputTag('unsortedOfflinePrimaryVertices4D'),
 #    offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
