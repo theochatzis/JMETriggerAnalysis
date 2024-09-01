@@ -225,6 +225,11 @@ elif opt_reco == 'HLT_75e33':
         'drop triggerTriggerFilterObjectWithRefs_l1t*_*_HLT'
   )
 
+  # adding trimmed tracking
+  from HLTrigger.Configuration.customizeHLTforTrimmedTracking import customizeHLTforTrimmedTracking
+  process = customizeHLTforTrimmedTracking(process)
+  
+
 
 elif opt_reco == 'HLT_75e33_time':
   from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg_time import cms, process
