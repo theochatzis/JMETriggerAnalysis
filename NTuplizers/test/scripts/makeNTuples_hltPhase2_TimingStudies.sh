@@ -5,7 +5,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-NEVT=50000
+NEVT=10000
 ODIR=${1}
 
 #if [ -d ${ODIR} ]; then
@@ -21,8 +21,9 @@ declare -A samplesMap
 
 #samplesMap["Phase2HLTTDR_QCD_Flat_Pt-15to3000_14TeV_PU200"]="/QCD_Pt-15to3000_TuneCP5_Flat_14TeV-pythia8/Phase2HLTTDRSummer20ReRECOMiniAOD-PU200_castor_111X_mcRun4_realistic_T15_v1-v1/FEVT"
 #samplesMap["Phase2HLTTDR_QCD_Flat_Pt-15to3000_14TeV_PU200"]="/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/PhaseIISpring22DRMiniAOD-PU200_castor_123X_mcRun4_realistic_v11-v1/GEN-SIM-DIGI-RAW-MINIAOD"
-samplesMap["Phase2HLTTDR_QCD_Flat_Pt-15to3000_14TeV_PU200"]="/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/Phase2Spring23DIGIRECOMiniAOD-PU200_Trk1GeV_131X_mcRun4_realistic_v5-v2/GEN-SIM-DIGI-RAW-MINIAOD"
-
+#samplesMap["Phase2HLTTDR_QCD_Flat_Pt-15to3000_14TeV_PU200"]="/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/Phase2Spring23DIGIRECOMiniAOD-PU200_Trk1GeV_131X_mcRun4_realistic_v5-v2/GEN-SIM-DIGI-RAW-MINIAOD"
+#samplesMap["Phase2HLTTDR_QCD_Flat_Pt-15to3000_14TeV_PU200"]="/RelValQCD_Pt15To7000_Flat_14/CMSSW_14_0_6-PU_140X_mcRun4_realistic_v3_STD_2026D110_PU-v1/GEN-SIM-DIGI-RAW"
+samplesMap["Phase2HLTTDR_QCD_Flat_Pt-15to3000_14TeV_PU200"]="/TT_TuneCP5_14TeV-POWHEG-Pythia8/Phase2Spring24DIGIRECOMiniAOD-PU140_Trk1GeV_140X_mcRun4_realistic_v4-v2/GEN-SIM-DIGI-RAW-MINIAOD"
 #samplesMap["RelValQCD_Pt15To7000_Flat_14TeV_PU200"]="/RelValQCD_Pt15To7000_Flat_14/CMSSW_12_4_0_pre3-PU_123X_mcRun4_realistic_v11_2026D88PU200-v1/MINIAODSIM"
 #samplesMap["RelValQCD_Pt15To7000_Flat_14TeV_noPU"]="/RelValQCD_Pt15To7000_Flat_14/CMSSW_12_4_0_pre3-123X_mcRun4_realistic_v11_2026D88noPU-v1/MINIAODSIM"
 

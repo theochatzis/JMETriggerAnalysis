@@ -200,7 +200,7 @@ if __name__ == '__main__':
                     _rms_err = _htmp.GetRMSError()
                     
                   elif opts.profiles_calc=="gausfit":
-                     _RMSrange = 1.0 # shows how many RMSs range around maximum will be used for fit
+                     _RMSrange = 1.5 # shows how many RMSs range around maximum will be used for fit
                      # find bin with maximum
                      _maxBin = _htmp.GetMaximumBin()
                      _maxPosition = (_htmp.GetXaxis()).GetBinCenter(_maxBin)

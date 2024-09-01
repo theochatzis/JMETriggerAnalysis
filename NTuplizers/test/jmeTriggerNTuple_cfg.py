@@ -217,7 +217,7 @@ elif opt_reco == 'HLT_75e33':
   # optimal tracking thresholds for MET
   #process = customisePhase2TrackingPtThresholds(process,1.8)
   #process.schedule_().append(process.MC_JME)
-  from JMETriggerAnalysis.Common.configs.HLT_75e33_ticlv4_cfg import cms, process
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_D110_cfg import cms, process
   # Input source
   process.source.inputCommands = cms.untracked.vstring(
         'keep *',
@@ -563,7 +563,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     #qcdWeightPU200 = cms.InputTag('qcdWeightPU200'),
 
     fixedGridRhoFastjetAllTmp = cms.InputTag('fixedGridRhoFastjetAllTmp'),
-    offlineFixedGridRhoFastjetAll = cms.InputTag('fixedGridRhoFastjetAll::RECO'),
+ #   offlineFixedGridRhoFastjetAll = cms.InputTag('fixedGridRhoFastjetAll::RECO'),
     #hltPixelClustersMultiplicity = cms.InputTag('hltPixelClustersMultiplicity'),
     hltOuterTrackerClustersMultiplicity = cms.InputTag('hltOuterTrackerClustersMultiplicity'),
     hltPixelTracksMultiplicity = cms.InputTag('hltPixelTracksMultiplicity'),
@@ -572,7 +572,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     hltTracksMultiplicity = cms.InputTag('hltTracksMultiplicity'),
     hltPixelVerticesMultiplicity = cms.InputTag('hltPixelVerticesMultiplicity'),
     hltPrimaryVerticesMultiplicity = cms.InputTag('hltPrimaryVerticesMultiplicity'),
-    offlinePrimaryVerticesMultiplicity = cms.InputTag('offlinePrimaryVerticesMultiplicity'),
+#    offlinePrimaryVerticesMultiplicity = cms.InputTag('offlinePrimaryVerticesMultiplicity'),
   ),
 
   vdoubles = cms.PSet(
@@ -590,7 +590,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 #    hltPrimaryVertices4D = cms.InputTag('goodOfflinePrimaryVertices4D'),
 #    hltUnsortedPrimaryVertices4D = cms.InputTag('unsortedOfflinePrimaryVertices4D'),
 #    offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
-    offlineSlimmedPrimaryVertices4D = cms.InputTag('offlineSlimmedPrimaryVertices4D'),
+#    offlineSlimmedPrimaryVertices4D = cms.InputTag('offlineSlimmedPrimaryVertices4D'),
 
   ),
 
@@ -1139,7 +1139,9 @@ elif opts.inputFiles:
    process.source.secondaryFileNames = []
 else:
    process.source.fileNames = [
-   '/store/mc/Phase2Spring23DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_Trk1GeV_131X_mcRun4_realistic_v5-v1/30000/01607282-0427-4687-a122-ef0a41220590.root'
+   '/store/mc/Phase2Spring24DIGIRECOMiniAOD/TT_TuneCP5_14TeV-POWHEG-Pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU140_Trk1GeV_140X_mcRun4_realistic_v4-v2/70000/04d3b116-8343-4ed2-ac89-a8eee89bb613.root'
+   #'/store/relval/CMSSW_14_0_6/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_140X_mcRun4_realistic_v3_STD_2026D110_PU-v1/2590000/00042ff4-01a3-48a9-b88e-83412b3a65c6.root'
+   #'/store/mc/Phase2Spring23DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_Trk1GeV_131X_mcRun4_realistic_v5-v1/30000/01607282-0427-4687-a122-ef0a41220590.root'
    #'/store/mc/PhaseIISpring22DRMiniAOD/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_castor_123X_mcRun4_realistic_v11-v1/40000/009871c5-babe-40aa-9e82-7d91f772b3e4.root'
    #'/store/relval/CMSSW_13_1_0_pre3/RelValQCD_Pt15To7000_Flat_14/MINIAODSIM/PU_131X_mcRun4_realistic_v2_2026D95PU200-v1/00000/f19a93e6-ee91-4f47-81ec-697697c32c66.root'
    ]

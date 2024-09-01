@@ -627,6 +627,10 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                     &recoGenJetCollectionContainer_i.vec_muonMultiplicity());
     this->addBranch(recoGenJetCollectionContainer_i.name() + "_CandidateVz",
                     &recoGenJetCollectionContainer_i.vec_CandidateVz());
+    this->addBranch(recoGenJetCollectionContainer_i.name() + "_CandidatePdgId",
+                    &recoGenJetCollectionContainer_i.vec_CandidatePdgId());
+    this->addBranch(recoGenJetCollectionContainer_i.name() + "_CandidateMass",
+    &recoGenJetCollectionContainer_i.vec_CandidateMass());
   }
 
   for (auto& l1tPFJetCollectionContainer_i : v_l1tPFJetCollectionContainer_) {

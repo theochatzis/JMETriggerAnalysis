@@ -1483,17 +1483,19 @@ def getPlotConfig(key, keyword, inputList):
        ## PFPuppi jets ##
        if ('hltAK4PFPuppiJets_' in key) or ('hltAK4PFPuppiJetsCorrected_' in key):
           #if ('_MatchedToGEN_' in key) and (('pt_overGEN_Mean_wrt_GEN_simNPU' in key) or ('pt_overGEN_RMSOverMean_wrt_GEN_simNPU' in key)):
-          if ('_MatchedToGEN_' in key) and (('pt_overGEN_Mean_wrt_GEN_simNPU' in key) or ('pt_overGEN_Mean_wrt_GEN_pt' in key) or ('pt_overGEN_RMSOverMean_wrt_GEN_pt' in key) or ('pt_overGEN_RMSOverMean_wrt_GEN_simNPU' in key) or ('_simNPU_eff' in key)):
+          if ('_MatchedToGEN_' in key) and (('pt_overGEN_Mean_wrt_GEN_simNPU' in key) or ('pt_overGEN_Mean_wrt_GEN_pt' in key) or ('pt_overGEN_RMSOverMean_wrt_GEN_pt' in key) or ('pt_overGEN_RMSOverMean_wrt_GEN_simNPU' in key) or ('_simNPU_eff' in key) or ('_eta_eff' in key) or ('_phi_eff' in key)):
              for idx, inp in enumerate(inputList):
-               #if ('Pt' in key) and ('EtaIncl' not in key):
-               if ('Pt' in key):
-                  continue
+               if ('Pt' in key) and ('EtaIncl' not in key):
+                   continue
+               #if ('Pt' in key):
+               #   continue
                #cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('hltAK4PFPuppiJets_', 'offlineAK4PFPuppiJets_'), Legend='Offline AK4PFPuppi', Color=ROOT.kBlack) if idx==0 else None]
                cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='hltAK4PFPuppiJets [ '+inp['Legend']+' ]')]
           
-          elif '_NotMatchedToGEN_' and (('njets_Mean_wrt_simNPU' in key) or ('pt_eff' in key)):
+          elif '_NotMatchedToGEN_' and (('njets_Mean_wrt_simNPU' in key) or ('pt_eff' in key) or ('_eta_eff' in key) or ('_phi_eff' in key)):
             for idx, inp in enumerate(inputList):
-               if ('Pt' in key):
+               #if ('Pt' in key):
+               if ('Pt' in key) and ('EtaIncl' not in key):
                   continue
                #cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('hltAK4PFPuppiJets_', 'offlineAK4PFPuppiJets_'), Legend='Offline AK4PFPuppi', Color=ROOT.kBlack) if idx==0 else None]
                cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='hltAK4PFPuppiJets [ '+inp['Legend']+' ]')]
@@ -1518,10 +1520,12 @@ def getPlotConfig(key, keyword, inputList):
        #    cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('hltPFPuppi_', 'offlPFPuppiCorr_'), Legend='OfflineCorr', Color=ROOT.kBlack) if idx==0 else None]
        #    cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='hltPFPuppi'+' [ '+inp['Legend']+' ]')]
        
-       elif ('_MatchedTohltPFPuppiCorr_simNPU_eff' in key) or ('_MatchedTohltPFPuppiCorr_pt_eff' in key):
+       elif ('_MatchedTohltPFPuppiCorr_simNPU_eff' in key) or ('_MatchedTohltPFPuppiCorr_pt_eff' in key) or ('_MatchedTohltPFPuppiCorr_eta_eff' in key) or ('_MatchedTohltPFPuppiCorr_phi_eff' in key):
          for idx, inp in enumerate(inputList):
-           if ('Pt' in key):
-              continue
+           if ('Pt' in key) and ('EtaIncl' not in key):
+                  continue
+           #if ('Pt' in key):
+           #   continue
            #cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('hltPFPuppi_', 'offlPFPuppi_'), Legend='Offline', Color=ROOT.kBlack) if idx==0 else None]
            cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='hltPFPuppi'+' [ '+inp['Legend']+' ]')]   
       

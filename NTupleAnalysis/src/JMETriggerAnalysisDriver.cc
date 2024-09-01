@@ -728,6 +728,11 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir, const
     float sumPt(0.), sumPx(0.), sumPy(0.);
 
     for(auto const jetIdx : jetIndices){
+      
+      // remove any jet with very high leptonic fraction (This is most probably lepton jet). Good in cases where leptons exist.
+      if (v_electronEnergyFraction->at(jetIdx) > 0.80 || v_muonEnergyFraction->at(jetIdx) > 0.80){
+        continue;
+      }
 
       sumPt += v_pt->at(jetIdx);
       sumPx += v_pt->at(jetIdx) * std::cos(v_phi->at(jetIdx));
@@ -896,9 +901,14 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir, const
         auto const hasMatch(mapMatchIndeces.find(jetIdx) != mapMatchIndeces.end());
 
         auto const minDeltaR = vecMatchMinDeltaR2.at(jetIdx) < 0.f ? -1.f : sqrt(vecMatchMinDeltaR2.at(jetIdx));
-
+        
+        // remove any jet with very high leptonic fraction (This is most probably lepton jet). Good in cases where leptons exist.
+        if (v_electronEnergyFraction->at(jetIdx) > 0.80 || v_muonEnergyFraction->at(jetIdx) > 0.80){
+          continue;
+        }
+        
         if(hasMatch){
-
+          
           ++nJetsMatched;
 
           sumPtMatched += jetPt;

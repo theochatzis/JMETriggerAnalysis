@@ -37,6 +37,8 @@ public:
   std::vector<int>& vec_muonMultiplicity() { return muonMultiplicity_; }
 
   std::vector<float>& vec_CandidateVz() { return CandidateVz_; }
+  std::vector<int>& vec_CandidatePdgId() { return CandidatePdgId_; }
+  std::vector<float>& vec_CandidateMass() { return CandidateMass_; }
 
 protected:
   std::vector<float> pt_;
@@ -59,6 +61,8 @@ protected:
   std::vector<int> muonMultiplicity_;
 
   std::vector<float> CandidateVz_;
+  std::vector<int> CandidatePdgId_;
+  std::vector<float> CandidateMass_;
 };
 
 #endif

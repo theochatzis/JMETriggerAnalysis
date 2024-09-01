@@ -32,7 +32,7 @@ for key in "${keys[@]}"; do
   # ouput dir: if already exists remove it
   if [ -d ./${ODIR}/${key} ]; then rm -rf ./${ODIR}/${key}; fi
   # run the batch driver to prepare the HTC jobs
-  batch_driver.py -l 0 -n 100000 -p JMETriggerAnalysisDriverPhase2 \
+  ../batch_driver.py -l 0 -n 100000 -p JMETriggerAnalysisDriverPhase2 \
   -i ${IDIR}/${key}/${key}.root \
   -od ./${ODIR}/${key} \
   -o ./${ODIR}/${key} \
@@ -40,7 +40,7 @@ for key in "${keys[@]}"; do
 done
 
 # run the batch monitor to submit the jobs
-batch_monitor.py -i ${ODIR} -r
+../batch_monitor.py -i ${ODIR} -r
 
 
 unset keys
