@@ -2,7 +2,7 @@
 
 # Step1, create flat ntuple with crab
 # Usage:   multicrab.py <pset> [options|
-# Example: crab/multicrab.py jmeTriggerNTuple2023Data_miniAOD_cfg.py -i 2024
+# Example: crab/multicrab.py jmeTriggerNTuple2023Data_miniAOD_cfg.py -i 2024F,2024G
 
 # Datasamples defined in createCrabConfigFilesMiniAOD.py
 
@@ -209,7 +209,7 @@ def create(opts,args):
         file.write("config.JobType.pyCfgParams = [\'globalTag="+globalTag+"\',\'isMuonData="+isMuonData+"\']\n")
         file.write("config.JobType.allowUndistributedCMSSW = True\n")
         file.write("config.JobType.inputFiles = [\'%s\']\n"%(os.path.join(dIN,jecsName+".db")))
-        #file.write("config.JobType.maxJobRuntimeMin = 2*1315\n")
+        file.write("config.JobType.maxJobRuntimeMin = 2*1315\n")
         file.write("\n")
         file.write("config.section_(\'Data\')\n")
         file.write("config.Data.publication = False\n")
@@ -219,7 +219,7 @@ def create(opts,args):
         file.write("config.Data.unitsPerJob = 200\n")
         file.write("config.Data.totalUnits = -1\n")
         file.write("\n")
-        ####file.write("config.Data.lumiMask = \'%s\'\n"%(os.path.join(dIN,lumiJSON)))
+        file.write("config.Data.lumiMask = \'%s\'\n"%(os.path.join(dIN,lumiJSON)))
         file.write("config.Data.outLFNDirBase = \'/store/user/%s/%s/%s\'\n"%(USER,STOREDIR,name))
         file.write("\n")
         file.write("config.section_(\'Site\')\n")
@@ -390,6 +390,14 @@ if __name__=="__main__":
                       help="List datasets and exit")
 
     (opts, args) = parser.parse_args()
+
+    opts.includeTasks = opts.includeTasks.split(',')
+    opts.excludeTasks = opts.excludeTasks.split(',')
+    if 'None' in opts.includeTasks:
+        opts.includeTasks = opts.includeTasks.remove('None')
+    if 'None' in opts.excludeTasks:
+        opts.excludeTasks = opts.excludeTasks.remove('None')
+
     #if len(args) == 0:
     #    parser.error("pset missing.")
 
