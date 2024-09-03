@@ -35,13 +35,19 @@ samples_muons = {
   #2024 Muon0
   '/Muon0/Run2024B-PromptReco-v1/MINIAOD':["Muon0_Run2024B","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraB_Golden.json","140X_dataRun3_Prompt_v2"],
   '/Muon0/Run2024C-PromptReco-v1/MINIAOD':["Muon0_Run2024C","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraC_Golden.json","140X_dataRun3_Prompt_v2"],
-  '/Muon0/Run2024D-PromptReco-v1/MINIAOD':["Muon0_Run2024D","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_378981_380470_Golden.json","140X_dataRun3_Prompt_v2"],
-  '/Muon0/Run2024E-PromptReco-v1/MINIAOD':["Muon0_Run2024E","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_378981_380470_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/Muon0/Run2024D-PromptReco-v1/MINIAOD':["Muon0_Run2024D","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraD_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/Muon0/Run2024E-PromptReco-v1/MINIAOD':["Muon0_Run2024E1","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraE_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/Muon0/Run2024E-PromptReco-v2/MINIAOD':["Muon0_Run2024E2","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraE_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/Muon0/Run2024F-PromptReco-v1/MINIAOD':["Muon0_Run2024F","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_381984-383779_Golden_Run2024F.json","140X_dataRun3_Prompt_v4"],
+  '/Muon0/Run2024G-PromptReco-v1/MINIAOD':["Muon0_Run2024G","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_385016_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v4"],
   #2024 Muon1
   '/Muon1/Run2024B-PromptReco-v1/MINIAOD':["Muon1_Run2024B","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraB_Golden.json","140X_dataRun3_Prompt_v2"],
   '/Muon1/Run2024C-PromptReco-v1/MINIAOD':["Muon1_Run2024C","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraC_Golden.json","140X_dataRun3_Prompt_v2"],
-  '/Muon1/Run2024D-PromptReco-v1/MINIAOD':["Muon1_Run2024D","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_378981_380470_Golden.json","140X_dataRun3_Prompt_v2"],
-  '/Muon1/Run2024E-PromptReco-v1/MINIAOD':["Muon1_Run2024E","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_378981_380470_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/Muon1/Run2024D-PromptReco-v1/MINIAOD':["Muon1_Run2024D","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraD_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/Muon1/Run2024E-PromptReco-v1/MINIAOD':["Muon1_Run2024E1","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraE_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/Muon1/Run2024E-PromptReco-v2/MINIAOD':["Muon1_Run2024E2","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraE_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/Muon1/Run2024F-PromptReco-v1/MINIAOD':["Muon1_Run2024F","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_381984-383779_Golden_Run2024F.json","140X_dataRun3_Prompt_v4"],
+  '/Muon1/Run2024G-PromptReco-v1/MINIAOD':["Muon1_Run2024G","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_385016_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v4"],
 }
 
 samples = {
@@ -74,13 +80,19 @@ samples = {
   #2024 JetMET0
   '/JetMET0/Run2024B-PromptReco-v1/MINIAOD':["JetMET0_Run2024B","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraB_Golden.json","140X_dataRun3_Prompt_v2"],
   '/JetMET0/Run2024C-PromptReco-v1/MINIAOD':["JetMET0_Run2024C","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraC_Golden.json","140X_dataRun3_Prompt_v2"],
-  '/JetMET0/Run2024D-PromptReco-v1/MINIAOD':["JetMET0_Run2024D","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_378981_380470_Golden.json","140X_dataRun3_Prompt_v2"],
-  '/JetMET0/Run2024E-PromptReco-v1/MINIAOD':["JetMET0_Run2024E","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_378981_380470_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/JetMET0/Run2024D-PromptReco-v1/MINIAOD':["JetMET0_Run2024D","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraD_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/JetMET0/Run2024E-PromptReco-v1/MINIAOD':["JetMET0_Run2024E1","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraE_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/JetMET0/Run2024E-PromptReco-v2/MINIAOD':["JetMET0_Run2024E2","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraE_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/JetMET0/Run2024F-PromptReco-v1/MINIAOD':["JetMET0_Run2024F","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_381984-383779_Golden_Run2024F.json","140X_dataRun3_Prompt_v4"],
+  '/JetMET0/Run2024G-PromptReco-v1/MINIAOD':["JetMET0_Run2024G","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_385016_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v4"],
   #2024 JetMET1
   '/JetMET1/Run2024B-PromptReco-v1/MINIAOD':["JetMET1_Run2024B","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraB_Golden.json","140X_dataRun3_Prompt_v2"],
   '/JetMET1/Run2024C-PromptReco-v1/MINIAOD':["JetMET1_Run2024C","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraC_Golden.json","140X_dataRun3_Prompt_v2"],
-  '/JetMET1/Run2024D-PromptReco-v1/MINIAOD':["JetMET1_Run2024D","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_378981_380470_Golden.json","140X_dataRun3_Prompt_v2"],
-  '/JetMET1/Run2024E-PromptReco-v1/MINIAOD':["JetMET1_Run2024E","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_378981_380470_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/JetMET1/Run2024D-PromptReco-v1/MINIAOD':["JetMET1_Run2024D","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraD_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/JetMET1/Run2024E-PromptReco-v1/MINIAOD':["JetMET1_Run2024E1","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraE_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/JetMET1/Run2024E-PromptReco-v2/MINIAOD':["JetMET1_Run2024E2","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraE_Golden.json","140X_dataRun3_Prompt_v2"],
+  '/JetMET1/Run2024F-PromptReco-v1/MINIAOD':["JetMET1_Run2024F","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_381984-383779_Golden_Run2024F.json","140X_dataRun3_Prompt_v4"],
+  '/JetMET1/Run2024G-PromptReco-v1/MINIAOD':["JetMET1_Run2024G","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_385016_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v4"],
 }
 
 def main():
