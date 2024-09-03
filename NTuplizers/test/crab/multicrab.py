@@ -3,8 +3,8 @@
 # Step1, create flat ntuple with crab
 # Usage:   multicrab.py <pset> [options|
 # Example: crab/multicrab.py jmeTriggerNTuple2023Data_miniAOD_cfg.py -i 2024F,2024G
-
-# Datasamples defined in createCrabConfigFilesMiniAOD.py
+# Example: crab/multicrab.py NanoAOD_JMETriggerSkim.py -i 2024 --list
+# Datasamples defined in createCrabConfigFilesMiniAOD.py and createCrabConfigFilesNanoAOD.py
 
 import os,sys,re
 import datetime
@@ -107,17 +107,20 @@ def isData(datasetname):
         return True
     return False
 
-def getsamples():
+def getsamples(args):
     returnsamples = {}
-    from createCrabConfigFilesMiniAOD import samples,samples_muons
+    if 'Nano' in args[0]:
+        print("Samples in crab/createCrabConfigFilesNanoAOD.py")
+        from createCrabConfigFilesNanoAOD import samples,samples_muons
+    else:
+        print("Samples in crab/createCrabConfigFilesMiniAOD.py")
+        from createCrabConfigFilesMiniAOD import samples,samples_muons
     returnsamples.update(samples)
     returnsamples.update(samples_muons)    
     return returnsamples
 
 def listdatasets(opts,args):
-    #from createCrabConfigFilesMiniAOD import samples
-    samples = getsamples()
-    print("Samples in crab/createCrabConfigFilesMiniAOD.py")
+    samples = getsamples(args)
     samples = GetIncludeExcludeDatasets(samples, opts)
     for sample in samples.items():
         print(sample[0])
@@ -129,7 +132,7 @@ def create(opts,args):
     PSET = os.path.abspath(args[0])
 
     #from createCrabConfigFilesMiniAOD import samples
-    samples = getsamples()
+    samples = getsamples(args)
     #print(samples)
     samples = GetIncludeExcludeDatasets(samples, opts)
     #print(samples)
