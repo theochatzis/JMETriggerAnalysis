@@ -2,7 +2,7 @@
 
 #add L1 emulator
 #run simplified menu
-cmsDriver.py Phase2 -s L1P2GT,HLT:75e33 --processName=HLTX \
+cmsDriver.py Phase2 -s L1P2GT,HLT:75e33_timing --processName=HLTX \
 --conditions auto:phase2_realistic_T33 \
 --geometry Extended2026D110 \
 --era Phase2C17I13M9 \
@@ -12,7 +12,7 @@ cmsDriver.py Phase2 -s L1P2GT,HLT:75e33 --processName=HLTX \
 --inputCommands='keep *, drop *_hlt*_*_HLT, drop triggerTriggerFilterObjectWithRefs_l1t*_*_HLT' \
 -n 1 --nThreads 1
 
-edmConfigDump Phase2_HLT.py > HLT_75e33_D110_cfg.py
+edmConfigDump Phase2_HLT.py > HLT_75e33_D110_cfg_time.py
 
 #add: process.MessageLogger.HLTrigReport = cms.untracked.PSet()
 

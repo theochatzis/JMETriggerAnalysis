@@ -219,15 +219,74 @@ elif opt_reco == 'HLT_75e33':
   #process.schedule_().append(process.MC_JME)
   from JMETriggerAnalysis.Common.configs.HLT_75e33_D110_cfg import cms, process
   # Input source
-  process.source.inputCommands = cms.untracked.vstring(
-        'keep *',
-        'drop *_hlt*_*_HLT',
-        'drop triggerTriggerFilterObjectWithRefs_l1t*_*_HLT'
-  )
-
+  #process.source.inputCommands = cms.untracked.vstring(
+  #      'keep *',
+  #      'drop *_hlt*_*_HLT',
+  #      'drop triggerTriggerFilterObjectWithRefs_l1t*_*_HLT'
+  #)
+  process.schedule = cms.Schedule(*[
+  # process.L1T_SinglePFPuppiJet230off,
+  # process.L1T_PFPuppiHT450off,
+  # process.L1T_PFPuppiMET220off,
+  # process.HLT_AK4PFPuppiJet520,
+  # process.HLT_PFPuppiHT1070,
+  # process.HLT_PFPuppiMETTypeOne140_PFPuppiMHT140,
+  # process.L1T_PFHT400PT30_QuadPFPuppiJet_70_55_40_40_2p4,
+  # process.L1T_DoublePFPuppiJets112_2p4_DEta1p6,
+  # process.HLT_PFHT330PT30_QuadPFPuppiJet_75_60_45_40_TriplePFPuppiBTagDeepCSV_2p4,
+  # process.HLT_PFHT200PT30_QuadPFPuppiJet_70_40_30_30_TriplePFPuppiBTagDeepCSV_2p4,
+  # process.HLT_DoublePFPuppiJets128_DoublePFPuppiBTagDeepCSV_2p4,
+  # process.HLT_PFHT330PT30_QuadPFPuppiJet_75_60_45_40_TriplePFPuppiBTagDeepFlavour_2p4,
+  # process.HLT_PFHT200PT30_QuadPFPuppiJet_70_40_30_30_TriplePFPuppiBTagDeepFlavour_2p4,
+  # process.HLT_DoublePFPuppiJets128_DoublePFPuppiBTagDeepFlavour_2p4,
+  # process.L1T_SingleTkMuon_22,
+  # process.L1T_DoubleTkMuon_15_7,
+  # process.L1T_TripleTkMuon_5_3_3,
+  # process.HLT_Mu50_FromL1TkMuon,
+  # process.HLT_IsoMu24_FromL1TkMuon,
+  # process.HLT_Mu37_Mu27_FromL1TkMuon,
+  # process.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_FromL1TkMuon,
+  # process.HLT_TriMu_10_5_5_DZ_FromL1TkMuon,
+  # process.L1T_TkEm51,
+  # process.L1T_TkEle36,
+  # process.L1T_TkIsoEm36,
+  # process.L1T_TkIsoEle28,
+  # process.L1T_TkEm37TkEm24,
+  # process.L1T_TkEle25TkEle12,
+  # process.L1T_TkIsoEm22TkIsoEm12,
+  # process.L1T_TkIsoEle22TkEm12,
+  # process.HLT_Ele32_WPTight_Unseeded,
+  # process.HLT_Ele26_WP70_Unseeded,
+  # process.HLT_Photon108EB_TightID_TightIso_Unseeded,
+  # process.HLT_Photon187_Unseeded,
+  # process.HLT_DoubleEle25_CaloIdL_PMS2_Unseeded,
+  # process.HLT_Diphoton30_23_IsoCaloId_Unseeded,
+  # process.HLT_Ele32_WPTight_L1Seeded,
+  # process.HLT_Ele115_NonIso_L1Seeded,
+  # process.HLT_Ele26_WP70_L1Seeded,
+  # process.HLT_Photon108EB_TightID_TightIso_L1Seeded,
+  # process.HLT_Photon187_L1Seeded,
+  # process.HLT_DoubleEle25_CaloIdL_PMS2_L1Seeded,
+  # process.HLT_DoubleEle23_12_Iso_L1Seeded,
+  # process.HLT_Diphoton30_23_IsoCaloId_L1Seeded,
+  # process.HLT_DoubleMediumChargedIsoPFTauHPS40_eta2p1,
+  # process.HLT_DoubleMediumDeepTauPFTauHPS35_eta2p1,
+  process.MC_JME,
+  # process.MC_BTV,
+  # process.MC_Ele5_Open_Unseeded,
+  # process.MC_Ele5_Open_L1Seeded,
+  process.HLTriggerFinalPath,
+  process.HLTAnalyzerEndpath,
+  process.endjob_step,
+  process.FEVTDEBUGHLToutput_step
+  ],
+  tasks=[process.patAlgosToolsTask])
   # adding trimmed tracking
-  from HLTrigger.Configuration.customizeHLTforTrimmedTracking import customizeHLTforTrimmedTracking
-  process = customizeHLTforTrimmedTracking(process)
+  from HLTrigger.Configuration.customizeHLTforTrimmedTracking import customizeHLTforTrimmedTracking,customizeHLTforTrimmedTrackingMixedPF
+  # Only for trimmed tracking 
+  #process = customizeHLTforTrimmedTracking(process)
+  # Trimmed tracking + Mixed PF
+  process = customizeHLTforTrimmedTrackingMixedPF(process)
   
 
 
@@ -278,6 +337,8 @@ process.hltPixelTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(sr
 process.hltPixelTracksCleanerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracksCleaner', defaultValue = -1.)
 process.hltPixelTracksMergerMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'pixelTracksMerger', defaultValue = -1.)
 process.hltTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'generalTracks', defaultValue = -1.)
+process.hltComplementTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'hltPixelTracksForPU', defaultValue = -1.)
+process.hltMixedTracksMultiplicity = _hltTrackMultiplicityValueProducer.clone(src = 'mixedGeneralTracks', defaultValue = -1.)
 
 process.hltPixelVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'hltPhase2PixelVertices', defaultValue = -1.)
 process.hltPrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer.clone(src = 'goodOfflinePrimaryVertices', defaultValue = -1.)
@@ -299,6 +360,8 @@ process.jmeTriggerNTupleInputsSeq = cms.Sequence(
   + process.hltPixelTracksCleanerMultiplicity
   + process.hltPixelTracksMergerMultiplicity
   + process.hltTracksMultiplicity
+  + process.hltComplementTracksMultiplicity
+  + process.hltMixedTracksMultiplicity 
   + process.hltPixelVerticesMultiplicity
   + process.hltPrimaryVerticesMultiplicity
   + process.offlinePrimaryVerticesMultiplicity
@@ -575,6 +638,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     hltPixelTracksCleanerMultiplicity = cms.InputTag('hltPixelTracksCleanerMultiplicity'),
     hltPixelTracksMergerMultiplicity = cms.InputTag('hltPixelTracksMergerMultiplicity'),
     hltTracksMultiplicity = cms.InputTag('hltTracksMultiplicity'),
+    hltComplementTracksMultiplicity = cms.InputTag('hltComplementTracksMultiplicity'),
+    hltMixedTracksMultiplicity = cms.InputTag('hltMixedTracksMultiplicity'), 
     hltPixelVerticesMultiplicity = cms.InputTag('hltPixelVerticesMultiplicity'),
     hltPrimaryVerticesMultiplicity = cms.InputTag('hltPrimaryVerticesMultiplicity'),
 #    offlinePrimaryVerticesMultiplicity = cms.InputTag('offlinePrimaryVerticesMultiplicity'),
