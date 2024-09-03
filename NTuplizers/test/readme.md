@@ -12,7 +12,10 @@ Datasamples defined in crab/createCrabConfigFilesMiniAOD.py
 `cmsenv`\
 `source /cvmfs/cms.cern.ch/crab3/crab.(c)sh`\
 `voms-proxy-init -voms cms` \
-`crab/multicrab.py jmeTriggerNTuple2023Data_miniAOD_cfg.py -i 2024`
+`crab/multicrab.py jmeTriggerNTuple2023Data_miniAOD_cfg.py -i 2024`\
+\
+\
+`crab/multicrab.py -l -i 'Muon\S+2024'`
 
 **Help**:
 
