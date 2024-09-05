@@ -212,7 +212,7 @@ def create(opts,args):
         file.write("config.JobType.pyCfgParams = [\'globalTag="+globalTag+"\',\'isMuonData="+isMuonData+"\']\n")
         file.write("config.JobType.allowUndistributedCMSSW = True\n")
         file.write("config.JobType.inputFiles = [\'%s\']\n"%(os.path.join(dIN,jecsName+".db")))
-        file.write("config.JobType.maxJobRuntimeMin = 2*1315\n")
+        #file.write("config.JobType.maxJobRuntimeMin = 2*1315\n")
         file.write("\n")
         file.write("config.section_(\'Data\')\n")
         file.write("config.Data.publication = False\n")
