@@ -129,7 +129,15 @@ def create(opts,args):
     time = datetime.datetime.now().strftime("%Y%m%dT%H%M")
     version = GetCMSSW()
 
+    isNano = False
+    if 'Nano' in args[0]:
+        isNano = True
+
     PSET = os.path.abspath(args[0])
+    SKIMCONFIG = ""
+    if isNano:
+        PSET = 'PSet.py'
+        SKIMCONFIG = os.path.abspath(args[0])
 
     #from createCrabConfigFilesMiniAOD import samples
     samples = getsamples(args)
@@ -211,7 +219,11 @@ def create(opts,args):
         #file.write("config.JobType.pyCfgParams = [\'offlineJecs="+jecsName+"\',\'globalTag="+globalTag+"\',\'isMuonData="+isMuonData+"\']\n")
         file.write("config.JobType.pyCfgParams = [\'globalTag="+globalTag+"\',\'isMuonData="+isMuonData+"\']\n")
         file.write("config.JobType.allowUndistributedCMSSW = True\n")
-        file.write("config.JobType.inputFiles = [\'%s\']\n"%(os.path.join(dIN,jecsName+".db")))
+        if isNano:
+            file.write("config.JobType.scriptExe = \'NanoAOD_crab_script.sh\'\n")
+            file.write("config.JobType.inputFiles = [\'%s\', \'%s\', \'%s\']\n"%(SKIMCONFIG, os.path.join(dIN,PSET), os.path.join(dIN,jecsName+".db")))
+        else:
+            file.write("config.JobType.inputFiles = [\'%s\']\n"%(os.path.join(dIN,jecsName+".db")))
         #file.write("config.JobType.maxJobRuntimeMin = 2*1315\n")
         file.write("\n")
         file.write("config.section_(\'Data\')\n")

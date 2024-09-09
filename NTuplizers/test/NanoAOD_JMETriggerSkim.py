@@ -94,10 +94,11 @@ class Skim(Module):
             self.h_pileup.Fill(event.Pileup_nTrueInt)
         
         self.cAllEvents.increment()
-        """
+
         # selection
         # 2016 trigger
-        triggerDecision = False
+        triggerDecision = True #False
+        """
         if hasattr(event._tree, 'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ'):
             triggerDecision = triggerDecision or event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ
 
