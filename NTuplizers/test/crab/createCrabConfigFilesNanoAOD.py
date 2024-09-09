@@ -7,7 +7,7 @@ storeDir = "TriggerObjects"
 
 samples_muons = {
   #2022
-  '/Muon/Run2022C-16Dec2023-v1/NANOAOD':["Muon0_Run2022CV1","Winter22Run3_RunC_V2_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
+  'Muon0_Run2022CV1':["/Muon/Run2022C-16Dec2023-v1/NANOAOD","Winter22Run3_RunC_V2_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
 #  '/Muon/Run2022D-PromptReco-v1/MINIAOD':["Muon0_Run2022DV1","Winter22Run3_RunD_V2_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
 #  '/Muon/Run2022D-PromptReco-v2/MINIAOD':["Muon0_Run2022DV2","Winter22Run3_RunD_V2_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
 #  '/Muon/Run2022D-PromptReco-v3/MINIAOD':["Muon0_Run2022DV3","Winter22Run3_RunD_V2_DATA","Cert_Collisions2022_355100_362760_Golden.json","124X_dataRun3_Prompt_v4"],
@@ -47,7 +47,7 @@ samples_muons = {
 #  '/Muon1/Run2024E-PromptReco-v1/MINIAOD':["Muon1_Run2024E1","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraE_Golden.json","140X_dataRun3_Prompt_v2"],
 #  '/Muon1/Run2024E-PromptReco-v2/MINIAOD':["Muon1_Run2024E2","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraE_Golden.json","140X_dataRun3_Prompt_v2"],
 #  '/Muon1/Run2024F-PromptReco-v1/MINIAOD':["Muon1_Run2024F","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_381984-383779_Golden_Run2024F.json","140X_dataRun3_Prompt_v4"],
-  '/Muon1/Run2024G-PromptReco-v1/NANOAOD':["Muon1_Run2024G","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_385194_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v4"],
+  'Muon1_Run2024G':["/Muon1/Run2024G-PromptReco-v1/NANOAOD","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_385194_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v4"],
 }
 
 samples = {
