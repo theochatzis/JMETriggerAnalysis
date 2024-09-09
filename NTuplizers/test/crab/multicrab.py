@@ -169,7 +169,7 @@ def create(opts,args):
             os.mkdir(STOREDIR)
     
     for sample, sample_attributes in samples.items():
-        name=sample_attributes[0]
+        name=sample
 
         isMuonData = "False"
         if "Muon" in name:
@@ -217,7 +217,7 @@ def create(opts,args):
         file.write("config.section_(\'Data\')\n")
         file.write("config.Data.publication = False\n")
         file.write("config.Data.ignoreLocality = False\n")
-        file.write("config.Data.inputDataset = \'%s\'\n"%(sample))
+        file.write("config.Data.inputDataset = \'%s\'\n"%(sample_attributes[0]))
         file.write("config.Data.splitting = \'Automatic\'\n")
         file.write("config.Data.unitsPerJob = 200\n")
         file.write("config.Data.totalUnits = -1\n")
