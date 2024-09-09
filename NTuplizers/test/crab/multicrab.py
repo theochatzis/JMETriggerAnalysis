@@ -187,7 +187,7 @@ def create(opts,args):
         lumiJSON=sample_attributes[2]
         globalTag=sample_attributes[3]
 
-        print("Creating file: "+name)
+        print("Creating file","crabConfig_"+name+".py")
 
         dIN = os.getcwd()
         while os.path.basename(dIN) != 'test':
@@ -375,7 +375,19 @@ def resubmit(taskdir):
         pass
     """
 
+def proxy():
+    result = Execute("voms-proxy-info")
+    #print(result[0])
+    #print(type(result))
+    proxy_re = re.compile("Proxy not found")
+    match = proxy_re.search(result[0])
+    if match:
+        print("Proxy not found, exiting..")
+        sys.exit()
+
 def main(opts,args):
+
+    proxy()
 
     if opts.list:
         listdatasets(opts,args)
