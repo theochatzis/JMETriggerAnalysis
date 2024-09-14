@@ -62,7 +62,7 @@ opts.register('output', 'out.root',
 opts.parseArguments()
 
 ###
-### base configuration file
+### base configuration fileHLT_75e33
 ###
 
 if opt_reco == 'default':
