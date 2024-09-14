@@ -1,5 +1,5 @@
-### Tools for JME studies on the Phase-2 HLT reconstruction
-* [Setup](#setup)
+## Tools for JME studies on the Phase-2 HLT reconstruction
+* [Setup](##Setup)
 * [Instructions to generate configuration files for HLT Phase-2 reconstruction](#instructions-to-generate-configuration-files-for-hlt-phase-2-reconstruction)
 * [Configuration with JME trigger paths for testing](#configuration-with-jme-trigger-paths-for-testing)
 * [Inputs for HLT Jet Energy Scale Corrections workflow](#inputs-for-hlt-jet-energy-scale-corrections-workflow)
@@ -7,7 +7,7 @@
 
 ----------
 
-### Setup
+## Setup
 ### Test setup 
 
 ```shell
@@ -19,6 +19,9 @@ git cms-merge-topic theochatzis:trimmedTrackingPUPPI # add trimming from trackin
 git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b phase2_14_X
 scram b -j 12
 ```
+### Useful links
+- [HLT Phase2 documentation](https://hltupgrade.docs.cern.ch/)
+
 ### Previous setup
 ```shell
 scramv1 project CMSSW CMSSW_11_1_8
