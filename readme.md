@@ -20,8 +20,16 @@ git clone git@github.com:theochatzis/JMETriggerAnalysis.git -b run3_14_0_X
 scram b -j 12
 ```
 
+Make sure the menu is updated (see bellow section : Getting the HLT Menu configuration).
+Do:
+```
+cd ${CMSSW_BASE}/JMETriggerAnalysis/Common/test
+./dumpHLTMenus_mcRun3.sh
+```
+
 Test command:
 ```
+cd ${CMSSW_BASE}/JMETriggerAnalysis/NTuplizers/test
 cmsRun jmeTriggerNTuple_cfg.py maxEvents=10 output=out_HLT_Run3TRK.root
 ```
 
