@@ -2,9 +2,9 @@
 
 # Step1, create flat ntuple with crab
 # Usage:   multicrab.py <pset> [options|
-# Example: crab/multicrab.py jmeTriggerNTuple2023Data_miniAOD_cfg.py -i 2024
-
-# Datasamples defined in createCrabConfigFilesMiniAOD.py
+# Example: crab/multicrab.py jmeTriggerNTuple2023Data_miniAOD_cfg.py -i 2024F,2024G
+# Example: crab/multicrab.py NanoAOD_JMETriggerSkim.py -i 2024 --list
+# Datasamples defined in createCrabConfigFilesMiniAOD.py and createCrabConfigFilesNanoAOD.py
 
 import os,sys,re
 import datetime
@@ -107,17 +107,20 @@ def isData(datasetname):
         return True
     return False
 
-def getsamples():
+def getsamples(args):
     returnsamples = {}
-    from createCrabConfigFilesMiniAOD import samples,samples_muons
+    if 'Nano' in args[0]:
+        print("Samples in crab/createCrabConfigFilesNanoAOD.py")
+        from createCrabConfigFilesNanoAOD import samples,samples_muons
+    else:
+        print("Samples in crab/createCrabConfigFilesMiniAOD.py")
+        from createCrabConfigFilesMiniAOD import samples,samples_muons
     returnsamples.update(samples)
     returnsamples.update(samples_muons)    
     return returnsamples
 
 def listdatasets(opts,args):
-    #from createCrabConfigFilesMiniAOD import samples
-    samples = getsamples()
-    print("Samples in crab/createCrabConfigFilesMiniAOD.py")
+    samples = getsamples(args)
     samples = GetIncludeExcludeDatasets(samples, opts)
     for sample in samples.items():
         print(sample[0])
@@ -126,10 +129,18 @@ def create(opts,args):
     time = datetime.datetime.now().strftime("%Y%m%dT%H%M")
     version = GetCMSSW()
 
+    isNano = False
+    if 'Nano' in args[0]:
+        isNano = True
+
     PSET = os.path.abspath(args[0])
+    SKIMCONFIG = ""
+    if isNano:
+        PSET = 'PSet.py'
+        SKIMCONFIG = os.path.abspath(args[0])
 
     #from createCrabConfigFilesMiniAOD import samples
-    samples = getsamples()
+    samples = getsamples(args)
     #print(samples)
     samples = GetIncludeExcludeDatasets(samples, opts)
     #print(samples)
@@ -166,7 +177,7 @@ def create(opts,args):
             os.mkdir(STOREDIR)
     
     for sample, sample_attributes in samples.items():
-        name=sample_attributes[0]
+        name=sample
 
         isMuonData = "False"
         if "Muon" in name:
@@ -176,7 +187,7 @@ def create(opts,args):
         lumiJSON=sample_attributes[2]
         globalTag=sample_attributes[3]
 
-        print("Creating file: "+name)
+        print("Creating file","crabConfig_"+name+".py")
 
         dIN = os.getcwd()
         while os.path.basename(dIN) != 'test':
@@ -208,18 +219,22 @@ def create(opts,args):
         #file.write("config.JobType.pyCfgParams = [\'offlineJecs="+jecsName+"\',\'globalTag="+globalTag+"\',\'isMuonData="+isMuonData+"\']\n")
         file.write("config.JobType.pyCfgParams = [\'globalTag="+globalTag+"\',\'isMuonData="+isMuonData+"\']\n")
         file.write("config.JobType.allowUndistributedCMSSW = True\n")
-        file.write("config.JobType.inputFiles = [\'%s\']\n"%(os.path.join(dIN,jecsName+".db")))
+        if isNano:
+            file.write("config.JobType.scriptExe = \'NanoAOD_crab_script.sh\'\n")
+            file.write("config.JobType.inputFiles = [\'%s\', \'%s\', \'%s\']\n"%(SKIMCONFIG, os.path.join(dIN,PSET), os.path.join(dIN,jecsName+".db")))
+        else:
+            file.write("config.JobType.inputFiles = [\'%s\']\n"%(os.path.join(dIN,jecsName+".db")))
         #file.write("config.JobType.maxJobRuntimeMin = 2*1315\n")
         file.write("\n")
         file.write("config.section_(\'Data\')\n")
         file.write("config.Data.publication = False\n")
         file.write("config.Data.ignoreLocality = False\n")
-        file.write("config.Data.inputDataset = \'%s\'\n"%(sample))
+        file.write("config.Data.inputDataset = \'%s\'\n"%(sample_attributes[0]))
         file.write("config.Data.splitting = \'Automatic\'\n")
         file.write("config.Data.unitsPerJob = 200\n")
         file.write("config.Data.totalUnits = -1\n")
         file.write("\n")
-        ####file.write("config.Data.lumiMask = \'%s\'\n"%(os.path.join(dIN,lumiJSON)))
+        file.write("config.Data.lumiMask = \'%s\'\n"%(os.path.join(dIN,lumiJSON)))
         file.write("config.Data.outLFNDirBase = \'/store/user/%s/%s/%s\'\n"%(USER,STOREDIR,name))
         file.write("\n")
         file.write("config.section_(\'Site\')\n")
@@ -360,7 +375,19 @@ def resubmit(taskdir):
         pass
     """
 
+def proxy():
+    result = Execute("voms-proxy-info")
+    #print(result[0])
+    #print(type(result))
+    proxy_re = re.compile("Proxy not found")
+    match = proxy_re.search(result[0])
+    if match:
+        print("Proxy not found, exiting..")
+        sys.exit()
+
 def main(opts,args):
+
+    proxy()
 
     if opts.list:
         listdatasets(opts,args)
@@ -390,6 +417,14 @@ if __name__=="__main__":
                       help="List datasets and exit")
 
     (opts, args) = parser.parse_args()
+
+    opts.includeTasks = opts.includeTasks.split(',')
+    opts.excludeTasks = opts.excludeTasks.split(',')
+    if 'None' in opts.includeTasks:
+        opts.includeTasks = opts.includeTasks.remove('None')
+    if 'None' in opts.excludeTasks:
+        opts.excludeTasks = opts.excludeTasks.remove('None')
+
     #if len(args) == 0:
     #    parser.error("pset missing.")
 
