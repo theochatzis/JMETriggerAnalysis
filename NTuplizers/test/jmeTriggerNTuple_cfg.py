@@ -262,10 +262,10 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoVertexCollections = cms.PSet(
 
-    hltPixelVertices = cms.InputTag('hltPixelVertices'),
+    #hltPixelVertices = cms.InputTag('hltPixelVertices'),
     #hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
-    hltVerticesPF = cms.InputTag('hltVerticesPF'),
-    #offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    #hltVerticesPF = cms.InputTag('hltVerticesPF'),
+    offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
   ),
 
   recoPFCandidateCollections = cms.PSet(
@@ -319,8 +319,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   patJetCollections = cms.PSet(
 
     #offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
-    #offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
-    #offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
+    offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
+    offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
   ),
 
   recoGenMETCollections = cms.PSet(
@@ -356,7 +356,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   patMETCollections = cms.PSet(
 
     #offlinePFMET = cms.InputTag('slimmedMETs'),
-    #offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
+    offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
   ),
 
   recoMuonCollections = cms.PSet(
