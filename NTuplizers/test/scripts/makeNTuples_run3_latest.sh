@@ -16,13 +16,14 @@ ODIR=${1}
 declare -A samplesMap
 
 # QCD 
-samplesMap["Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65"]='/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter23MiniAOD-126X_mcRun3_2023_forPU65_v1-v2/MINIAODSIM'
+#samplesMap["Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65"]='/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter23MiniAOD-126X_mcRun3_2023_forPU65_v1-v2/MINIAODSIM'
 
 # VBF H(125)->Invisible
-samplesMap["Run3Winter23_VBF_HToInvisible_13p6TeV_PU65"]="/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter23MiniAOD-126X_mcRun3_2023_forPU65_v1-v2/MINIAODSIM"
+samplesMap["Run3Winter23_VBF_HToInvisible_13p6TeV_PU65"]="/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter24MiniAOD-133X_mcRun3_2024_realistic_v9-v3/MINIAODSIM"
 
 recoKeys=(
-  HLT_Run3TRK
+  default
+  testMHT
 )
 
 if [ -d ${OUTPUT_DIR_EOS}/${ODIR} ]; then
