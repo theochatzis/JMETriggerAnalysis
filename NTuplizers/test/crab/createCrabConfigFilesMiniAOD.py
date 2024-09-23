@@ -42,6 +42,7 @@ samples_muons = {
   'Muon0_Run2024E2':["/Muon0/Run2024E-PromptReco-v2/MINIAOD","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraE_Golden.json","140X_dataRun3_Prompt_v2"],
   'Muon0_Run2024F':["/Muon0/Run2024F-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_381984-383779_Golden_Run2024F.json","140X_dataRun3_Prompt_v4"],
   'Muon0_Run2024G':["/Muon0/Run2024G-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_385016_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v4"],
+  'Muon0_Run2024H':["/Muon0/Run2024H-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_386047_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v4"],
   #2024 Muon1
   'Muon1_Run2024B':["/Muon1/Run2024B-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraB_Golden.json","140X_dataRun3_Prompt_v2"],
   'Muon1_Run2024C':["/Muon1/Run2024C-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraC_Golden.json","140X_dataRun3_Prompt_v2"],
@@ -50,6 +51,7 @@ samples_muons = {
   'Muon1_Run2024E2':["/Muon1/Run2024E-PromptReco-v2/MINIAOD","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraE_Golden.json","140X_dataRun3_Prompt_v2"],
   'Muon1_Run2024F':["/Muon1/Run2024F-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_381984-383779_Golden_Run2024F.json","140X_dataRun3_Prompt_v4"],
   'Muon1_Run2024G':["/Muon1/Run2024G-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_385016_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v4"],
+  'Muon1_Run2024H':["/Muon1/Run2024H-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_386047_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v4"],
 }
 
 samples = {
@@ -89,6 +91,7 @@ samples = {
   'JetMET0_Run2024E2':["/JetMET0/Run2024E-PromptReco-v2/MINIAOD","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraE_Golden.json","140X_dataRun3_Prompt_v2"],
   'JetMET0_Run2024F':["/JetMET0/Run2024F-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_381984-383779_Golden_Run2024F.json","140X_dataRun3_Prompt_v4"],
   'JetMET0_Run2024G':["/JetMET0/Run2024G-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_385016_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v4"],
+  'JetMET0_Run2024H':["/JetMET0/Run2024H-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_386047_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v4"],
   #2024 JetMET1
   'JetMET1_Run2024B':["/JetMET1/Run2024B-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraB_Golden.json","140X_dataRun3_Prompt_v2"],
   'JetMET1_Run2024C':["/JetMET1/Run2024C-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraC_Golden.json","140X_dataRun3_Prompt_v2"],
@@ -97,6 +100,7 @@ samples = {
   'JetMET1_Run2024E2':["/JetMET1/Run2024E-PromptReco-v2/MINIAOD","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_eraE_Golden.json","140X_dataRun3_Prompt_v2"],
   'JetMET1_Run2024F':["/JetMET1/Run2024F-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Cert_Collisions2024_381984-383779_Golden_Run2024F.json","140X_dataRun3_Prompt_v4"],
   'JetMET1_Run2024G':["/JetMET1/Run2024G-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_385016_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v4"],
+  'JetMET1_Run2024H':["/JetMET1/Run2024H-PromptReco-v1/MINIAOD","Summer23BPixPrompt23_V1_MC","Collisions24_13p6TeV_378981_386047_DCSOnly_TkPx.json","140X_dataRun3_Prompt_v4"],
 }
 
 def main():
