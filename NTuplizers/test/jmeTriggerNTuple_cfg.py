@@ -39,12 +39,12 @@ opts.register('wantSummary', False,
               vpo.VarParsing.varType.bool,
               'show cmsRun summary at job completion')
 
-#opts.register('globalTag', None,
-#              vpo.VarParsing.multiplicity.singleton,
-#              vpo.VarParsing.varType.string,
-#              'argument of process.GlobalTag.globaltag')
+opts.register('globalTag', None,
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.string,
+              'argument of process.GlobalTag.globaltag')
 
-opts.register('reco', 'HLT_Run3TRK',
+opts.register('reco', 'default',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
               'keyword to define HLT reconstruction')
@@ -74,25 +74,24 @@ opts.parseArguments()
 ###
 ### HLT configuration
 ###
-if opts.reco == 'HLT_oldJECs':
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_3_0_GRun_configDump import cms, process
-  update_jmeCalibs = False
 
-elif opts.reco == 'HLT_Run3TRK':
-  #from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
-  #from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_12_4_0_GRun_postEE_configDump import cms, process
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump import cms, process
-  #from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_doubletRecovery_configDump import cms, process
-  update_jmeCalibs = True
-  #process.GlobalTag.globaltag = cms.string('126X_mcRun3_2023_forPU65_v7')
-  #process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
-  # Test option to skip forward PFHC application (after eta = 2.5)
-  #process.hltParticleFlow.skipForwardCalibrations = cms.bool(True)
-  #from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_0_0_GRun_configDump_noCustom import cms, process
-  #update_jmeCalibs = False
+update_jmeCalibs = False
+
+if opts.reco == 'default':
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_0_0_GRun_configDump import cms, process
+
+elif opts.reco == 'testMHT':
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_0_0_GRun_configDump import cms, process
+  # customize MHT definition 
+  from HLTrigger.Configuration.customizerHLTforMHT import customizerHLTforMHT
+  process = customizerHLTforMHT(process)
 
 else:
   raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
+
+# By pass global tag of menu if needed
+if opts.globalTag is not None:
+  process.GlobalTag.globaltag = cms.string(opts.globalTag)
 
 # remove cms.OutputModule objects from HLT config-dump
 for _modname in process.outputModules_():
@@ -119,12 +118,12 @@ print('-'*108)
 keepPaths = [
   'MC_*Jets*',
   'MC_*MET*',
-  #'MC_*AK8Calo*',
-  #'HLT_PFJet*_v*',
-  #'HLT_AK4PFJet*_v*',
-  #'HLT_AK8PFJet*_v*',
-  #'HLT_PFHT*_v*',
-  #'HLT_PFMET*_PFMHT*_v*',
+  'MC_*AK8Calo*',
+  'HLT_PFJet*_v*',
+  'HLT_AK4PFJet*_v*',
+  'HLT_AK8PFJet*_v*',
+  'HLT_PFHT*_v*',
+  'HLT_PFMET*_PFMHT*_v*',
   #'AlCa_*',
   'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*'
 ]
@@ -263,10 +262,10 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
 
   recoVertexCollections = cms.PSet(
 
-    hltPixelVertices = cms.InputTag('hltPixelVertices'),
+    #hltPixelVertices = cms.InputTag('hltPixelVertices'),
     #hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
-    hltVerticesPF = cms.InputTag('hltVerticesPF'),
-    #offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    #hltVerticesPF = cms.InputTag('hltVerticesPF'),
+    offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
   ),
 
   recoPFCandidateCollections = cms.PSet(
@@ -283,8 +282,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     hltAK4CaloJets = cms.InputTag('hltAK4CaloJets'),
     hltAK4CaloJetsCorrected = cms.InputTag('hltAK4CaloJetsCorrected'),
 
-    #hltAK8CaloJets = cms.InputTag('hltAK8CaloJets'),
-    #hltAK8CaloJetsCorrected = cms.InputTag('hltAK8CaloJetsCorrected'),
+    hltAK8CaloJets = cms.InputTag('hltAK8CaloJets'),
+    hltAK8CaloJetsCorrected = cms.InputTag('hltAK8CaloJetsCorrected'),
   ),
 
 # recoPFClusterJetCollections = cms.PSet(
@@ -307,8 +306,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     #hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
     #hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
 
-    #hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
-    #hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
+    hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
+    hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
 
     #hltAK8PFCHSJets = cms.InputTag('hltAK8PFCHSJets'),
     #hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
@@ -320,14 +319,14 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   patJetCollections = cms.PSet(
 
     #offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
-    #offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
-    #offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
+    offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
+    offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
   ),
 
   recoGenMETCollections = cms.PSet(
 
     #genMETCalo = cms.InputTag('genMetCalo::HLT'),
-    #genMETTrue = cms.InputTag('genMetTrue::HLT'),
+    genMETTrue = cms.InputTag('genMetTrue::HLT'),
   ),
 
   recoCaloMETCollections = cms.PSet(
@@ -357,7 +356,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   patMETCollections = cms.PSet(
 
     #offlinePFMET = cms.InputTag('slimmedMETs'),
-    #offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
+    offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
   ),
 
   recoMuonCollections = cms.PSet(
@@ -409,7 +408,8 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
-    '/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2550000/000b8f39-b147-44c0-a2cb-a048abe5786c.root'
+    '/store/mc/Run3Summer23BPixDRPremix/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/130X_mcRun3_2023_realistic_postBPix_v6-v2/2830000/00500cd3-78c5-44f0-959e-87343b2f925b.root'
+    #'/store/mc/Run3Winter24Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/133X_mcRun3_2024_realistic_v9-v3/50000/017d210f-c527-402b-8e13-e6119e79fe6c.root'
     #'/store/mc/Run3Winter23MiniAOD/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/MINIAODSIM/FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v2/2540000/10e9c9ff-b431-42c5-a1ec-e3143eafee20.root',
     #'/store/mc/Run3Winter23Digi/DYToMuMu_M-20_TuneCP5_13p6TeV-pythia8/GEN-SIM-RAW/GTv4Digi_126X_mcRun3_2023_forPU65_v4-v2/2820000/0070321e-e4e6-4769-900f-0c0ad3831215.root'
     #'/store/mc/Run3Winter23MiniAOD/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/MINIAODSIM/126X_mcRun3_2023_forPU65_v1-v2/2550000/19e43825-6b8e-426e-9cca-e23cf318737c.root',
