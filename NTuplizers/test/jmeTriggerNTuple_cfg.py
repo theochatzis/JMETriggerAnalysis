@@ -83,7 +83,7 @@ if opts.reco == 'default':
 elif opts.reco == 'testMHT':
   from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_0_0_GRun_configDump import cms, process
   # customize MHT definition 
-  from HLTrigger/Configuration/customizerHLTforMHT import customizerHLTforMHT
+  from HLTrigger.Configuration.customizerHLTforMHT import customizerHLTforMHT
   process = customizerHLTforMHT(process)
 
 else:
