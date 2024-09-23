@@ -100,25 +100,27 @@ opts.parseArguments()
 ### base configuration file
 ###
 
-if opt_reco == 'default':
+if opts.reco == 'default':
   from JMETriggerAnalysis.Common.configs.HLT_75e33_D110_cfg import cms, process
 
-elif opt_reco == 'trimmedTracking':
+elif opts.reco == 'trimmedTracking':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_D110_cfg import cms, process
   from HLTrigger.Configuration.customizeHLTforTrimmedTracking import customizeHLTforTrimmedTracking
   # Only for trimmed tracking 
   process = customizeHLTforTrimmedTracking(process)
 
-elif opt_reco == 'mixedPF':
+elif opts.reco == 'mixedPF':
+  from JMETriggerAnalysis.Common.configs.HLT_75e33_D110_cfg import cms, process
   from HLTrigger.Configuration.customizeHLTforTrimmedTracking import customizeHLTforTrimmedTrackingMixedPF
   # Trimmed tracking + Mixed PF
   process = customizeHLTforTrimmedTrackingMixedPF(process)
   
-elif opt_reco == 'HLT_75e33_time':
+elif opts.reco == 'HLT_75e33_time':
   # needs to be updated
   from JMETriggerAnalysis.Common.configs.HLT_75e33_cfg_time import cms, process
 
 else:
-  raise RuntimeError('invalid argument for option "reco": "'+opt_reco+'"')
+  raise RuntimeError('invalid argument for option "reco": "'+opts.reco+'"')
 
 ###
 ### analysis sequence
@@ -332,11 +334,11 @@ if opts.rerunPUPPI:
 
 ## ---- updated JECs from local db file ------------------------------------------
 process.jescESSource = cms.ESSource('PoolDBESSource',
-  _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Phase2Spring23ticlv4_MC.db'),
+  _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Phase2Spring24_MC_'+opts.reco+'.db'),
   toGet = cms.VPSet(
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
-      tag = cms.string('JetCorrectorParametersCollection_Phase2Spring23ticlv4_MC_AK4PFPuppiHLT'),
+      tag = cms.string('JetCorrectorParametersCollection_Phase2Spring24_MC_'+('' if opts.reco == 'default' else (opts.reco+'_'))+'AK4PFPuppiHLT'),
       label = cms.untracked.string('AK4PFPuppi'),
     ),
   ),
@@ -685,7 +687,7 @@ process.TFileService = cms.Service('TFileService', fileName = cms.string(opts.ou
 # Tracking Monitoring
 if opts.trkdqm > 0:
 
-   if opt_reco in ['HLT_TRKv00', 'HLT_TRKv00_TICL', 'HLT_TRKv02', 'HLT_TRKv02_TICL']:
+   if opts.reco in ['HLT_TRKv00', 'HLT_TRKv00_TICL', 'HLT_TRKv02', 'HLT_TRKv02_TICL']:
       process.reconstruction_pixelTrackingOnly_step = cms.Path(process.reconstruction_pixelTrackingOnly)
       process.schedule_().extend([process.reconstruction_pixelTrackingOnly_step])
 
@@ -699,10 +701,6 @@ if opts.trkdqm > 0:
      + process.TrackHistograms_hltInitialStepTracks
      + process.TrackHistograms_hltGeneralTracks
    )
-
-   if opt_skimTracks:
-      process.TrackHistograms_hltGeneralTracksOriginal = trackHistogrammer.clone(src = 'generalTracksOriginal')
-      process.trkMonitoringSeq += process.TrackHistograms_hltGeneralTracksOriginal
 
    process.trkMonitoringEndPath = cms.EndPath(process.trkMonitoringSeq)
    process.schedule_().extend([process.trkMonitoringEndPath])
@@ -861,7 +859,7 @@ if opts.pfdqm > 0:
      ('_l1tPFPuppi', 'l1pfCandidates:Puppi', '(pt > 0)', leafCandidateHistogrammer),
    ]
 
-   if 'TICL' in opt_reco:
+   if 'TICL' in opts.reco:
       _candTags += [
         ('_pfTICL', 'pfTICL', '', pfCandidateHistogrammerRecoPFCandidate),
       ]
@@ -953,12 +951,6 @@ if opts.logs:
      ),
    )
 
-   if opt_skimTracks:
-      process.MessageLogger.debugModules += [
-        'hltTrimmedPixelVertices',
-        'generalTracks',
-      ]
-
 # EDM Input Files
 if opts.inputFiles and opts.secondaryInputFiles:
    process.source.fileNames = opts.inputFiles
@@ -980,34 +972,6 @@ else:
 # '/store/relval/CMSSW_13_1_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_131X_mcRun4_realistic_v2_2026D95PU200-v1/00000/fcb028a5-b0f8-47b0-8109-ce7556b7af35.root',
    ]
 
-# skimming of tracks
-if opt_skimTracks:
-
-   from JMETriggerAnalysis.Common.hltPhase2_skimmedTracks import customize_hltPhase2_skimmedTracks
-   process = customize_hltPhase2_skimmedTracks(process)
-
-#   # modify PV inputs of PFPuppi collections
-#   process.puppiNoLep.vertexName = process.generalTracks.vertices
-#   process.hltPFPuppi.vertexName = process.generalTracks.vertices
-
-   # add PV collections to JMETriggerNTuple
-   process.JMETriggerNTuple.recoVertexCollections = cms.PSet(
-     hltPixelVertices = cms.InputTag('pixelVertices'),
-     hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
-     hltPrimaryVertices = cms.InputTag('offlinePrimaryVertices'),
-     offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
-   )
-
-   process.JMETriggerNTuple.outputBranchesToBeDropped += [
-     'hltPixelVertices_isFake',
-     'hltPixelVertices_chi2',
-     'hltPixelVertices_ndof',
-
-     'hltTrimmedPixelVertices_isFake',
-     'hltTrimmedPixelVertices_chi2',
-     'hltTrimmedPixelVertices_ndof',
-   ]
-
 process.prune()
 
 # dump content of cms.Process to python file
@@ -1019,7 +983,6 @@ if opts.verbosity > 0:
    print('--- jmeTriggerNTuple_cfg.py ---')
    print('')
    print('option: output =', opts.output)
-   print('option: reco =', opts.reco, '(skimTracks = '+str(opt_skimTracks)+')')
    print('option: trkdqm =', opts.trkdqm)
    print('option: pfdqm =', opts.pfdqm)
    print('option: dumpPython =', opts.dumpPython)
