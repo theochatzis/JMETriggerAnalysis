@@ -6,17 +6,27 @@ for the jets used in the High-Level Trigger (HLT).
 
 Instructions to set up the CMSSW area to produce JRA NTuples, and derive JESCs:
 ```
-cmsrel CMSSW_13_3_1_patch1
-cd CMSSW_13_3_1_patch1/src
+cmsrel CMSSW_14_0_14
+cd CMSSW_14_0_14/src
 cmsenv
 git cms-init
 
 # Was used to test skipping forward PFHC corrections application.  
 #git cms-merge-topic theochatzis:optionForSkipForwardPFHC
 
+# In case you want to study the new CaloTowers update
+git cherry-pick 979e2299d39a803bcdfec5b20ad083e67f7a30dc
+
 git clone https://github.com/theochatzis/JetMETAnalysis.git -b hlt_run3
-git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b run3_13_3_X_jecs
+git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b run3_14_0_X
 scram b -j 8
+```
+
+Make sure the menu is updated (see section on main page `readme.md`: Getting the HLT Menu configuration).
+Do:
+```
+cd ${CMSSW_BASE}/JMETriggerAnalysis/Common/test
+./dumpHLTMenus_mcRun3.sh
 ```
 
 Note: 
