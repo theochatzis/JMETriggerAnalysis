@@ -56,8 +56,12 @@ opts.register('verbosity', 0,
               vpo.VarParsing.varType.int,
               'level of output verbosity')
 
-opts.parseArguments()
+opts.register('reco', 'caloTowers_thresholds',
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.string,
+              'keyword to define HLT reconstruction')
 
+opts.parseArguments()
 
 supported_bpix_options = ['noBPix', 'BPix', 'BPixPlus', 'BPixMinus']
 
@@ -68,7 +72,24 @@ if opts.bpixMode is not None and opts.bpixMode not in supported_bpix_options:
 ### HLT configuration
 ###
 
-from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_13_3_0_GRun_configDump import *
+if opts.reco == "default":
+   from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_0_0_GRun_configDump import *
+elif opts.reco == 'caloTowers_thresholds':
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_0_0_GRun_configDump import *
+  # making sure all CaloTowers are updated in the menu:
+  from HLTrigger.Configuration.common import producers_by_type
+  for producer in producers_by_type(process, "CaloTowersCreator"):
+        producer.EcalRecHitThresh = cms.bool(True)
+else:
+  raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
+
+
+
+   
+
+
+
+
 
 # remove cms.OutputModule objects from HLT config-dump
 for _modname in process.outputModules_():
