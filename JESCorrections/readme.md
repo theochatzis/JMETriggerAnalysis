@@ -15,6 +15,7 @@ git cms-init
 #git cms-merge-topic theochatzis:optionForSkipForwardPFHC
 
 # In case you want to study the new CaloTowers update
+git cms-addpkg RecoLocalCalo/CaloTowersCreator
 git cherry-pick 979e2299d39a803bcdfec5b20ad083e67f7a30dc
 
 git clone https://github.com/theochatzis/JetMETAnalysis.git -b hlt_run3

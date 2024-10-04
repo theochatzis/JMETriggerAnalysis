@@ -1,5 +1,4 @@
 ### Production of NTuples
-
 ## The NTuplizer
 The basic configuration file for producing the NTuples is the `jmeTriggerNTuple_cfg.py`. In this file we re-run the HLT configuration and then collect results for Trigger paths and HLT Objects collections to analyze the triggers and the objects performances.
 
@@ -30,8 +29,21 @@ one can change the outputfiles location from options:
 `config.Site.storageSite` for the Site and `config.Data.outLFNDirBase` for the output directory path. 
 
 The framework supports multiple submissions in `CRAB` with Multicrab. See the next subsection.
+## Multicrab (when re-running HLT)
+There is an executable that allows to use the config file that re-runs HLT `multicrab_reHLT.py`. E.g. the `jmeTriggerNTuple2023Data_cfg.py`
+You can change the following parameters in the script according to your study:
+- `job_name` : this is just the name of the output crab job   
+- `primary_dataset`, `secondary_dataset` : define the primary and secondary dataset you use, this should be a MINIAOD and a RAW in order to have both offline PAT collections and the raw info to re-reco HLT. If you need no PAT/Offline quantities you could just use the primary dataset with `RAW`. E.g. a use case is a MC where you want only the `GEN-SIM-RAW` to use the generated quantities.    
+- `recoOptions` : these are the options supported in `jmeTriggerNTuple2023Data_cfg.py` that you want to use
+- `recoOptionsPFHCs` : dictionary providing a PFHCs file per separate crab job
+- `recoOptionsJECs` : dictionary providing a JECs file per separate crab job
+Then you can just run the executable by:
+```
+multicrab_reHLT.py
+```
+you should be able to see the submission in CRAB for the different reconstructions.
 
-## Multicrab
+## Multicrab (for MiniAOD/NanoAOD analysis)
 
 **Usage**:\
 `multicrab.py <pset> [options]`\

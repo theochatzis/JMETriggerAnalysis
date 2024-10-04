@@ -44,6 +44,7 @@ git cms-init
 git cms-merge-topic theochatzis:testMHTforFwd
 
 # In case you want to study the new CaloTowers update
+git cms-addpkg RecoLocalCalo/CaloTowersCreator
 git cherry-pick 979e2299d39a803bcdfec5b20ad083e67f7a30dc
 ## -----------------------------------------------------------------------------------
 
@@ -129,26 +130,9 @@ it will create a script that will submit the jobs and the different crab configs
 ### Analyzing Events from NTuples
 The directory for Analysis of the output NTuples is the `NTupleAnalysis`. You can see a structure with different plugins that are used for analysis, and python scripts that utilize those or provide tools in the `test` directory.
 
-A description of the basic tools can be found [here](https://github.com/theochatzis/JMETriggerAnalysis/tree/run3_13_0_X/NTupleAnalysis/test#readme).
+A description of the basic tools and how to use them can be found [here](https://github.com/theochatzis/JMETriggerAnalysis/tree/run3_13_0_X/NTupleAnalysis/test#readme).
 
-Utilizing those tools usually one can make scripts performing an analysis or a part of it. Some indicative scripts for the different parts are following:
 
-1. Adding the output NTuples:
-```
-JMETriggerAnalysis/NTupleAnalysis/test/addNTuples_2023Data.sh
-```
-2. Analyzing the NTuples creating multiple histograms with objects quantities/performances between different matched collections, for selections based on a trigger or any other selection. This contains all the needed information to make a trigger efficiency plot or performance plots.
-```
-JMETriggerAnalysis/NTupleAnalysis/test/runAnalysis_hltRun3_2023Data.sh
-```
-3. Plotting scripts. There are plotting scripts for performances like the following:
-```
-JMETriggerAnalysis/NTupleAnalysis/test/plotVersionCheck.sh
-```
-or for trigger efficiencies. For example:
-```
-JMETriggerAnalysis/NTupleAnalysis/test/plotEfficiencies_2023Data.sh
-```
 
 ----------
 
