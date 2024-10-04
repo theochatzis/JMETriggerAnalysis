@@ -45,9 +45,9 @@ def getJetEfficiencies(fpath, hltThreshold_SingleJet):
   binEdges_pT = array.array('d', [_tmp*20 for _tmp in range(35)] + [700+_tmp*50 for _tmp in range(6+1)])
   for _tmpRef in _tmpRefs:
     jetRefCollection = 'offlineAK4PFPuppiJetsCorrected' if _tmpRef == 'Offline' else 'ak4GenJetsNoNu'
-    _tmp_num = _tfile.Get('HLT_PFJet'+hltThreshold_SingleJet+'/'+jetRefCollection+'_EtaIncl_pt0')
+    _tmp_num = _tfile.Get('HLT_PFJet'+hltThreshold_SingleJet+'/'+jetRefCollection+'_BPixVeto_pt0')
 
-    _tmp_den = _tfile.Get('NoSelection/'+jetRefCollection+'_EtaIncl_pt0')
+    _tmp_den = _tfile.Get('NoSelection/'+jetRefCollection+'_BPixVeto_pt0')
 
     ret['Puppi_SingleJet_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
     ret['Puppi_SingleJet_wrt_'+_tmpRef].SetName('Puppi_SingleJet_wrt_'+_tmpRef)
@@ -118,11 +118,14 @@ def getMETEfficiencies(fpath, hltThreshold_MET):
 #     ret['PFMET_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
 #     ret['PFMET_wrt_'+_tmpRef].SetName('PFMET_wrt_'+_tmpRef)
     
-    metRefCollection = 'offlinePFPuppiMET_Type1' if _tmpRef == 'Offline' else 'genMETTrue'
+    metRefCollection = 'offlinePFPuppiMET_' if _tmpRef == 'Offline' else 'genMETTrue'
     
-    _tmp_num = _tfile.Get('HLT_PFMETTypeOne'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight'+'/'+metRefCollection+'_pt')
+    # _tmp_num = _tfile.Get('HLT_PFMET'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight'+'/'+metRefCollection+'_pt')
 
-    _tmp_den = _tfile.Get('NoSelection/'+metRefCollection+'_pt')
+    # _tmp_den = _tfile.Get('NoSelection/'+metRefCollection+'_pt')
+    _tmp_num = _tfile.Get('HLT_PFMET'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight/'+'offlinePFPuppiMET_pt')
+
+    _tmp_den = _tfile.Get('NoSelection/'+'offlinePFPuppiMET_pt')
 
     # _tmp_num = _tfile.Get('HLT_PFMETTypeOne'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight'+'/offlinePFPuppiMET_Type1_pt')
 
@@ -197,13 +200,13 @@ if __name__ == '__main__':
 
   inputDir = opts.inputDir
   
-  recosList = ['default', 'hcal_jecs2022']
+  recosList = ['default_eraC', 'default_eraD', 'option5_eraD']
   outputDir = opts.output
   MKDIRP(opts.output, verbose = (opts.verbosity > 0), dry_run = opts.dry_run)
 
   ## SingleJet
 
-  for _tmpJetThresh in ['60','110','140', '320', '500']:
+  for _tmpJetThresh in ['60','140', '320', '500']:
     print ('='*110)
     print ('\033[1m'+_tmpJetThresh+'\033[0m')
     print ('='*110)
@@ -214,13 +217,18 @@ if __name__ == '__main__':
 
     effysJet[_tmpJetThresh] = {}
     
-    effysJet[_tmpJetThresh]['default'] = getJetEfficiencies(
-    fpath = inputDir+'/test_L1T/hcal_jecs2022/harvesting/data.root',
+    effysJet[_tmpJetThresh]['default_eraC'] = getJetEfficiencies(
+    fpath = inputDir+'/data_BPixIssue_eraC/default/harvesting/data.root',
     hltThreshold_SingleJet = _tmpJetThresh,
     )
 
-    effysJet[_tmpJetThresh]['hcal_jecs2022'] = getJetEfficiencies(
-    fpath = inputDir+'/test_muon_data/hcal_jecs2022/harvesting/data.root',
+    effysJet[_tmpJetThresh]['default_eraD'] = getJetEfficiencies(
+    fpath = inputDir+'/data_BPixIssue_eraD/default/harvesting/data.root',
+    hltThreshold_SingleJet = _tmpJetThresh,
+    )
+
+    effysJet[_tmpJetThresh]['option5_eraD'] = getJetEfficiencies(
+    fpath = inputDir+'/data_BPixIssue_eraD/option5/harvesting/data.root',
     hltThreshold_SingleJet = _tmpJetThresh,
     )
 
@@ -241,23 +249,36 @@ if __name__ == '__main__':
         canvas = ROOT.TCanvas(tmpName(), tmpName(False))
         canvas.cd()
 
-        h0 = canvas.DrawFrame(0.2*float(_tmpJetThresh), 0.0001, min(3.0*float(_tmpJetThresh),1000.), 1.19)
+        h0 = canvas.DrawFrame(0.2*float(_tmpJetThresh), 0.0001, min(4.0*float(_tmpJetThresh),1000.), 1.19)
         #h0 = canvas.DrawFrame(0.0*float(_tmpJetThresh), 0.0001, 1000., 1.19)
 
         try:
-          effysJet[_tmpJetThresh]['default'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysJet[_tmpJetThresh]['default'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineWidth(2)
-          effysJet[_tmpJetThresh]['default'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerColor(1)
-          effysJet[_tmpJetThresh]['default'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineColor(1)
-          effysJet[_tmpJetThresh]['default'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineStyle(1)
-          effysJet[_tmpJetThresh]['default'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Draw('lepz')
+          effysJet[_tmpJetThresh]['default_eraC'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1)
+          effysJet[_tmpJetThresh]['default_eraC'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineWidth(2)
+          effysJet[_tmpJetThresh]['default_eraC'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerColor(1)
+          effysJet[_tmpJetThresh]['default_eraC'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineColor(1)
+          effysJet[_tmpJetThresh]['default_eraC'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineStyle(1)
+          effysJet[_tmpJetThresh]['default_eraC'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerStyle(8)
+          effysJet[_tmpJetThresh]['default_eraC'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1.0)
+          effysJet[_tmpJetThresh]['default_eraC'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Draw('ep')
 
-          effysJet[_tmpJetThresh]['hcal_jecs2022'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysJet[_tmpJetThresh]['hcal_jecs2022'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineWidth(2)
-          effysJet[_tmpJetThresh]['hcal_jecs2022'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerColor(4)
-          effysJet[_tmpJetThresh]['hcal_jecs2022'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineColor(4)
-          effysJet[_tmpJetThresh]['hcal_jecs2022'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineStyle(1)
-          effysJet[_tmpJetThresh]['hcal_jecs2022'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Draw('lepz')
+          effysJet[_tmpJetThresh]['default_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1)
+          effysJet[_tmpJetThresh]['default_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineWidth(2)
+          effysJet[_tmpJetThresh]['default_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerColor(2)
+          effysJet[_tmpJetThresh]['default_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineColor(2)
+          effysJet[_tmpJetThresh]['default_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineStyle(1)
+          effysJet[_tmpJetThresh]['default_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerStyle(8)
+          effysJet[_tmpJetThresh]['default_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1.0)
+          effysJet[_tmpJetThresh]['default_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Draw('ep')
+
+          effysJet[_tmpJetThresh]['option5_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1)
+          effysJet[_tmpJetThresh]['option5_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineWidth(2)
+          effysJet[_tmpJetThresh]['option5_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerColor(4)
+          effysJet[_tmpJetThresh]['option5_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineColor(4)
+          effysJet[_tmpJetThresh]['option5_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineStyle(1)
+          effysJet[_tmpJetThresh]['option5_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerStyle(8)
+          effysJet[_tmpJetThresh]['option5_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1.0)
+          effysJet[_tmpJetThresh]['option5_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Draw('ep')
         except: pass
 
         topLabel = ROOT.TPaveText(0.11, 0.93, 0.95, 0.98, 'NDC')
@@ -268,7 +289,7 @@ if __name__ == '__main__':
         topLabel.SetTextFont(42)
         topLabel.SetTextSize(0.035)
         topLabel.SetBorderSize(0)
-        topLabel.AddText('#font[61]{CMS} #font[52]{Run-3 Data} 2022 Muon RunG')
+        topLabel.AddText('#font[61]{CMS} #font[52]{Run-3 Data} 2023')
         topLabel.Draw('same')
 
         objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -302,10 +323,11 @@ if __name__ == '__main__':
         leg1.SetEntrySeparation(0.2) 
 
         try:
-          leg1.AddEntry(effysJet[_tmpJetThresh]['default'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'L1 seed', 'lp')
-          leg1.AddEntry(effysJet[_tmpJetThresh]['hcal_jecs2022'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'L1+HLT', 'lp')
+          leg1.AddEntry(effysJet[_tmpJetThresh]['default_eraC'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'No BPix', 'lp')
+          leg1.AddEntry(effysJet[_tmpJetThresh]['default_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'BPix', 'lp')
+          leg1.AddEntry(effysJet[_tmpJetThresh]['option5_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'BPix + doublet recovery', 'lp')
           #leg1.AddEntry(effysJet[_tmpJetThresh]['test_wrongJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'HCAL update+condDB Calibs', 'lp')
-          #leg1.AddEntry(effysJet[_tmpJetThresh]['hcal_jecs2022'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'HCAL update+fixed Calibs', 'lp')
+          #leg1.AddEntry(effysJet[_tmpJetThresh]['default_eraD'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'HCAL update+fixed Calibs', 'lp')
         except: pass
         leg1.Draw('same')
 
@@ -324,7 +346,7 @@ if __name__ == '__main__':
     
 
   ## HT
-  for _tmpHTThresh in ['180','250','350','510','780', '890', '1050']:
+  for _tmpHTThresh in ['780', '890', '1050']:
     print ('='*110)
     print ('\033[1m'+_tmpHTThresh+'\033[0m')
     print ('='*110)
@@ -334,12 +356,27 @@ if __name__ == '__main__':
     effysHT = {}
 
     effysHT[_tmpHTThresh] = {}
+    
+    effysHT[_tmpHTThresh]['default_eraC'] = getHTEfficiencies(
+    fpath = inputDir+'/data_BPixIssue_eraC/default/harvesting/data.root',
+    hltThreshold_HT = _tmpHTThresh,
+    )
 
-    for _tmpReco in recosList:
-      effysHT[_tmpHTThresh][_tmpReco] = getHTEfficiencies(
-       fpath = inputDir+'/test_muon_data/'+_tmpReco+'/harvesting/data.root',
-          hltThreshold_HT = _tmpHTThresh,
-      )
+    effysHT[_tmpHTThresh]['default_eraD'] = getHTEfficiencies(
+    fpath = inputDir+'/data_BPixIssue_eraD/default/harvesting/data.root',
+    hltThreshold_HT = _tmpHTThresh,
+    )
+
+    effysHT[_tmpHTThresh]['option5_eraD'] = getHTEfficiencies(
+    fpath = inputDir+'/data_BPixIssue_eraD/option5/harvesting/data.root',
+    hltThreshold_HT = _tmpHTThresh,
+    )
+
+    # for _tmpReco in recosList:
+    #   effysHT[_tmpHTThresh][_tmpReco] = getHTEfficiencies(
+    #    fpath = inputDir+'/test_muon_data/'+_tmpReco+'/harvesting/data.root',
+    #       hltThreshold_HT = _tmpHTThresh,
+    #   )
 
     for _tmpRef in [
       'Offline',
@@ -355,20 +392,33 @@ if __name__ == '__main__':
         h0 = canvas.DrawFrame(0.0*float(_tmpHTThresh), 0.0001, 1500., 1.19)
 
         try:
-          effysHT[_tmpHTThresh]['default'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysHT[_tmpHTThresh]['default'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineWidth(2)
-          effysHT[_tmpHTThresh]['default'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerColor(1)
-          effysHT[_tmpHTThresh]['default'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineColor(1)
-          effysHT[_tmpHTThresh]['default'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineStyle(1)
-          effysHT[_tmpHTThresh]['default'][_tmpType+'_HT_wrt_'+_tmpRef].Draw('lepz')
+          effysHT[_tmpHTThresh]['default_eraC'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1)
+          effysHT[_tmpHTThresh]['default_eraC'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineWidth(2)
+          effysHT[_tmpHTThresh]['default_eraC'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerColor(1)
+          effysHT[_tmpHTThresh]['default_eraC'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineColor(1)
+          effysHT[_tmpHTThresh]['default_eraC'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineStyle(1)
+          effysHT[_tmpHTThresh]['default_eraC'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerStyle(8)
+          effysHT[_tmpHTThresh]['default_eraC'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1.0)
+          effysHT[_tmpHTThresh]['default_eraC'][_tmpType+'_HT_wrt_'+_tmpRef].Draw('ep')
 
   
-          effysHT[_tmpHTThresh]['hcal_jecs2022'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysHT[_tmpHTThresh]['hcal_jecs2022'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineWidth(2)
-          effysHT[_tmpHTThresh]['hcal_jecs2022'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerColor(4)
-          effysHT[_tmpHTThresh]['hcal_jecs2022'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineColor(4)
-          effysHT[_tmpHTThresh]['hcal_jecs2022'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineStyle(1)
-          effysHT[_tmpHTThresh]['hcal_jecs2022'][_tmpType+'_HT_wrt_'+_tmpRef].Draw('lepz')
+          effysHT[_tmpHTThresh]['default_eraD'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1)
+          effysHT[_tmpHTThresh]['default_eraD'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineWidth(2)
+          effysHT[_tmpHTThresh]['default_eraD'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerColor(2)
+          effysHT[_tmpHTThresh]['default_eraD'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineColor(2)
+          effysHT[_tmpHTThresh]['default_eraC'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerStyle(8)
+          effysHT[_tmpHTThresh]['default_eraC'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1.0)
+          effysHT[_tmpHTThresh]['default_eraD'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineStyle(1)
+          effysHT[_tmpHTThresh]['default_eraD'][_tmpType+'_HT_wrt_'+_tmpRef].Draw('ep')
+
+          effysHT[_tmpHTThresh]['option5_eraD'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1)
+          effysHT[_tmpHTThresh]['option5_eraD'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineWidth(2)
+          effysHT[_tmpHTThresh]['option5_eraD'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerColor(4)
+          effysHT[_tmpHTThresh]['option5_eraD'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineColor(4)
+          effysHT[_tmpHTThresh]['option5_eraD'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineStyle(1)
+          effysHT[_tmpHTThresh]['default_eraC'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerStyle(8)
+          effysHT[_tmpHTThresh]['default_eraC'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1.0)
+          effysHT[_tmpHTThresh]['option5_eraD'][_tmpType+'_HT_wrt_'+_tmpRef].Draw('ep')
   
         except: pass
 
@@ -380,7 +430,7 @@ if __name__ == '__main__':
         topLabel.SetTextFont(42)
         topLabel.SetTextSize(0.035)
         topLabel.SetBorderSize(0)
-        topLabel.AddText('#font[61]{CMS} #font[52]{Run-3 Data} 2022 Muon RunG')
+        topLabel.AddText('#font[61]{CMS} #font[52]{Run-3 Data} 2023')
         topLabel.Draw('same')
 
         objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -413,10 +463,11 @@ if __name__ == '__main__':
         leg1.SetTextSize(0.05)
         leg1.SetEntrySeparation(0.2)
         try:
-          leg1.AddEntry(effysHT[_tmpHTThresh]['default'][_tmpType+'_HT_wrt_'+_tmpRef], 'Default', 'lp')
-          leg1.AddEntry(effysHT[_tmpHTThresh]['hcal_jecs2022'][_tmpType+'_HT_wrt_'+_tmpRef], 'HCAL update', 'lp')
+          leg1.AddEntry(effysHT[_tmpHTThresh]['default_eraC'][_tmpType+'_HT_wrt_'+_tmpRef], 'No BPix', 'lp')
+          leg1.AddEntry(effysHT[_tmpHTThresh]['default_eraD'][_tmpType+'_HT_wrt_'+_tmpRef], 'BPix', 'lp')
+          leg1.AddEntry(effysHT[_tmpHTThresh]['option5_eraD'][_tmpType+'_HT_wrt_'+_tmpRef], 'BPix + doublet recovery', 'lp')
           #leg1.AddEntry(effysHT[_tmpHTThresh]['test_wrongJECs'][_tmpType+'_HT_wrt_'+_tmpRef], 'HCAL update+condDB Calibs', 'lp')
-          #leg1.AddEntry(effysHT[_tmpHTThresh]['hcal_jecs2022'][_tmpType+'_HT_wrt_'+_tmpRef], 'HCAL update+fixed Calibs', 'lp')
+          #leg1.AddEntry(effysHT[_tmpHTThresh]['default_eraD'][_tmpType+'_HT_wrt_'+_tmpRef], 'HCAL update+fixed Calibs', 'lp')
         except: pass
         leg1.Draw('same')
 
@@ -436,7 +487,7 @@ if __name__ == '__main__':
 
   ## MET
   
-  for _tmpMETThresh in ['140']:
+  for _tmpMETThresh in ['120','140']:
     print ('='*110)
     print ('\033[1m'+_tmpMETThresh+'\033[0m')
     print ('='*110)
@@ -446,12 +497,27 @@ if __name__ == '__main__':
     effysMET = {}
 
     effysMET[_tmpMETThresh] = {}
+    
+    effysMET[_tmpMETThresh]['default_eraC'] = getMETEfficiencies(
+    fpath = inputDir+'/data_BPixIssue_eraC/default/harvesting/data.root',
+    hltThreshold_MET = _tmpMETThresh,
+    )
 
-    for _tmpReco in recosList:
-      effysMET[_tmpMETThresh][_tmpReco] = getMETEfficiencies(
-        fpath = inputDir+'/test_muon_data/'+_tmpReco+'/harvesting/data.root',
-          hltThreshold_MET = _tmpMETThresh,
-      )
+    effysMET[_tmpMETThresh]['default_eraD'] = getMETEfficiencies(
+    fpath = inputDir+'/data_BPixIssue_eraD/default/harvesting/data.root',
+    hltThreshold_MET = _tmpMETThresh,
+    )
+
+    effysMET[_tmpMETThresh]['option5_eraD'] = getMETEfficiencies(
+    fpath = inputDir+'/data_BPixIssue_eraD/option5/harvesting/data.root',
+    hltThreshold_MET = _tmpMETThresh,
+    )
+
+    # for _tmpReco in recosList:
+    #   effysMET[_tmpMETThresh][_tmpReco] = getMETEfficiencies(
+    #     fpath = inputDir+'/test_muon_data/'+_tmpReco+'/harvesting/data.root',
+    #       hltThreshold_MET = _tmpMETThresh,
+    #   )
 
     for _tmpRef in [
       'Offline',
@@ -462,7 +528,7 @@ if __name__ == '__main__':
       ]:
 
         for _tmpAlgo in [
-          'METTypeOne',
+          'MET',
         ]:
 
           # MET
@@ -472,20 +538,27 @@ if __name__ == '__main__':
           h0 = canvas.DrawFrame(0, 0.0001, 500, 1.19)
   
           try:
-            effysMET[_tmpMETThresh]['default'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerSize(1)
-            effysMET[_tmpMETThresh]['default'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineWidth(2)
-            effysMET[_tmpMETThresh]['default'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerColor(1)
-            effysMET[_tmpMETThresh]['default'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineColor(1)
-            effysMET[_tmpMETThresh]['default'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineStyle(1)
-            effysMET[_tmpMETThresh]['default'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].Draw('lepz')
+            effysMET[_tmpMETThresh]['default_eraC'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerSize(1)
+            effysMET[_tmpMETThresh]['default_eraC'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineWidth(2)
+            effysMET[_tmpMETThresh]['default_eraC'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerColor(1)
+            effysMET[_tmpMETThresh]['default_eraC'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineColor(1)
+            effysMET[_tmpMETThresh]['default_eraC'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineStyle(1)
+            effysMET[_tmpMETThresh]['default_eraC'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].Draw('lepz')
     
 
-            effysMET[_tmpMETThresh]['hcal_jecs2022'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerSize(1)
-            effysMET[_tmpMETThresh]['hcal_jecs2022'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineWidth(2)
-            effysMET[_tmpMETThresh]['hcal_jecs2022'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerColor(4)
-            effysMET[_tmpMETThresh]['hcal_jecs2022'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineColor(4)
-            effysMET[_tmpMETThresh]['hcal_jecs2022'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineStyle(1)
-            effysMET[_tmpMETThresh]['hcal_jecs2022'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].Draw('lepz')
+            effysMET[_tmpMETThresh]['default_eraD'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerSize(1)
+            effysMET[_tmpMETThresh]['default_eraD'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineWidth(2)
+            effysMET[_tmpMETThresh]['default_eraD'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerColor(2)
+            effysMET[_tmpMETThresh]['default_eraD'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineColor(2)
+            effysMET[_tmpMETThresh]['default_eraD'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineStyle(1)
+            effysMET[_tmpMETThresh]['default_eraD'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].Draw('lepz')
+
+            effysMET[_tmpMETThresh]['option5_eraD'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerSize(1)
+            effysMET[_tmpMETThresh]['option5_eraD'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineWidth(2)
+            effysMET[_tmpMETThresh]['option5_eraD'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerColor(4)
+            effysMET[_tmpMETThresh]['option5_eraD'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineColor(4)
+            effysMET[_tmpMETThresh]['option5_eraD'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineStyle(1)
+            effysMET[_tmpMETThresh]['option5_eraD'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].Draw('lepz')
     
           except: pass
   
@@ -497,7 +570,7 @@ if __name__ == '__main__':
           topLabel.SetTextFont(42)
           topLabel.SetTextSize(0.035)
           topLabel.SetBorderSize(0)
-          topLabel.AddText('#font[61]{CMS} #font[52]{Run-3 Data} VBF H #rightarrow Inv. PU 65')
+          topLabel.AddText('#font[61]{CMS} #font[52]{Run-3 Data} 2023')
           topLabel.Draw('same')
   
           objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -530,10 +603,11 @@ if __name__ == '__main__':
           leg1.SetTextSize(0.05)
           leg1.SetEntrySeparation(0.2)
           try:
-            leg1.AddEntry(effysMET[_tmpMETThresh]['default'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef], 'Default', 'lp')
-            leg1.AddEntry(effysMET[_tmpMETThresh]['hcal_jecs2022'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef], 'HCAL update', 'lp')
+            leg1.AddEntry(effysMET[_tmpMETThresh]['default_eraC'][_tmpType+'_MET_wrt_'+_tmpRef], 'No BPix', 'lp')
+            leg1.AddEntry(effysMET[_tmpMETThresh]['default_eraD'][_tmpType+'_MET_wrt_'+_tmpRef], 'BPix', 'lp')
+            leg1.AddEntry(effysMET[_tmpMETThresh]['option5_eraD'][_tmpType+'_MET_wrt_'+_tmpRef], 'BPix + doublet recovery', 'lp')
             #leg1.AddEntry(effysMET[_tmpMETThresh]['test_wrongJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef], 'HCAL update+condDB Calibs', 'lp')
-            #leg1.AddEntry(effysMET[_tmpMETThresh]['hcal_jecs2022'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef], 'HCAL update+fixed Calibs', 'lp')
+            #leg1.AddEntry(effysMET[_tmpMETThresh]['default_eraD'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef], 'HCAL update+fixed Calibs', 'lp')
           except: pass
           leg1.Draw('same')
   
