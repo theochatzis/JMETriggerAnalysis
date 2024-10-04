@@ -167,15 +167,21 @@ void AnalysisDriverBase::write(TFile& outFile) {
     if (hasTH1D(key)) {
       mapTH1D_.at(key)->SetName(keyTokens.begin()->c_str());
       mapTH1D_.at(key)->SetTitle(keyTokens.begin()->c_str());
-      mapTH1D_.at(key)->Write();
+      if (mapTH1D_.at(key)->GetEntries() > 0){ // only write outputs in case the histogram has entries
+        mapTH1D_.at(key)->Write();
+      }
     } else if (hasTH2D(key)) {
       mapTH2D_.at(key)->SetName(keyTokens.begin()->c_str());
       mapTH2D_.at(key)->SetTitle(keyTokens.begin()->c_str());
-      mapTH2D_.at(key)->Write();
+      if (mapTH2D_.at(key)->GetEntries() > 0){ // only write outputs in case the histogram has entries
+        mapTH2D_.at(key)->Write();
+      }
     } else if (hasTH3D(key)) {
       mapTH3D_.at(key)->SetName(keyTokens.begin()->c_str());
       mapTH3D_.at(key)->SetTitle(keyTokens.begin()->c_str());
-      mapTH3D_.at(key)->Write();
+      if (mapTH3D_.at(key)->GetEntries() > 0){ // only write outputs in case the histogram has entries
+        mapTH3D_.at(key)->Write();
+      }
     }
   }
 }
