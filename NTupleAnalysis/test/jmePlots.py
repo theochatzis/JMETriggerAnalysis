@@ -82,7 +82,7 @@ def plot(histograms, outputs, title, labels, legXY=[], ratio=False, ratioPadFrac
 
     xyMinMax = []
     if histograms[0].th1.InheritsFrom('TGraph'):
-       xyMinMax = get_xyminmax_from_graph(histograms[0].th1)
+       xyMinMax = get_xyminmax_from_graph(histograms[0].th1, error=False)
 
     nvalid_histograms = len(histograms)
 
@@ -126,7 +126,7 @@ def plot(histograms, outputs, title, labels, legXY=[], ratio=False, ratioPadFrac
                  xMinCalc = min(xMinCalc, tmpXMin) if xMinCalc is not None else tmpXMin
                  xMaxCalc = max(xMaxCalc, tmpXMax) if xMaxCalc is not None else tmpXMax
               else:
-                 _tmp_xyMinMax = get_xyminmax_from_graph(_tmp.th1)
+                 _tmp_xyMinMax = get_xyminmax_from_graph(_tmp.th1, error=False)
                  xMinCalc = min(xMinCalc, _tmp_xyMinMax[0]) if xMinCalc is not None else _tmp_xyMinMax[0]
                  xMaxCalc = max(xMaxCalc, _tmp_xyMinMax[2]) if xMaxCalc is not None else _tmp_xyMinMax[2]
     else:
@@ -143,7 +143,7 @@ def plot(histograms, outputs, title, labels, legXY=[], ratio=False, ratioPadFrac
               for i_bin in range(1, _tmp.th1.GetNbinsX()+1):
                   HMAX = max(HMAX, (_tmp.th1.GetBinContent(i_bin) + _tmp.th1.GetBinError(i_bin)))
            else:
-              _tmp_xyMinMax = get_xyminmax_from_graph(_tmp.th1)
+              _tmp_xyMinMax = get_xyminmax_from_graph(_tmp.th1, error=False)
               HMIN = min(HMIN, _tmp_xyMinMax[1])
               HMAX = max(HMAX, _tmp_xyMinMax[3])
 
@@ -179,8 +179,8 @@ def plot(histograms, outputs, title, labels, legXY=[], ratio=False, ratioPadFrac
           for tmpIdx, tmpLab in enumerate(xBinLabels):
               h0.GetXaxis().SetBinLabel(tmpIdx+1, tmpLab)
 
-#      h0.GetXaxis().SetRangeUser(XMIN, XMAX)
-#      h0.GetYaxis().SetRangeUser(YMIN, YMAX)
+       h0.GetXaxis().SetRangeUser(XMIN, XMAX)
+       h0.GetYaxis().SetRangeUser(YMIN, YMAX)
 
        if leg:
           leg.Draw('same')
@@ -334,11 +334,11 @@ def plot(histograms, outputs, title, labels, legXY=[], ratio=False, ratioPadFrac
            if _tmp.th1 is None: continue
            if hasattr(_tmp.th1, 'GetNbinsX'):
               for _tmpb in range(1, _tmp.th1.GetNbinsX()+1):
-                  if (abs(_tmp.th1.GetBinContent(_tmpb)) > 1e-7) and (abs(_tmp.th1.GetBinError(_tmpb)) > 1e-7):
+                  if (abs(_tmp.th1.GetBinContent(_tmpb)) > 1e-7) and (abs(_tmp.th1.GetBinError(_tmpb)) > 1e-7) and (abs(_tmp.th1.GetBinError(_tmpb))/abs(_tmp.th1.GetBinContent(_tmpb)) < 0.10): # ignore bins where the error bar is higher than 10%.
                      h2max = max(h2max, _tmp.th1.GetBinContent(_tmpb)+_tmp.th1.GetBinError(_tmpb)) if (h2max is not None) else _tmp.th1.GetBinContent(_tmpb)+_tmp.th1.GetBinError(_tmpb)
                      h2min = min(h2min, _tmp.th1.GetBinContent(_tmpb)-_tmp.th1.GetBinError(_tmpb)) if (h2min is not None) else _tmp.th1.GetBinContent(_tmpb)-_tmp.th1.GetBinError(_tmpb)
            else:
-              _tmp_xyMinMax = get_xyminmax_from_graph(_tmp.th1)
+              _tmp_xyMinMax = get_xyminmax_from_graph(_tmp.th1, error=False)
               h2min = min(h2min, _tmp_xyMinMax[1]) if (h2min is not None) else _tmp_xyMinMax[1]
               h2max = max(h2max, _tmp_xyMinMax[3]) if (h2max is not None) else _tmp_xyMinMax[3]
 
@@ -385,8 +385,8 @@ def getPlotLabels(key, isProfile, isEfficiency, keyword):
     elif key.startswith('offlineAK4PFPuppiJetsCorrected_'):  _objLabel = 'Offline AK4PuppiJets'
     elif key.startswith('offlineAK8PFPuppiJetsCorrected_'):  _objLabel = 'Offline AK8PuppiJets'
     elif key.startswith('hltAK4CaloJets_'):            _objLabel = 'HLT AK4CaloJets'
-    #elif key.startswith('hltAK4CaloJetsCorrected_'):   _objLabel = 'HLT AK4CaloJetsCorrected'
-    elif key.startswith('hltAK4CaloJetsCorrected_'):   _objLabel = 'PFHC/JEC 2023'
+    elif key.startswith('hltAK4CaloJetsCorrected_'):   _objLabel = 'HLT AK4CaloJetsCorrected'
+    #elif key.startswith('hltAK4CaloJetsCorrected_'):   _objLabel = 'PFHC/JEC 2023'
     elif key.startswith('hltAK4PFClusterJets_'):            _objLabel = 'HLT AK4PFClusterJets'
     elif key.startswith('hltAK4PFClusterJetsCorrected_'):   _objLabel = 'HLT AK4PFClusterJetsCorrected'
     elif key.startswith('hltAK4PFJets_'):              _objLabel = 'HLT AK4PFJets'
@@ -658,10 +658,12 @@ class PlotConfig:
         self.titleY = ''
         self.objLabel = ''
 #        self.divideByBinWidth = False
-#        self.normalizedToUnity = False
+        self.normalizedToUnity = True
         self.legXY = [0.75, 0.60, 0.95, 0.90]
         self.xMin = None
         self.xMax = None
+        self.yMin = None
+        self.yMax = None
         self.ratio = True
         self.autoRangeX = True
         self.xLabelSize = None
@@ -1171,8 +1173,121 @@ def getPlotConfig(key, keyword, inputList):
             #cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('MatchedTohltCaloCorr_', 'MatchedToofflPFPuppiCorr_'), Legend='Offline PUPPI', Color=ROOT.kPink, LineStyle=2) if idx==0 else None]
             cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='Calo ('+inp['Legend']+')', Color=inp['LineColor'])]
        '''
+    
+        ###
+    ### version_check_data_new
+    ###
+    elif keyword == 'version_check_data_new':
+
+       if ('/' in key) and (not key.startswith('NoSelection/')):
+          if ('_pt0' not in key_basename) or key_basename.endswith('pt0_eff') or \
+             key_basename.endswith('pt0') or ('pt0_over' in key_basename):
+             return
+
+      #  if key.endswith('_pt_eff'):
+      #     cfg.xMin, cfg.xMax = 0., 300.
+       
+       cfg.legXY = [0.50, 0.22, 1.0, 0.55]
+
+       ## MET
+      #  if 'hltPFMET_' in key:
+      #     for idx, inp in enumerate(inputList):
+      #       cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='PF ('+inp['Legend']+')', Color=inp['LineColor'])]
+
+      #  elif 'hltPFMETTypeOne_' in key:
+      #     for idx, inp in enumerate(inputList):
+      #       cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='PF ('+inp['Legend']+')', Color=inp['LineColor'])]
+
+       ## Jets
+      #  elif 'hltAK4PFJets_' in key:
+      #     for idx, inp in enumerate(inputList):
+      #       cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='PF ('+inp['Legend']+')', Color=inp['LineColor'])]
+       
+      #  if ('hltAK4PFJetsCorrected_' in key) and ('MatchedToGEN_' in key):
+      #     for idx, inp in enumerate(inputList):
+      #       #cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('hltAK4PFJetsCorrected_', 'offlineAK4PFPuppiJetsCorrected_'), Legend='Offline', Color=ROOT.kBlack) if idx==0 else None]
+      #       cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='PF ('+inp['Legend']+')', Color=inp['LineColor'])]
        
        
+       
+      #  if 'hltAK4PFJetsCorrected_'  in key:
+      #     distributionQuantity = ((('EtaIncl' in key) and (key.endswith('_pt') or key.endswith('_eta') or key.endswith('_phi') or key.endswith('_HT'))) or key.endswith('_chargedHadronEnergyFraction') or key.endswith('_chargedHadronMultiplicity') or key.endswith('_neutralHadronEnergyFraction') or key.endswith('_neutralHadronMultiplicity') or key.endswith('_photonEnergyFraction') or key.endswith('_photonMultiplicity') ) 
+      #     cfg.logX=(key.endswith('_pt') or key.endswith('_pt_eff'))
+      #     cfg.logY=((key.endswith('_pt') or key.endswith('_HT')) and not (('RMS' in key) or ('Mean' in key)) )
+      #     if ('_MatchedToOffline_' in key) and (distributionQuantity or ('pt_overOffline_Mean_wrt_Offline_pt' in key) or ('pt_overOffline_RMSOverMean_wrt_Offline_pt' in key) or ('pt_overOffline_RMSOverMean_wrt_Offline_simNPU' in key) or ('pt_overOffline' in key) or ('_pt_eff' in key) or ('_phi' in key) or (('EtaIncl' in key) and (('_eta_eff' in key) or ('pt_overOffline_Mean_wrt_Offline_eta' in key)))):
+      #        for idx, inp in enumerate(inputList):
+      #          #if 'Pt' in key:
+      #          #   break
+      #          if ('RMS_wrt_Offline_pt' in key) or ('NotMatchedToOffline_' in key) or key.endswith('_HT'):
+      #             cfg.legXY = [0.50, 0.50, 0.95, 0.95]
+      #          cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('hltAK4PFJetsCorrected_', 'hltAK4CaloJetsCorrected_'), Legend='Calo', Color=ROOT.kBlue) if idx==0 else None]
+      #          cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='PF ('+inp['Legend']+')', Color=inp['LineColor'])]
+       
+      #  elif ('offlineAK4PFPuppiJetsCorrected_' in key) and ('_MatchedTohltPFCorr_' in key) and ((('eta_eff' in key) and ('EtaIncl' in key)) or ('pt_eff' in key) or ('_phi_eff' in key)):
+      #     cfg.logX=(key.endswith('_pt') or key.endswith('_pt_eff'))
+      #     cfg.logY=((key.endswith('_pt')  or key.endswith('_HT')) and not (('RMS' in key) or ('Mean' in key)) )
+      #     for idx, inp in enumerate(inputList):
+      #       cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('MatchedTohltPFCorr_', 'MatchedTohltCaloCorr_'), Legend='Calo', Color=ROOT.kBlue) if idx==0 else None]
+      #       cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='PF ('+inp['Legend']+')', Color=inp['LineColor'])] 
+
+       if 'hltAK4CaloJetsCorrected_'  in key:
+          distributionQuantity = (((key.endswith('_pt') or key.endswith('_eta') or key.endswith('_phi') or key.endswith('_HT'))) or key.endswith('_chargedHadronEnergyFraction') or key.endswith('_chargedHadronMultiplicity') or key.endswith('_neutralHadronEnergyFraction') or key.endswith('_neutralHadronMultiplicity') or key.endswith('_photonEnergyFraction') or key.endswith('_photonMultiplicity') ) 
+          cfg.logX=(key.endswith('_pt') or key.endswith('_pt_eff'))
+          cfg.logY=((key.endswith('_pt') or key.endswith('_HT')) and not (('RMS' in key) or ('Mean' in key)) )
+          if ('_MatchedToOffline_' in key) and (distributionQuantity or ('pt_overOffline_Mean_wrt_Offline_pt' in key) or ('pt_overOffline_RMSOverMean_wrt_Offline_pt' in key) or ('pt_overOffline_RMSOverMean_wrt_Offline_simNPU' in key) or ('pt_overOffline' in key) or ('_pt_eff' in key) or ('_phi' in key) or (('EtaIncl' in key) and (('_eta_eff' in key) or ('pt_overOffline_Mean_wrt_Offline_eta' in key)))):
+             for idx, inp in enumerate(inputList):
+               #if 'Pt' in key:
+               #   break
+               if ('RMS_wrt_Offline_pt' in key):
+                  cfg.xMin=40
+                  cfg.xMax=300
+               if ('RMS_wrt_Offline_pt' in key) or ('NotMatchedToOffline_' in key) or key.endswith('_HT'):
+                  cfg.legXY = [0.50, 0.50, 0.95, 0.95]
+               cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('hltAK4CaloJetsCorrected_', 'hltAK4PFJetsCorrected_'), Legend='PF', Color=ROOT.kBlue) if idx==0 else None]
+               cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='Calo ('+inp['Legend']+')', Color=inp['LineColor'])]
+       
+       elif ('offlineAK4CaloPuppiJetsCorrected_' in key) and ('_MatchedTohltCaloCorr_' in key) and ((('eta_eff' in key) and ('EtaIncl' in key)) or ('pt_eff' in key) or ('_phi_eff' in key)):
+          cfg.logX=(key.endswith('_pt') or key.endswith('_pt_eff'))
+          cfg.logY=((key.endswith('_pt')  or key.endswith('_HT')) and not (('RMS' in key) or ('Mean' in key)) )
+          for idx, inp in enumerate(inputList):
+            cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('MatchedTohltCaloCorr_', 'MatchedTohltPFCorr_'), Legend='PF', Color=ROOT.kBlue) if idx==0 else None]
+            cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='Calo ('+inp['Legend']+')', Color=inp['LineColor'])] 
+
+      #  if 'hltAK8PFJetsCorrected_'  in key:
+      #     distributionQuantity = ((('EtaIncl' in key) and (key.endswith('_pt') or key.endswith('_eta') or key.endswith('_phi') or key.endswith('_HT'))) or key.endswith('_chargedHadronEnergyFraction') or key.endswith('_chargedHadronMultiplicity') or key.endswith('_neutralHadronEnergyFraction') or key.endswith('_neutralHadronMultiplicity') or key.endswith('_photonEnergyFraction') or key.endswith('_photonMultiplicity') ) 
+      #     cfg.logX=(key.endswith('_pt') or key.endswith('_pt_eff'))
+      #     cfg.logY=((key.endswith('_pt') or key.endswith('_HT')) and not (('RMS' in key) or ('Mean' in key)) )
+      #     if ('_MatchedToGEN_' in key) and (distributionQuantity or ('pt_overGEN_Mean_wrt_GEN_pt' in key) or ('pt_overGEN_RMSOverMean_wrt_GEN_pt' in key) or ('pt_overGEN_RMSOverMean_wrt_GEN_simNPU' in key) or ('pt_overGEN' in key) or ('_pt_eff' in key) or ('_phi' in key) or (('EtaIncl' in key) and (('_eta_eff' in key) or ('pt_overGEN_Mean_wrt_GEN_eta' in key)))):
+      #        for idx, inp in enumerate(inputList):
+      #          #if 'Pt' in key:
+      #          #   break
+      #          if ('RMS_wrt_GEN_pt' in key) or ('NotMatchedToGEN_' in key) or key.endswith('_HT'):
+      #             cfg.legXY = [0.50, 0.50, 0.95, 0.95]
+      #          cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('hltAK8PFJetsCorrected_', 'hltAK8CaloJetsCorrected_'), Legend='Calo', Color=ROOT.kBlue) if idx==0 else None]
+      #          cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='PF ('+inp['Legend']+')', Color=inp['LineColor'])]
+       
+      #  elif ('ak8GenJetsNoNu' in key) and ('_MatchedTohltPFCorr_' in key) and ((('eta_eff' in key) and ('EtaIncl' in key)) or ('pt_eff' in key) or ('_phi_eff' in key)):
+      #     cfg.logX=(key.endswith('_pt') or key.endswith('_pt_eff'))
+      #     cfg.logY=((key.endswith('_pt')  or key.endswith('_HT')) and not (('RMS' in key) or ('Mean' in key)) )
+      #     for idx, inp in enumerate(inputList):
+      #       cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('MatchedTohltPFCorr_', 'MatchedTohltCaloCorr_'), Legend='Calo', Color=ROOT.kBlue) if idx==0 else None]
+      #       cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='PF ('+inp['Legend']+')', Color=inp['LineColor'])] 
+      
+      #  elif ( ('hltPFMET' in key ) and ( (key=='NoSelection/hltPFMET_pt') or (key=='NoSelection/hltPFMET_phi') or (('_Mean_' in key) or ('_RMSOverMean_' in key)) ) ):
+      #     cfg.logY=(key=='NoSelection/hltPFMET_pt')
+      #     for idx, inp in enumerate(inputList):
+      #       cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='HLT PF MET('+inp['Legend']+')')]
+       elif ( ('hltCaloMET' in key ) and ( (key=='NoSelection/hltCaloMET_pt') or (key=='NoSelection/hltCaloMET_phi') or (('_Mean_' in key) or ('_RMSOverMean_' in key) or (('_RMS_' in key))) ) ):
+          cfg.logY=(key=='NoSelection/hltCaloMET_pt')
+ 
+          if ('_wrt_Offline_pt' in key):
+             cfg.xMin=50
+             cfg.xMax=200
+             cfg.legXY = [0.50, 0.50, 0.95, 0.95]
+          for idx, inp in enumerate(inputList):
+            cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key.replace('hltCaloMET_', 'hltPFMET_'), Legend='PF', Color=ROOT.kBlue) if idx==0 else None]
+            cfg.hists += [getHistogram(plotCfg=cfg, inputDict=inp, key=key, Legend='HLT Calo MET('+inp['Legend']+')')]
+
     ###
     ### version_check_mc_raw
     ###
@@ -2718,6 +2833,8 @@ if __name__ == '__main__':
              'logY': _plotConfig.logY,
              'xMin': _plotConfig.xMin,
              'xMax': _plotConfig.xMax,
+             'yMin': _plotConfig.yMin,
+             'yMax': _plotConfig.yMax,
              'autoRangeX': _plotConfig.autoRangeX,
              'xLabelSize': _plotConfig.xLabelSize,
              'xBinLabels': _plotConfig.xBinLabels,
