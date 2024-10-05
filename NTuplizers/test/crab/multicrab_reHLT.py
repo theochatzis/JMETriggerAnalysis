@@ -84,23 +84,23 @@ def submit(config):
 ## loop over bpix cases and samples 
 for reco in recoOptions:
     config.JobType.pyCfgParams = ['reco='+reco]
-    for input_dataset in [dataset_flatPU, dataset_noPU]:
-        output_requestName = job_name+'_'+getOutputName(input_dataset.split('/')[2])+reco
-        config.General.requestName = output_requestName
-        config.Data.outLFNDirBase = '/store/user/%s/%s/%s'%(getUsername(),job_name,output_requestName)
-        config.Data.inputDataset = input_dataset
-        ## adding needed input files for calibrations and corresponding command arguments per job
-        config.JobType.inputFiles = []
-        if reco in recoOptionsPFHCs.keys():
-            config.JobType.inputFiles.append(input_file_dir + recoOptionsPFHCs[reco])
-            config.JobType.pyCfgParams.append('pfhcDBfile='+recoOptionsPFHCs[reco])
-        if reco inrecoOptionsJECs.keys() :
-            config.JobType.inputFiles.append(input_file_dir + recoOptionsJECs[reco])
-            config.JobType.pyCfgParams.append('jecDBfile='+recoOptionsJECs[reco])
-
-        
-        # needed to be able to use pyCfgParams 
-        p = Process(target=submit, args=(config,))
-        p.start()
-        p.join()
+    
+    output_requestName = job_name+'_'+getOutputName(input_dataset.split('/')[2])+reco
+    config.General.requestName = output_requestName
+    config.Data.outLFNDirBase = '/store/user/%s/%s/%s'%(getUsername(),job_name,output_requestName)
+    config.Data.inputDataset = primary_dataset
+    config.Data.secondaryInputDataset = secondary_dataset
+    ## adding needed input files for calibrations and corresponding command arguments per job
+    config.JobType.inputFiles = []
+    if reco in recoOptionsPFHCs.keys():
+        config.JobType.inputFiles.append(input_file_dir + recoOptionsPFHCs[reco])
+        config.JobType.pyCfgParams.append('pfhcDBfile='+recoOptionsPFHCs[reco])
+    if reco in recoOptionsJECs.keys() :
+        config.JobType.inputFiles.append(input_file_dir + recoOptionsJECs[reco])
+        config.JobType.pyCfgParams.append('jecDBfile='+recoOptionsJECs[reco])
+    
+    # needed to be able to use pyCfgParams 
+    p = Process(target=submit, args=(config,))
+    p.start()
+    p.join()
 
