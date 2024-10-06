@@ -224,7 +224,7 @@ if opts.pfhcDBfile is not None:
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('PFCalibrationRcd'),
-        tag = cms.string('PFCalibration_CMSSW_13_0_0_HLT_126X_v4_mcRun3_2023'),
+        tag = cms.string('PFCalibration_HLT_133X_mcRun3_2024_realistic_v9'),
         label = cms.untracked.string('HLT'),
       ),
     ),
@@ -241,22 +241,22 @@ if opts.jecDBfile is not None:
     toGet = cms.VPSet(
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK4CaloHLT'),
+        tag = cms.string('JetCorrectorParametersCollection_Run3Winter24Digi_AK4CaloHLT'),
         label = cms.untracked.string('AK4CaloHLT'),
       ),
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK4PFHLT'),
+        tag = cms.string('JetCorrectorParametersCollection_Run3Winter24Digi_AK4PFHLT'),
         label = cms.untracked.string('AK4PFHLT'),
       ),
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK8CaloHLT'),
+        tag = cms.string('JetCorrectorParametersCollection_Run3Winter24Digi_AK8CaloHLT'),
         label = cms.untracked.string('AK8CaloHLT'),
       ),
       cms.PSet(
         record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_Run3Winter23Digi_AK8PFHLT'),
+        tag = cms.string('JetCorrectorParametersCollection_Run3Winter24Digi_AK8PFHLT'),
         label = cms.untracked.string('AK8PFHLT'),
       ),
     ),
