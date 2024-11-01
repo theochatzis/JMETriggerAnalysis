@@ -48,7 +48,7 @@ fi
 
 
 for recoKey in "${recoKeys[@]}"; do
-  python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple_cfg.py dumpPython=.tmp_cfg.py reco=${recoKey} globalTag=140X_mcRun3_2024_realistic_EOR3_TkDPGv6
+  python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple_cfg.py dumpPython=.tmp_cfg.py reco=${recoKey}
 
   for sampleKey in ${!samplesMap[@]}; do
     sampleName=${samplesMap[${sampleKey}]}
