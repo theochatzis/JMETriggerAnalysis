@@ -10,23 +10,25 @@ fi
 NEVT=500000
 
 
-OUTPUT_DIR_EOS=/eos/user/${USER:0:1}/${USER}/JMETriggerAnalysis_samples2023
+OUTPUT_DIR_EOS=/eos/user/${USER:0:1}/${USER}/samples2023
 ODIR=${1}
 
 
 declare -A samplesMap
 
 # QCD 
-#samplesMap["Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65"]='/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter23MiniAOD-126X_mcRun3_2023_forPU65_v1-v2/MINIAODSIM'
+samplesMap["Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65"]='/QCD_Pt-15to7000_TuneCP5_Flat_13p6TeV_pythia8/Run3Winter24MiniAOD-NoPU_133X_mcRun3_2024_realistic_v9-v2/MINIAODSIM'
 
+# 
+# 
 # VBF H(125)->Invisible
 #samplesMap["Run3Winter23_VBF_HToInvisible_13p6TeV_PU65"]="/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter24MiniAOD-133X_mcRun3_2024_realistic_v9-v3/MINIAODSIM"
-samplesMap["Run3Summer23BPix_VBF_HToInvisible"]="/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixMiniAODv4-130X_mcRun3_2023_realistic_postBPix_v6-v2/MINIAODSIM"
+#samplesMap["Run3Summer23BPix_VBF_HToInvisible"]="/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixMiniAODv4-130X_mcRun3_2023_realistic_postBPix_v6-v2/MINIAODSIM"
 #"/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixDRPremix-130X_mcRun3_2023_realistic_postBPix_v6-v2/GEN-SIM-RAW"
 
 recoKeys=(
   default
-  testMHT
+  caloTowers_thresholds
 )
 
 if [ -d ${OUTPUT_DIR_EOS}/${ODIR} ]; then
@@ -46,7 +48,7 @@ fi
 
 
 for recoKey in "${recoKeys[@]}"; do
-  python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple_cfg.py dumpPython=.tmp_cfg.py 
+  python3 ${CMSSW_BASE}/src/JMETriggerAnalysis/NTuplizers/test/jmeTriggerNTuple_cfg.py dumpPython=.tmp_cfg.py reco=${recoKey} globalTag=140X_mcRun3_2024_realistic_EOR3_TkDPGv6
 
   for sampleKey in ${!samplesMap[@]}; do
     sampleName=${samplesMap[${sampleKey}]}
