@@ -338,7 +338,7 @@ process.jescESSource = cms.ESSource('PoolDBESSource',
   toGet = cms.VPSet(
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
-      tag = cms.string('JetCorrectorParametersCollection_Phase2Spring24_MC_'+('' if opts.reco == 'default' else (opts.reco+'_'))+'AK4PFPuppiHLT'),
+      tag = cms.string('JetCorrectorParametersCollection_Phase2Spring24_MC_'+opts.reco+'_AK4PFPuppiHLT'),
       label = cms.untracked.string('AK4PFPuppi'),
     ),
   ),
