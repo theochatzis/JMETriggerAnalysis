@@ -1,18 +1,18 @@
 #!/bin/bash -e
 
-   hltGetConfiguration /dev/CMSSW_14_0_0/GRun \
-   --globaltag auto:phase1_2024_realistic \
+   hltGetConfiguration /dev/CMSSW_14_2_0/GRun \
+   --globaltag 142X_mcRun3_2025_realistic_v7 \
    --mc \
    --unprescale \
    --output minimal \
    --max-events 100 \
-   --input /store/mc/Run3Winter24Digi/TT_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/133X_mcRun3_2024_realistic_v8-v2/80000/dc984f7f-2e54-48c4-8950-5daa848b6db9.root \
-   --eras Run3_2024 --l1-emulator uGT --l1 L1Menu_Collisions2024_v1_3_0_xml \
+   --input /store/mc/Run3Winter25Digi/TT_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/142X_mcRun3_2025_realistic_v4-v2/140000/c5287ea9-2b85-4cf6-bb9e-59c083dc73eb.root \
+   --eras Run3_2025 --l1-emulator uGT --l1 L1Menu_Collisions2024_v1_3_0_xml \
    --path MC_*,HLTriggerF*,Status*,HLT_PFJet*,HLT_PFHT*,HLT_PFMET*_PFMHT*_IDTight_v* \
    > tmp.py
 
 # dump configuration 
-edmConfigDump tmp.py > "${CMSSW_BASE}"/src/JMETriggerAnalysis/Common/python/configs/HLT_dev_CMSSW_14_0_0_GRun_configDump.py
+edmConfigDump tmp.py > "${CMSSW_BASE}"/src/JMETriggerAnalysis/Common/python/configs/HLT_dev_CMSSW_14_2_0_GRun_configDump.py
 
 #test running it
 #cmsRun tmp.py &> test.log

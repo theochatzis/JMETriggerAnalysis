@@ -1,7 +1,7 @@
 #!/bin/bash
 base_dir=/eos/user/t/tchatzis/JRA_NTuples_Winter24/ 
 # Define lists
-bpix_categories=("BPix" "BPixPlus" "BPixMinus" "noBPix")
+bpix_categories=("BPix" "FPix" "noBPix")
 samples_labels=("FlatPU0to80" "NoPU")
 
 # Double loop over the lists

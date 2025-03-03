@@ -78,23 +78,56 @@ opts.parseArguments()
 update_jmeCalibs = False
 
 if opts.reco == 'default':
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_0_0_GRun_configDump import cms, process
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_2_0_GRun_configDump import cms, process
 
-elif opts.reco == 'caloTowers_thresholds':
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_0_0_GRun_configDump import cms, process
-  from HLTrigger.Configuration.common import producers_by_type
-  for producer in producers_by_type(process, "CaloTowersCreator"):
-        producer.EcalRecHitThresh = cms.bool(True)
+elif opts.reco == 'ca_mkfit':
+   from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_2_0_GRun_configDump import cms, process
+   from HLTrigger.Configuration.customize_CAPixelOnlyRetune import customize_CAPixelOnlyRetuneSameEff
+   process = customize_CAPixelOnlyRetuneSameEff(process)
+   from RecoTracker.MkFit.customizeHLTIter0ToMkFit import customizeHLTIter0ToMkFit
+   process = customizeHLTIter0ToMkFit(process)
+
+elif opts.reco == 'ca_mkfit_bpixl1':
+   from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_2_0_GRun_configDump import cms, process
+   from HLTrigger.Configuration.customize_CAPixelOnlyRetune import customize_CAPixelOnlyRetuneSameEff
+   process = customize_CAPixelOnlyRetuneSameEff(process)
+   from RecoTracker.MkFit.customizeHLTIter0ToMkFit import customizeHLTIter0ToMkFit
+   process = customizeHLTIter0ToMkFit(process)
+
+   process.hltSiPixelClustersSoA.clusterThreshold_layer1 = 2000
+   process.hltSiPixelClusters.clusterThreshold_layer1 = 2000
+
+# elif opts.reco == 'caloTowers_thresholds':
+#   from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_2_0_GRun_configDump import cms, process
+#   from HLTrigger.Configuration.common import producers_by_type
+#   for producer in producers_by_type(process, "CaloTowersCreator"):
+#         producer.EcalRecHitThresh = cms.bool(True)
   update_jmeCalibs = True
 
 elif opts.reco == 'testMHT':
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_0_0_GRun_configDump import cms, process
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_2_0_GRun_configDump import cms, process
   # customize MHT definition 
   from HLTrigger.Configuration.customizerHLTforMHT import customizerHLTforMHT
   process = customizerHLTforMHT(process)
 
+elif opts.reco == 'mixedPFPuppi':
+  # adding mixed tracking in PF
+  print("adding mixed tracking in PF")
+  from HLTrigger.Configuration.customizeHLTforMixedTrkPUPPI import *
+  process = customizeHLTForMixedPF(process)
+   # adding CHS/PUPPI
+  print("adding CHS/PUPPI")
+  process = addPaths_MC_JMEPFCHS(process)
+  process = addPaths_MC_JMEPFPuppi(process)[0]
+
 else:
   raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
+
+# Use always the Ecal PF RecHit Thresholds in Calo Towers:
+from HLTrigger.Configuration.common import producers_by_type
+for producer in producers_by_type(process, "CaloTowersCreator"):
+  producer.EcalRecHitThresh = cms.bool(True)
+
 
 # By pass global tag of menu if needed
 if opts.globalTag is not None:
@@ -254,7 +287,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     #hltPixelVertices = cms.InputTag('hltPixelVertices'),
     #hltTrimmedPixelVertices = cms.InputTag('hltTrimmedPixelVertices'),
     #hltVerticesPF = cms.InputTag('hltVerticesPF'),
-    offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    #offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
   ),
 
   recoPFCandidateCollections = cms.PSet(
@@ -308,7 +341,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   patJetCollections = cms.PSet(
 
     #offlineAK4PFCHSJetsCorrected = cms.InputTag('slimmedJets'),
-    offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
+    #offlineAK4PFPuppiJetsCorrected = cms.InputTag('slimmedJetsPuppi'),
     #offlineAK8PFPuppiJetsCorrected = cms.InputTag('slimmedJetsAK8'),
   ),
 
@@ -321,7 +354,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   recoCaloMETCollections = cms.PSet(
 
     hltCaloMET = cms.InputTag('hltMet'),
-    hltCaloMETTypeOne = cms.InputTag('hltCaloMETTypeOne'),
+    #hltCaloMETTypeOne = cms.InputTag('hltCaloMETTypeOne'),
   ),
 
 # recoPFClusterMETCollections = cms.PSet(
@@ -345,7 +378,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   patMETCollections = cms.PSet(
 
     #offlinePFMET = cms.InputTag('slimmedMETs'),
-    offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
+    #offlinePFPuppiMET = cms.InputTag('slimmedMETsPuppi'),
   ),
 
   recoMuonCollections = cms.PSet(
@@ -397,25 +430,7 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
-    '/store/relval/CMSSW_14_0_9/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_140X_mcRun3_2024_realistic_EOR3_TkDPGv6_RV245_2024-v1/2580000/0008bc3f-5e69-45fb-a46d-103c9ee4c9aa.root'
-    #'/store/mc/Run3Summer23BPixDRPremix/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/130X_mcRun3_2023_realistic_postBPix_v6-v2/2830000/00500cd3-78c5-44f0-959e-87343b2f925b.root'
-    #'/store/mc/Run3Winter24Digi/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/GEN-SIM-RAW/133X_mcRun3_2024_realistic_v9-v3/50000/017d210f-c527-402b-8e13-e6119e79fe6c.root'
-    #'/store/mc/Run3Winter23MiniAOD/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/MINIAODSIM/FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v2/2540000/10e9c9ff-b431-42c5-a1ec-e3143eafee20.root',
-    #'/store/mc/Run3Winter23Digi/DYToMuMu_M-20_TuneCP5_13p6TeV-pythia8/GEN-SIM-RAW/GTv4Digi_126X_mcRun3_2023_forPU65_v4-v2/2820000/0070321e-e4e6-4769-900f-0c0ad3831215.root'
-    #'/store/mc/Run3Winter23MiniAOD/VBFHToInvisible_M-125_TuneCP5_13p6TeV_powheg-pythia8/MINIAODSIM/126X_mcRun3_2023_forPU65_v1-v2/2550000/19e43825-6b8e-426e-9cca-e23cf318737c.root',
-    #'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/033373ea-6628-4bd0-b0ce-a35145622552.root',
-#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/1b0db43a-d38e-4e8b-8ad5-a2b255a54445.root',
-#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/6259374b-6865-4dd4-9414-25e393cb30ae.root',
-#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/8aae5414-96dc-414b-b277-e3da177b5fd6.root',
-#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/1b62be66-8f21-4c37-ada8-0e9094b754c3.root',
-#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/9292ed8b-e6e9-4e25-9ca2-bea39913b662.root',
-#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/7f0077e6-e6f7-45bb-8d09-688fbe898716.root',
-#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/33ca1f69-b3b2-4f6c-8505-66d405c7dc85.root',
-#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/0379f27a-2c28-4e23-9d1f-beb1fbae45dd.root',
-#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/216d41af-b3b1-4669-b496-682e7eefd6cb.root',
-#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/6ef59234-3b07-49e4-96b3-03b499901f22.root',
-#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/755f6116-2539-4d13-89cd-874fe989d755.root',
-#'/store/mc/Run3Summer23DR/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to70_castor_130X_mcRun3_2023_realistic_v14-v1/2560003/6137a5b1-f72c-4fd0-93e5-2f2eaa238dc0.root',
+    '/store/mc/Run3Winter25Digi/QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to120_142X_mcRun3_2025_realistic_v7-v1/2560000/004eb817-3642-40a7-a3c4-95faa48c4f9d.root'
 
   ]
 

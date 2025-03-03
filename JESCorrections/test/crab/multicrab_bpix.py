@@ -21,6 +21,7 @@ def getOutputName(input_dataset):
 
 dataset_flatPU='/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v9_ext1-v2/GEN-SIM-RAW'
 dataset_noPU='/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter24Digi-NoPU_133X_mcRun3_2024_realistic_v9_ext1-v2/GEN-SIM-RAW'
+doPuppiCHS = False
 
 # Note : check bellow outLFNDirBase such that you have a working directory 
 # default is to output in personal EOS space /store/user/[your_lxplus_user_name]/2024_JRA_NTuples/
@@ -62,12 +63,14 @@ def submit(config):
     crabCommand('submit', config = config)
 
 ## loop over bpix cases and samples 
-for bpixMode in ['noBPix','BPix','BPixPlus', 'BPixMinus']:
+for bpixMode in ['noBPix','BPix','FPix']:
     config.JobType.pyCfgParams = ['bpixMode='+bpixMode]
+    if doPuppiCHS:
+        config.JobType.pyCfgParams += ['reco=mixedPFPuppi'] 
     for input_dataset in [dataset_flatPU, dataset_noPU]:
         output_requestName = 'JRA_'+getOutputName(input_dataset.split('/')[2])+bpixMode
         config.General.requestName = output_requestName
-        config.Data.outLFNDirBase = '/store/user/%s/JRA_NTuples_Winter24/%s'%(getUsername(),output_requestName)
+        config.Data.outLFNDirBase = '/store/user/%s/JRA_NTuples/%s'%(getUsername(),output_requestName)
         config.Data.inputDataset = input_dataset
         
         # needed to be able to use pyCfgParams 

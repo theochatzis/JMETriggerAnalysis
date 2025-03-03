@@ -7,7 +7,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-NEVT=500000
+NEVT=1000000
 
 
 OUTPUT_DIR_EOS=/eos/user/${USER:0:1}/${USER}/samples2023
@@ -17,8 +17,8 @@ ODIR=${1}
 declare -A samplesMap
 
 # QCD 
-samplesMap["Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65"]='/QCD_Pt-15to7000_TuneCP5_Flat_13p6TeV_pythia8/Run3Winter24MiniAOD-NoPU_133X_mcRun3_2024_realistic_v9-v2/MINIAODSIM'
-
+samplesMap["QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8"]='/QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter25Digi-FlatPU0to120_142X_mcRun3_2025_realistic_v7-v1/GEN-SIM-RAW'
+samplesMap["TT_TuneCP5_13p6TeV_powheg-pythia8"]='/TT_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter25Digi-142X_mcRun3_2025_realistic_v7-v2/GEN-SIM-RAW'
 # 
 # 
 # VBF H(125)->Invisible
@@ -28,7 +28,8 @@ samplesMap["Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65"]='/QCD_Pt-15to7000_TuneCP5
 
 recoKeys=(
   default
-  caloTowers_thresholds
+  ca_mkfit
+  ca_mkfit_bpixl1
 )
 
 if [ -d ${OUTPUT_DIR_EOS}/${ODIR} ]; then
@@ -67,7 +68,7 @@ for recoKey in "${recoKeys[@]}"; do
     if [ -d ${ODIR}/${recoKey}/${sampleKey} ]; then rm -rf ${ODIR}/${recoKey}/${sampleKey}; fi
     
     bdriver -c .tmp_cfg.py --customize-cfg -m ${numEvents} -n 1000 --memory 2G --time 02:00:00 \
-      -d ${sampleName} -p 2 -o ${ODIR}/${recoKey}/${sampleKey} \
+      -d ${sampleName} -p 0 -o ${ODIR}/${recoKey}/${sampleKey} \
       --final-output ${FINAL_OUTPUT_DIR} \
       --submit \
       --customise-commands \
