@@ -1,0 +1,18 @@
+#!/bin/bash
+
+NAME=jescs_Phase2Spring23
+EVENTS=50000
+
+if [ -d "./$NAME" ]; then rm -rf ./$NAME; fi
+
+# calculate JECs using the fitJECs 
+./fitJESCs_phase2 -o ${NAME} -n ${EVENTS}  -b --skip-L1-PFPuppi -j ak4pfpuppiHLT
+
+python3 jescTxtToDBConverter_cfg.py input=${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test/${NAME}/ak4pfpuppiHLT/jesc/ output=./${NAME}/DBfile dumpPython=make_db_file_tmp.py
+
+cmsRun make_db_file_tmp.py 
+
+rm make_db_file_tmp.py
+
+## check the db file
+conddb --db ./${NAME}/DBfile/Phase2Spring23_MC.db search JetCorr

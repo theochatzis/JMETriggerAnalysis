@@ -1,0 +1,12 @@
+# Unix submit description file
+Universe = vanilla
+transfer_input_files = /afs/cern.ch/user/y/yeo/tmp/x509up
+Executable = ./Scr/test/test.sh
+request_memory = 1000
+should_transfer_files   = Yes
+arguments = $(ProcId)
+output = ./Scr/test/log/$(ProcId).out
+error = ./Scr/test/log/$(ProcId).err
+log = ./Scr/test/log/$(ProcId).log
++MaxRuntime = 36000
+Queue 264

@@ -2,31 +2,39 @@ import FWCore.ParameterSet.Config as cms
 
 from PhysicsTools.PatAlgos.selectionLayer1.muonSelector_cfi import selectedPatMuons
 
-userPreselectedMuons = selectedPatMuons.clone(
-  src = 'slimmedMuons',
-  cut = '(pt > 10.) && (abs(eta) < 2.4)',
-)
+def userMuons(process):
+    
+    process.userMuonsTask = cms.Task()
 
-userMuonsWithUserData = cms.EDProducer('MuonPATUserData',
+    process.userPreselectedMuons = selectedPatMuons.clone(
+      src = 'slimmedMuons',
+      cut = '(pt > 10.) && (abs(eta) < 2.4)',
+    )
 
-  src = cms.InputTag('userPreselectedMuons'),
+    process.userMuonsTask.add(process.userPreselectedMuons)
+    _lastMuonCollection = 'userPreselectedMuons'
 
-  primaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    process.userMuonsWithUserData = cms.EDProducer('MuonPATUserData',
+      src = cms.InputTag('userPreselectedMuons'),
+      primaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+      valueMaps_float = cms.vstring(),
+      userFloat_copycat = cms.PSet(),
+      userInt_stringSelectors = cms.PSet(),
+    )
 
-  valueMaps_float = cms.vstring(),
+    process.userMuonsTask.add(process.userMuonsWithUserData)
+    _lastMuonCollection = 'userMuonsWithUserData'
 
-  userFloat_copycat = cms.PSet(),
+    process.userIsolatedMuons = selectedPatMuons.clone(
+      src = 'userMuonsWithUserData',
+      #cut = '(userInt("IDLoose") > 0) && userFloat("pfIsoR04") < 0.40',
+      cut = '(pt > 30.) && (userInt("IDTight") > 0) && userFloat("pfIsoR04") < 0.15',
+    )
 
-  userInt_stringSelectors = cms.PSet(),
-)
+    process.userMuonsTask.add(process.userIsolatedMuons)
+    _lastMuonCollection = 'userIsolatedMuons'
+    
 
-userIsolatedMuons = selectedPatMuons.clone(
-  src = 'userMuonsWithUserData',
-  cut = '(userInt("IDLoose") > 0) && userFloat("pfIsoR04") < 0.40',
-)
+    process.userMuonsSequence = cms.Sequence(process.userMuonsTask)
 
-userMuonsSequence = cms.Sequence(
-    userPreselectedMuons
-  * userMuonsWithUserData
-  * userIsolatedMuons
-)
+    return process, _lastMuonCollection

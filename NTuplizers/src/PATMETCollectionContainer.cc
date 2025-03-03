@@ -1,12 +1,13 @@
 #include <JMETriggerAnalysis/NTuplizers/interface/PATMETCollectionContainer.h>
 
-PATMETCollectionContainer::PATMETCollectionContainer(
-  const std::string& name, const std::string& inputTagLabel, const edm::EDGetToken& token, const std::string& strCut, const bool orderByHighestPt
-) : VRecoCandidateCollectionContainer(name, inputTagLabel, token, strCut, orderByHighestPt) {
-}
+PATMETCollectionContainer::PATMETCollectionContainer(const std::string& name,
+                                                     const std::string& inputTagLabel,
+                                                     const edm::EDGetToken& token,
+                                                     const std::string& strCut,
+                                                     const bool orderByHighestPt)
+    : VRecoCandidateCollectionContainer(name, inputTagLabel, token, strCut, orderByHighestPt) {}
 
-void PATMETCollectionContainer::clear(){
-
+void PATMETCollectionContainer::clear() {
   Raw_pt_.clear();
   Raw_phi_.clear();
   Raw_sumEt_.clear();
@@ -25,8 +26,7 @@ void PATMETCollectionContainer::clear(){
   Type7EtFraction_.clear();
 }
 
-void PATMETCollectionContainer::reserve(const size_t vec_size){
-
+void PATMETCollectionContainer::reserve(const size_t vec_size) {
   Raw_pt_.reserve(vec_size);
   Raw_phi_.reserve(vec_size);
   Raw_sumEt_.reserve(vec_size);
@@ -45,8 +45,7 @@ void PATMETCollectionContainer::reserve(const size_t vec_size){
   Type7EtFraction_.reserve(vec_size);
 }
 
-void PATMETCollectionContainer::emplace_back(const pat::MET& obj){
-
+void PATMETCollectionContainer::emplace_back(const pat::MET& obj) {
   Raw_pt_.emplace_back(obj.shiftedPt(pat::MET::NoShift, pat::MET::Raw));
   Raw_phi_.emplace_back(obj.shiftedPhi(pat::MET::NoShift, pat::MET::Raw));
   Raw_sumEt_.emplace_back(obj.shiftedSumEt(pat::MET::NoShift, pat::MET::Raw));

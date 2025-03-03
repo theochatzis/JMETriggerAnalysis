@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+"""
+Description:
+ Script to show differences between modules in two cmsRun configuration files
+"""
+from __future__ import print_function
+import argparse
+import os
+import imp
+
+from JMETriggerAnalysis.Common.utils import *
+from JMETriggerAnalysis.NTuplizers.utils.common import *
+
+def getProcess(filepath):
+    _procTmp = imp.load_source('name', os.path.abspath(filepath))
+    if not hasattr(_procTmp, 'process'):
+       raise RuntimeError('getProcess("'+filepath+'")')
+    return getattr(_procTmp, 'process')
+
+#### main
+if __name__ == '__main__':
+   ### args
+   parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+
+   parser.add_argument('-r', '--reference', dest='reference', action='store', default=None, required=True,
+                       help='reference modules (format: "configuration_file_path:moduleName1,moduleName2"')
+
+   parser.add_argument('-t', '--target', dest='target', action='store', default=None, required=True,
+                       help='target modules (format: "configuration_file_path:moduleName1,moduleName2"')
+
+   parser.add_argument('-o', '--output', dest='output', action='store', default=None, required=True,
+                       help='path to output directory')
+
+   parser.add_argument('-v', '--verbosity', dest='verbosity', action='store', type=int, default=0,
+                       help='verbosity of log messages')
+
+   opts, opts_unknown = parser.parse_known_args()
+   ###
+
+   log_prx = os.path.basename(__file__)+' -- '
+
+   if os.path.exists(opts.output):
+      raise RuntimeError(log_prx+'target path to output directory already exists [-o]: '+opts.output)
+
+   OUT_DIR = os.path.abspath(os.path.realpath(opts.output))
+
+   modules1 = []
+   refe_inputs = opts.reference.split(':')
+   if len(refe_inputs) != 2:
+      raise RuntimeError(log_prx+'invalid format for reference modules [-r]: '+opts.reference)
+   else:
+      if not os.path.isfile(refe_inputs[0]):
+         raise RuntimeError(log_prx+'invalid path to reference configuration file [-r]: '+refe_inputs[0])
+      process1 = getProcess(refe_inputs[0])
+      refe_modNames = list(set(refe_inputs[1].split(',')))
+      for _modName in refe_modNames:
+          if not _modName: continue
+          if not hasattr(process1, _modName):
+             raise RuntimeError(log_prx+'invalid module name for reference configuration file [-r]: '+_modName)
+          modules1.append(getattr(process1, _modName))
+
+   modules2 = []
+   targ_inputs = opts.target.split(':')
+   if len(targ_inputs) != 2:
+      raise RuntimeError(log_prx+'invalid format for target modules [-t]: '+opts.target)
+   else:
+      if not os.path.isfile(targ_inputs[0]):
+         raise RuntimeError(log_prx+'invalid path to target configuration file [-t]: '+targ_inputs[0])
+      process2 = getProcess(targ_inputs[0])
+      targ_modNames = list(set(targ_inputs[1].split(',')))
+      for _modName in targ_modNames:
+          if not _modName: continue
+          if not hasattr(process2, _modName):
+             raise RuntimeError(log_prx+'invalid module name for target configuration file [-t]: '+_modName)
+          modules2.append(getattr(process2, _modName))
+
+   if len(modules1) != len(modules2):
+      raise RuntimeError(log_prx+'number of reference ('+len(modules1)+') and target ('+len(modules2)+') modules differ')
+
+   if not modules1:
+      raise SystemExit(0)
+
+   EXE('mkdir -p '+OUT_DIR, verbose=(opts.verbosity > 0))
+
+   for _modIdx in range(len(modules1)):
+
+       with open(OUT_DIR+'/'+str(_modIdx)+'_ref.txt', 'w') as of1:
+            of1.write('process.'+modules1[_modIdx].label_()+' = '+modules1[_modIdx].dumpPython())
+
+       with open(OUT_DIR+'/'+str(_modIdx)+'_tar.txt', 'w') as of2:
+            of2.write('process.'+modules2[_modIdx].label_()+' = '+modules2[_modIdx].dumpPython())

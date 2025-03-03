@@ -5,26 +5,29 @@
 #include <DataFormats/METReco/interface/GenMET.h>
 
 class RecoGenMETCollectionContainer : public VRecoCandidateCollectionContainer<reco::GenMET> {
+public:
+  explicit RecoGenMETCollectionContainer(const std::string&,
+                                         const std::string&,
+                                         const edm::EDGetToken&,
+                                         const std::string& strCut = "",
+                                         const bool orderByHighestPt = false);
+  ~RecoGenMETCollectionContainer() override {}
 
- public:
-  explicit RecoGenMETCollectionContainer(const std::string&, const std::string&, const edm::EDGetToken&, const std::string& strCut="", const bool orderByHighestPt=false);
-  virtual ~RecoGenMETCollectionContainer() {}
+  void clear() override;
+  void reserve(const size_t) override;
+  void emplace_back(const reco::GenMET&) override;
 
-  void clear();
-  void reserve(const size_t);
-  void emplace_back(const reco::GenMET&);
+  std::vector<float>& vec_pt() { return pt_; }
+  std::vector<float>& vec_phi() { return phi_; }
+  std::vector<float>& vec_sumEt() { return sumEt_; }
+  std::vector<float>& vec_NeutralEMEtFraction() { return NeutralEMEtFraction_; }
+  std::vector<float>& vec_NeutralHadEtFraction() { return NeutralHadEtFraction_; }
+  std::vector<float>& vec_ChargedEMEtFraction() { return ChargedEMEtFraction_; }
+  std::vector<float>& vec_ChargedHadEtFraction() { return ChargedHadEtFraction_; }
+  std::vector<float>& vec_MuonEtFraction() { return MuonEtFraction_; }
+  std::vector<float>& vec_InvisibleEtFraction() { return InvisibleEtFraction_; }
 
-  std::vector<float>& vec_pt(){ return pt_; }
-  std::vector<float>& vec_phi(){ return phi_; }
-  std::vector<float>& vec_sumEt(){ return sumEt_; }
-  std::vector<float>& vec_NeutralEMEtFraction(){ return NeutralEMEtFraction_; }
-  std::vector<float>& vec_NeutralHadEtFraction(){ return NeutralHadEtFraction_; }
-  std::vector<float>& vec_ChargedEMEtFraction(){ return ChargedEMEtFraction_; }
-  std::vector<float>& vec_ChargedHadEtFraction(){ return ChargedHadEtFraction_; }
-  std::vector<float>& vec_MuonEtFraction(){ return MuonEtFraction_; }
-  std::vector<float>& vec_InvisibleEtFraction(){ return InvisibleEtFraction_; }
-
- protected:
+protected:
   std::vector<float> pt_;
   std::vector<float> phi_;
   std::vector<float> sumEt_;

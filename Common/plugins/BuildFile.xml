@@ -1,17 +1,26 @@
-<export>
-</export>
-<library  name="JMETriggerAnalysisCommon_plugins" file="*.cc">
+<library name="JMETriggerAnalysisCommonPlugins" file="*.cc">
+  <flags EDM_PLUGIN="1"/>
   <use name="FWCore/Framework"/>
   <use name="FWCore/ParameterSet"/>
   <use name="FWCore/MessageLogger"/>
+  <use name="FWCore/ServiceRegistry"/>
+  <use name="FWCore/Utilities"/>
+  <use name="CommonTools/Egamma"/>
+  <use name="CommonTools/UtilAlgos"/>
   <use name="CommonTools/Utils"/>
   <use name="DataFormats/Common"/>
+  <use name="DataFormats/TrackReco"/>
   <use name="DataFormats/VertexReco"/>
   <use name="DataFormats/MuonReco"/>
+  <use name="DataFormats/JetReco"/>
   <use name="DataFormats/METReco"/>
   <use name="DataFormats/ParticleFlowCandidate"/>
   <use name="DataFormats/PatCandidates"/>
-  <use name="RecoEgamma/EgammaTools"/>
+  <use name="HLTrigger/HLTcore"/>
+  <use name="CondFormats/JetMETObjects"/>
+  <use name="JetMETCorrections/JetCorrector"/>
+  <use name="JetMETCorrections/Type1MET"/>
+  <use name="RecoPixelVertexing/PixelVertexFinding"/>
   <use name="rootmath"/>
   <use name="root"/>
 </library>

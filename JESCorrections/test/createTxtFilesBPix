@@ -1,0 +1,96 @@
+#!/bin/bash
+
+INDIR_NOBPIX=JESCs_2024_noBPix
+INDIR_BPIX=JESCs_2024_BPix
+INDIR_BPIX_PLUS=JESCs_2024_BPixPlus
+INDIR_BPIX_MINUS=JESCs_2024_BPixMinus
+OUTDIR=corrections_2024
+
+CORRECTIONS_NAME=Run3Winter24Digi
+
+mkdir ${OUTDIR}
+
+cp ./${INDIR_NOBPIX}/ak4pfHLT/jesc/*.txt ./${OUTDIR}
+cp ././${INDIR_NOBPIX}/ak8pfHLT/jesc/*.txt ./${OUTDIR}
+cp ./${INDIR_NOBPIX}/ak4caloHLT/jesc/*.txt ./${OUTDIR}
+cp ./${INDIR_NOBPIX}/ak8caloHLT/jesc/*.txt ./${OUTDIR}
+
+for jetType in AK4PFHLT AK8PFHLT
+do
+  # change L1FastJet and L2Relative with phi bins
+  for level in L1FastJet L2Relative 
+  do
+    if [ "$jetType" == "AK4PFHLT" ]; then	  
+      cp ./${INDIR_NOBPIX}/ak4pfHLT/jesc/${CORRECTIONS_NAME}_${level}_${jetType}.txt file1.txt
+      cp ./${INDIR_BPIX}/ak4pfHLT/jesc/${CORRECTIONS_NAME}_${level}_${jetType}.txt file2.txt
+      cp ./${INDIR_BPIX_PLUS}/ak4pfHLT/jesc/${CORRECTIONS_NAME}_${level}_${jetType}.txt file3.txt
+      cp ./${INDIR_BPIX_MINUS}/ak4pfHLT/jesc/${CORRECTIONS_NAME}_${level}_${jetType}.txt file4.txt
+      cp ./${INDIR_NOBPIX}/ak4pfHLT/jesc/${CORRECTIONS_NAME}_${level}_${jetType}.txt file5.txt
+
+      if [ "$level" == "L1FastJet" ]; then
+        python3 merge_files_test.py file1.txt:"-10.0 -1.5?-3.15 3.15,-1.5 0.0?-3.15 -1.40,0.0 10.0?-3.15 3.15" \
+        file2.txt:"-1.5 0.0?-1.20 -0.80" \
+        file3.txt:"-1.5 0.0?-0.80 -0.60" \
+        file4.txt:"-1.5 0.0?-1.40 -1.20" \
+        file5.txt:"-1.5 0.0?-0.60 3.15" \
+        "{2 JetEta JetPhi 3 Rho JetPt JetA max(0.0001,1-(z/y)*([0]+([1]*(x))*(1+[2]*log(y)))) Correction L1FastJet}"
+      fi 
+
+      if [ "$level" == "L2Relative" ]; then
+        python3 merge_files_test.py file1.txt:"-10.0 -1.5?-3.15 3.15,-1.5 0.0?-3.15 -1.40,0.0 10.0?-3.15 3.15" \
+        file2.txt:"-1.5 0.0?-1.20 -0.80" \
+        file3.txt:"-1.5 0.0?-0.80 -0.60" \
+        file4.txt:"-1.5 0.0?-1.40 -1.20" \
+        file5.txt:"-1.5 0.0?-0.60 3.15" \
+        "{2 JetEta JetPhi 1 JetPt max(0.0001,[0]+([1]/(pow(log10(x),2)+[2]))+([3]*exp(-([4]*((log10(x)-[5])*(log10(x)-[5])))))+([6]*exp(-([7]*((log10(x)-[8])*(log10(x)-[8])))))) Correction L2Relative}"
+      fi
+      mv output.txt ./${OUTDIR}/${CORRECTIONS_NAME}_${level}_${jetType}.txt
+      rm file1.txt
+      rm file2.txt
+      rm file3.txt 
+      rm file4.txt
+      rm file5.txt
+    fi
+
+    if [ "$jetType" == "AK8PFHLT" ]; then
+      cp ./${INDIR_NOBPIX}/ak8pfHLT/jesc/${CORRECTIONS_NAME}_${level}_${jetType}.txt file1.txt
+      cp ./${INDIR_BPIX}/ak8pfHLT/jesc/${CORRECTIONS_NAME}_${level}_${jetType}.txt file2.txt
+      cp ./${INDIR_BPIX_PLUS}/ak8pfHLT/jesc/${CORRECTIONS_NAME}_${level}_${jetType}.txt file3.txt
+      cp ./${INDIR_BPIX_MINUS}/ak8pfHLT/jesc/${CORRECTIONS_NAME}_${level}_${jetType}.txt file4.txt
+      cp ./${INDIR_NOBPIX}/ak8pfHLT/jesc/${CORRECTIONS_NAME}_${level}_${jetType}.txt file5.txt
+      
+      if [ "$level" == "L1FastJet" ]; then
+        python3 merge_files_test.py file1.txt:"-10.0 -1.5?-3.15 3.15,-1.5 0.0?-3.15 -1.60,0.0 10.0?-3.15 3.15" \
+        file2.txt:"-1.5 0.0?-1.20 -0.80" \
+        file3.txt:"-1.5 0.0?-0.80 -0.40" \
+        file4.txt:"-1.5 0.0?-1.60 -1.20" \
+        file5.txt:"-1.5 0.0?-0.40 3.15" \
+        "{2 JetEta JetPhi 3 Rho JetPt JetA max(0.0001,1-(z/y)*([0]+([1]*(x))*(1+[2]*log(y)))) Correction L1FastJet}"
+      fi 
+
+      if [ "$level" == "L2Relative" ]; then
+        python3 merge_files_test.py file1.txt:"-10.0 -1.5?-3.15 3.15,-1.5 0.0?-3.15 -1.60,0.0 10.0?-3.15 3.15" \
+        file2.txt:"-1.5 0.0?-1.20 -0.80" \
+        file3.txt:"-1.5 0.0?-0.80 -0.40" \
+        file4.txt:"-1.5 0.0?-1.60 -1.20" \
+        file5.txt:"-1.5 0.0?-0.40 3.15" \
+        "{2 JetEta JetPhi 1 JetPt max(0.0001,[0]+([1]/(pow(log10(x),2)+[2]))+([3]*exp(-([4]*((log10(x)-[5])*(log10(x)-[5])))))+([6]*exp(-([7]*((log10(x)-[8])*(log10(x)-[8])))))) Correction L2Relative}"
+      fi
+      mv output.txt ./${OUTDIR}/${CORRECTIONS_NAME}_${level}_${jetType}.txt
+      rm file1.txt
+      rm file2.txt
+      rm file3.txt 
+      rm file4.txt
+      rm file5.txt
+    fi
+  done
+done
+
+python3 jescTxtToDBConverter_cfg.py input=./${OUTDIR} output=./${OUTDIR}/DBfile dumpPython=make_db_file_tmp.py
+
+cmsRun make_db_file_tmp.py 
+
+rm make_db_file_tmp.py
+
+## check the db file
+conddb --db ./${OUTDIR}/DBfile/${CORRECTIONS_NAME}.db search JetCorr

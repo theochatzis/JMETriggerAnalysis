@@ -1,0 +1,37 @@
+executable            = fitJESCs
+getenv                = True
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+transfer_output_files = JESCs_noForwardPFHCs_10M_noPtClip
+output_destination = /afs/cern.ch/work/a/aakpinar/public/CMSSW_13_0_7_patch1/src/JMETriggerAnalysis/JESCorrections/test/
+
+MY.XRDCP_CREATE_DIR = True
+MY.WantOS = "el8"
+
+arguments             =  -o JESCs_noForwardPFHCs_10M_noPtClip -b -j ak4caloHLT -n 10000000
+output                = htc_out_noForwardPFHCs_10M_noPtClip/ak4caloHLT.out
+error                 = htc_out_noForwardPFHCs_10M_noPtClip/ak4caloHLT.err
+log                   = htc_out_noForwardPFHCs_10M_noPtClip/ak4caloHLT.log
++JobFlavour           = "tomorrow"
+queue
+
+arguments             =  -o JESCs_noForwardPFHCs_10M_noPtClip -b -j ak4pfHLT -n 10000000
+output                = htc_out_noForwardPFHCs_10M_noPtClip/ak4pfHLT.out
+error                 = htc_out_noForwardPFHCs_10M_noPtClip/ak4pfHLT.err
+log                   = htc_out_noForwardPFHCs_10M_noPtClip/ak4pfHLT.log
++JobFlavour           = "tomorrow"
+queue
+
+arguments             =  -o JESCs_noForwardPFHCs_10M_noPtClip -b -j ak8caloHLT -n 10000000
+output                = htc_out_noForwardPFHCs_10M_noPtClip/ak8caloHLT.out
+error                 = htc_out_noForwardPFHCs_10M_noPtClip/ak8caloHLT.err
+log                   = htc_out_noForwardPFHCs_10M_noPtClip/ak8caloHLT.log
++JobFlavour           = "tomorrow"
+queue
+
+arguments             =  -o JESCs_noForwardPFHCs_10M_noPtClip -b -j ak8pfHLT -n 10000000
+output                = htc_out_noForwardPFHCs_10M_noPtClip/ak8pfHLT.out
+error                 = htc_out_noForwardPFHCs_10M_noPtClip/ak8pfHLT.err
+log                   = htc_out_noForwardPFHCs_10M_noPtClip/ak8pfHLT.log
++JobFlavour           = "tomorrow"
+queue

@@ -1,5 +1,5 @@
 #include <FWCore/Framework/interface/Frameworkfwd.h>
-#include <FWCore/Framework/interface/EDProducer.h>
+#include <FWCore/Framework/interface/stream/EDProducer.h>
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/Framework/interface/MakerMacros.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
@@ -16,28 +16,27 @@
 #include <memory>
 #include <utility>
 
-class MuonPATUserData : public edm::EDProducer {
-
- public:
+class MuonPATUserData : public edm::stream::EDProducer<> {
+public:
   explicit MuonPATUserData(const edm::ParameterSet&);
 
   static void fillDescriptions(edm::ConfigurationDescriptions&);
 
- private:
-  virtual void produce(edm::Event&, const edm::EventSetup&);
+private:
+  void produce(edm::Event&, const edm::EventSetup&) override;
 
   edm::EDGetToken src_;
 
-  std::vector<std::string>     vmaps_bool_;
+  std::vector<std::string> vmaps_bool_;
   std::vector<edm::EDGetToken> vmaps_bool_token_;
 
-  std::vector<std::string>     vmaps_float_;
+  std::vector<std::string> vmaps_float_;
   std::vector<edm::EDGetToken> vmaps_float_token_;
 
   std::vector<std::pair<std::string, std::string> > v_float_copycats_;
 
   std::vector<std::pair<std::string, StringCutObjectSelector<pat::Muon, true> > > userInt_stringSelects_;
-  std::vector<std::pair<std::string, StringObjectFunction   <pat::Muon, true> > > userFloat_stringFuncs_;
+  std::vector<std::pair<std::string, StringObjectFunction<pat::Muon, true> > > userFloat_stringFuncs_;
 
   edm::EDGetTokenT<edm::View<reco::Vertex> > primaryVertices_;
 
@@ -46,32 +45,32 @@ class MuonPATUserData : public edm::EDProducer {
   bool IDTightHZZ(const reco::Muon&, const reco::Vertex&);
 };
 
-MuonPATUserData::MuonPATUserData(const edm::ParameterSet& iConfig)
-{
+MuonPATUserData::MuonPATUserData(const edm::ParameterSet& iConfig) {
   src_ = consumes<edm::View<pat::Muon> >(iConfig.getParameter<edm::InputTag>("src"));
 
   // ValueMaps [bool]
-  vmaps_bool_ = iConfig.exists("valueMaps_bool") ? iConfig.getParameter<std::vector<std::string> >("valueMaps_bool") : std::vector<std::string>();
+  vmaps_bool_ = iConfig.exists("valueMaps_bool") ? iConfig.getParameter<std::vector<std::string> >("valueMaps_bool")
+                                                 : std::vector<std::string>();
 
-  for(const auto& vm_str : vmaps_bool_)
-  {
+  for (const auto& vm_str : vmaps_bool_) {
     vmaps_bool_token_.emplace_back(consumes<edm::ValueMap<bool> >(edm::InputTag(vm_str)));
   }
   // -----------------
 
   // ValueMaps [float]
-  vmaps_float_ = iConfig.exists("valueMaps_float") ? iConfig.getParameter<std::vector<std::string> >("valueMaps_float") : std::vector<std::string>();
+  vmaps_float_ = iConfig.exists("valueMaps_float") ? iConfig.getParameter<std::vector<std::string> >("valueMaps_float")
+                                                   : std::vector<std::string>();
 
-  for(const auto& vm_str : vmaps_float_)
-  {
+  for (const auto& vm_str : vmaps_float_) {
     vmaps_float_token_.emplace_back(consumes<edm::ValueMap<float> >(edm::InputTag(vm_str)));
   }
   // -----------------
 
   // PSet for userFloat copycat(s)
-  const edm::ParameterSet pset_userFloat_copycat = iConfig.exists("userFloat_copycat") ? iConfig.getParameter<edm::ParameterSet>("userFloat_copycat") : edm::ParameterSet();
-  for(unsigned int i=0; i<pset_userFloat_copycat.getParameterNames().size(); ++i)
-  {
+  const edm::ParameterSet pset_userFloat_copycat = iConfig.exists("userFloat_copycat")
+                                                       ? iConfig.getParameter<edm::ParameterSet>("userFloat_copycat")
+                                                       : edm::ParameterSet();
+  for (unsigned int i = 0; i < pset_userFloat_copycat.getParameterNames().size(); ++i) {
     const std::string pset_arg = pset_userFloat_copycat.getParameterNames().at(i);
     const std::string pset_val = pset_userFloat_copycat.getParameter<std::string>(pset_arg);
 
@@ -80,18 +79,22 @@ MuonPATUserData::MuonPATUserData(const edm::ParameterSet& iConfig)
   // -----------------
 
   // PSet for userInts from StringCutObjectSelector(s)
-  const edm::ParameterSet& pset_userInt_stringSelects = iConfig.exists("userInt_stringSelectors") ? iConfig.getParameter<edm::ParameterSet>("userInt_stringSelectors") : edm::ParameterSet();
-  for(const std::string& vname : pset_userInt_stringSelects.getParameterNamesForType<std::string>())
-  {
-    userInt_stringSelects_.emplace_back(std::pair<std::string, StringCutObjectSelector<pat::Muon, true> >(vname, pset_userInt_stringSelects.getParameter<std::string>(vname)));
+  const edm::ParameterSet& pset_userInt_stringSelects =
+      iConfig.exists("userInt_stringSelectors") ? iConfig.getParameter<edm::ParameterSet>("userInt_stringSelectors")
+                                                : edm::ParameterSet();
+  for (const std::string& vname : pset_userInt_stringSelects.getParameterNamesForType<std::string>()) {
+    userInt_stringSelects_.emplace_back(std::pair<std::string, StringCutObjectSelector<pat::Muon, true> >(
+        vname, pset_userInt_stringSelects.getParameter<std::string>(vname)));
   }
   // -----------------
 
   // PSet for userFloats from StringObjectFunction(s)
-  const edm::ParameterSet& pset_userFloat_stringFuncs = iConfig.exists("userFloat_stringFunctions") ? iConfig.getParameter<edm::ParameterSet>("userFloat_stringFunctions") : edm::ParameterSet();
-  for(const std::string& vname : pset_userFloat_stringFuncs.getParameterNamesForType<std::string>())
-  {
-    userFloat_stringFuncs_.emplace_back(std::pair<std::string, StringObjectFunction<pat::Muon, true> >(vname, pset_userFloat_stringFuncs.getParameter<std::string>(vname)));
+  const edm::ParameterSet& pset_userFloat_stringFuncs =
+      iConfig.exists("userFloat_stringFunctions") ? iConfig.getParameter<edm::ParameterSet>("userFloat_stringFunctions")
+                                                  : edm::ParameterSet();
+  for (const std::string& vname : pset_userFloat_stringFuncs.getParameterNamesForType<std::string>()) {
+    userFloat_stringFuncs_.emplace_back(std::pair<std::string, StringObjectFunction<pat::Muon, true> >(
+        vname, pset_userFloat_stringFuncs.getParameter<std::string>(vname)));
   }
   // -----------------
 
@@ -100,15 +103,13 @@ MuonPATUserData::MuonPATUserData(const edm::ParameterSet& iConfig)
   produces<pat::MuonCollection>();
 }
 
-void MuonPATUserData::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
-{
+void MuonPATUserData::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   edm::Handle<edm::View<pat::Muon> > patMuons;
   iEvent.getByToken(src_, patMuons);
 
   // ValueMaps [bool]
   std::vector<edm::Handle<edm::ValueMap<bool> > > v_vmap_bool;
-  for(unsigned int i=0; i<vmaps_bool_token_.size(); ++i)
-  {
+  for (unsigned int i = 0; i < vmaps_bool_token_.size(); ++i) {
     edm::Handle<edm::ValueMap<bool> > vmap;
     iEvent.getByToken(vmaps_bool_token_.at(i), vmap);
     v_vmap_bool.emplace_back(vmap);
@@ -117,8 +118,7 @@ void MuonPATUserData::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   // ValueMaps [float]
   std::vector<edm::Handle<edm::ValueMap<float> > > v_vmap_float;
-  for(unsigned int i=0; i<vmaps_float_token_.size(); ++i)
-  {
+  for (unsigned int i = 0; i < vmaps_float_token_.size(); ++i) {
     edm::Handle<edm::ValueMap<float> > vmap;
     iEvent.getByToken(vmaps_float_token_.at(i), vmap);
     v_vmap_float.emplace_back(vmap);
@@ -129,10 +129,9 @@ void MuonPATUserData::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<edm::View<reco::Vertex> > recoVtxs;
   iEvent.getByToken(primaryVertices_, recoVtxs);
 
-  const auto* PV = (recoVtxs->size() > 0) ? &(recoVtxs->at(0)) : nullptr;
+  const auto* PV = (!recoVtxs->empty()) ? &(recoVtxs->at(0)) : nullptr;
 
-  if(PV == nullptr)
-  {
+  if (PV == nullptr) {
     edm::LogWarning("Input") << "@@@ MuonPATUserData::produce -- empty collection of primary vertices";
   }
   // -----------------
@@ -140,69 +139,59 @@ void MuonPATUserData::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::unique_ptr<pat::MuonCollection> newMuons(new pat::MuonCollection);
   newMuons->reserve(patMuons->size());
 
-  for(unsigned int i_muo=0; i_muo<patMuons->size(); ++i_muo)
-  {
+  for (unsigned int i_muo = 0; i_muo < patMuons->size(); ++i_muo) {
     newMuons->emplace_back(patMuons->at(i_muo));
     pat::Muon& muo = newMuons->back();
 
     // ValueMaps [bool]
-    for(unsigned int i=0; i<v_vmap_bool.size(); ++i)
-    {
-      if(muo.hasUserInt(vmaps_bool_.at(i)))
-      {
+    for (unsigned int i = 0; i < v_vmap_bool.size(); ++i) {
+      if (muo.hasUserInt(vmaps_bool_.at(i))) {
         throw cms::Exception("InputError")
-	  << "@@@ MuonPATUserData::produce -- PAT user-int label already exists: " << vmaps_bool_.at(i);
+            << "@@@ MuonPATUserData::produce -- PAT user-int label already exists: " << vmaps_bool_.at(i);
       }
 
-      if(v_vmap_bool.at(i)->contains(patMuons->refAt(i_muo).id()))
-      {
+      if (v_vmap_bool.at(i)->contains(patMuons->refAt(i_muo).id())) {
         const bool val = (*(v_vmap_bool.at(i)))[patMuons->refAt(i_muo)];
         muo.addUserInt(vmaps_bool_.at(i), int(val));
-      }
-      else
-      {
+      } else {
         throw cms::Exception("InputError")
-          << "@@@ MuonPATUserData::produce -- object reference not found in ValueMap<bool> \"" << vmaps_bool_.at(i) << "\"";
+            << "@@@ MuonPATUserData::produce -- object reference not found in ValueMap<bool> \"" << vmaps_bool_.at(i)
+            << "\"";
       }
     }
     // -----------------
 
     // ValueMaps [float]
-    for(unsigned int i=0; i<v_vmap_float.size(); ++i)
-    {
-      if(muo.hasUserFloat(vmaps_float_.at(i)))
-      {
+    for (unsigned int i = 0; i < v_vmap_float.size(); ++i) {
+      if (muo.hasUserFloat(vmaps_float_.at(i))) {
         throw cms::Exception("InputError")
-	  << "@@@ MuonPATUserData::produce -- PAT user-float label already exists: " << vmaps_float_.at(i);
+            << "@@@ MuonPATUserData::produce -- PAT user-float label already exists: " << vmaps_float_.at(i);
       }
 
-      if(v_vmap_float.at(i)->contains(patMuons->refAt(i_muo).id()))
-      {
+      if (v_vmap_float.at(i)->contains(patMuons->refAt(i_muo).id())) {
         const float val = (*(v_vmap_float.at(i)))[patMuons->refAt(i_muo)];
         muo.addUserFloat(vmaps_float_.at(i), val);
-      }
-      else
-      {
+      } else {
         throw cms::Exception("InputError")
-          << "@@@ MuonPATUserData::produce -- object reference not found in ValueMap<float> \"" << vmaps_float_.at(i) << "\"";
+            << "@@@ MuonPATUserData::produce -- object reference not found in ValueMap<float> \"" << vmaps_float_.at(i)
+            << "\"";
       }
     }
     // -----------------
 
     // userFloat copycat(s)
-    for(const auto& userfloat_copycat : v_float_copycats_)
-    {
+    for (const auto& userfloat_copycat : v_float_copycats_) {
       const std::string& ref = userfloat_copycat.second;
       const std::string& out = userfloat_copycat.first;
 
-      if(muo.hasUserFloat(ref) == false)
-      {
-        throw cms::Exception("InputError") << "@@@ MuonPATUserData::produce -- PAT user-float key \""+ref+"\" not found";
+      if (muo.hasUserFloat(ref) == false) {
+        throw cms::Exception("InputError")
+            << "@@@ MuonPATUserData::produce -- PAT user-float key \"" + ref + "\" not found";
       }
 
-      if(muo.hasUserFloat(out) == true)
-      {
-        throw cms::Exception("InputError") << "@@@ MuonPATUserData::produce -- target PAT user-float key \""+out+"\" already exists";
+      if (muo.hasUserFloat(out) == true) {
+        throw cms::Exception("InputError")
+            << "@@@ MuonPATUserData::produce -- target PAT user-float key \"" + out + "\" already exists";
       }
 
       muo.addUserFloat(out, muo.userFloat(ref));
@@ -211,12 +200,13 @@ void MuonPATUserData::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     // Impact Parameter(s)
     const float dxyPV = ((PV && muo.muonBestTrack().isNonnull()) ? muo.muonBestTrack()->dxy(PV->position()) : -9999.);
-    const float dzPV  = ((PV && muo.muonBestTrack().isNonnull()) ? muo.muonBestTrack()->dz (PV->position()) : -9999.);
+    const float dzPV = ((PV && muo.muonBestTrack().isNonnull()) ? muo.muonBestTrack()->dz(PV->position()) : -9999.);
 
     muo.addUserFloat("dxyPV", dxyPV);
     muo.addUserFloat("dzPV", dzPV);
 
-    const float SIP3D = ((muo.edB(pat::Muon::PV3D) != 0.) ? (muo.dB(pat::Muon::PV3D) / muo.edB(pat::Muon::PV3D)) : +9999.);
+    const float SIP3D =
+        ((muo.edB(pat::Muon::PV3D) != 0.) ? (muo.dB(pat::Muon::PV3D) / muo.edB(pat::Muon::PV3D)) : +9999.);
     muo.addUserFloat("SIP3D", SIP3D);
     // -----------------
 
@@ -231,7 +221,7 @@ void MuonPATUserData::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     muo.addUserInt("IDTight", int(PV ? muo.isTightMuon(*PV) : 0));
     muo.addUserInt("IDSoft", int(PV ? muon::isSoftMuon(muo, *PV, isRun2016BCDEF) : 0));
     muo.addUserInt("IDHighPt", int(PV ? muo.isHighPtMuon(*PV) : 0));
-    muo.addUserInt("IDHighPtTRK" , int(PV ? muon::isTrackerHighPtMuon(muo, *PV) : 0));
+    muo.addUserInt("IDHighPtTRK", int(PV ? muon::isTrackerHighPtMuon(muo, *PV) : 0));
     muo.addUserInt("IDLooseHZZ", int(PV ? this->IDLooseHZZ(muo, *PV) : 0));
     muo.addUserInt("IDTightHZZ", int(PV ? this->IDTightHZZ(muo, *PV) : 0));
     // ------------------
@@ -244,7 +234,9 @@ void MuonPATUserData::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     const float pfIsoR03_Ph(muoPFIsoR03.sumPhotonEt);
     const float pfIsoR03_PU(muoPFIsoR03.sumPUPt);
 
-    const float pfIsoR03 = (muo.pt() != 0.) ? ((pfIsoR03_CH + std::max(0., pfIsoR03_NH + pfIsoR03_Ph - 0.5*pfIsoR03_PU)) / muo.pt()) : -1.;
+    const float pfIsoR03 =
+        (muo.pt() != 0.) ? ((pfIsoR03_CH + std::max(0., pfIsoR03_NH + pfIsoR03_Ph - 0.5 * pfIsoR03_PU)) / muo.pt())
+                         : -1.;
 
     muo.addUserFloat("pfIsoR03_CH", pfIsoR03_CH);
     muo.addUserFloat("pfIsoR03_NH", pfIsoR03_NH);
@@ -261,7 +253,9 @@ void MuonPATUserData::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     const float pfIsoR04_Ph(muoPFIsoR04.sumPhotonEt);
     const float pfIsoR04_PU(muoPFIsoR04.sumPUPt);
 
-    const float pfIsoR04 = (muo.pt() != 0.) ? ((pfIsoR04_CH + std::max(0., pfIsoR04_NH + pfIsoR04_Ph - 0.5*pfIsoR04_PU)) / muo.pt()) : -1.;
+    const float pfIsoR04 =
+        (muo.pt() != 0.) ? ((pfIsoR04_CH + std::max(0., pfIsoR04_NH + pfIsoR04_Ph - 0.5 * pfIsoR04_PU)) / muo.pt())
+                         : -1.;
 
     muo.addUserFloat("pfIsoR04_CH", pfIsoR04_CH);
     muo.addUserFloat("pfIsoR04_NH", pfIsoR04_NH);
@@ -271,14 +265,13 @@ void MuonPATUserData::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     // ------------------
 
     // Selectors [int]
-    for(const auto& i_strNfunc : userInt_stringSelects_)
-    {
+    for (const auto& i_strNfunc : userInt_stringSelects_) {
       const auto& i_str = i_strNfunc.first;
       const auto& i_func = i_strNfunc.second;
 
-      if(muo.hasUserInt(i_str)){
-
-        throw cms::Exception("InputError") << "@@@ MuonPATUserData::produce -- PAT user-int label already exists: " << i_str;
+      if (muo.hasUserInt(i_str)) {
+        throw cms::Exception("InputError")
+            << "@@@ MuonPATUserData::produce -- PAT user-int label already exists: " << i_str;
       }
 
       muo.addUserInt(i_str, int(i_func(muo)));
@@ -286,14 +279,13 @@ void MuonPATUserData::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     // -----------------
 
     // Functions [float]
-    for(const auto& i_strNfunc : userFloat_stringFuncs_){
-
-      const auto& i_str  = i_strNfunc.first;
+    for (const auto& i_strNfunc : userFloat_stringFuncs_) {
+      const auto& i_str = i_strNfunc.first;
       const auto& i_func = i_strNfunc.second;
 
-      if(muo.hasUserFloat(i_str)){
-
-        throw cms::Exception("InputError") << "@@@ MuonPATUserData::produce -- PAT user-float label already exists: " << i_str;
+      if (muo.hasUserFloat(i_str)) {
+        throw cms::Exception("InputError")
+            << "@@@ MuonPATUserData::produce -- PAT user-float label already exists: " << i_str;
       }
 
       muo.addUserFloat(i_str, float(i_func(muo)));
@@ -306,41 +298,47 @@ void MuonPATUserData::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   return;
 }
 
-bool MuonPATUserData::IDLooseHZZ(const reco::Muon& muon, const reco::Vertex& vtx){
-
+bool MuonPATUserData::IDLooseHZZ(const reco::Muon& muon, const reco::Vertex& vtx) {
   const bool kin = ((muon.pt() > 5.) && (fabs(muon.eta()) < 2.4));
-  if(not kin){ return false; }
+  if (not kin) {
+    return false;
+  }
 
-  const bool ip = (
-            muon.muonBestTrack().isNonnull()
-    && fabs(muon.muonBestTrack()->dxy(vtx.position())) < 0.5
-    && fabs(muon.muonBestTrack()->dz (vtx.position())) < 1.0
-  );
-  if(!ip){ return false; }
+  const bool ip = (muon.muonBestTrack().isNonnull() && fabs(muon.muonBestTrack()->dxy(vtx.position())) < 0.5 &&
+                   fabs(muon.muonBestTrack()->dz(vtx.position())) < 1.0);
+  if (!ip) {
+    return false;
+  }
 
   const bool id = (muon.isGlobalMuon() || muon.isTrackerMuon());
-  if(!id){ return false; }
+  if (!id) {
+    return false;
+  }
 
   const bool trk_type = (muon.muonBestTrackType() != 2);
-  if(!trk_type){ return false; }
+  if (!trk_type) {
+    return false;
+  }
 
   return true;
 }
 
-bool MuonPATUserData::IDTightHZZ(const reco::Muon& muon, const reco::Vertex& vtx){
-
+bool MuonPATUserData::IDTightHZZ(const reco::Muon& muon, const reco::Vertex& vtx) {
   const bool looseHZZ = IDLooseHZZ(muon, vtx);
-  if(not looseHZZ){ return false; }
+  if (not looseHZZ) {
+    return false;
+  }
 
   bool pass = muon.isPFMuon();
 
-  if(muon.pt() > 200.){ pass |= muon::isTrackerHighPtMuon(muon, vtx); }
+  if (muon.pt() > 200.) {
+    pass |= muon::isTrackerHighPtMuon(muon, vtx);
+  }
 
   return pass;
 }
 
-void MuonPATUserData::fillDescriptions(edm::ConfigurationDescriptions& descriptions){
-
+void MuonPATUserData::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   edm::ParameterSetDescription desc;
   desc.setUnknown();
 

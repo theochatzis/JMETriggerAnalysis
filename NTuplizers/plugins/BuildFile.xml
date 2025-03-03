@@ -1,6 +1,5 @@
-<export>
-</export>
-<library  name="JMETriggerAnalysisNTuplizers_plugins" file="*.cc">
+<library name="JMETriggerAnalysisNTuplizersPlugins" file="*.cc">
+  <flags EDM_PLUGIN="1"/>
   <use name="JMETriggerAnalysis/NTuplizers"/>
   <use name="FWCore/Framework"/>
   <use name="FWCore/ParameterSet"/>
@@ -11,6 +10,10 @@
   <use name="CommonTools/UtilAlgos"/>
   <use name="CommonTools/Utils"/>
   <use name="DataFormats/Common"/>
+  <use name="DataFormats/L1TGlobal"/>
+  <use name="HLTrigger/HLTcore"/>
+  <use name="SimDataFormats/GeneratorProducts"/>
+  <use name="SimDataFormats/PileupSummaryInfo"/>
   <use name="rootmath"/>
   <use name="root"/>
 </library>

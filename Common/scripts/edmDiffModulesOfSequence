@@ -1,0 +1,111 @@
+#!/usr/bin/env python
+"""
+Description:
+ Script to show modules of a sequence that differ across two cmsRun configuration files
+"""
+from __future__ import print_function
+import argparse
+import os
+import imp
+
+from JMETriggerAnalysis.Common.utils import *
+
+def getProcess(filepath):
+    _procTmp = imp.load_source('name', os.path.abspath(filepath))
+    if not hasattr(_procTmp, 'process'):
+       raise RuntimeError('getProcess("'+filepath+'")')
+    return getattr(_procTmp, 'process')
+
+#### main
+if __name__ == '__main__':
+   ### args
+   parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+
+   parser.add_argument('-r', '--reference', dest='reference', action='store', default=None,
+                       help='path to the reference configuration file [optional]')
+
+   parser.add_argument('-t', '--target', dest='target', action='store', default=None, required=True,
+                       help='path to the target configuration file')
+
+   parser.add_argument('-s', '--sequence', dest='sequence', action='store', default=None, required=True,
+                       help='name of the sequence in the target file')
+
+   parser.add_argument('-d', '--include-dependencies', dest='include_dependencies', action='store_true', default=False,
+                       help='include dependencies not included in the sequence of the target configuration file')
+
+   parser.add_argument('-e', '--include-es', dest='include_es', action='store_true', default=False,
+                       help='include ES modules (ESPrefer, ESSource, ESProducer)')
+
+   parser.add_argument('-n', '--name-only', dest='name_only', action='store_true', default=False,
+                       help='show only name of modules')
+
+   parser.add_argument('-i', '--ignore', dest='ignore', nargs='+', type=str, default=[],
+                       help='list of modules to be ignored in the target configuration file')
+
+   parser.add_argument('-c', '--consider-only', dest='consider_only', nargs='+', type=str, default=[],
+                       help='list of the only modules to be considered in the target configuration file (takes precedence over --ignore, if module appears in both lists)')
+
+   parser.add_argument('-p', '--prefix-output', dest='prefix_output', action='store', default='',
+                       help='string used as prefix to the names of output modules (example: prefix="process.")')
+
+   parser.add_argument('-v', '--verbosity', dest='verbosity', action='store', type=int, default=0,
+                       help='verbosity of log messages')
+
+   opts, opts_unknown = parser.parse_known_args()
+   ###
+
+   log_prx = os.path.basename(__file__)+' -- '
+
+   process1 = None
+   if (opts.reference is None):
+      if opts.verbosity > 0:
+         print('-'*75)
+         print(log_prx+'path to reference configuration file not specified [-r]')
+         print('-'*75)
+   elif not os.path.isfile(opts.reference):
+      raise RuntimeError(log_prx+'invalid path to reference configuration file [-r]: '+opts.reference)
+   else:
+      process1 = getProcess(opts.reference)
+
+   process2 = None
+   if not os.path.isfile(opts.target):
+      raise RuntimeError(log_prx+'invalid path to target configuration file [-t]: '+opts.target)
+   else:
+      process2 = getProcess(opts.target)
+
+   modulesToBeIgnored = sorted(list(set(opts.ignore)))
+   onlyModulesToBeConsidered = sorted(list(set(opts.consider_only)))
+
+   orderedListOfModuleNames = orderedListOfModuleNamesFromSequence(process2, opts.sequence)
+   depModuleNames = []
+   if opts.include_dependencies:
+      for _tmp in orderedListOfModuleNames:
+          depModuleNames += getModuleDependencies(getattr(process2, _tmp))
+      depModuleNames = sorted(list(set(depModuleNames)))
+      depModuleNames = [_tmp for _tmp in depModuleNames if ((_tmp not in orderedListOfModuleNames) and processHasModule(process2, _tmp))]
+
+   listOfModuleNames = []
+   if opts.include_dependencies:
+      listOfModuleNames += depModuleNames[:]
+   if opts.include_es:
+      for _tmp_set in [process2.es_prefers_(), process2.es_sources_(), process2.es_producers_()]:
+          for _tmp in _tmp_set:
+              if (_tmp not in listOfModuleNames) and (_tmp not in orderedListOfModuleNames):
+                 listOfModuleNames += [_tmp]
+   listOfModuleNames += orderedListOfModuleNames
+   for _tmp in listOfModuleNames:
+       if _tmp in modulesToBeIgnored:
+          continue
+       if onlyModulesToBeConsidered and (_tmp not in onlyModulesToBeConsidered):
+          continue
+       _mod_diffs = False
+       _mod1_dump = None
+       _mod2_dump = getattr(process2, _tmp).dumpPython()
+       if not processHasModule(process1, _tmp):
+          _mod_diffs = True
+       else:
+          _mod1_dump = getattr(process1, _tmp).dumpPython()
+          # difference between two modules currently defined based on their dump
+          _mod_diffs = (_mod1_dump != _mod2_dump)
+       if _mod_diffs:
+          print(opts.prefix_output+_tmp+(not opts.name_only)*(' = '+_mod2_dump))
