@@ -56,14 +56,14 @@ opts.register('verbosity', 0,
               vpo.VarParsing.varType.int,
               'level of output verbosity')
 
-opts.register('reco', 'caloTowers_thresholds',
+opts.register('reco', 'default',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
               'keyword to define HLT reconstruction')
 
 opts.parseArguments()
 
-supported_bpix_options = ['noBPix', 'BPix', 'BPixPlus', 'BPixMinus']
+supported_bpix_options = ['noBPix', 'BPix', 'FPix', 'BPixPlus', 'BPixMinus']
 
 if opts.bpixMode is not None and opts.bpixMode not in supported_bpix_options:
     raise ValueError("Error: The bpixMode value provided is not one of the supported options.")
@@ -72,24 +72,35 @@ if opts.bpixMode is not None and opts.bpixMode not in supported_bpix_options:
 ### HLT configuration
 ###
 
-if opts.reco == "default":
-   from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_0_0_GRun_configDump import *
-elif opts.reco == 'caloTowers_thresholds':
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_0_0_GRun_configDump import *
-  # making sure all CaloTowers are updated in the menu:
+print(f'Using {opts.reco}')
+from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_2_0_GRun_configDump import *
+
+if opts.reco == 'default':
+  # Use always the Ecal PF RecHit Thresholds in Calo Towers:
   from HLTrigger.Configuration.common import producers_by_type
   for producer in producers_by_type(process, "CaloTowersCreator"):
-        producer.EcalRecHitThresh = cms.bool(True)
+    producer.EcalRecHitThresh = cms.bool(True)
+  # CA + MkFit
+  from HLTrigger.Configuration.customize_CAPixelOnlyRetune import customize_CAPixelOnlyRetuneSameEff
+  process = customize_CAPixelOnlyRetuneSameEff(process)
+  from RecoTracker.MkFit.customizeHLTIter0ToMkFit import customizeHLTIter0ToMkFit
+  process = customizeHLTIter0ToMkFit(process)
+  # Cluster seeds change
+  process.hltSiPixelClustersSoA.clusterThreshold_layer1 = 2000
+  process.hltSiPixelClusters.clusterThreshold_layer1 = 2000
+
+elif opts.reco == 'mixedPFPuppi':
+  # adding mixed tracking in PF
+  print("adding mixed tracking in PF")
+  from HLTrigger.Configuration.customizeHLTforMixedTrkPUPPI import *
+  process = customizeHLTForMixedPF(process)
+   # adding CHS/PUPPI
+  print("adding CHS/PUPPI")
+  process = addPaths_MC_JMEPFCHS(process)
+  process = addPaths_MC_JMEPFPuppi(process)[0]
+
 else:
-  raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
-
-
-
-   
-
-
-
-
+   raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
 
 # remove cms.OutputModule objects from HLT config-dump
 for _modname in process.outputModules_():
@@ -185,6 +196,13 @@ process.hltAK4PFJetsBPix = cms.EDFilter( "PFJetSelector",
     filter = cms.bool(False),
     cut = cms.string("phi<-0.80 && phi>-1.20")
 )
+
+process.hltAK4PFJetsFPix = cms.EDFilter( "PFJetSelector",
+    src = cms.InputTag("hltAK4PFJets"),
+    filter = cms.bool(False),
+    cut = cms.string("phi>2.30 && phi<3.15")
+)
+
 # [-0.80 , -0.60]
 process.hltAK4PFJetsBPixPlus = cms.EDFilter( "PFJetSelector",
     src = cms.InputTag("hltAK4PFJets"),
@@ -203,11 +221,12 @@ process.hltAK4PFJetsBPixMinus = cms.EDFilter( "PFJetSelector",
 process.hltAK4PFJetsNoBPix = cms.EDFilter( "PFJetSelector",
     src = cms.InputTag("hltAK4PFJets"),
     filter = cms.bool(False),
-    cut = cms.string("!(phi<-0.60 && phi>-1.40)")
+    cut = cms.string("!(phi<-0.60 && phi>-1.40) && !(phi>2.30 && phi<3.15)")
 )
 
 
 process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsBPix
+process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsFPix
 process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsBPixPlus
 process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsBPixMinus
 process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsNoBPix
@@ -218,6 +237,13 @@ process.hltAK8PFJetsBPix = cms.EDFilter( "PFJetSelector",
     filter = cms.bool(False),
     cut = cms.string("phi<-0.80 && phi>-1.20")
 )
+
+process.hltAK8PFJetsFPix = cms.EDFilter( "PFJetSelector",
+    src = cms.InputTag("hltAK8PFJets"),
+    filter = cms.bool(False),
+    cut = cms.string("phi>2.30 && phi<3.15")
+)
+
 # [-0.80 , -0.40]
 process.hltAK8PFJetsBPixPlus = cms.EDFilter( "PFJetSelector",
     src = cms.InputTag("hltAK8PFJets"),
@@ -236,11 +262,12 @@ process.hltAK8PFJetsBPixMinus = cms.EDFilter( "PFJetSelector",
 process.hltAK8PFJetsNoBPix = cms.EDFilter( "PFJetSelector",
     src = cms.InputTag("hltAK8PFJets"),
     filter = cms.bool(False),
-    cut = cms.string("!(phi<-0.40 && phi>-1.60)")
+    cut = cms.string("!(phi<-0.40 && phi>-1.60) && !(phi>2.30 && phi<3.15)")
 )
 
 
 process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsBPix
+process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsFPix
 process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsBPixPlus
 process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsBPixMinus
 process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsNoBPix
@@ -269,18 +296,100 @@ if opts.bpixMode == 'BPixMinus':
 from JMETriggerAnalysis.JESCorrections.jescJRA_utils import addJRAPath
 
 
-addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfHLT'       , recoJets = ak4hltCollectionName_ , rho = 'hltFixedGridRhoFastjetAll')
-#addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfchsHLT'    , recoJets = 'hltAK4PFCHSJets'    , rho = 'hltFixedGridRhoFastjetAll')
-#addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfpuppiHLT'  , recoJets = 'hltAK4PFPuppiJets'  , rho = 'hltFixedGridRhoFastjetAll')
-
-
-addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfHLT'       , recoJets = ak8hltCollectionName_ , rho = 'hltFixedGridRhoFastjetAll')
-#addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfchsHLT'    , recoJets = 'hltAK8PFCHSJets'    , rho = 'hltFixedGridRhoFastjetAll')
-#addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfpuppiHLT'  , recoJets = 'hltAK8PFPuppiJets'  , rho = 'hltFixedGridRhoFastjetAll')
+addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfHLT'       , recoJets = 'hltAK4PFJets'+(str(opts.bpixMode) if opts.bpixMode else '')      , rho = 'hltFixedGridRhoFastjetAll')
+addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8pfHLT'       , recoJets = 'hltAK8PFJets'+(str(opts.bpixMode) if opts.bpixMode else '')         , rho = 'hltFixedGridRhoFastjetAll')
 
 if (opts.bpixMode is None) or (opts.bpixMode == 'noBPix'):  
   addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4caloHLT'     , recoJets = 'hltAK4CaloJets'      , rho = 'hltFixedGridRhoFastjetAllCalo')
   addJRAPath(process, genJets = 'ak8GenJetsNoNu', maxDeltaR = 0.4, moduleNamePrefix = 'ak8caloHLT'     , recoJets = 'hltAK8CaloJets'      , rho = 'hltFixedGridRhoFastjetAllCalo')
+
+if opts.reco == 'mixedPFPuppi':
+  # [-1.20 , -0.80]
+  process.hltAK4PFPuppiJetsBPix = cms.EDFilter( "PFJetSelector",
+      src = cms.InputTag("hltAK4PFPuppiJets"),
+      filter = cms.bool(False),
+      cut = cms.string("phi<-0.80 && phi>-1.20")
+  )
+
+  process.hltAK4PFPuppiJetsFPix = cms.EDFilter( "PFJetSelector",
+      src = cms.InputTag("hltAK4PFPuppiJets"),
+      filter = cms.bool(False),
+      cut = cms.string("phi>2.30 && phi<3.15")
+  )
+
+  # [-0.80 , -0.60]
+  process.hltAK4PFPuppiJetsBPixPlus = cms.EDFilter( "PFJetSelector",
+      src = cms.InputTag("hltAK4PFPuppiJets"),
+      filter = cms.bool(False),
+      cut = cms.string("phi<-0.60 && phi>-0.80")
+  )
+
+  # [-1.40 , -1.20]
+  process.hltAK4PFPuppiJetsBPixMinus = cms.EDFilter( "PFJetSelector",
+      src = cms.InputTag("hltAK4PFPuppiJets"),
+      filter = cms.bool(False),
+      cut = cms.string("phi<-1.20 && phi>-1.40")
+  )
+
+  # Not in [-1.40 , -0.60]
+  process.hltAK4PFPuppiJetsnoBpix = cms.EDFilter( "PFJetSelector",
+      src = cms.InputTag("hltAK4PFPuppiJets"),
+      filter = cms.bool(False),
+      cut = cms.string("!(phi<-0.60 && phi>-1.40) && !(phi>2.30 && phi<3.15)")
+  )
+
+
+  process.HLTAK4PFPuppiJetsSequence += process.hltAK4PFPuppiJetsBPix
+  process.HLTAK4PFPuppiJetsSequence += process.hltAK4PFPuppiJetsFPix
+  process.HLTAK4PFPuppiJetsSequence += process.hltAK4PFPuppiJetsBPixPlus
+  process.HLTAK4PFPuppiJetsSequence += process.hltAK4PFPuppiJetsBPixMinus
+  process.HLTAK4PFPuppiJetsSequence += process.hltAK4PFPuppiJetsnoBpix
+
+
+  # [-1.20 , -0.80]
+  process.hltAK4PFCHSJetsBPix = cms.EDFilter( "PFJetSelector",
+      src = cms.InputTag("hltAK4PFCHSJets"),
+      filter = cms.bool(False),
+      cut = cms.string("phi<-0.80 && phi>-1.20")
+  )
+
+  process.hltAK4PFCHSJetsFPix = cms.EDFilter( "PFJetSelector",
+      src = cms.InputTag("hltAK4PFCHSJets"),
+      filter = cms.bool(False),
+      cut = cms.string("phi>2.30 && phi<3.15")
+  )
+
+  # [-0.80 , -0.60]
+  process.hltAK4PFCHSJetsBPixPlus = cms.EDFilter( "PFJetSelector",
+      src = cms.InputTag("hltAK4PFCHSJets"),
+      filter = cms.bool(False),
+      cut = cms.string("phi<-0.60 && phi>-0.80")
+  )
+
+  # [-1.40 , -1.20]
+  process.hltAK4PFCHSJetsBPixMinus = cms.EDFilter( "PFJetSelector",
+      src = cms.InputTag("hltAK4PFCHSJets"),
+      filter = cms.bool(False),
+      cut = cms.string("phi<-1.20 && phi>-1.40")
+  )
+
+  # Not in [-1.40 , -0.60]
+  process.hltAK4PFCHSJetsnoBpix = cms.EDFilter( "PFJetSelector",
+      src = cms.InputTag("hltAK4PFCHSJets"),
+      filter = cms.bool(False),
+      cut = cms.string("!(phi<-0.60 && phi>-1.40) && !(phi>2.30 && phi<3.15)")
+  )
+
+
+  process.HLTAK4PFCHSJetsSequence += process.hltAK4PFCHSJetsBPix
+  process.HLTAK4PFCHSJetsSequence += process.hltAK4PFCHSJetsFPix
+  process.HLTAK4PFCHSJetsSequence += process.hltAK4PFCHSJetsBPixPlus
+  process.HLTAK4PFCHSJetsSequence += process.hltAK4PFCHSJetsBPixMinus
+  process.HLTAK4PFCHSJetsSequence += process.hltAK4PFCHSJetsnoBpix
+
+  addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfchsHLT'    , recoJets = 'hltAK4PFCHSJets'+(str(opts.bpixMode) if opts.bpixMode else '')    , rho = 'hltFixedGridRhoFastjetAll')
+  addJRAPath(process, genJets = 'ak4GenJetsNoNu', maxDeltaR = 0.2, moduleNamePrefix = 'ak4pfpuppiHLT'  , recoJets = 'hltAK4PFPuppiJets'+(str(opts.bpixMode) if opts.bpixMode else '')  , rho = 'hltFixedGridRhoFastjetAll')
+
 
 ###
 ### standard options
@@ -317,7 +426,7 @@ if opts.inputFiles:
    process.source.fileNames = opts.inputFiles
 else:
    process.source.fileNames = [
-     '/store/mc/Run3Winter24Digi/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to120_133X_mcRun3_2024_realistic_v9-v3/40000/0d532668-aed7-403d-943e-86f88480b3b3.root',
+     '/store/mc/Run3Winter25Digi/QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to120_142X_mcRun3_2025_realistic_v7-v1/2560000/004eb817-3642-40a7-a3c4-95faa48c4f9d.root',
    ]
 
 # input EDM files [secondary]

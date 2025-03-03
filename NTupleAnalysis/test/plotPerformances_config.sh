@@ -6,7 +6,7 @@ INPDIR=/eos/user/t/tchatzis/samples2023/
 
 
 #OUTDIR=./plots_test_winter24
-OUTDIR=/eos/user/t/tchatzis/plots_correctionsWinter24_new_gaussian/
+OUTDIR=/eos/user/t/tchatzis/plots_trk25_validation_qcd/
 
 
 
@@ -18,12 +18,21 @@ rm -rf ${OUTDIR}
 #    /eos/user/t/tchatzis/samples2023/test_24_winter23jecs/HLT_Run3TRK/harvesting/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65.root:'23 PFHC+JEC':1:1:20
 # -l '#font[61]{CMS} #font[52]{Run-3 Simulation} QCD FlatPt Winter24'
 
+
 jmePlots.py -k version_check_mc  \
 -o ${OUTDIR} \
--i /eos/user/t/tchatzis/samples2023/validation_2024JECS/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/crab_validation_2024JECS/harvesting_gaussian/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65.root:'Winter24 BPix':632:1:20 \
-   /eos/user/t/tchatzis/samples2023/validation_2024JECS/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/crab_validation_2024JECS_extraPhi/harvesting_gaussian/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65.root:'Winter24 BPix+Overlap':800:1:20 \
-   /eos/user/t/tchatzis/samples2023/validation_2024JECS/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/crab_validation_defaultJECS/harvesting_gaussian/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65.root:'Winter23':1:1:20
--l '#font[61]{CMS} #font[52]{Run-3 Simulation} QCD FlatPt Winter24'
+-i /eos/user/t/tchatzis/samples2023/test_trk25/default/harvesting_qcd/qcd.root:'Default':632:1:20 \
+   /eos/user/t/tchatzis/samples2023/test_trk25/ca_mkfit/harvesting_qcd/qcd.root:'CA+MkFit':800:1:20 \
+   /eos/user/t/tchatzis/samples2023/test_trk25/ca_mkfit_bpixl1/harvesting_qcd/qcd.root:'CA+MkFit+BPixL1':1:1:20
+-l '#font[61]{CMS} #font[52]{Run-3 Simulation} QCD FlatPt Winter25'
+
+# jmePlots.py -k version_check_mc  \
+# -o ${OUTDIR} \
+# -i /eos/user/t/tchatzis/samples2023/validation_2024JECS/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/crab_validation_2024JECS/harvesting_gaussian/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65.root:'Winter24 BPix':632:1:20 \
+#    /eos/user/t/tchatzis/samples2023/validation_2024JECS/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/crab_validation_2024JECS_extraPhi/harvesting_gaussian/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65.root:'Winter24 BPix+Overlap':800:1:20 \
+#    /eos/user/t/tchatzis/samples2023/validation_2024JECS/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/crab_validation_defaultJECS/harvesting_gaussian/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65.root:'Winter23':1:1:20
+# -l '#font[61]{CMS} #font[52]{Run-3 Simulation} QCD FlatPt Winter24'
+
 
 #   /eos/user/t/tchatzis/samples2023/test_24_winter24corrections_noBPix/HLT_Run3TRK/harvesting/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65.root:'PFHC+JEC(BPixVeto)':632:1:20 \
 # /eos/user/t/tchatzis/samples2023/test_24_winter23jecs/HLT_Run3TRK/harvesting/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65.root:'23 PFHC+JEC':632:1:20 \
