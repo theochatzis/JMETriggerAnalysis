@@ -34,11 +34,19 @@ ssh -Y <user_name>@lxplus8.cern.ch
 ```
 then in any directory setup the framework:
 ```
-cmsrel CMSSW_15_0_0_pre3
-cd CMSSW_15_0_0_pre3/src
+cmsrel CMSSW_15_2_0
+cd CMSSW_15_2_0/src
 cmsenv
 git cms-init
 ## --- You can find bellow useful additions to standard CMSSW for relevant studies ---
+# Needed: Merge updates from tracking for 2025 - CA automation for patatrack params + mkFit for track building
+git cms-merge-topic elusian:1501_newCAtuning 
+
+## -----------------------------------------------------------------------------------
+
+git clone git@github.com:theochatzis/JMETriggerAnalysis.git
+
+## Additional studies
 ## Only use those in case you want to perform such a study. 
 # Optional: Use this merge-topic in case you want to study removal of low pT jets in MHT
 git cms-merge-topic theochatzis:testMHTforFwd
@@ -46,13 +54,6 @@ git cms-merge-topic theochatzis:testMHTforFwd
 # Optional: Used for PUPPI studies
 git cms-merge-topic theochatzis:puppiRun3Customizer_15_0_X
  
-# Needed: Merge updates from tracking for 2025 - CA automation for patatrack params + mkFit for track building
-git cms-merge-topic elusian:1500p3_newCAtuning 
-
-## -----------------------------------------------------------------------------------
-
-git clone git@github.com:theochatzis/JMETriggerAnalysis.git -b run3_14_0_X
-
 
 # Build
 scram b -j 12

@@ -17,8 +17,8 @@ ODIR=${1}
 declare -A samplesMap
 
 # QCD 
-samplesMap["QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8"]='/QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter25Digi-FlatPU0to120_142X_mcRun3_2025_realistic_v7-v1/GEN-SIM-RAW'
-samplesMap["TT_TuneCP5_13p6TeV_powheg-pythia8"]='/TT_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter25Digi-142X_mcRun3_2025_realistic_v7-v2/GEN-SIM-RAW'
+samplesMap["QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8"]='/QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter25Digi-FlatPU0to120_142X_mcRun3_2025_realistic_v7-v3/GEN-SIM-RAW'
+#samplesMap["TT_TuneCP5_13p6TeV_powheg-pythia8"]='/TT_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter25Digi-142X_mcRun3_2025_realistic_v7-v2/GEN-SIM-RAW'
 # 
 # 
 # VBF H(125)->Invisible
@@ -28,8 +28,6 @@ samplesMap["TT_TuneCP5_13p6TeV_powheg-pythia8"]='/TT_TuneCP5_13p6TeV_powheg-pyth
 
 recoKeys=(
   default
-  ca_mkfit
-  ca_mkfit_bpixl1
 )
 
 if [ -d ${OUTPUT_DIR_EOS}/${ODIR} ]; then

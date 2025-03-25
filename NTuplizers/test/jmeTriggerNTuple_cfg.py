@@ -78,31 +78,7 @@ opts.parseArguments()
 update_jmeCalibs = False
 
 if opts.reco == 'default':
-  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_2_0_GRun_configDump import cms, process
-
-elif opts.reco == 'ca_mkfit':
-   from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_2_0_GRun_configDump import cms, process
-   from HLTrigger.Configuration.customize_CAPixelOnlyRetune import customize_CAPixelOnlyRetuneSameEff
-   process = customize_CAPixelOnlyRetuneSameEff(process)
-   from RecoTracker.MkFit.customizeHLTIter0ToMkFit import customizeHLTIter0ToMkFit
-   process = customizeHLTIter0ToMkFit(process)
-
-elif opts.reco == 'ca_mkfit_bpixl1':
-   from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_2_0_GRun_configDump import cms, process
-   from HLTrigger.Configuration.customize_CAPixelOnlyRetune import customize_CAPixelOnlyRetuneSameEff
-   process = customize_CAPixelOnlyRetuneSameEff(process)
-   from RecoTracker.MkFit.customizeHLTIter0ToMkFit import customizeHLTIter0ToMkFit
-   process = customizeHLTIter0ToMkFit(process)
-
-   process.hltSiPixelClustersSoA.clusterThreshold_layer1 = 2000
-   process.hltSiPixelClusters.clusterThreshold_layer1 = 2000
-
-# elif opts.reco == 'caloTowers_thresholds':
-#   from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_2_0_GRun_configDump import cms, process
-#   from HLTrigger.Configuration.common import producers_by_type
-#   for producer in producers_by_type(process, "CaloTowersCreator"):
-#         producer.EcalRecHitThresh = cms.bool(True)
-  update_jmeCalibs = True
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_15_0_0_GRun_configDump import cms, process
 
 elif opts.reco == 'testMHT':
   from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_2_0_GRun_configDump import cms, process
@@ -123,10 +99,33 @@ elif opts.reco == 'mixedPFPuppi':
 else:
   raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
 
+
+# Tracking updates 2025
+from HLTrigger.Configuration.customize_CAPixelOnlyRetune import customize_CAPixelOnlyRetuneSameEff
+process = customize_CAPixelOnlyRetuneSameEff(process)
+from RecoTracker.MkFit.customizeHLTIter0ToMkFit import customizeHLTIter0ToMkFit
+process = customizeHLTIter0ToMkFit(process)
+
+process.hltSiPixelClustersSoA.clusterThreshold_layer1 = 2000
+process.hltSiPixelClusters.clusterThreshold_layer1 = 2000
+
+# New PFHC
+process.GlobalTag.toGet += [
+  cms.PSet(
+      record = cms.string('PFCalibrationRcd'),
+      tag = cms.string('PFCalibration_Run3Winter25_MC_hlt_v1'),
+      label = cms.untracked.string('HLT'),
+  )
+]
+
 # Use always the Ecal PF RecHit Thresholds in Calo Towers:
 from HLTrigger.Configuration.common import producers_by_type
 for producer in producers_by_type(process, "CaloTowersCreator"):
   producer.EcalRecHitThresh = cms.bool(True)
+
+
+# Remove HLT_PFJet40_GPUvsCPU_v7
+process.schedule.remove(process.HLT_PFJet40_GPUvsCPU_v7)
 
 
 # By pass global tag of menu if needed
@@ -172,6 +171,8 @@ vetoPaths = [
   'HLT_*ForPPRef_v*',
 	'AlCa_*',
 ]
+
+
 
 # list of paths that are kept
 listOfPaths = []
@@ -430,7 +431,7 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
-    '/store/mc/Run3Winter25Digi/QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to120_142X_mcRun3_2025_realistic_v7-v1/2560000/004eb817-3642-40a7-a3c4-95faa48c4f9d.root'
+    '/store/mc/Run3Winter25Digi/QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to120_142X_mcRun3_2025_realistic_v7-v3/90000/01264d3b-3e70-4995-aeea-ce434d408b6e.root'
 
   ]
 

@@ -73,23 +73,13 @@ if opts.bpixMode is not None and opts.bpixMode not in supported_bpix_options:
 ###
 
 print(f'Using {opts.reco}')
-from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_14_2_0_GRun_configDump import *
+
 
 if opts.reco == 'default':
-  # Use always the Ecal PF RecHit Thresholds in Calo Towers:
-  from HLTrigger.Configuration.common import producers_by_type
-  for producer in producers_by_type(process, "CaloTowersCreator"):
-    producer.EcalRecHitThresh = cms.bool(True)
-  # CA + MkFit
-  from HLTrigger.Configuration.customize_CAPixelOnlyRetune import customize_CAPixelOnlyRetuneSameEff
-  process = customize_CAPixelOnlyRetuneSameEff(process)
-  from RecoTracker.MkFit.customizeHLTIter0ToMkFit import customizeHLTIter0ToMkFit
-  process = customizeHLTIter0ToMkFit(process)
-  # Cluster seeds change
-  process.hltSiPixelClustersSoA.clusterThreshold_layer1 = 2000
-  process.hltSiPixelClusters.clusterThreshold_layer1 = 2000
-
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_15_0_0_GRun_configDump import *
+  
 elif opts.reco == 'mixedPFPuppi':
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_15_0_0_GRun_configDump import *
   # adding mixed tracking in PF
   print("adding mixed tracking in PF")
   from HLTrigger.Configuration.customizeHLTforMixedTrkPUPPI import *
@@ -101,6 +91,34 @@ elif opts.reco == 'mixedPFPuppi':
 
 else:
    raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
+
+# Tracking updates 2025
+from HLTrigger.Configuration.customize_CAPixelOnlyRetune import customize_CAPixelOnlyRetuneSameEff
+process = customize_CAPixelOnlyRetuneSameEff(process)
+from RecoTracker.MkFit.customizeHLTIter0ToMkFit import customizeHLTIter0ToMkFit
+process = customizeHLTIter0ToMkFit(process)
+
+process.hltSiPixelClustersSoA.clusterThreshold_layer1 = 2000
+process.hltSiPixelClusters.clusterThreshold_layer1 = 2000
+
+# New PFHC
+process.GlobalTag.toGet += [
+  cms.PSet(
+      record = cms.string('PFCalibrationRcd'),
+      tag = cms.string('PFCalibration_Run3Winter25_MC_hlt_v1'),
+      label = cms.untracked.string('HLT'),
+  )
+]
+
+# Use always the Ecal PF RecHit Thresholds in Calo Towers:
+from HLTrigger.Configuration.common import producers_by_type
+for producer in producers_by_type(process, "CaloTowersCreator"):
+  producer.EcalRecHitThresh = cms.bool(True)
+
+
+# Remove HLT_PFJet40_GPUvsCPU_v7
+process.schedule.remove(process.HLT_PFJet40_GPUvsCPU_v7)
+
 
 # remove cms.OutputModule objects from HLT config-dump
 for _modname in process.outputModules_():
@@ -165,24 +183,26 @@ if hasattr(process, 'FastTimerService'):
 #process = addPaths_MC_JMEPFCHS(process)
 #process = addPaths_MC_JMEPFPuppi(process)
 
-## ES modules for PF-Hadron Calibrations
+## ES modules for PF-Hadron Calibrations with db file
+'''
 import os
 
 from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
 ## ES modules for PF-Hadron Calibrations
 process.pfhcESSource = cms.ESSource('PoolDBESSource',
-   _CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
-   toGet = cms.VPSet(
-     cms.PSet(
-       record = cms.string('PFCalibrationRcd'),
-       tag = cms.string('PFCalibration_HLT_133X_mcRun3_2024_realistic_v9'),
-       label = cms.untracked.string('HLT'),
-     ),
+  _CondDB.clone(connect = 'sqlite_file:PFCalibration.db'),
+  toGet = cms.VPSet(
+    cms.PSet(
+      record = cms.string('PFCalibrationRcd'),
+      tag = cms.string('PFCalibration_HLT_133X_mcRun3_2024_realistic_v9'),
+      label = cms.untracked.string('HLT'),
+    ),
   ),
 )
-
 process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
-## Used to test applying the offline PFHC : 
+'''
+
+## Used to test applying the offline PFHC from GT: 
 #process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
 
 # Test option to skip forward PFHC application (after eta = 2.5)
@@ -426,7 +446,7 @@ if opts.inputFiles:
    process.source.fileNames = opts.inputFiles
 else:
    process.source.fileNames = [
-     '/store/mc/Run3Winter25Digi/QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to120_142X_mcRun3_2025_realistic_v7-v1/2560000/004eb817-3642-40a7-a3c4-95faa48c4f9d.root',
+     '/store/mc/Run3Winter25Digi/QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to120_142X_mcRun3_2025_realistic_v7-v3/90000/01264d3b-3e70-4995-aeea-ce434d408b6e.root',
    ]
 
 # input EDM files [secondary]

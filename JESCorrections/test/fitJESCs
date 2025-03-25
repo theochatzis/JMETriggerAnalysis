@@ -9,7 +9,7 @@ JESC_BASE=${CMSSW_BASE}/src/JMETriggerAnalysis/JESCorrections/test
 #JRANTuple_NoPU=/eos/user/t/tchatzis/nanopost/hlt_run3_JECs/QCD_NoPU_133X_nophi_ext.root
 #JRANTuple_PU=/eos/user/t/tchatzis/nanopost/hlt_run3_JECs/QCD_FlatPU0to120_133X_nophi_ext.root
 
-ERA=Run3Winter24Digi
+ERA=Run3Winter25Digi
 
 # Check this out for L1 correction - this defines the binning of mu
 # if for example your sample has flat PU0to80 use the binning such that the maximum is 80
@@ -24,8 +24,8 @@ L1_CORRECTION_BIN_WIDTH=10
 JET_TYPES=(
   ak4pfHLT
   ak8pfHLT
-  #ak4caloHLT
-  #ak8caloHLT
+  ak4caloHLT
+  ak8caloHLT
 )
 #JET_TYPES=(
 #  ak4pfHLT

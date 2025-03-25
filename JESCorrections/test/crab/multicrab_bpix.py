@@ -19,12 +19,12 @@ def getOutputName(input_dataset):
     else:
         print("Substring not found in the input string.")
 
-dataset_flatPU='/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v9_ext1-v2/GEN-SIM-RAW'
-dataset_noPU='/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter24Digi-NoPU_133X_mcRun3_2024_realistic_v9_ext1-v2/GEN-SIM-RAW'
+dataset_flatPU='/QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter25Digi-FlatPU0to120_142X_mcRun3_2025_realistic_v7-v3/GEN-SIM-RAW'
+dataset_noPU='/QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter25Digi-NoPU_142X_mcRun3_2025_realistic_v7-v3/GEN-SIM-RAW'
 doPuppiCHS = False
 
 # Note : check bellow outLFNDirBase such that you have a working directory 
-# default is to output in personal EOS space /store/user/[your_lxplus_user_name]/2024_JRA_NTuples/
+# default is to output in personal EOS space /store/user/[your_lxplus_user_name]/JRA_NTuples/
 
 # common part in all submissions
 input_file_dir = os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/JESCorrections/test/' 
@@ -40,7 +40,7 @@ config.section_('JobType')
 config.JobType.pluginName  = 'Analysis'
 config.JobType.psetName = input_file_dir+'jescJRA_cfg.py'
 
-config.JobType.inputFiles = [input_file_dir + 'PFCalibration.db']
+#config.JobType.inputFiles = [input_file_dir + 'PFCalibration.db'] # not needed now
 config.JobType.maxMemoryMB = 2500
 config.JobType.allowUndistributedCMSSW = True
 

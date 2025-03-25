@@ -6,20 +6,27 @@ for the jets used in the High-Level Trigger (HLT).
 
 Instructions to set up the CMSSW area to produce JRA NTuples, and derive JESCs:
 ```
-cmsrel CMSSW_14_0_14
-cd CMSSW_14_0_14/src
+cmsrel CMSSW_15_0_2
+cd CMSSW_15_0_2/src
 cmsenv
 git cms-init
+
+
+# Needed: Merge updates from tracking for 2025 - CA automation for patatrack params + mkFit for track building
+git cms-merge-topic elusian:1501_newCAtuning 
+
+git clone https://github.com/theochatzis/JetMETAnalysis.git -b hlt_run3
+
+git clone https://github.com/theochatzis/JMETriggerAnalysis.git
+
+## Additional studies
+# Optional: Used for PUPPI studies
+git cms-merge-topic theochatzis:puppiRun3Customizer_15_0_X
 
 # Was used to test skipping forward PFHC corrections application.  
 #git cms-merge-topic theochatzis:optionForSkipForwardPFHC
 
-# In case you want to study the new CaloTowers update
-git cms-addpkg RecoLocalCalo/CaloTowersCreator
-git cherry-pick 979e2299d39a803bcdfec5b20ad083e67f7a30dc
 
-git clone https://github.com/theochatzis/JetMETAnalysis.git -b hlt_run3
-git clone https://github.com/theochatzis/JMETriggerAnalysis.git -b run3_14_0_X
 scram b -j 8
 ```
 
