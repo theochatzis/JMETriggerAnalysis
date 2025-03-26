@@ -34,8 +34,8 @@ ssh -Y <user_name>@lxplus8.cern.ch
 ```
 then in any directory setup the framework:
 ```
-cmsrel CMSSW_15_2_0
-cd CMSSW_15_2_0/src
+cmsrel CMSSW_15_0_2
+cd CMSSW_15_0_2/src
 cmsenv
 git cms-init
 ## --- You can find bellow useful additions to standard CMSSW for relevant studies ---
