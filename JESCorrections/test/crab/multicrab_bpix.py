@@ -40,7 +40,7 @@ config.section_('JobType')
 config.JobType.pluginName  = 'Analysis'
 config.JobType.psetName = input_file_dir+'jescJRA_cfg.py'
 
-#config.JobType.inputFiles = [input_file_dir + 'PFCalibration.db'] # not needed now
+config.JobType.inputFiles = [input_file_dir + 'PFCalibration.db'] 
 config.JobType.maxMemoryMB = 2500
 config.JobType.allowUndistributedCMSSW = True
 

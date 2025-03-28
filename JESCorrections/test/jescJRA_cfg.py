@@ -102,13 +102,13 @@ process.hltSiPixelClustersSoA.clusterThreshold_layer1 = 2000
 process.hltSiPixelClusters.clusterThreshold_layer1 = 2000
 
 # New PFHC
-process.GlobalTag.toGet += [
-  cms.PSet(
-      record = cms.string('PFCalibrationRcd'),
-      tag = cms.string('PFCalibration_Run3Winter25_MC_hlt_v1'),
-      label = cms.untracked.string('HLT'),
-  )
-]
+#process.GlobalTag.toGet += [
+#  cms.PSet(
+#      record = cms.string('PFCalibrationRcd'),
+#      tag = cms.string('PFCalibration_Run3Winter25_MC_hlt_v1'),
+#      label = cms.untracked.string('HLT'),
+#  )
+#]
 
 # Use always the Ecal PF RecHit Thresholds in Calo Towers:
 from HLTrigger.Configuration.common import producers_by_type
@@ -184,7 +184,7 @@ if hasattr(process, 'FastTimerService'):
 #process = addPaths_MC_JMEPFPuppi(process)
 
 ## ES modules for PF-Hadron Calibrations with db file
-'''
+
 import os
 
 from CondCore.CondDB.CondDB_cfi import CondDB as _CondDB
@@ -194,13 +194,13 @@ process.pfhcESSource = cms.ESSource('PoolDBESSource',
   toGet = cms.VPSet(
     cms.PSet(
       record = cms.string('PFCalibrationRcd'),
-      tag = cms.string('PFCalibration_HLT_133X_mcRun3_2024_realistic_v9'),
+      tag = cms.string('PFCalibration_142X_mcRun3_2025_v7_forHLT'),
       label = cms.untracked.string('HLT'),
     ),
   ),
 )
 process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
-'''
+
 
 ## Used to test applying the offline PFHC from GT: 
 #process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
