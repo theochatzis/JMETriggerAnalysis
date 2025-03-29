@@ -201,6 +201,9 @@ process.pfhcESSource = cms.ESSource('PoolDBESSource',
 )
 process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
 
+vpset_gt = process.GlobalTag.toGet
+for i, pset in enumerate(vpset_gt):
+    print(f"{i}:")
 
 ## Used to test applying the offline PFHC from GT: 
 #process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
@@ -238,7 +241,7 @@ process.hltAK4PFJetsBPixMinus = cms.EDFilter( "PFJetSelector",
 )
 
 # Not in [-1.40 , -0.60]
-process.hltAK4PFJetsNoBPix = cms.EDFilter( "PFJetSelector",
+process.hltAK4PFJetsnoBPix = cms.EDFilter( "PFJetSelector",
     src = cms.InputTag("hltAK4PFJets"),
     filter = cms.bool(False),
     cut = cms.string("!(phi<-0.60 && phi>-1.40) && !(phi>2.30 && phi<3.15)")
@@ -249,7 +252,7 @@ process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsBPix
 process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsFPix
 process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsBPixPlus
 process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsBPixMinus
-process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsNoBPix
+process.HLTAK4PFJetsReconstructionSequence += process.hltAK4PFJetsnoBPix
 
 # [-1.20 , -0.80]
 process.hltAK8PFJetsBPix = cms.EDFilter( "PFJetSelector",
@@ -279,7 +282,7 @@ process.hltAK8PFJetsBPixMinus = cms.EDFilter( "PFJetSelector",
 )
 
 # Not in [-1.60 , -0.40]
-process.hltAK8PFJetsNoBPix = cms.EDFilter( "PFJetSelector",
+process.hltAK8PFJetsnoBPix = cms.EDFilter( "PFJetSelector",
     src = cms.InputTag("hltAK8PFJets"),
     filter = cms.bool(False),
     cut = cms.string("!(phi<-0.40 && phi>-1.60) && !(phi>2.30 && phi<3.15)")
@@ -290,25 +293,7 @@ process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsBPix
 process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsFPix
 process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsBPixPlus
 process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsBPixMinus
-process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsNoBPix
-
-ak4hltCollectionName_ = 'hltAK4PFJets'
-ak8hltCollectionName_ = 'hltAK8PFJets'
-if opts.bpixMode == 'noBPix':
-   ak4hltCollectionName_ = 'hltAK4PFJetsNoBPix'
-   ak8hltCollectionName_ = 'hltAK8PFJetsNoBPix'
-
-if opts.bpixMode == 'BPix':
-   ak4hltCollectionName_ = 'hltAK4PFJetsBPix'
-   ak8hltCollectionName_ = 'hltAK8PFJetsBPix'
-
-if opts.bpixMode == 'BPixPlus':
-   ak4hltCollectionName_ = 'hltAK4PFJetsBPixPlus'
-   ak8hltCollectionName_ = 'hltAK8PFJetsBPixPlus'
-
-if opts.bpixMode == 'BPixMinus':
-   ak4hltCollectionName_ = 'hltAK4PFJetsBPixMinus'
-   ak8hltCollectionName_ = 'hltAK8PFJetsBPixMinus'
+process.HLTAK8PFJetsReconstructionSequence += process.hltAK8PFJetsnoBPix
 
 ###
 ### Jet Response Analyzer (JRA) NTuple
