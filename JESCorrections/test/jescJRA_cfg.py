@@ -201,10 +201,6 @@ process.pfhcESSource = cms.ESSource('PoolDBESSource',
 )
 process.pfhcESPrefer = cms.ESPrefer('PoolDBESSource', 'pfhcESSource')
 
-vpset_gt = process.GlobalTag.toGet
-for i, pset in enumerate(vpset_gt):
-    print(f"{i}:")
-
 ## Used to test applying the offline PFHC from GT: 
 #process.hltParticleFlow.calibrationsLabel = '' # standard label for Offline-PFHC in GT
 
