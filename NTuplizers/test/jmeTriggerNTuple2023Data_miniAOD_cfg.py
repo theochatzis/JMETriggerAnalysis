@@ -16,7 +16,7 @@ opts.register('skipEvents', 0,
               vpo.VarParsing.varType.int,
               'number of events to be skipped')
 
-opts.register('isMuonData', False,
+opts.register('isMuonData', True,
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.bool,
               'set to True if you want to run on Muon dataset for miniAOD analysis')
@@ -158,11 +158,11 @@ if opts.offlineJecs is not None:
         tag = cms.string('JetCorrectorParametersCollection_'+opts.offlineJecs+'_AK4PFPuppi'),
         label = cms.untracked.string('AK4PFPuppi'),
       ),
-      cms.PSet(
-        record = cms.string('JetCorrectionsRecord'),
-        tag = cms.string('JetCorrectorParametersCollection_'+opts.offlineJecs+'_AK8PFPuppi'),
-        label = cms.untracked.string('AK8PFPuppi'),
-      ),
+      # cms.PSet(
+      #   record = cms.string('JetCorrectionsRecord'),
+      #   tag = cms.string('JetCorrectorParametersCollection_'+opts.offlineJecs+'_AK8PFPuppi'),
+      #   label = cms.untracked.string('AK8PFPuppi'),
+      # ),
     ),
   )
   process.offlinejescESPrefer = cms.ESPrefer('PoolDBESSource', 'offlinejescESSource')
@@ -179,16 +179,16 @@ if opts.offlineJecs is not None:
       jetCorrections=("AK4PFPuppi", jecToUse, "None"),  #JECs to be applied
   )
 
-  updateJetCollection(
-      process,
-      jetSource=cms.InputTag("slimmedJetsAK8"),  #Input PAT jet collection
-      labelName="AK8PFPuppi",  #Label for the updated jet collection - will become patJetCorrFactors[labelName]
-      jetCorrections=("AK8PFPuppi", jecToUse, "None"),  #JECs to be applied
-  )
+  # updateJetCollection(
+  #     process,
+  #     jetSource=cms.InputTag("slimmedJetsAK8"),  #Input PAT jet collection
+  #     labelName="AK8PFPuppi",  #Label for the updated jet collection - will become patJetCorrFactors[labelName]
+  #     jetCorrections=("AK8PFPuppi", jecToUse, "None"),  #JECs to be applied
+  # )
 
-  process.jecSequence = cms.Sequence(process.patJetCorrFactorsAK4PFPuppi * process.updatedPatJetsAK4PFPuppi * process.patJetCorrFactorsAK8PFPuppi * process.updatedPatJetsAK8PFPuppi)
-  process.offlineJecPath = cms.Path(process.jecSequence)
-  process.schedule.append(process.offlineJecPath)
+  # process.jecSequence = cms.Sequence(process.patJetCorrFactorsAK4PFPuppi * process.updatedPatJetsAK4PFPuppi * process.patJetCorrFactorsAK8PFPuppi * process.updatedPatJetsAK8PFPuppi)
+  # process.offlineJecPath = cms.Path(process.jecSequence)
+  # process.schedule.append(process.offlineJecPath)
 
 ###
 ### Customized objects modules
