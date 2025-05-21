@@ -184,7 +184,7 @@ def create(opts,args):
             isMuonData = "True"
 
         jecsName=sample_attributes[1]
-        lumiJSON=sample_attributes[2]
+        lumiJSON="/eos/user/c/cmsdqm/www/CAF/certification/" + sample_attributes[2]
         globalTag=sample_attributes[3]
 
         print("Creating file","crabConfig_"+name+".py")
@@ -214,16 +214,19 @@ def create(opts,args):
         file.write("config.section_(\'JobType\')\n")
         file.write("config.JobType.pluginName = \'Analysis\'\n")
         file.write("config.JobType.maxMemoryMB = 2500\n")
-        #  file.write("config.JobType.psetName = \'%s\'\n"%(os.path.join(dIN,'jmeTriggerNTuple2023Data_miniAOD_cfg.py')))
         file.write("config.JobType.psetName = \'%s\'\n"%(PSET))
-        #file.write("config.JobType.pyCfgParams = [\'offlineJecs="+jecsName+"\',\'globalTag="+globalTag+"\',\'isMuonData="+isMuonData+"\']\n")
-        file.write("config.JobType.pyCfgParams = [\'globalTag="+globalTag+"\',\'isMuonData="+isMuonData+"\']\n")
+
         file.write("config.JobType.allowUndistributedCMSSW = True\n")
         if isNano:
-            file.write("config.JobType.scriptExe = \'NanoAOD_crab_script.sh\'\n")
-            file.write("config.JobType.inputFiles = [\'%s\', \'%s\', \'%s\']\n"%(SKIMCONFIG, os.path.join(dIN,PSET), os.path.join(dIN,jecsName+".db")))
+                file.write("config.JobType.scriptExe = \'NanoAOD_crab_script.sh\'\n")
+                file.write("config.JobType.inputFiles = [\'%s\', \'%s\']\n"%(SKIMCONFIG, os.path.join(dIN,PSET)))
         else:
-            file.write("config.JobType.inputFiles = [\'%s\']\n"%(os.path.join(dIN,jecsName+".db")))
+            if (jecsName is not None) and (len(jecsName)>0):
+                file.write("config.JobType.pyCfgParams = [\'offlineJecs="+jecsName+"\',\'globalTag="+globalTag+"\',\'isMuonData="+isMuonData+"\']\n")
+                file.write("config.JobType.inputFiles = [\'%s\']\n"%(os.path.join(dIN,jecsName+".db")))
+            else:
+                file.write("config.JobType.pyCfgParams = [\'globalTag="+globalTag+"\',\'isMuonData="+isMuonData+"\']\n")
+
         #file.write("config.JobType.maxJobRuntimeMin = 2*1315\n")
         file.write("\n")
         file.write("config.section_(\'Data\')\n")
