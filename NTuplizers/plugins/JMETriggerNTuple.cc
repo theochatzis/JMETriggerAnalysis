@@ -21,6 +21,7 @@
 #include "JMETriggerAnalysis/NTuplizers/interface/L1TPFJetCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/RecoCaloJetCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/RecoPFJetCollectionContainer.h"
+#include "JMETriggerAnalysis/NTuplizers/interface/RecoPhotonCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/RecoPFClusterJetCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/PATJetCollectionContainer.h"
 #include "JMETriggerAnalysis/NTuplizers/interface/RecoGenMETCollectionContainer.h"
@@ -93,6 +94,7 @@ protected:
   std::vector<L1TPFJetCollectionContainer> v_l1tPFJetCollectionContainer_;
   std::vector<RecoCaloJetCollectionContainer> v_recoCaloJetCollectionContainer_;
   std::vector<RecoPFJetCollectionContainer> v_recoPFJetCollectionContainer_;
+  std::vector<RecoPhotonCollectionContainer> v_recoPhotonCollectionContainer_;
   std::vector<RecoPFClusterJetCollectionContainer> v_recoPFClusterJetCollectionContainer_;
   std::vector<PATJetCollectionContainer> v_patJetCollectionContainer_;
   std::vector<RecoGenMETCollectionContainer> v_recoGenMETCollectionContainer_;
@@ -341,6 +343,16 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                                                                      "reco::PFJetCollection",
                                                                      stringCutObjectSelectors_map_);
   for (auto& cc_i : v_recoPFJetCollectionContainer_) {
+    cc_i.orderByHighestPt(true);
+  }
+
+  // reco::PhotonCollection
+  initCollectionContainer<RecoPhotonCollectionContainer, reco::Photon>(iConfig,
+                                                                     v_recoPhotonCollectionContainer_,
+                                                                     "recoPhotonCollections",
+                                                                     "reco::PhotonCollection",
+                                                                     stringCutObjectSelectors_map_);
+  for (auto& cc_i : v_recoPhotonCollectionContainer_) {
     cc_i.orderByHighestPt(true);
   }
 
@@ -666,6 +678,20 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                     &recoPFJetCollectionContainer_i.vec_photonMultiplicity());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_muonMultiplicity",
                     &recoPFJetCollectionContainer_i.vec_muonMultiplicity());
+  }
+
+  for (auto& recoPhotonCollectionContainer_i : v_recoPhotonCollectionContainer_) {
+    this->addBranch(recoPhotonCollectionContainer_i.name() + "_pt", &recoPhotonCollectionContainer_i.vec_pt());
+    this->addBranch(recoPhotonCollectionContainer_i.name() + "_eta", &recoPhotonCollectionContainer_i.vec_eta());
+    this->addBranch(recoPhotonCollectionContainer_i.name() + "_phi", &recoPhotonCollectionContainer_i.vec_phi());
+    this->addBranch(recoPhotonCollectionContainer_i.name() + "_m", &recoPhotonCollectionContainer_i.vec_m());
+
+    this->addBranch(recoPhotonCollectionContainer_i.name() + "_r9",
+                    &recoPhotonCollectionContainer_i.vec_r9());
+    this->addBranch(recoPhotonCollectionContainer_i.name() + "_sigmaIetaIeta",
+                    &recoPhotonCollectionContainer_i.vec_sigmaIetaIeta());
+    this->addBranch(recoPhotonCollectionContainer_i.name() + "_hOverE",
+                    &recoPhotonCollectionContainer_i.vec_hOverE());
   }
 
   for (auto& patJetCollectionContainer_i : v_patJetCollectionContainer_) {
@@ -1030,6 +1056,10 @@ void JMETriggerNTuple::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   // reco::PFJetCollection
   this->fillCollectionContainer<RecoPFJetCollectionContainer, reco::PFJet>(
       iEvent, v_recoPFJetCollectionContainer_, fillCollectionConditionMap_);
+  
+  // reco::PhotonCollection
+  this->fillCollectionContainer<RecoPhotonCollectionContainer, reco::Photon>(
+      iEvent, v_recoPhotonCollectionContainer_, fillCollectionConditionMap_);
 
   // pat::JetCollection
   this->fillCollectionContainer<PATJetCollectionContainer, pat::Jet>(
