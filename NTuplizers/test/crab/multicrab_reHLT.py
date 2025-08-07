@@ -85,7 +85,7 @@ def submit(config):
 for reco in recoOptions:
     config.JobType.pyCfgParams = ['reco='+reco]
     
-    output_requestName = job_name+'_'+getOutputName(input_dataset.split('/')[2])+reco
+    output_requestName = job_name+'_'+getOutputName(primary_dataset.split('/')[2])+reco
     config.General.requestName = output_requestName
     config.Data.outLFNDirBase = '/store/user/%s/%s/%s'%(getUsername(),job_name,output_requestName)
     config.Data.inputDataset = primary_dataset
