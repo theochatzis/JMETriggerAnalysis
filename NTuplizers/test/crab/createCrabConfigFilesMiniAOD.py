@@ -44,12 +44,12 @@ samples_muons = {
   #2024 Muon1
   #'Muon1_Run2024BV1':["/Muon1/Run2024B-PromptReco-v1/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
   'Muon1_Run2024CV1':["/Muon1/Run2024C-PromptReco-v1/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
-  'Muon1_Run2024DV1':["/Muon1/Run2024D-PromptReco-v1/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
-  'Muon1_Run2024EV1':["/Muon1/Run2024E-PromptReco-v1/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
-  'Muon1_Run2024EV2':["/Muon1/Run2024E-PromptReco-v2/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
-  'Muon1_Run2024FV1':["/Muon1/Run2024F-PromptReco-v1/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v4"],
-  'Muon1_Run2024GV1':["/Muon1/Run2024G-PromptReco-v1/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v4"],
-  'Muon1_Run2024HV1':["/Muon1/Run2024H-PromptReco-v1/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v4"],
+  'Muon1_Run2024DV1':["/Muon1/Run2024D-PromptReco-v1/MINIAOD","Summer24Prompt24_RunDnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
+  'Muon1_Run2024EV1':["/Muon1/Run2024E-PromptReco-v1/MINIAOD","Summer24Prompt24_RunEnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
+  'Muon1_Run2024EV2':["/Muon1/Run2024E-PromptReco-v2/MINIAOD","Summer24Prompt24_RunEnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
+  'Muon1_Run2024FV1':["/Muon1/Run2024F-PromptReco-v1/MINIAOD","Summer24Prompt24_RunFnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v4"],
+  'Muon1_Run2024GV1':["/Muon1/Run2024G-PromptReco-v1/MINIAOD","Summer24Prompt24_RunGnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v4"],
+  'Muon1_Run2024HV1':["/Muon1/Run2024H-PromptReco-v1/MINIAOD","Summer24Prompt24_RunHnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v4"],
   'Muon1_Run2024IV1':["/Muon1/Run2024I-PromptReco-v1/MINIAOD","Summer24Prompt24_RunInib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v4"],
   
   #2025 Muon0
@@ -102,12 +102,12 @@ samples = {
   #2024 JetMET1
   #'JetMET1_Run2024BV1':["/JetMET1/Run2024B-PromptReco-v1/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
   'JetMET1_Run2024CV1':["/JetMET1/Run2024C-PromptReco-v1/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
-  'JetMET1_Run2024DV1':["/JetMET1/Run2024D-PromptReco-v1/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
-  'JetMET1_Run2024EV1':["/JetMET1/Run2024E-PromptReco-v1/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
-  'JetMET1_Run2024EV2':["/JetMET1/Run2024E-PromptReco-v2/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
-  'JetMET1_Run2024FV1':["/JetMET1/Run2024F-PromptReco-v1/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v4"],
-  'JetMET1_Run2024GV1':["/JetMET1/Run2024G-PromptReco-v1/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v4"],
-  'JetMET1_Run2024HV1':["/JetMET1/Run2024H-PromptReco-v1/MINIAOD","Summer24Prompt24_RunCnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v4"],
+  'JetMET1_Run2024DV1':["/JetMET1/Run2024D-PromptReco-v1/MINIAOD","Summer24Prompt24_RunDnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
+  'JetMET1_Run2024EV1':["/JetMET1/Run2024E-PromptReco-v1/MINIAOD","Summer24Prompt24_RunEnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
+  'JetMET1_Run2024EV2':["/JetMET1/Run2024E-PromptReco-v2/MINIAOD","Summer24Prompt24_RunEnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v2"],
+  'JetMET1_Run2024FV1':["/JetMET1/Run2024F-PromptReco-v1/MINIAOD","Summer24Prompt24_RunFnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v4"],
+  'JetMET1_Run2024GV1':["/JetMET1/Run2024G-PromptReco-v1/MINIAOD","Summer24Prompt24_RunGnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v4"],
+  'JetMET1_Run2024HV1':["/JetMET1/Run2024H-PromptReco-v1/MINIAOD","Summer24Prompt24_RunHnib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v4"],
   'JetMET1_Run2024IV1':["/JetMET1/Run2024I-PromptReco-v1/MINIAOD","Summer24Prompt24_RunInib1_V1_DATA","Collisions24/Cert_Collisions2024_378981_386951_Golden.json","140X_dataRun3_Prompt_v4"],
   
   #2025 JetMET0
