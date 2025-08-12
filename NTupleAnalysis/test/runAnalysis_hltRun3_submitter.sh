@@ -1,12 +1,69 @@
 #!/bin/bash
 source env.sh
-BASE_DIR=/eos/user/s/slehti/CoffTeaNTuples_v1407_Run2023BCD_20240905T1544/
-OUT_EOS_DIR=/samples2023/DPNote2023/
-JOBS_DIR_NAME=DPNote2023
+# ______                       _   _____                  _   
+# | ___ \                     | | |_   _|                | |  
+# | |_/ /_ _ _ __ ___  ___  __| |   | | _ __  _ __  _   _| |_ 
+# |  __/ _` | '__/ __|/ _ \/ _` |   | || '_ \| '_ \| | | | __|
+# | | | (_| | |  \__ \  __/ (_| |  _| || | | | |_) | |_| | |_ 
+# \_|  \__,_|_|  |___/\___|\__,_|  \___/_| |_| .__/ \__,_|\__|
+#                                            | |              
+#          
+# Default values
+BASE_DIR=/eos/user/t/tchatzis/JetTriggers_DPNote/
+OUT_EOS_DIR=DPNoteSubmitter
+JOBS_DIR_NAME=DPNoteSubmitter
 
+# Define dataKeys manually here if you want
 dataKeys=(
-  JetMET0_Run2023CV2
+  #JetMET0_Run2022CV1
 )
+
+DRIVER_CONFIG=efficiencies_miniaod
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --base-dir) # Base dir. Could be on EOS or anywhere.
+            BASE_DIR="$2"
+            shift 2
+            ;;
+        --out-eos-dir) # Output is stored in an EOS dir.
+            OUT_EOS_DIR="$2"
+            shift 2
+            ;;
+        --jobs-dir-name) # Name of condor submissions jobs directory. This is appearing locally.
+            JOBS_DIR_NAME="$2"
+            shift 2
+            ;;
+        --driver-config) # Name of file to use for plugin configuration. See analysisDriver_configurations directory for such configs examples.
+            DRIVER_CONFIG="$2"
+            shift 2
+            ;;
+        --data-keys) # Comma seperated list of keys of data sub-directories to be used. If none is given will just take everything inside the BASE_DIR.
+            IFS=',' read -r -a dataKeys <<< "$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Usage: $0 [--base-dir DIR] [--out-eos-dir DIR] [--jobs-dir-name NAME] [--driver-config PLUGIN_CONFIGURATION_YAML_FILE] [--data-keys key1,key2,...]"
+            exit 1
+            ;;
+    esac
+done
+
+#   ___              _           _         ___       _         
+#  / _ \            | |         (_)       |_  |     | |        
+# / /_\ \_ __   __ _| |_   _ ___ _ ___      | | ___ | |__  ___ 
+# |  _  | '_ \ / _` | | | | / __| / __|     | |/ _ \| '_ \/ __|
+# | | | | | | | (_| | | |_| \__ \ \__ \ /\__/ / (_) | |_) \__ \
+# \_| |_/_| |_|\__,_|_|\__, |___/_|___/ \____/ \___/|_.__/|___/
+#                       __/ |                                  
+#                      |___/                                   
+
+# If dataKeys array is empty, fill it from directories in BASE_DIR
+if [ ${#dataKeys[@]} -eq 0 ]; then
+    echo "No manual dataKeys given - scanning ${BASE_DIR}..."
+    mapfile -t dataKeys < <(find "${BASE_DIR}" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+fi
 
 FIRST_USER_LETTER=${USER:0:1}
 
@@ -20,10 +77,10 @@ for dataKey in "${dataKeys[@]}"; do
 
   mkdir -p ${OUTDIR}
   [ -d ${OUTDIR}/ntuples ] || (ln -sf ${INPDIR} ${OUTDIR}/ntuples)
-  batch_driver.py -l 1 -n 100000 -p JMETriggerAnalysisDriverRun3 \
+  batch_driver.py -l 1 -n 10000000 -p JMETriggerAnalysisDriverRun3 -cfg ${DRIVER_CONFIG} \
    -i ${INPDIR}/*.root -o ${OUTDIR}/jobs \
    -od ${OUTPUTDIR} \
-   --JobFlavour espresso
+   --JobFlavour microcentury
   
   mkdir -p ${OUTPUTDIR}
 

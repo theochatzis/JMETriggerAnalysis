@@ -10,8 +10,9 @@ source env.sh
 #                                            |_|              
 # Default values
 OUT_EOS_DIR="/DPNoteSubmitter/"
-OUTPUT_FILE_NAME="data"
+OUTPUT_FILE_NAME="data_batch"
 SKIP_HARVEST=false
+BATCH_SIZE=500   # Number of files to merge per batch
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -28,9 +29,13 @@ while [[ $# -gt 0 ]]; do
             OUTPUT_FILE_NAME="$2"
             shift 2
             ;;
+        --batch-size) # This is the ouput file name 
+            BATCH_SIZE="$2"
+            shift 2
+            ;;
         *)
             echo "Unknown option: $1"
-            echo "Usage: $0 [--skip-harvest] [--out-dir DIR] [--output-file NAME]"
+            echo "Usage: $0 [--skip-harvest] [--out-dir DIR] [--output-file NAME] [--batch-size NUMBER OF FILES PER BATCH FOR HADD]"
             exit 1
             ;;
     esac
@@ -50,19 +55,52 @@ INPUT_DIR="/eos/user/${FIRST_USER_LETTER}/${USER}${OUT_EOS_DIR}"
 
 echo "Searching for ROOT files in: ${INPUT_DIR} ..."
 
-# Find all .root files recursively
-ROOT_FILES=$(find "${INPUT_DIR}" -type f -name "*.root")
+# Find all .root files recursively and store in array
+mapfile -t ROOT_FILES < <(find "${INPUT_DIR}" -type f -name "*.root")
 
-if [ -z "${ROOT_FILES}" ]; then
+if [ ${#ROOT_FILES[@]} -eq 0 ]; then
     echo "Error: No .root files found inside ${INPUT_DIR}"
     exit 1
 fi
 
-## Merge Jobs with hadd
-echo "Merging all ROOT files into: ${INPUT_DIR}/${OUTPUT_FILE_NAME}.root"
-hadd "${INPUT_DIR}/${OUTPUT_FILE_NAME}.root" $ROOT_FILES
+CORES=$(nproc)
+echo "Using $CORES cores for hadd."
 
-## Harvest i.e. create responses, matching efficiency etc
+# Create temporary directory for batches
+TMP_DIR="${INPUT_DIR}/tmp_batches"
+mkdir -p "$TMP_DIR"
+
+batch_files=()
+batch_num=0
+
+# Function to merge a batch of files
+merge_batch() {
+    local batch_file="$1"
+    shift
+    local files=("$@")
+    echo "Merging batch ${batch_num} with ${#files[@]} files..."
+    # hadd -j "$CORES" "$batch_file" "${files[@]}"
+     hadd "$batch_file" "${files[@]}"
+}
+
+# Split input files into batches and merge each batch
+for ((i=0; i<${#ROOT_FILES[@]}; i+=BATCH_SIZE)); do
+    batch_file="${TMP_DIR}/batch_${batch_num}.root"
+    batch_slice=("${ROOT_FILES[@]:i:BATCH_SIZE}")
+    merge_batch "$batch_file" "${batch_slice[@]}"
+    batch_files+=("$batch_file")
+    ((batch_num++))
+done
+
+# Merge all batch files into the final output file
+echo "Merging ${#batch_files[@]} batch files into final output: ${INPUT_DIR}/${OUTPUT_FILE_NAME}.root"
+#hadd -j "$CORES" "${INPUT_DIR}/${OUTPUT_FILE_NAME}.root" "${batch_files[@]}"
+hadd "${INPUT_DIR}/${OUTPUT_FILE_NAME}.root" "${batch_files[@]}"
+
+# Clean up batch files
+rm -rf "$TMP_DIR"
+
+# Harvest step
 if [ "$SKIP_HARVEST" = true ]; then
     echo "Skipping harvesting step."
 else
