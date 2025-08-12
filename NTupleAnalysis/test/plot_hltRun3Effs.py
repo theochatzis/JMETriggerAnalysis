@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os
 import sys
 import argparse
@@ -32,32 +32,27 @@ def getJetEfficiencies(fpath, hltThreshold_SingleJet):
   ret = {}
 
   _tfile = ROOT.TFile.Open(fpath)
+
   if not _tfile:
     WARNING('failed to open target TFile: '+fpath)
     return ret
 
   _tmpRefs = [
     'Offline',
+    'Generated',
   ]
 
   # SingleJet
   binEdges_pT = array.array('d', [_tmp*20 for _tmp in range(35)] + [700+_tmp*50 for _tmp in range(6+1)])
-
+  
   for _tmpRef in _tmpRefs:
+    jetRefCollection = 'offlineAK4PFPuppiJetsCorrected' if _tmpRef == 'Offline' else 'ak4GenJetsNoNu'
+    _tmp_num = _tfile.Get('HLT_PFJet'+hltThreshold_SingleJet+'/'+jetRefCollection+'_EtaIncl_pt0')
 
-    _tmp_num = _tfile.Get('HLT_PFJet'+hltThreshold_SingleJet+'/offlineAK4PFPuppiJetsCorrected_EtaIncl_MatchedToHLT_pt')
-
-    _tmp_den = _tfile.Get('NoSelection/offlineAK4PFPuppiJetsCorrected_EtaIncl_MatchedToHLT_pt')
+    _tmp_den = _tfile.Get('NoSelection/'+jetRefCollection+'_EtaIncl_pt0')
 
     ret['Puppi_SingleJet_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
     ret['Puppi_SingleJet_wrt_'+_tmpRef].SetName('Puppi_SingleJet_wrt_'+_tmpRef)
-
-    _tmp_num = _tfile.Get('HLT_PFJet'+hltThreshold_SingleJet+'/offlineAK4PFCHSJetsCorrected_EtaIncl_MatchedToHLT_pt')
-
-    _tmp_den = _tfile.Get('NoSelection/offlineAK4PFCHSJetsCorrected_EtaIncl_MatchedToHLT_pt')
-
-    ret['PF_SingleJet_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
-    ret['PF_SingleJet_wrt_'+_tmpRef].SetName('PF_SingleJet_wrt_'+_tmpRef)
 
   _tfile.Close()
 
@@ -87,13 +82,6 @@ def getHTEfficiencies(fpath, hltThreshold_HT):
     ret['Puppi_HT_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
     ret['Puppi_HT_wrt_'+_tmpRef].SetName('Puppi_HT_wrt_'+_tmpRef)
 
-    _tmp_num = _tfile.Get('HLT_PFHT'+hltThreshold_HT+'/offlineAK4PFCHSJetsCorrected_Eta2p5_HT')
-
-    _tmp_den = _tfile.Get('NoSelection/offlineAK4PFCHSJetsCorrected_Eta2p5_HT')
-
-    ret['PF_HT_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
-    ret['PF_HT_wrt_'+_tmpRef].SetName('PF_HT_wrt_'+_tmpRef)
-
   _tfile.Close()
 
   return ret
@@ -108,33 +96,40 @@ def getMETEfficiencies(fpath, hltThreshold_MET):
 
   _tmpRefs = [
     'Offline',
+    'Generated',
   ]
 
   for _tmpRef in _tmpRefs:
 
-    _tmp_num = _tfile.Get('HLT_PFMET'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight'+'/offlinePFPuppiMET_Raw_pt')
+#     _tmp_num = _tfile.Get('HLT_PFMET'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight'+'/offlinePFPuppiMET_Raw_pt')
 
-    _tmp_den = _tfile.Get('NoSelection/offlinePFPuppiMET_Raw_pt')
+#     _tmp_den = _tfile.Get('NoSelection/offlinePFPuppiMET_Raw_pt')
 
-#    _tmp_num = _tfile.Get('20to40_HLT/offlinePFPuppiMET_Raw_pt')
-#    _tmp_den = _tfile.Get('20to40/offlinePFPuppiMET_Raw_pt')
+# #    _tmp_num = _tfile.Get('20to40_HLT/offlinePFPuppiMET_Raw_pt')
+# #    _tmp_den = _tfile.Get('20to40/offlinePFPuppiMET_Raw_pt')
 
-    ret['PuppiMET_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
-    ret['PuppiMET_wrt_'+_tmpRef].SetName('PuppiMET_wrt_'+_tmpRef)
+#     ret['PuppiMET_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
+#     ret['PuppiMET_wrt_'+_tmpRef].SetName('PuppiMET_wrt_'+_tmpRef)
 
-    _tmp_num = _tfile.Get('HLT_PFMET'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight'+'/offlinePFMET_Raw_pt')
+#     _tmp_num = _tfile.Get('HLT_PFMET'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight'+'/offlinePFMET_Raw_pt')
 
-    _tmp_den = _tfile.Get('NoSelection/offlinePFMET_Raw_pt')
+#     _tmp_den = _tfile.Get('NoSelection/offlinePFMET_Raw_pt')
 
-#    _tmp_num = _tfile.Get('20to40_HLT/offlinePFMET_Raw_pt')
-#    _tmp_den = _tfile.Get('20to40/offlinePFMET_Raw_pt')
+# #    _tmp_num = _tfile.Get('20to40_HLT/offlinePFMET_Raw_pt')
+# #    _tmp_den = _tfile.Get('20to40/offlinePFMET_Raw_pt')
 
-    ret['PFMET_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
-    ret['PFMET_wrt_'+_tmpRef].SetName('PFMET_wrt_'+_tmpRef)
+#     ret['PFMET_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
+#     ret['PFMET_wrt_'+_tmpRef].SetName('PFMET_wrt_'+_tmpRef)
+    
+    metRefCollection = 'offlinePFPuppiMET_Type1' if _tmpRef == 'Offline' else 'genMETTrue'
+    
+    _tmp_num = _tfile.Get('HLT_PFMETTypeOne'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight'+'/'+metRefCollection+'_pt')
 
-    _tmp_num = _tfile.Get('HLT_PFMETTypeOne'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight'+'/offlinePFPuppiMET_Type1_pt')
+    _tmp_den = _tfile.Get('NoSelection/'+metRefCollection+'_pt')
 
-    _tmp_den = _tfile.Get('NoSelection/offlinePFPuppiMET_Type1_pt')
+    # _tmp_num = _tfile.Get('HLT_PFMETTypeOne'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight'+'/offlinePFPuppiMET_Type1_pt')
+
+    # _tmp_den = _tfile.Get('NoSelection/offlinePFPuppiMET_Type1_pt')
 
 #    _tmp_num = _tfile.Get('20to40_HLT_TypeOne/offlinePFPuppiMET_Raw_pt')
 #    _tmp_den = _tfile.Get('20to40/offlinePFPuppiMET_Raw_pt')
@@ -142,15 +137,16 @@ def getMETEfficiencies(fpath, hltThreshold_MET):
     ret['PuppiMETTypeOne_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
     ret['PuppiMETTypeOne_wrt_'+_tmpRef].SetName('PuppiMETTypeOne_wrt_'+_tmpRef)
 
-    _tmp_num = _tfile.Get('HLT_PFMETTypeOne'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight'+'/offlinePFMET_Type1_pt')
+#     _tmp_num = _tfile.Get('HLT_PFMETTypeOne'+hltThreshold_MET+'_PFMHT'+hltThreshold_MET+'_IDTight'+'/offlinePFMET_Type1_pt')
 
-    _tmp_den = _tfile.Get('NoSelection/offlinePFMET_Type1_pt')
+#     _tmp_den = _tfile.Get('NoSelection/offlinePFMET_Type1_pt')
 
-#    _tmp_num = _tfile.Get('20to40_HLT_TypeOne/offlinePFMET_Raw_pt')
-#    _tmp_den = _tfile.Get('20to40/offlinePFMET_Raw_pt')
 
-    ret['PFMETTypeOne_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
-    ret['PFMETTypeOne_wrt_'+_tmpRef].SetName('PFMETTypeOne_wrt_'+_tmpRef)
+# #    _tmp_num = _tfile.Get('20to40_HLT_TypeOne/offlinePFMET_Raw_pt')
+# #    _tmp_den = _tfile.Get('20to40/offlinePFMET_Raw_pt')
+
+#     ret['PFMETTypeOne_wrt_'+_tmpRef] = get_efficiency_graph(_tmp_num, _tmp_den)
+#     ret['PFMETTypeOne_wrt_'+_tmpRef].SetName('PFMETTypeOne_wrt_'+_tmpRef)
 
   _tfile.Close()
 
@@ -203,92 +199,65 @@ if __name__ == '__main__':
   ### args validation ---
 
   inputDir = opts.inputDir
-
-  recoKeys = [
-    'outputs',
-  ]
-
+  
+  recosList = ['test_noCustom', 'test_wrongJECs', 'test_correctJECs']
   outputDir = opts.output
   MKDIRP(opts.output, verbose = (opts.verbosity > 0), dry_run = opts.dry_run)
 
-  for _tmpReco in recoKeys:
+  ## SingleJet
+
+  for _tmpJetThresh in ['60','140', '320', '500']:
     print ('='*110)
-    print ('\033[1m'+_tmpReco+'\033[0m')
+    print ('\033[1m'+_tmpJetThresh+'\033[0m')
     print ('='*110)
-    print ('\033[1m'+'Efficiency Plots'+'\033[0m')
+    print ('\033[1m'+'Jet Efficiency Plots'+'\033[0m')
     print ('='*110)
 
-    ## SingleJet
     effysJet = {}
-    for _tmpPU in [
-      'PU',
-#      'NoPU',
-    ]:
-      effysJet[_tmpPU] = {}
-      for _tmpJetThresh in ['140', '320', '500']:
-        effysJet[_tmpPU][_tmpJetThresh] = getJetEfficiencies(
-          fpath = inputDir+'/'+_tmpReco+'/Run3Winter21_QCD_PtFlat15to7000_14TeV_'+_tmpPU+'.root',
-          hltThreshold_SingleJet = _tmpJetThresh,
-        )
+
+    effysJet[_tmpJetThresh] = {}
+
+    for _tmpReco in recosList:
+      effysJet[_tmpJetThresh][_tmpReco] = getJetEfficiencies(
+        fpath = inputDir+'/'+_tmpReco+'/HLT_Run3TRK/harvesting/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65.root',
+        hltThreshold_SingleJet = _tmpJetThresh,
+      )
 
     for _tmpRef in [
       'Offline',
+      'Generated'
     ]:
 
       for _tmpType in [
-        'PF',
         'Puppi',
       ]:
 
         canvas = ROOT.TCanvas(tmpName(), tmpName(False))
         canvas.cd()
 
-        h0 = canvas.DrawFrame(100, 0.0001, 1000, 1.19)
+        h0 = canvas.DrawFrame(0.5*float(_tmpJetThresh), 0.0001, min(4.0*float(_tmpJetThresh),1000.), 1.19)
 
         try:
-          effysJet['PU']['140'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysJet['PU']['140'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineWidth(2)
-          effysJet['PU']['140'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerColor(1)
-          effysJet['PU']['140'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineColor(1)
-          effysJet['PU']['140'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineStyle(1)
-          effysJet['PU']['140'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Draw('lepz')
+          effysJet[_tmpJetThresh]['test_noCustom'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1)
+          effysJet[_tmpJetThresh]['test_noCustom'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineWidth(2)
+          effysJet[_tmpJetThresh]['test_noCustom'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerColor(1)
+          effysJet[_tmpJetThresh]['test_noCustom'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineColor(1)
+          effysJet[_tmpJetThresh]['test_noCustom'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineStyle(1)
+          effysJet[_tmpJetThresh]['test_noCustom'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Draw('lepz')
 
-          effysJet['PU']['320'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysJet['PU']['320'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineWidth(2)
-          effysJet['PU']['320'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerColor(2)
-          effysJet['PU']['320'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineColor(2)
-          effysJet['PU']['320'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineStyle(1)
-          effysJet['PU']['320'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Draw('lepz')
+          effysJet[_tmpJetThresh]['test_wrongJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1)
+          effysJet[_tmpJetThresh]['test_wrongJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineWidth(2)
+          effysJet[_tmpJetThresh]['test_wrongJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerColor(2)
+          effysJet[_tmpJetThresh]['test_wrongJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineColor(2)
+          effysJet[_tmpJetThresh]['test_wrongJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineStyle(1)
+          #effysJet[_tmpJetThresh]['test_wrongJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Draw('lepz')
 
-          effysJet['PU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysJet['PU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineWidth(2)
-          effysJet['PU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerColor(4)
-          effysJet['PU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineColor(4)
-          effysJet['PU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineStyle(1)
-          effysJet['PU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Draw('lepz')
-        except: pass
-
-        try:
-          effysJet['NoPU']['140'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysJet['NoPU']['140'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineWidth(2)
-          effysJet['NoPU']['140'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerColor(1)
-          effysJet['NoPU']['140'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineColor(1)
-          effysJet['NoPU']['140'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineStyle(2)
-          effysJet['NoPU']['140'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Draw('lepz')
-
-          effysJet['NoPU']['320'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysJet['NoPU']['320'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineWidth(2)
-          effysJet['NoPU']['320'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerColor(2)
-          effysJet['NoPU']['320'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineColor(2)
-          effysJet['NoPU']['320'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineStyle(2)
-          effysJet['NoPU']['320'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Draw('lepz')
-
-          effysJet['NoPU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysJet['NoPU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineWidth(2)
-          effysJet['NoPU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerColor(4)
-          effysJet['NoPU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineColor(4)
-          effysJet['NoPU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineStyle(2)
-          effysJet['NoPU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Draw('lepz')
+          effysJet[_tmpJetThresh]['test_correctJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerSize(1)
+          effysJet[_tmpJetThresh]['test_correctJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineWidth(2)
+          effysJet[_tmpJetThresh]['test_correctJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetMarkerColor(4)
+          effysJet[_tmpJetThresh]['test_correctJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineColor(4)
+          effysJet[_tmpJetThresh]['test_correctJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef].SetLineStyle(1)
+          effysJet[_tmpJetThresh]['test_correctJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Draw('lepz')
         except: pass
 
         topLabel = ROOT.TPaveText(0.11, 0.93, 0.95, 0.98, 'NDC')
@@ -299,7 +268,7 @@ if __name__ == '__main__':
         topLabel.SetTextFont(42)
         topLabel.SetTextSize(0.035)
         topLabel.SetBorderSize(0)
-        topLabel.AddText('#font[61]{CMS} #font[52]{Run-3 Simulation}')
+        topLabel.AddText('#font[61]{CMS} #font[52]{Run-3 Simulation} QCD PU 65')
         topLabel.Draw('same')
 
         objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -310,7 +279,7 @@ if __name__ == '__main__':
         objLabel.SetTextFont(42)
         objLabel.SetTextSize(0.035)
         objLabel.SetBorderSize(0)
-        objLabel.AddText('14 TeV')
+        objLabel.AddText('13.6 TeV')
         objLabel.Draw('same')
 
         l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.70, 0.88, 'NDC')
@@ -321,128 +290,91 @@ if __name__ == '__main__':
         l1tRateLabel.SetTextFont(42)
         l1tRateLabel.SetTextSize(0.035)
         l1tRateLabel.SetBorderSize(0)
-        l1tRateLabel.AddText('Offline Jet |#eta| < 5.0')
+        l1tRateLabel.AddText('SingleJet'+_tmpJetThresh)
         l1tRateLabel.Draw('same')
 
-        leg1 = ROOT.TLegend(0.60, 0.20, 0.94, 0.44)
+        leg1 = ROOT.TLegend(0.50, 0.20, 0.84, 0.44)
+        leg1.SetFillStyle(0)
+        leg1.SetLineWidth(0)
         leg1.SetNColumns(1)
         leg1.SetTextFont(42)
-        leg1.SetTextSize(0.040)
-        leg1.SetEntrySeparation(0.4) 
+        leg1.SetTextSize(0.05)
+        leg1.SetEntrySeparation(0.2) 
+
         try:
-          leg1.AddEntry(effysJet['PU']['140'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'HLT_PFJet140 ', 'lp')
-          leg1.AddEntry(effysJet['PU']['320'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'HLT_PFJet320 ', 'lp')
-          leg1.AddEntry(effysJet['PU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'HLT_PFJet500 ', 'lp')
+          leg1.AddEntry(effysJet[_tmpJetThresh]['test_noCustom'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'Default', 'lp')
+          leg1.AddEntry(effysJet[_tmpJetThresh]['test_correctJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'HCAL update', 'lp')
+          #leg1.AddEntry(effysJet[_tmpJetThresh]['test_wrongJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'HCAL update+condDB Calibs', 'lp')
+          #leg1.AddEntry(effysJet[_tmpJetThresh]['test_correctJECs'][_tmpType+'_SingleJet_wrt_'+_tmpRef], 'HCAL update+fixed Calibs', 'lp')
         except: pass
         leg1.Draw('same')
 
-        try:
-          _htmpPU140 = effysJet['PU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Clone()
-          _htmpPU140.SetLineColor(1)
-          _htmpPU140.SetLineStyle(2)
-        except: pass
-
-        try:
-          _htmpPU200 = effysJet['NoPU']['500'][_tmpType+'_SingleJet_wrt_'+_tmpRef].Clone()
-          _htmpPU200.SetLineColor(1)
-          _htmpPU200.SetLineStyle(1)
-        except: pass
-
-#        leg2 = ROOT.TLegend(0.70, 0.46, 0.94, 0.61)
-#        leg2.SetNColumns(1)
-#        leg2.SetTextFont(42)
-#        leg2.SetTextSize(0.040)
-#        try:
-#          leg2.AddEntry(_htmpPU140, 'PU', 'l')
-#        except: pass
-#        try:
-#          leg2.AddEntry(_htmpPU200, 'NoPU', 'l')
-#        except: pass
-#        leg2.Draw('same')
-
-        h0.SetTitle(';'+_tmpRef+' Jet p_{T} [GeV];Efficiency')
+        h0.SetTitle(';'+_tmpRef+' Leading Jet p_{T} [GeV];Efficiency')
         h0.GetYaxis().SetTitleOffset(h0.GetYaxis().GetTitleOffset() * 1.0)
 
         canvas.SetLogy(0)
         canvas.SetGrid(1, 1)
 
         for _tmpExt in EXTS:
-          canvas.SaveAs(outputDir+'/triggerEff_'+_tmpType+'_SingleJet_wrt'+_tmpRef+'.'+_tmpExt)
+          canvas.SaveAs(outputDir+'/triggerEff_'+_tmpType+'_SingleJet_wrt'+_tmpRef+'_'+_tmpJetThresh+'.'+_tmpExt)
 
         canvas.Close()
 
-        print ('\033[1m'+outputDir+'/triggerEff_'+_tmpType+'_SingleJet_wrt'+_tmpRef+'\033[0m')
+        print ('\033[1m'+outputDir+'/triggerEff_'+_tmpType+'_SingleJet_wrt'+_tmpRef+'_'+_tmpJetThresh+'\033[0m')     
+    
 
-    ## HT
+  ## HT
+  for _tmpHTThresh in ['780', '890', '1050']:
+    print ('='*110)
+    print ('\033[1m'+_tmpHTThresh+'\033[0m')
+    print ('='*110)
+    print ('\033[1m'+'HT Efficiency Plots'+'\033[0m')
+    print ('='*110)
+
     effysHT = {}
-    #for _tmpPU in ['PU', 'NoPU']:
-    for _tmpPU in ['PU']:
-      effysHT[_tmpPU] = {}
-      for _tmpHTThresh in ['780', '890', '1050']:
-        effysHT[_tmpPU][_tmpHTThresh] = getHTEfficiencies(
-          fpath = inputDir+'/'+_tmpReco+'/Run3Winter21_QCD_PtFlat15to7000_14TeV_'+_tmpPU+'.root',
+
+    effysHT[_tmpHTThresh] = {}
+
+    for _tmpReco in recosList:
+      effysHT[_tmpHTThresh][_tmpReco] = getHTEfficiencies(
+        fpath = inputDir+'/'+_tmpReco+'/HLT_Run3TRK/harvesting/Run3Winter23_QCD_Pt15to7000_13p6TeV_PU65.root',
           hltThreshold_HT = _tmpHTThresh,
-        )
+      )
 
     for _tmpRef in [
       'Offline',
     ]:
 
       for _tmpType in [
-        'PF',
         'Puppi',
       ]:
 
         canvas = ROOT.TCanvas(tmpName(), tmpName(False))
         canvas.cd()
 
-        h0 = canvas.DrawFrame(600, 0.0001, 2000, 1.19)
+        h0 = canvas.DrawFrame(0.7*float(_tmpHTThresh), 0.0001, 1.5*float(_tmpHTThresh), 1.19)
 
         try:
-          effysHT['PU']['780'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysHT['PU']['780'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineWidth(2)
-          effysHT['PU']['780'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerColor(1)
-          effysHT['PU']['780'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineColor(1)
-          effysHT['PU']['780'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineStyle(1)
-          effysHT['PU']['780'][_tmpType+'_HT_wrt_'+_tmpRef].Draw('lepz')
+          effysHT[_tmpHTThresh]['test_noCustom'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1)
+          effysHT[_tmpHTThresh]['test_noCustom'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineWidth(2)
+          effysHT[_tmpHTThresh]['test_noCustom'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerColor(1)
+          effysHT[_tmpHTThresh]['test_noCustom'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineColor(1)
+          effysHT[_tmpHTThresh]['test_noCustom'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineStyle(1)
+          effysHT[_tmpHTThresh]['test_noCustom'][_tmpType+'_HT_wrt_'+_tmpRef].Draw('lepz')
 
-          effysHT['PU']['890'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysHT['PU']['890'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineWidth(2)
-          effysHT['PU']['890'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerColor(2)
-          effysHT['PU']['890'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineColor(2)
-          effysHT['PU']['890'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineStyle(1)
-          effysHT['PU']['890'][_tmpType+'_HT_wrt_'+_tmpRef].Draw('lepz')
+          effysHT[_tmpHTThresh]['test_wrongJECs'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1)
+          effysHT[_tmpHTThresh]['test_wrongJECs'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineWidth(2)
+          effysHT[_tmpHTThresh]['test_wrongJECs'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerColor(2)
+          effysHT[_tmpHTThresh]['test_wrongJECs'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineColor(2)
+          effysHT[_tmpHTThresh]['test_wrongJECs'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineStyle(1)
+          #effysHT[_tmpHTThresh]['test_wrongJECs'][_tmpType+'_HT_wrt_'+_tmpRef].Draw('lepz')
   
-          effysHT['PU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysHT['PU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineWidth(2)
-          effysHT['PU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerColor(4)
-          effysHT['PU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineColor(4)
-          effysHT['PU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineStyle(1)
-          effysHT['PU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef].Draw('lepz')
-  
-        except: pass
-
-        try:  
-          effysHT['NoPU']['780'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysHT['NoPU']['780'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineWidth(2)
-          effysHT['NoPU']['780'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerColor(1)
-          effysHT['NoPU']['780'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineColor(1)
-          effysHT['NoPU']['780'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineStyle(2)
-          effysHT['NoPU']['780'][_tmpType+'_HT_wrt_'+_tmpRef].Draw('lepz')
-
-          effysHT['NoPU']['890'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysHT['NoPU']['890'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineWidth(2)
-          effysHT['NoPU']['890'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerColor(2)
-          effysHT['NoPU']['890'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineColor(2)
-          effysHT['NoPU']['890'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineStyle(2)
-          effysHT['NoPU']['890'][_tmpType+'_HT_wrt_'+_tmpRef].Draw('lepz')
-  
-          effysHT['NoPU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1)
-          effysHT['NoPU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineWidth(2)
-          effysHT['NoPU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerColor(4)
-          effysHT['NoPU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineColor(4)
-          effysHT['NoPU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineStyle(2)
-          effysHT['NoPU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef].Draw('lepz')
+          effysHT[_tmpHTThresh]['test_correctJECs'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerSize(1)
+          effysHT[_tmpHTThresh]['test_correctJECs'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineWidth(2)
+          effysHT[_tmpHTThresh]['test_correctJECs'][_tmpType+'_HT_wrt_'+_tmpRef].SetMarkerColor(4)
+          effysHT[_tmpHTThresh]['test_correctJECs'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineColor(4)
+          effysHT[_tmpHTThresh]['test_correctJECs'][_tmpType+'_HT_wrt_'+_tmpRef].SetLineStyle(1)
+          effysHT[_tmpHTThresh]['test_correctJECs'][_tmpType+'_HT_wrt_'+_tmpRef].Draw('lepz')
   
         except: pass
 
@@ -454,7 +386,7 @@ if __name__ == '__main__':
         topLabel.SetTextFont(42)
         topLabel.SetTextSize(0.035)
         topLabel.SetBorderSize(0)
-        topLabel.AddText('#font[61]{CMS} #font[52]{Run-3 Simulation}')
+        topLabel.AddText('#font[61]{CMS} #font[52]{Run-3 Simulation} QCD PU 65')
         topLabel.Draw('same')
 
         objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -465,7 +397,7 @@ if __name__ == '__main__':
         objLabel.SetTextFont(42)
         objLabel.SetTextSize(0.035)
         objLabel.SetBorderSize(0)
-        objLabel.AddText('14 TeV')
+        objLabel.AddText('13.6 TeV')
         objLabel.Draw('same')
 
         l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.70, 0.88, 'NDC')
@@ -476,38 +408,23 @@ if __name__ == '__main__':
         l1tRateLabel.SetTextFont(42)
         l1tRateLabel.SetTextSize(0.035)
         l1tRateLabel.SetBorderSize(0)
-        l1tRateLabel.AddText('Offline Jet |#eta| < 2.5')
+        l1tRateLabel.AddText('HT'+_tmpHTThresh)
         l1tRateLabel.Draw('same')
 
-        leg1 = ROOT.TLegend(0.60, 0.20, 0.94, 0.44)
+        leg1 = ROOT.TLegend(0.50, 0.20, 0.84, 0.44)
+        leg1.SetFillStyle(0)
+        leg1.SetLineWidth(0)
         leg1.SetNColumns(1)
         leg1.SetTextFont(42)
-        leg1.SetTextSize(0.040)
-        leg1.SetEntrySeparation(0.4)
+        leg1.SetTextSize(0.05)
+        leg1.SetEntrySeparation(0.2)
         try:
-          leg1.AddEntry(effysHT['PU'][ '780'][_tmpType+'_HT_wrt_'+_tmpRef], 'HLT_PFHT780', 'lp')
-          leg1.AddEntry(effysHT['PU'][ '890'][_tmpType+'_HT_wrt_'+_tmpRef], 'HLT_PFHT890', 'lp')
-          leg1.AddEntry(effysHT['PU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef], 'HLT_PFHT1050', 'lp')
+          leg1.AddEntry(effysHT[_tmpHTThresh]['test_noCustom'][_tmpType+'_HT_wrt_'+_tmpRef], 'Default', 'lp')
+          leg1.AddEntry(effysHT[_tmpHTThresh]['test_correctJECs'][_tmpType+'_HT_wrt_'+_tmpRef], 'HCAL update', 'lp')
+          #leg1.AddEntry(effysHT[_tmpHTThresh]['test_wrongJECs'][_tmpType+'_HT_wrt_'+_tmpRef], 'HCAL update+condDB Calibs', 'lp')
+          #leg1.AddEntry(effysHT[_tmpHTThresh]['test_correctJECs'][_tmpType+'_HT_wrt_'+_tmpRef], 'HCAL update+fixed Calibs', 'lp')
         except: pass
         leg1.Draw('same')
-
-#        leg2 = ROOT.TLegend(0.70, 0.46, 0.94, 0.61)
-#        leg2.SetNColumns(1)
-#        leg2.SetTextFont(42)
-#        leg2.SetTextSize(0.040)
-#        try:
-#          _htmpPU140 = effysHT['PU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef].Clone()
-#          _htmpPU140.SetLineColor(1)
-#          _htmpPU140.SetLineStyle(2)
-#          leg2.AddEntry(_htmpPU140, 'PU', 'l')
-#        except: pass
-#        try:
-#          _htmpPU200 = effysHT['NoPU']['1050'][_tmpType+'_HT_wrt_'+_tmpRef].Clone()
-#          _htmpPU200.SetLineColor(1)
-#          _htmpPU200.SetLineStyle(1)
-#          leg2.AddEntry(_htmpPU200, 'NoPU', 'l')
-#        except: pass
-#        leg2.Draw('same')
 
         h0.SetTitle(';'+_tmpRef+' H_{T} [GeV];Efficiency')
         h0.GetYaxis().SetTitleOffset(h0.GetYaxis().GetTitleOffset() * 1.0)
@@ -516,38 +433,42 @@ if __name__ == '__main__':
         canvas.SetGrid(1, 1)
 
         for _tmpExt in EXTS:
-          canvas.SaveAs(outputDir+'/triggerEff_'+_tmpType+'_HT_wrt'+_tmpRef+'.'+_tmpExt)
+          canvas.SaveAs(outputDir+'/triggerEff_'+_tmpType+'_HT_wrt'+_tmpRef+'_'+_tmpHTThresh+'.'+_tmpExt)
 
         canvas.Close()
 
-        print ('\033[1m'+outputDir+'/triggerEff_'+_tmpType+'_HT_wrt'+_tmpRef+'\033[0m')
+        print ('\033[1m'+outputDir+'/triggerEff_'+_tmpType+'_HT_wrt'+_tmpRef+'_'+_tmpHTThresh+'\033[0m')
 
-    ## MET
+
+  ## MET
+  
+  for _tmpMETThresh in ['140']:
+    print ('='*110)
+    print ('\033[1m'+_tmpMETThresh+'\033[0m')
+    print ('='*110)
+    print ('\033[1m'+'MET Efficiency Plots'+'\033[0m')
+    print ('='*110)
+
     effysMET = {}
-    for _tmpPU in [
-      'PU',
-    ]:
-      effysMET[_tmpPU] = {}
-      for _tmpMETThresh in [
-        '120',
-        '140',
-      ]:
-        effysMET[_tmpPU][_tmpMETThresh] = getMETEfficiencies(
-          fpath = inputDir+'/'+_tmpReco+'/Run3Winter21_VBF_HToInvisible_14TeV_'+_tmpPU+'.root',
+
+    effysMET[_tmpMETThresh] = {}
+
+    for _tmpReco in recosList:
+      effysMET[_tmpMETThresh][_tmpReco] = getMETEfficiencies(
+        fpath = inputDir+'/'+_tmpReco+'/HLT_Run3TRK/harvesting/Run3Winter23_VBF_HToInvisible_13p6TeV_PU65.root',
           hltThreshold_MET = _tmpMETThresh,
-        )
+      )
 
     for _tmpRef in [
       'Offline',
+      'Generated'
     ]:
 
       for _tmpType in [
-        'PF',
         'Puppi',
       ]:
 
-        for _tmpReco in [
-          'MET',
+        for _tmpAlgo in [
           'METTypeOne',
         ]:
 
@@ -558,19 +479,26 @@ if __name__ == '__main__':
           h0 = canvas.DrawFrame(0, 0.0001, 500, 1.19)
   
           try:
-            effysMET['PU']['120'][_tmpType+_tmpReco+'_wrt_'+_tmpRef].SetMarkerSize(1)
-            effysMET['PU']['120'][_tmpType+_tmpReco+'_wrt_'+_tmpRef].SetLineWidth(2)
-            effysMET['PU']['120'][_tmpType+_tmpReco+'_wrt_'+_tmpRef].SetMarkerColor(1)
-            effysMET['PU']['120'][_tmpType+_tmpReco+'_wrt_'+_tmpRef].SetLineColor(1)
-            effysMET['PU']['120'][_tmpType+_tmpReco+'_wrt_'+_tmpRef].SetLineStyle(1)
-            effysMET['PU']['120'][_tmpType+_tmpReco+'_wrt_'+_tmpRef].Draw('lepz')
+            effysMET[_tmpMETThresh]['test_noCustom'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerSize(1)
+            effysMET[_tmpMETThresh]['test_noCustom'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineWidth(2)
+            effysMET[_tmpMETThresh]['test_noCustom'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerColor(1)
+            effysMET[_tmpMETThresh]['test_noCustom'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineColor(1)
+            effysMET[_tmpMETThresh]['test_noCustom'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineStyle(1)
+            effysMET[_tmpMETThresh]['test_noCustom'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].Draw('lepz')
     
-            effysMET['PU']['140'][_tmpType+_tmpReco+'_wrt_'+_tmpRef].SetMarkerSize(1)
-            effysMET['PU']['140'][_tmpType+_tmpReco+'_wrt_'+_tmpRef].SetLineWidth(2)
-            effysMET['PU']['140'][_tmpType+_tmpReco+'_wrt_'+_tmpRef].SetMarkerColor(2)
-            effysMET['PU']['140'][_tmpType+_tmpReco+'_wrt_'+_tmpRef].SetLineColor(2)
-            effysMET['PU']['140'][_tmpType+_tmpReco+'_wrt_'+_tmpRef].SetLineStyle(1)
-            effysMET['PU']['140'][_tmpType+_tmpReco+'_wrt_'+_tmpRef].Draw('lepz')
+            effysMET[_tmpMETThresh]['test_wrongJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerSize(1)
+            effysMET[_tmpMETThresh]['test_wrongJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineWidth(2)
+            effysMET[_tmpMETThresh]['test_wrongJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerColor(2)
+            effysMET[_tmpMETThresh]['test_wrongJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineColor(2)
+            effysMET[_tmpMETThresh]['test_wrongJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineStyle(1)
+            #effysMET[_tmpMETThresh]['test_wrongJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].Draw('lepz')
+
+            effysMET[_tmpMETThresh]['test_correctJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerSize(1)
+            effysMET[_tmpMETThresh]['test_correctJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineWidth(2)
+            effysMET[_tmpMETThresh]['test_correctJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetMarkerColor(4)
+            effysMET[_tmpMETThresh]['test_correctJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineColor(4)
+            effysMET[_tmpMETThresh]['test_correctJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].SetLineStyle(1)
+            effysMET[_tmpMETThresh]['test_correctJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef].Draw('lepz')
     
           except: pass
   
@@ -582,7 +510,7 @@ if __name__ == '__main__':
           topLabel.SetTextFont(42)
           topLabel.SetTextSize(0.035)
           topLabel.SetBorderSize(0)
-          topLabel.AddText('#font[61]{CMS} #font[52]{Run-3 Simulation}')
+          topLabel.AddText('#font[61]{CMS} #font[52]{Run-3 Simulation} VBF H #rightarrow Inv. PU 65')
           topLabel.Draw('same')
   
           objLabel = ROOT.TPaveText(0.80, 0.93, 0.96, 0.98, 'NDC')
@@ -593,13 +521,8 @@ if __name__ == '__main__':
           objLabel.SetTextFont(42)
           objLabel.SetTextSize(0.035)
           objLabel.SetBorderSize(0)
-          objLabel.AddText('14 TeV')
+          objLabel.AddText('13.6 TeV')
           objLabel.Draw('same') 
-
-          if _tmpReco == 'MET':
-            printlabel = 'Raw '+_tmpType
-          else:
-            printlabel = 'Type-1 '+_tmpType
 
           l1tRateLabel = ROOT.TPaveText(0.165, 0.82, 0.70, 0.88, 'NDC')
           l1tRateLabel.SetFillColor(0)
@@ -609,15 +532,21 @@ if __name__ == '__main__':
           l1tRateLabel.SetTextFont(42)
           l1tRateLabel.SetTextSize(0.035)
           l1tRateLabel.SetBorderSize(0)
-          l1tRateLabel.AddText(printlabel)
+          l1tRateLabel.AddText('HLT_PF'+_tmpAlgo+_tmpMETThresh+'_PFMHT'+_tmpMETThresh+'_IDTight')
           l1tRateLabel.Draw('same')
-  
-          leg1 = ROOT.TLegend(0.45, 0.20, 0.94, 0.44)
+
+          leg1 = ROOT.TLegend(0.50, 0.20, 0.84, 0.44)
+          leg1.SetFillStyle(0)
+          leg1.SetLineWidth(0)
           leg1.SetNColumns(1)
           leg1.SetTextFont(42)
+          leg1.SetTextSize(0.05)
+          leg1.SetEntrySeparation(0.2)
           try:
-            leg1.AddEntry(effysMET['PU']['120'][_tmpType+_tmpReco+'_wrt_'+_tmpRef], 'HLT_PF'+_tmpReco+'120_PFMHT120_IDTight', 'lp')
-            leg1.AddEntry(effysMET['PU']['140'][_tmpType+_tmpReco+'_wrt_'+_tmpRef], 'HLT_PF'+_tmpReco+'140_PFMHT140_IDTight', 'lp')
+            leg1.AddEntry(effysMET[_tmpMETThresh]['test_noCustom'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef], 'Default', 'lp')
+            leg1.AddEntry(effysMET[_tmpMETThresh]['test_correctJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef], 'HCAL update', 'lp')
+            #leg1.AddEntry(effysMET[_tmpMETThresh]['test_wrongJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef], 'HCAL update+condDB Calibs', 'lp')
+            #leg1.AddEntry(effysMET[_tmpMETThresh]['test_correctJECs'][_tmpType+_tmpAlgo+'_wrt_'+_tmpRef], 'HCAL update+fixed Calibs', 'lp')
           except: pass
           leg1.Draw('same')
   
@@ -628,9 +557,10 @@ if __name__ == '__main__':
           canvas.SetGrid(1, 1)
   
           for _tmpExt in EXTS:
-            canvas.SaveAs(outputDir+'/triggerEff_'+_tmpType+_tmpReco+'_wrt'+_tmpRef+'.'+_tmpExt)
+            canvas.SaveAs(outputDir+'/triggerEff_'+_tmpType+_tmpAlgo+'_wrt'+_tmpRef+'_'+_tmpMETThresh+'.'+_tmpExt)
   
           canvas.Close()
   
-          print ('\033[1m'+outputDir+'/triggerEff_'+_tmpType+_tmpReco+'_wrt'+_tmpRef+'\033[0m')
+          print ('\033[1m'+outputDir+'/triggerEff_'+_tmpType+_tmpAlgo+'_wrt'+_tmpRef+'_'+_tmpMETThresh+'\033[0m')
+  
  
