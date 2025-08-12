@@ -72,6 +72,9 @@ if __name__ == '__main__':
 
    parser.add_argument('-d', '--dry-run', dest='dry_run', action='store_true', default=False,
                        help='enable dry-run mode')
+   
+   parser.add_argument('-me', '--make-eff', dest='make_matching_eff', action='store_false', default=True,
+                       help='make matching efficiencies, will require NoSelection directory')
 
    opts, opts_unknown = parser.parse_known_args()
    ### -------------------
@@ -351,28 +354,29 @@ if __name__ == '__main__':
    
               if not (('HLT_' in hkey_i_dirname) and ('Jet' in hkey_i_dirname)):
                  continue
-   
-              hkey_i_num = hkey_i
-              hkey_i_den = 'NoSelection/'+hkey_i_basename
-   
-              if hkey_i_num not in histograms: KILL(log_prx+'AAA2 '+hkey_i_num)
-              if hkey_i_den not in histograms: KILL(log_prx+'BBB2 '+hkey_i_den)
-   
-              tmp_hnum = histograms[hkey_i_num]
-              tmp_hden = histograms[hkey_i_den]
-   
-              if not tmp_hnum.InheritsFrom('TH2'): KILL(log_prx+'AAA3 '+hkey_i_num)
-              if not tmp_hden.InheritsFrom('TH2'): KILL(log_prx+'BBB3 '+hkey_i_den)
-   
-              tmp_hnum0 = tmp_hnum.ProjectionY('tmp_hnum0')
-              tmp_hden0 = tmp_hden.ProjectionY('tmp_hden0')
+              
+              if opts.make_matching_eff:
+               hkey_i_num = hkey_i
+               hkey_i_den = 'NoSelection/'+hkey_i_basename
+      
+               if hkey_i_num not in histograms: KILL(log_prx+'AAA2 '+hkey_i_num)
+               if hkey_i_den not in histograms: KILL(log_prx+'BBB2 '+hkey_i_den)
+      
+               tmp_hnum = histograms[hkey_i_num]
+               tmp_hden = histograms[hkey_i_den]
+      
+               if not tmp_hnum.InheritsFrom('TH2'): KILL(log_prx+'AAA3 '+hkey_i_num)
+               if not tmp_hden.InheritsFrom('TH2'): KILL(log_prx+'BBB3 '+hkey_i_den)
+      
+               tmp_hnum0 = tmp_hnum.ProjectionY('tmp_hnum0')
+               tmp_hden0 = tmp_hden.ProjectionY('tmp_hden0')
 
-              tmp_effname = hkey_i_num.replace(opts.separator_2d, '_')+'_eff'
+               tmp_effname = hkey_i_num.replace(opts.separator_2d, '_')+'_eff'
+      
+               if tmp_effname in histograms: KILL(log_prx+'CCC2 '+tmp_effname)
    
-              if tmp_effname in histograms: KILL(log_prx+'CCC2 '+tmp_effname)
-  
-              print (tmp_effname)
-              histograms[tmp_effname] = get_efficiency_graph(tmp_hnum0, tmp_hden0)
+               print (tmp_effname)
+               histograms[tmp_effname] = get_efficiency_graph(tmp_hnum0, tmp_hden0)
 
               del tmp_hnum0
               del tmp_hden0
