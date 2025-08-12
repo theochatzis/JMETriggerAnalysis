@@ -148,6 +148,13 @@ A description of the basic tools and how to use them can be found [here](https:/
 
 The core steps of the analysis process are described first here, and below you can find three basic use cases examples of using the code.
 
+Links to use cases:
+
+- [Making Efficiencies from MiniAOD (DPNote Style)](https://github.com/theochatzis/JMETriggerAnalysis?tab=readme-ov-file#use-case-making-efficiencies-from-miniaod-dpnote-style)
+- [Making Efficiencies from RAW](https://github.com/theochatzis/JMETriggerAnalysis?tab=readme-ov-file#use-case-making-efficiencies-from-raw)
+- [Performances plots (only from RAW)](https://github.com/theochatzis/JMETriggerAnalysis?tab=readme-ov-file#use-case--performances-plots-only-from-raw)
+
+
 **Tree -> Histograms production**: 
 
 The first step is making histograms from the `Events` TTree of the NTuples as input. There are cpp based plugins that are analyzing this structure of events branches in `NTupleAnalysis/src/`, the ones used is `JMETriggerAnalysisDriverRun3`. To use an analyzer in a configurable way we have python script `run.py` which feeds the settings of the analyzer with a `driver configuration YAML file`. Examples of such YAML files exist in `NTupleAnalysis/test/analysisDriver_configurations`.
