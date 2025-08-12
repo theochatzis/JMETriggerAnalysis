@@ -57,13 +57,15 @@ protected:
 
   void bookHistograms_Jets(const std::string& dir,
                            const std::string& jetType,
-                           const std::vector<std::string>& matchLabels = {});
+                           const std::vector<std::string>& matchLabels = {},
+                           bool const lightVersion = false);
   void bookHistograms_MET(const std::string& dir,
                           const std::string& metType,
-                          const std::vector<std::string>& matchLabels = {});
+                          const std::vector<std::string>& matchLabels = {},
+                          bool const lightVersion = false);
 
-  void fillHistograms_Jets(const std::string& dir, const fillHistoDataJets& fhDataJets, float const weight = 1.f);
-  void fillHistograms_MET(const std::string& dir, const fillHistoDataMET& fhDataMET, float const weight = 1.f);
+  void fillHistograms_Jets(const std::string& dir, const fillHistoDataJets& fhDataJets, float const weight = 1.f,bool const lightVersion = false);
+  void fillHistograms_MET(const std::string& dir, const fillHistoDataMET& fhDataMET, float const weight = 1.f,bool const lightVersion = false);
 };
 
 #endif

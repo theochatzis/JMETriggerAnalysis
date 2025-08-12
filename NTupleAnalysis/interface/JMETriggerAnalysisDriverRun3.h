@@ -15,6 +15,16 @@ class JMETriggerAnalysisDriverRun3 : public JMETriggerAnalysisDriver {
   void init() override;
   void analyze() override;
 
+  // adding setter methods for YAML-driven config (callable from Python for communication with the outside world)
+  void setJetCategoryLabels(const std::vector<std::string>& labels);
+  void setRunPeriods(const std::vector<std::string>& periods);
+  void setLightVersion(bool val);
+  void setUseOnlyTriggers(bool val);
+  void setUseOnlyRunPeriods(bool val);
+  void setJetTriggers(const std::vector<std::string>& triggers);
+  void setHTTriggers(const std::vector<std::string>& triggers);
+  void setMETTriggers(const std::vector<std::string>& triggers);
+
  protected:
   bool jetBelongsToCategory(const std::string& categLabel, const float jetPt, const float jetAbsEta, const float jetPhi, const float jetEta) const override;
 
@@ -30,7 +40,8 @@ class JMETriggerAnalysisDriverRun3 : public JMETriggerAnalysisDriver {
   float getMET(std::string const&) const;
   float getPFMHT(float const, float const) const;
   float getPuppiMHT(float const, float const) const;
-
+  
+  // Helper variables
   std::map<std::string, std::map<std::string, std::string>> labelMap_jetAK4_;
   std::map<std::string, std::map<std::string, std::string>> labelMap_jetAK8_;
   std::map<std::string, std::map<std::string, std::string>> labelMap_MET_;
@@ -40,12 +51,18 @@ class JMETriggerAnalysisDriverRun3 : public JMETriggerAnalysisDriver {
   std::vector<std::string> mettriggers;
   std::vector<std::string> puintervals;
   std::vector<std::string> runPeriods;
+  bool lightVersion;
+  bool useOnlyTriggers;
+  bool useOnlyRunPeriods;
+
+  bool isOffline;
 
   bool hltJetTrigger(std::string const& key) const;
   bool hltHTTrigger(std::string const& key) const;
   bool hltMETTrigger(std::string const& key) const;
   bool pileupintervals(std::string const& key) const;
   bool runPeriod(std::string const& key) const;
+  
 };
 
 #endif

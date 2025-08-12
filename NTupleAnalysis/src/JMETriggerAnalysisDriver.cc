@@ -16,7 +16,6 @@ JMETriggerAnalysisDriver::JMETriggerAnalysisDriver(const std::string& outputFile
 bool JMETriggerAnalysisDriver::jetBelongsToCategory(const std::string& categLabel, const float jetPt, const float jetAbsEta, const float jetPhi, const float jetEta) const {
   bool ret(false);
   
-  // modification start
   // booleans that show if jet is AK4 or AK8
   // bool isAK4 = (jetCollection.find("AK4")!=std::string::npos) or (jetCollection.find("ak4")!=std::string::npos);
   // bool isAK8 = (jetCollection.find("AK8")!=std::string::npos) or (jetCollection.find("ak8")!=std::string::npos);
@@ -512,7 +511,8 @@ void JMETriggerAnalysisDriver::analyze() {
 
 void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
                                                    const std::string& jetType,
-                                                   const std::vector<std::string>& matchLabels) {
+                                                   const std::vector<std::string>& matchLabels,
+                                                   bool const lightVersion) {
   auto dirPrefix(dir);
   while (dirPrefix.back() == '/') {
     dirPrefix.pop_back();
@@ -552,17 +552,21 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
   for (uint idx = 0; idx < binEdges_MHT.size(); ++idx) {
     binEdges_MHT.at(idx) = idx * 10.;
   }
-
+  
+  std::vector<float> binEdges_pt(101);
+  for (uint idx = 0; idx < binEdges_pt.size(); ++idx) {
+    binEdges_pt.at(idx) = idx * 10.;
+  }
   // std::vector<float> binEdges_pt(16);
   // for (uint idx = 0; idx < binEdges_pt.size(); ++idx) {
   //   binEdges_pt.at(idx) = 20. * idx;
   // }
   //std::vector<float> binEdges_pt({0, 30, 50, 70, 100, 150, 200, 300});
-  std::vector<float> binEdges_pt({0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,//{0,10,20,30,40,50,60,70,80,90,100,
-                                  125,150,175,200,
-                                  250,300,350,400,450,500});//,
-                                  //550,600,650,700,
-                                  //800,900,1000});
+  // std::vector<float> binEdges_pt({0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,//{0,10,20,30,40,50,60,70,80,90,100,
+  //                                 125,150,175,200,
+  //                                 250,300,350,400,450,500});//,
+  //                                 //550,600,650,700,
+  //                                 //800,900,1000});
 
   std::vector<float> binEdges_eta(101);
   for (uint idx = 0; idx < binEdges_eta.size(); ++idx) {
@@ -613,16 +617,34 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
   }
 
   for (auto const& catLabel : jetCategoryLabels_) {
+    if (lightVersion){
+      addTH1D(dirPrefix + jetType + catLabel + "_HT", binEdges_HT);
+      addTH1D(dirPrefix + jetType + catLabel + "_pt0", binEdges_pt);
+      addTH1D(dirPrefix + jetType + "_leadJet" + catLabel + "_pt0", binEdges_pt);
+      //addTH1D(dirPrefix + jetType + catLabel + "_pt", binEdges_pt);
+      //addTH1D(dirPrefix + jetType + catLabel + "_eta", binEdges_eta);
+      //addTH2D(dirPrefix + jetType + catLabel + "_eta__vs__pt", binEdges_eta, binEdges_pt);
+      //addTH1D(dirPrefix + jetType + catLabel + "_phi", binEdges_phi);
+      //addTH1D(dirPrefix + jetType + catLabel + "_mass", binEdges_mass);
+      // for (auto const& matchLabel : matchLabels) {
+      // addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel + "__vs__" +
+      //             matchLabel + "_pt",
+      //         binEdges_response,
+      //         binEdges_pt);
+      // }
+      continue;
+    }
     addTH1D(dirPrefix + jetType + catLabel + "_njets", binEdges_njets);
     addTH1D(dirPrefix + jetType + catLabel + "_HT", binEdges_HT);
     addTH1D(dirPrefix + jetType + catLabel + "_MHT", binEdges_MHT);
     // modification start
-    addTH1D(dirPrefix + jetType + catLabel + "_simNPU", binEdges_simNPU);
-    addTH2D(dirPrefix + jetType + catLabel + "_simNPU__vs__pt0", binEdges_simNPU, binEdges_pt); // for efficiencies vs NPU
-    addTH2D(dirPrefix + jetType + catLabel + "_simNPU__vs__HT", binEdges_simNPU, binEdges_HT); // for efficiencies vs NPU
+    // addTH1D(dirPrefix + jetType + catLabel + "_simNPU", binEdges_simNPU);
+    // addTH2D(dirPrefix + jetType + catLabel + "_simNPU__vs__pt0", binEdges_simNPU, binEdges_pt); // for efficiencies vs NPU
+    // addTH2D(dirPrefix + jetType + catLabel + "_simNPU__vs__HT", binEdges_simNPU, binEdges_HT); // for efficiencies vs NPU
     // modification end
     addTH1D(dirPrefix + jetType + catLabel + "_pt", binEdges_pt);
     addTH1D(dirPrefix + jetType + catLabel + "_pt0", binEdges_pt);
+    addTH1D(dirPrefix + jetType + "_leadJet" + catLabel + "_pt0", binEdges_pt);
     addTH1D(dirPrefix + jetType + catLabel + "_eta", binEdges_eta);
     addTH2D(dirPrefix + jetType + catLabel + "_eta__vs__pt", binEdges_eta, binEdges_pt);
     addTH1D(dirPrefix + jetType + catLabel + "_phi", binEdges_phi);
@@ -660,7 +682,7 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_HT", binEdges_HT);
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_MHT", binEdges_MHT);
       // modification start
-      addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_simNPU", binEdges_simNPU);
+      // addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_simNPU", binEdges_simNPU);
       // modification
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt", binEdges_pt);
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt0", binEdges_pt);
@@ -710,10 +732,10 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
       addTH1D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel, binEdges_response);
       
       // modification start
-      addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel + "__vs__" +
-             matchLabel + "_simNPU",
-                  binEdges_response,
-                  binEdges_simNPU);
+      // addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel + "__vs__" +
+      //        matchLabel + "_simNPU",
+      //             binEdges_response,
+      //             binEdges_simNPU);
       // modification end
       
       addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel + "__vs__" +
@@ -724,10 +746,10 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
                   matchLabel + "_pt",
               binEdges_response,
               binEdges_pt);
-      addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_leadCandPt_over" + matchLabel + "__vs__" +
-                  matchLabel + "_simNPU",
-                  binEdges_response,
-                  binEdges_simNPU);
+      // addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_leadCandPt_over" + matchLabel + "__vs__" +
+      //             matchLabel + "_simNPU",
+      //             binEdges_response,
+      //             binEdges_simNPU);
       addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel + "__vs__pt",
               binEdges_response,
               binEdges_pt);
@@ -772,7 +794,7 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_HT", binEdges_HT);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_MHT", binEdges_MHT);
       // modification start
-      addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_simNPU", binEdges_simNPU);
+      // addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_simNPU", binEdges_simNPU);
       // modification
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_pt", binEdges_pt);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_pt0", binEdges_pt);
@@ -780,8 +802,8 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
       addTH2D(
           dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_eta__vs__pt", binEdges_eta, binEdges_pt);
       // modification start
-      addTH2D(
-          dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_njets__vs__simNPU", binEdges_njets, binEdges_simNPU);
+      // addTH2D(
+      //     dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_njets__vs__simNPU", binEdges_njets, binEdges_simNPU);
       // modification end 
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_phi", binEdges_phi);
       addTH1D(dirPrefix + jetType + catLabel + "_NotMatchedTo" + matchLabel + "_mass", binEdges_mass);
@@ -813,7 +835,8 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
 
 void JMETriggerAnalysisDriver::bookHistograms_MET(const std::string& dir,
                                                   const std::string& metType,
-                                                  const std::vector<std::string>& matchLabels) {
+                                                  const std::vector<std::string>& matchLabels,
+                                                  bool const lightVersion) {
   auto dirPrefix(dir);
   while (dirPrefix.back() == '/') {
     dirPrefix.pop_back();
@@ -822,12 +845,10 @@ void JMETriggerAnalysisDriver::bookHistograms_MET(const std::string& dir,
     dirPrefix += "/";
   }
   
-  // modification start
-  std::vector<float> binEdges_pt(81);
+  std::vector<float> binEdges_pt(101);
   for (uint idx = 0; idx < binEdges_pt.size(); ++idx) {
     binEdges_pt.at(idx) = idx * 5.;
   }
-  // modification end
 
   std::vector<float> binEdges_phi(41);
   for (uint idx = 0; idx < binEdges_phi.size(); ++idx) {
@@ -844,11 +865,16 @@ void JMETriggerAnalysisDriver::bookHistograms_MET(const std::string& dir,
   
   const std::vector<float> binEdges_offlineNPV({0,  10, 15, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,  40,  42,
                                                 44, 46, 48, 50, 52, 54, 56, 58, 60, 65, 70, 80, 100, 120, 140});
-
+  if (lightVersion){
+    addTH1D(dirPrefix + metType + "_pt", binEdges_pt);
+    addTH1D(dirPrefix + metType + "_ptNoMu", binEdges_pt);
+    return;
+  }
   addTH1D(dirPrefix + metType + "_pt", binEdges_pt);
+  addTH1D(dirPrefix + metType + "_ptNoMu", binEdges_pt);
   addTH1D(dirPrefix + metType + "_phi", binEdges_phi);
   addTH1D(dirPrefix + metType + "_sumEt", binEdges_sumEt);
-  addTH2D(dirPrefix + metType + "_simNPU__vs__pt", binEdges_simNPU, binEdges_pt); // for efficiencies vs NPU
+  // addTH2D(dirPrefix + metType + "_simNPU__vs__pt", binEdges_simNPU, binEdges_pt); // for efficiencies vs NPU
 
   if (matchLabels.empty()) {
     return;
@@ -889,7 +915,7 @@ void JMETriggerAnalysisDriver::bookHistograms_MET(const std::string& dir,
     addTH2D(dirPrefix + metType + "_pt_over" + matchLabel + "__vs__" + matchLabel + "_sumEt",
             binEdges_response,
             binEdges_sumEt);
-    addTH2D(dirPrefix + metType + "_pt_over" + matchLabel + "__vs__simNPU", binEdges_response, binEdges_simNPU);
+    // addTH2D(dirPrefix + metType + "_pt_over" + matchLabel + "__vs__simNPU", binEdges_response, binEdges_simNPU);
     addTH2D(dirPrefix + metType + "_pt_over" + matchLabel + "__vs__offlineNPV", binEdges_response, binEdges_offlineNPV);
 
     addTH2D(
@@ -900,7 +926,7 @@ void JMETriggerAnalysisDriver::bookHistograms_MET(const std::string& dir,
     addTH2D(dirPrefix + metType + "_deltaPhi" + matchLabel + "__vs__" + matchLabel + "_sumEt",
             binEdges_deltaPhi,
             binEdges_sumEt);
-    addTH2D(dirPrefix + metType + "_deltaPhi" + matchLabel + "__vs__simNPU", binEdges_deltaPhi, binEdges_simNPU);
+    // addTH2D(dirPrefix + metType + "_deltaPhi" + matchLabel + "__vs__simNPU", binEdges_deltaPhi, binEdges_simNPU);
     addTH2D(
         dirPrefix + metType + "_deltaPhi" + matchLabel + "__vs__offlineNPV", binEdges_deltaPhi, binEdges_offlineNPV);
 
@@ -913,7 +939,7 @@ void JMETriggerAnalysisDriver::bookHistograms_MET(const std::string& dir,
     addTH2D(dirPrefix + metType + "_sumEt_over" + matchLabel + "__vs__" + matchLabel + "_sumEt",
             binEdges_response,
             binEdges_sumEt);
-    addTH2D(dirPrefix + metType + "_sumEt_over" + matchLabel + "__vs__simNPU", binEdges_response, binEdges_simNPU);
+    // addTH2D(dirPrefix + metType + "_sumEt_over" + matchLabel + "__vs__simNPU", binEdges_response, binEdges_simNPU);
     addTH2D(
         dirPrefix + metType + "_sumEt_over" + matchLabel + "__vs__offlineNPV", binEdges_response, binEdges_offlineNPV);
 
@@ -925,7 +951,7 @@ void JMETriggerAnalysisDriver::bookHistograms_MET(const std::string& dir,
     addTH2D(dirPrefix + metType + "_pt_paraTo" + matchLabel + "__vs__" + matchLabel + "_sumEt",
             binEdges_deltaPt,
             binEdges_sumEt);
-    addTH2D(dirPrefix + metType + "_pt_paraTo" + matchLabel + "__vs__simNPU", binEdges_deltaPt, binEdges_simNPU);
+    // addTH2D(dirPrefix + metType + "_pt_paraTo" + matchLabel + "__vs__simNPU", binEdges_deltaPt, binEdges_simNPU);
     addTH2D(
         dirPrefix + metType + "_pt_paraTo" + matchLabel + "__vs__offlineNPV", binEdges_deltaPt, binEdges_offlineNPV);
 
@@ -938,9 +964,9 @@ void JMETriggerAnalysisDriver::bookHistograms_MET(const std::string& dir,
     addTH2D(dirPrefix + metType + "_pt_paraTo" + matchLabel + "Minus" + matchLabel + "__vs__" + matchLabel + "_sumEt",
             binEdges_deltaPt,
             binEdges_sumEt);
-    addTH2D(dirPrefix + metType + "_pt_paraTo" + matchLabel + "Minus" + matchLabel + "__vs__simNPU",
-            binEdges_deltaPt,
-            binEdges_simNPU);
+    // addTH2D(dirPrefix + metType + "_pt_paraTo" + matchLabel + "Minus" + matchLabel + "__vs__simNPU",
+    //         binEdges_deltaPt,
+    //         binEdges_simNPU);
     addTH2D(dirPrefix + metType + "_pt_paraTo" + matchLabel + "Minus" + matchLabel + "__vs__offlineNPV",
             binEdges_deltaPt,
             binEdges_offlineNPV);
@@ -953,7 +979,7 @@ void JMETriggerAnalysisDriver::bookHistograms_MET(const std::string& dir,
     addTH2D(dirPrefix + metType + "_pt_perpTo" + matchLabel + "__vs__" + matchLabel + "_sumEt",
             binEdges_deltaPt,
             binEdges_sumEt);
-    addTH2D(dirPrefix + metType + "_pt_perpTo" + matchLabel + "__vs__simNPU", binEdges_deltaPt, binEdges_simNPU);
+    // addTH2D(dirPrefix + metType + "_pt_perpTo" + matchLabel + "__vs__simNPU", binEdges_deltaPt, binEdges_simNPU);
     addTH2D(
         dirPrefix + metType + "_pt_perpTo" + matchLabel + "__vs__offlineNPV", binEdges_deltaPt, binEdges_offlineNPV);
   }
@@ -961,7 +987,7 @@ void JMETriggerAnalysisDriver::bookHistograms_MET(const std::string& dir,
 
 void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
                                                    const fillHistoDataJets& fhData,
-                                                   float const weight) {
+                                                   float const weight, bool const lightVersion) {
   auto dirPrefix(dir);
   while (dirPrefix.back() == '/') {
     dirPrefix.pop_back();
@@ -969,10 +995,10 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
   if (not dirPrefix.empty()) {
     dirPrefix += "/";
   }
-  // modification start
+
   // adding the simulated number of PU in the variables
-  auto const simNPU = this->value<int>("pileupInfo_BX0_numPUInteractions"); 
-  // modification end  
+  // auto const simNPU = this->value<int>("pileupInfo_BX0_numPUInteractions"); 
+  
   auto const* v_pt(this->vector_ptr<float>(fhData.jetCollection + "_pt"));
   auto const* v_eta(this->vector_ptr<float>(fhData.jetCollection + "_eta"));
   auto const* v_phi(this->vector_ptr<float>(fhData.jetCollection + "_phi"));
@@ -1005,7 +1031,15 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
     }
     return;
   }
-
+  
+  // Fill histograms based on the category of the leading jet only.
+  for (auto const& catLabel : jetCategoryLabels_) {
+    if (jetBelongsToCategory(catLabel, v_pt->at(0), std::abs(v_eta->at(0)), v_phi->at(0), v_eta->at(0))) {
+      H1(dirPrefix + fhData.jetCollection + "_leadJet" + catLabel + "_pt0")->Fill(v_pt->at(0), weight);
+    }
+  }
+  
+  // Fill histograms based on jet category.
   for (auto const& catLabel : jetCategoryLabels_) {
     std::vector<size_t> jetIndices;
     jetIndices.reserve(v_pt->size());
@@ -1031,14 +1065,16 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
       if(v_pt->at(jetIdx) > 30){ // add only contributions with above 30GeV for HT
         sumPt += v_pt->at(jetIdx);
       }
-      if(v_pt->at(jetIdx) > 15){ // add only contributions with above 30GeV for MHT
+      if(v_pt->at(jetIdx) > 20){ // add only contributions with above 20GeV for MHT
         sumPx += v_pt->at(jetIdx) * std::cos(v_phi->at(jetIdx));
         sumPy += v_pt->at(jetIdx) * std::sin(v_phi->at(jetIdx));
       }
       
-      // modification start
-      H1(dirPrefix + fhData.jetCollection + catLabel + "_simNPU")->Fill(simNPU, weight);
-      // modification end 
+      if (lightVersion) { // in light version keeping only leading jet and HT - so only needing this for HT calculation.
+        continue;
+      }
+
+      //H1(dirPrefix + fhData.jetCollection + catLabel + "_simNPU")->Fill(simNPU, weight);
       H1(dirPrefix + fhData.jetCollection + catLabel + "_pt")->Fill(v_pt->at(jetIdx), weight);
       H1(dirPrefix + fhData.jetCollection + catLabel + "_eta")->Fill(v_eta->at(jetIdx), weight);
       H2(dirPrefix + fhData.jetCollection + catLabel + "_eta__vs__pt")
@@ -1092,19 +1128,29 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
       }
       
     }
-
-    H1(dirPrefix + fhData.jetCollection + catLabel + "_njets")->Fill(0.01 + jetIndices.size(), weight);
-
     H1(dirPrefix + fhData.jetCollection + catLabel + "_HT")->Fill(sumPt, weight);
-    H1(dirPrefix + fhData.jetCollection + catLabel + "_MHT")->Fill(sqrt(sumPx * sumPx + sumPy * sumPy), weight);
-    
-    H2(dirPrefix + fhData.jetCollection + catLabel + "_simNPU__vs__HT")
-          ->Fill(simNPU, sumPt, weight);
     if (indexMaxPtJet >= 0) {
       H1(dirPrefix + fhData.jetCollection + catLabel + "_pt0")->Fill(v_pt->at(indexMaxPtJet), weight);
-      H2(dirPrefix + fhData.jetCollection + catLabel + "_simNPU__vs__pt0")
-          ->Fill(simNPU, v_pt->at(indexMaxPtJet), weight);
     }
+    if (lightVersion){
+      continue;
+    }
+    H1(dirPrefix + fhData.jetCollection + catLabel + "_njets")->Fill(0.01 + jetIndices.size(), weight);
+
+    
+    H1(dirPrefix + fhData.jetCollection + catLabel + "_MHT")->Fill(sqrt(sumPx * sumPx + sumPy * sumPy), weight);
+    
+    //H2(dirPrefix + fhData.jetCollection + catLabel + "_simNPU__vs__HT")
+    //      ->Fill(simNPU, sumPt, weight);
+    if (indexMaxPtJet >= 0) {
+      H1(dirPrefix + fhData.jetCollection + catLabel + "_pt0")->Fill(v_pt->at(indexMaxPtJet), weight);
+      //H2(dirPrefix + fhData.jetCollection + catLabel + "_simNPU__vs__pt0")
+      //    ->Fill(simNPU, v_pt->at(indexMaxPtJet), weight);
+    }
+  }
+  
+  if(lightVersion){ // stop here in light version, do not perform any matching etc.
+    return;
   }
 
   for (auto const& fhDataMatch : fhData.matches) {
@@ -1258,9 +1304,8 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
             maxPtJetPtWithMatch = jetPt;
             indexMaxPtJetWithMatch = jetIdx;
           }
-          // modification start
-          H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_simNPU")->Fill(simNPU, weight);
-          // modification
+
+          //H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_simNPU")->Fill(simNPU, weight);
           H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt")->Fill(jetPt, weight);
           H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_eta")->Fill(jetEta, weight);
           H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_eta__vs__pt")
@@ -1364,9 +1409,9 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
                  "__vs__" + matchLabel + "_pt")
                   ->Fill(v_leadCandPt->at(jetIdx)/v_match_leadCandPt->at(jetMatchIdx), jetMatchPt, weight);
               
-              H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_leadCandPt_over" + matchLabel +
-                 "__vs__" + matchLabel + "_simNPU")
-                  ->Fill(v_leadCandPt->at(jetIdx)/v_match_leadCandPt->at(jetMatchIdx), simNPU, weight);
+              // H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_leadCandPt_over" + matchLabel +
+              //    "__vs__" + matchLabel + "_simNPU")
+              //     ->Fill(v_leadCandPt->at(jetIdx)/v_match_leadCandPt->at(jetMatchIdx), simNPU, weight);
               
             }
             H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel +
@@ -1375,11 +1420,9 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
             H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel +
                "__vs__phi")
                 ->Fill(jetPtRatio, jetPhi, weight);
-            // modification start
-            H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel +
-               "__vs__" + matchLabel + "_simNPU")
-                ->Fill(jetPtRatio, simNPU, weight);
-            // modification end
+            // H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel +
+            //    "__vs__" + matchLabel + "_simNPU")
+            //     ->Fill(jetPtRatio, simNPU, weight);
             H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel +
                "__vs__" + matchLabel + "_eta")
                 ->Fill(jetPtRatio, jetMatchEta, weight);
@@ -1430,9 +1473,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
 
           H2(dirPrefix + fhData.jetCollection + catLabel + "_eta__vs__" + matchLabel + "_minDeltaR")
               ->Fill(jetEta, minDeltaR, weight);
-          // modification start
-          H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_simNPU")->Fill(simNPU, weight);
-          // modification
+          //H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_simNPU")->Fill(simNPU, weight);
           H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_pt")->Fill(jetPt, weight);
           H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_eta")->Fill(jetEta, weight);
           H2(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_eta__vs__pt")
@@ -1504,10 +1545,10 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
       //  H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_njets_over_tot" +"__vs__simNPU")
       //        ->Fill( (nJetsMatched*1.0)/((nJetsMatched+nJetsNotMatched)*1.0), simNPU, weight);
       //}
-      if((nJetsMatched+nJetsNotMatched)!=0){
-        H2(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_njets__vs__simNPU")
-              ->Fill(0.01 + nJetsNotMatched, simNPU, weight);
-      }
+      // if((nJetsMatched+nJetsNotMatched)!=0){
+      //   H2(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_njets__vs__simNPU")
+      //         ->Fill(0.01 + nJetsNotMatched, simNPU, weight);
+      // }
       // modification end
       H1(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_HT")->Fill(sumPtMatched, weight);
       H1(dirPrefix + fhData.jetCollection + catLabel + "_NotMatchedTo" + matchLabel + "_HT")
@@ -1551,7 +1592,8 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
 
 void JMETriggerAnalysisDriver::fillHistograms_MET(const std::string& dir,
                                                   const fillHistoDataMET& fhData,
-                                                  float const weight) {
+                                                  float const weight,
+                                                  bool const lightVersion) {
   auto dirPrefix(dir);
   while (dirPrefix.back() == '/') {
     dirPrefix.pop_back();
@@ -1563,8 +1605,12 @@ void JMETriggerAnalysisDriver::fillHistograms_MET(const std::string& dir,
   auto const* v_pt(this->vector_ptr<float>(fhData.metCollection + "_pt"));
   auto const* v_phi(this->vector_ptr<float>(fhData.metCollection + "_phi"));
   auto const* v_sumEt(this->vector_ptr<float>(fhData.metCollection + "_sumEt"));
+  
+  // add offline muons for MET NoMu
+  auto const* v_muPt(this->vector_ptr<float>("offlineMuons_pt"));
+  auto const* v_muPhi(this->vector_ptr<float>("offlineMuons_phi"));
 
-  auto const simNPU = this->value<int>("pileupInfo_BX0_numPUInteractions");
+  //auto const simNPU = this->value<int>("pileupInfo_BX0_numPUInteractions");
 
   uint offlineNPV(0);
   auto const* v_offlinePV_z(this->vector_ptr<float>("offlinePrimaryVertices_z"));
@@ -1593,11 +1639,34 @@ void JMETriggerAnalysisDriver::fillHistograms_MET(const std::string& dir,
   auto const metPt(v_pt->at(0));
   auto const metPhi(v_phi->at(0));
   auto const metSumEt(v_sumEt->at(0));
+  
+  // in case muons exist in the data calculate also METNoMu
+  float ptNoMu(0.0);
+  if (v_muPt->size()>0){
+    auto const muonPt(v_muPt->at(0));
+    auto const muonPhi(v_muPhi->at(0));
+    
+    float metPx, metPy, muonPx, muonPy;
 
+    metPx = metPt*cos(metPhi);
+    metPy = metPt*sin(metPhi);
+    
+    muonPx = muonPt*cos(muonPhi);
+    muonPy = muonPt*sin(muonPhi);
+  
+    ptNoMu = sqrt((metPx+muonPx)*(metPx+muonPx) + (metPy+muonPy)*(metPy+muonPy));
+  }
+  
+  if (lightVersion){
+    H1(dirPrefix + fhData.metCollection + "_pt")->Fill(metPt, weight);
+    H1(dirPrefix + fhData.metCollection + "_ptNoMu")->Fill(ptNoMu, weight);
+    return;
+  }
   H1(dirPrefix + fhData.metCollection + "_pt")->Fill(metPt, weight);
+  H1(dirPrefix + fhData.metCollection + "_ptNoMu")->Fill(ptNoMu, weight);
   H1(dirPrefix + fhData.metCollection + "_phi")->Fill(metPhi, weight);
   H1(dirPrefix + fhData.metCollection + "_sumEt")->Fill(metSumEt, weight);
-  H2(dirPrefix + fhData.metCollection + "_simNPU__vs__pt")->Fill(simNPU, metPt); // for efficiencies vs NPU
+  //H2(dirPrefix + fhData.metCollection + "_simNPU__vs__pt")->Fill(simNPU, metPt); // for efficiencies vs NPU
 
   for (auto const& fhDataMatch : fhData.matches) {
     auto const matchLabel(fhDataMatch.label);
@@ -1639,7 +1708,7 @@ void JMETriggerAnalysisDriver::fillHistograms_MET(const std::string& dir,
           ->Fill(metPtRatio, metMatchPhi, weight);
       H2(dirPrefix + fhData.metCollection + "_pt_over" + matchLabel + "__vs__" + matchLabel + "_sumEt")
           ->Fill(metPtRatio, metMatchSumEt, weight);
-      H2(dirPrefix + fhData.metCollection + "_pt_over" + matchLabel + "__vs__simNPU")->Fill(metPtRatio, simNPU, weight);
+      //H2(dirPrefix + fhData.metCollection + "_pt_over" + matchLabel + "__vs__simNPU")->Fill(metPtRatio, simNPU, weight);
       H2(dirPrefix + fhData.metCollection + "_pt_over" + matchLabel + "__vs__offlineNPV")
           ->Fill(metPtRatio, offlineNPV, weight);
     }
@@ -1655,8 +1724,8 @@ void JMETriggerAnalysisDriver::fillHistograms_MET(const std::string& dir,
           ->Fill(metSumEtRatio, metMatchPhi, weight);
       H2(dirPrefix + fhData.metCollection + "_sumEt_over" + matchLabel + "__vs__" + matchLabel + "_sumEt")
           ->Fill(metSumEtRatio, metMatchSumEt, weight);
-      H2(dirPrefix + fhData.metCollection + "_sumEt_over" + matchLabel + "__vs__simNPU")
-          ->Fill(metSumEtRatio, simNPU, weight);
+      // H2(dirPrefix + fhData.metCollection + "_sumEt_over" + matchLabel + "__vs__simNPU")
+      //     ->Fill(metSumEtRatio, simNPU, weight);
       H2(dirPrefix + fhData.metCollection + "_sumEt_over" + matchLabel + "__vs__offlineNPV")
           ->Fill(metSumEtRatio, offlineNPV, weight);
     }
@@ -1670,8 +1739,8 @@ void JMETriggerAnalysisDriver::fillHistograms_MET(const std::string& dir,
         ->Fill(metDeltaPhiMatch, metMatchPhi, weight);
     H2(dirPrefix + fhData.metCollection + "_deltaPhi" + matchLabel + "__vs__" + matchLabel + "_sumEt")
         ->Fill(metDeltaPhiMatch, metMatchSumEt, weight);
-    H2(dirPrefix + fhData.metCollection + "_deltaPhi" + matchLabel + "__vs__simNPU")
-        ->Fill(metDeltaPhiMatch, simNPU, weight);
+    // H2(dirPrefix + fhData.metCollection + "_deltaPhi" + matchLabel + "__vs__simNPU")
+    //     ->Fill(metDeltaPhiMatch, simNPU, weight);
     H2(dirPrefix + fhData.metCollection + "_deltaPhi" + matchLabel + "__vs__offlineNPV")
         ->Fill(metDeltaPhiMatch, offlineNPV, weight);
 
@@ -1684,8 +1753,8 @@ void JMETriggerAnalysisDriver::fillHistograms_MET(const std::string& dir,
         ->Fill(metParaToMatch, metMatchPhi, weight);
     H2(dirPrefix + fhData.metCollection + "_pt_paraTo" + matchLabel + "__vs__" + matchLabel + "_sumEt")
         ->Fill(metParaToMatch, metMatchSumEt, weight);
-    H2(dirPrefix + fhData.metCollection + "_pt_paraTo" + matchLabel + "__vs__simNPU")
-        ->Fill(metParaToMatch, simNPU, weight);
+    // H2(dirPrefix + fhData.metCollection + "_pt_paraTo" + matchLabel + "__vs__simNPU")
+    //     ->Fill(metParaToMatch, simNPU, weight);
     H2(dirPrefix + fhData.metCollection + "_pt_paraTo" + matchLabel + "__vs__offlineNPV")
         ->Fill(metParaToMatch, offlineNPV, weight);
 
@@ -1701,8 +1770,8 @@ void JMETriggerAnalysisDriver::fillHistograms_MET(const std::string& dir,
     H2(dirPrefix + fhData.metCollection + "_pt_paraTo" + matchLabel + "Minus" + matchLabel + "__vs__" + matchLabel +
        "_sumEt")
         ->Fill(metParaToMatchMinusMatch, metMatchSumEt, weight);
-    H2(dirPrefix + fhData.metCollection + "_pt_paraTo" + matchLabel + "Minus" + matchLabel + "__vs__simNPU")
-        ->Fill(metParaToMatchMinusMatch, simNPU, weight);
+    // H2(dirPrefix + fhData.metCollection + "_pt_paraTo" + matchLabel + "Minus" + matchLabel + "__vs__simNPU")
+    //     ->Fill(metParaToMatchMinusMatch, simNPU, weight);
     H2(dirPrefix + fhData.metCollection + "_pt_paraTo" + matchLabel + "Minus" + matchLabel + "__vs__offlineNPV")
         ->Fill(metParaToMatchMinusMatch, offlineNPV, weight);
 
@@ -1715,8 +1784,8 @@ void JMETriggerAnalysisDriver::fillHistograms_MET(const std::string& dir,
         ->Fill(metPerpToMatch, metMatchPhi, weight);
     H2(dirPrefix + fhData.metCollection + "_pt_perpTo" + matchLabel + "__vs__" + matchLabel + "_sumEt")
         ->Fill(metPerpToMatch, metMatchSumEt, weight);
-    H2(dirPrefix + fhData.metCollection + "_pt_perpTo" + matchLabel + "__vs__simNPU")
-        ->Fill(metPerpToMatch, simNPU, weight);
+    // H2(dirPrefix + fhData.metCollection + "_pt_perpTo" + matchLabel + "__vs__simNPU")
+    //     ->Fill(metPerpToMatch, simNPU, weight);
     H2(dirPrefix + fhData.metCollection + "_pt_perpTo" + matchLabel + "__vs__offlineNPV")
         ->Fill(metPerpToMatch, offlineNPV, weight);
   }
