@@ -154,9 +154,7 @@ The first step is making histograms from the `Events` TTree of the NTuples as in
 
 You can see bellow one example:
 
-<div style="max-height:200px; overflow-y:auto;">
-<pre style="margin:0;">
-<code class="language-yaml">
+```yaml
 # determines which from the available detector jet regions categories on eta,phi, pt etc will be used. These are defined in JMETriggerAnalysisDriverRun3::jetBelongsToCategory(...) function in NTupleAnalysis/src/JMETriggerAnalysisDriverRun3.cc
 jetCategoryLabels:
   - _HB
@@ -182,9 +180,7 @@ httriggers:
 
 mettriggers: # []
   - HLT_PFMET120_PFMHT120_IDTight
-</code>
-</pre>
-</div>
+```
 
 To run this plugin a condor submission script is used, that will process your input directory files simultaneously. To use this you can run `runAnalysis_hltRun3_submitter.sh` as follows:
 
