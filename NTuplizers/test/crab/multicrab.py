@@ -2,7 +2,7 @@
 
 # Step1, create flat ntuple with crab
 # Usage:   multicrab.py <pset> [options|
-# Example: crab/multicrab.py jmeTriggerNTuple2023Data_miniAOD_cfg.py -i 2024F,2024G
+# Example: crab/multicrab.py jmeTriggerNTuple_miniAOD_cfg.py -i 2024F,2024G
 # Example: crab/multicrab.py NanoAOD_JMETriggerSkim.py -i 2024 --list
 # Datasamples defined in createCrabConfigFilesMiniAOD.py and createCrabConfigFilesNanoAOD.py
 
@@ -223,7 +223,7 @@ def create(opts,args):
         else:
             if (jecsName is not None) and (len(jecsName)>0):
                 file.write("config.JobType.pyCfgParams = [\'offlineJecs="+jecsName+"\',\'globalTag="+globalTag+"\',\'isMuonData="+isMuonData+"\']\n")
-                file.write("config.JobType.inputFiles = [\'%s\']\n"%(os.path.join(dIN,jecsName+".db")))
+                file.write("config.JobType.inputFiles = [\'%s\']\n"%(os.path.join(f"{dIN}/jecsDBFile/",jecsName+".db")))
             else:
                 file.write("config.JobType.pyCfgParams = [\'globalTag="+globalTag+"\',\'isMuonData="+isMuonData+"\']\n")
 
