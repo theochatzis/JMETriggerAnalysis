@@ -5,6 +5,13 @@ import os
 import glob
 import time
 import ROOT
+import yaml
+
+def to_std_vector_str(pylist):
+    v = ROOT.std.vector('string')()
+    for item in pylist:
+        v.push_back(str(item))
+    return v
 
 def colored_text(txt, keys=[]):
     _tmp_out = ''
@@ -47,7 +54,10 @@ if __name__ == '__main__':
 
    parser.add_argument('-p', '--plugin', dest='plugin', action='store', default=None, required=True,
                        help='name of analysis plugin')
-
+   
+   parser.add_argument('-cfg', '--plugin-configuration', dest='plugin_config', action='store', default=None, required=True,
+                       help='configuration YAML file. These are found in analysisDriver_configurations directory')
+   
    parser.add_argument('-e', '--every', dest='every', action='store', type=int, default=1e2,
                        help='show progress of processing every N events')
 
@@ -59,6 +69,7 @@ if __name__ == '__main__':
 
    parser.add_argument('-v', '--verbosity', dest='verbosity', action='store', type=int, default=-1,
                        help='level of verbosity of output')
+   
 
    opts, opts_unknown = parser.parse_known_args()
    ### -------------------
@@ -156,11 +167,22 @@ if __name__ == '__main__':
    if opts.verbosity > -99:
       print('-'*50)
       print(colored_text('[plugin]', ['1']), opts.plugin)
+   
+   with open(os.environ["CMSSW_BASE"]+f"/src/JMETriggerAnalysis/NTupleAnalysis/test/analysisDriver_configurations/{opts.plugin_config}.yaml") as file_yaml:
+      config = yaml.safe_load(file_yaml)
 
    analyzer = getattr(ROOT, opts.plugin)(opts.output, 'recreate')
    analyzer.setVerbosity(opts.verbosity)
    analyzer.addOption('showEvery', str(SHOW_EVERY))
    for i_opt in optionsDict: analyzer.addOption(i_opt, optionsDict[i_opt])
+   analyzer.setJetCategoryLabels(to_std_vector_str(config["jetCategoryLabels"]))
+   analyzer.setJetTriggers(to_std_vector_str(config["jettriggers"]))
+   analyzer.setHTTriggers(to_std_vector_str(config["httriggers"]))
+   analyzer.setMETTriggers(to_std_vector_str(config["mettriggers"]))
+   analyzer.setRunPeriods(to_std_vector_str(config["runPeriods"]))
+   analyzer.setLightVersion(config["lightVersion"])
+   analyzer.setUseOnlyTriggers(config["useOnlyTriggers"])
+   analyzer.setUseOnlyRunPeriods(config["useOnlyRunPeriods"])
    analyzer.init()
 
    for [i_inpFile, i_inpTree] in inputFileTreePairs:
