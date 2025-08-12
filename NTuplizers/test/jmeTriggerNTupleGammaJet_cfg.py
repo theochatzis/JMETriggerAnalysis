@@ -89,6 +89,7 @@ opts.parseArguments()
 ### HLT configuration
 ###
 from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_15_0_0_GRun_configDump_data import cms, process
+
 if opts.reco == 'default':
   process.GlobalTag.globaltag = cms.string('150X_dataRun3_HLT_v1')
 elif opts.reco == 'hcal_hbhe':
@@ -523,7 +524,7 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
-    '/store/data/Run2025C/EGamma0/RAW-RECO/IsoPhotonEB-PromptReco-v1/000/392/175/00000/0a6dde4c-e1da-429d-9793-c6bb6e9a7f5a.root'
+    'root://cms-xrd-global.cern.ch//store/data/Run2025C/EGamma0/RAW-RECO/IsoPhotonEB-PromptReco-v1/000/392/175/00000/404a96ad-5571-40d3-a9e0-118a23dc75d0.root'
   ]
 
 # input EDM files [secondary]
