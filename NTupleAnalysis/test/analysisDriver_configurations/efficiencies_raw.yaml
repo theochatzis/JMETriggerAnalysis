@@ -1,0 +1,38 @@
+# determines which from the available detector jet regions categories on eta,phi, pt etc will be used. These are defined in JMETriggerAnalysisDriverRun3::jetBelongsToCategory(...) function in NTupleAnalysis/src/JMETriggerAnalysisDriverRun3.cc
+jetCategoryLabels:
+  - _EtaIncl
+  - _Eta2p5
+  - _HB
+  - _HE1
+  - _HE2
+  - _HF
+  - _BPix
+  - _BPixVeto
+  - _FPix
+  - _FPixVeto
+
+# determines which from the available run periods to be used. These are defined in JMETriggerAnalysisDriverRun3::runPeriod(...) function in NTupleAnalysis/src/JMETriggerAnalysisDriverRun3.cc
+runPeriods: []
+
+# with this provides very minimal output for efficiencies calculations only. It will contain only offline quantities in the output directories with minimal info, needed for efficiencies.
+lightVersion: true 
+# this will skip the NoSelection category. In case of MC can be set to False to provide denominators for efficiencies/unbiased selections for performances.
+useOnlyTriggers: true
+# this will use only run periods definitions for categories selection. For MC should be deactivated.
+useOnlyRunPeriods: false
+
+# Booleans paths to be used in the analysis for defining regions. Make sure both your numerator and denominators are here for efficiencies calculations.
+jettriggers:
+  - HLT_PFJet60
+  - HLT_PFJet140
+  - HLT_PFJet320
+  - HLT_PFJet500
+
+httriggers:
+  - HLT_PFHT1050
+
+mettriggers: # []
+  - HLT_PFMET120_PFMHT120_IDTight
+  - HLT_PFMETNoMu120_PFMHTNoMu120_IDTight
+  - HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_FilterHF
+  - HLT_IsoMu27
