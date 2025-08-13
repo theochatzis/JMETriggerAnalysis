@@ -21,6 +21,21 @@ hep.style.use("CMS")
 #              | |                                                           
 #              |_|                                                           
 
+def FixHist(passed, total):
+        """Functions that ennsures passed <= total for all bins..."""
+        nbins = passed.GetNbinsX()
+        for i in range(1, nbins + 1):
+            p = passed.GetBinContent(i)
+            t = total.GetBinContent(i)
+            if p > t:
+                print(f"[FixHist] Bin {i}: passed={p} > total={t}, setting passed=total")
+                passed.SetBinContent(i, t)
+            # Optional: fix negative totals
+            if t < 0:
+                print(f"[FixHist] Bin {i}: total={t} < 0, setting total=0 and passed=0")
+                total.SetBinContent(i, 0)
+                passed.SetBinContent(i, 0)
+
 def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_efficiency.png", 
                          x_range=None, rebin=None, trigger_name=None):
     """
@@ -50,7 +65,7 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
         if hist_num_root.GetEntries() < 100:
             print(f"Warning: Numerator '{hist_num_key}' has less than 100 entries... Skipping this pair...")
             continue
-        
+
         # Optional rebinning
         if rebin is not None:
             if isinstance(rebin, int):
@@ -65,6 +80,9 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
                 hist_den_root = hist_den_root.Rebin(nbins_new, hist_den_root.GetName() + "_rebinned", bin_edges_arr)
             else:
                 raise ValueError("`rebin` must be None, int, or a sequence of bin edges.")
+        
+        # Fix inconsistencies (if any)
+        FixHist(hist_num_root, hist_den_root)
 
         # Create the TEfficiency object
         eff = ROOT.TEfficiency(hist_num_root, hist_den_root)
