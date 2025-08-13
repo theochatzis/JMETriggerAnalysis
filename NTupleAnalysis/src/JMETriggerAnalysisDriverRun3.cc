@@ -641,6 +641,8 @@ bool JMETriggerAnalysisDriverRun3::runPeriod(std::string const& key) const {
   if ( key == "2022") return ( runNumber_ > 355794 and runNumber_ < 362760 ); // Eras C -> G
   else if ( key == "2023") return ( runNumber_ > 367080 and runNumber_ < 372415 );
   else if ( key == "2024") return ( runNumber_ > 379412 and runNumber_ < 387121	); // from Era C -> I
+  else if ( key == "2022_eraCDE" ) return ( runNumber_ > 355794 and runNumber_ < 360332 ); // 2022 era C->E 
+  else if ( key == "2022_eraFG" ) return ( runNumber_ > 360332 and runNumber_ < 362760 ); // 2022 era F , HCAL scale got updated
   else if (key == "2023_eraC_beforeHCALOffline") return (runNumber_ > 367080 and runNumber_ < 367765); // era C change of HCAL resp corrs in offline only
   else if (key == "2023_eraC_afterHCALOffline") return (runNumber_ >= 367765 and runNumber_ < 369864); // era C after HCAL resp corrs update in offline (this is right before era D)
   else if (key == "2023_eraD") return (runNumber_ >= 369864 and runNumber_ < 372415); // the BPix run was 369334 so this contains BPix.

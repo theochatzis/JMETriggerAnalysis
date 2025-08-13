@@ -16,6 +16,8 @@ runPeriods:
   - 2022
   - 2023
   - 2024
+  - 2022_eraCDE
+  - 2022_eraFG
   - 2023_eraC_beforeHCALOffline
   - 2023_eraC_afterHCALOffline
   - 2023_eraD

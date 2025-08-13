@@ -55,7 +55,7 @@ x_range_dict: # Shows the range of the plots on x-axis
   HLT_PFJet60: [40, 200.]
   HLT_PFJet140: [80, 300.]
   HLT_PFJet320: [260, 500.]
-  HLT_PFJet500: [400. , 800.]
+  HLT_PFJet500: [400. , 1000.]
   HLT_PFJetFwd60: [40, 200.]
   HLT_PFJetFwd140: [80, 300.]
   HLT_PFJetFwd320: [260, 500.]
@@ -72,7 +72,7 @@ rebin_dict: # Rebin if its provided as an integer, or variable bin width binning
   HLT_PFJet60: 1
   HLT_PFJet140: 2
   HLT_PFJet320: 2
-  HLT_PFJet500: 4
+  HLT_PFJet500: 5
   HLT_PFJetFwd60: 1
   HLT_PFJetFwd140: 2
   HLT_PFJetFwd320: 2
