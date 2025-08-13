@@ -553,9 +553,9 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
     binEdges_MHT.at(idx) = idx * 10.;
   }
   
-  std::vector<float> binEdges_pt(101);
+  std::vector<float> binEdges_pt(501);
   for (uint idx = 0; idx < binEdges_pt.size(); ++idx) {
-    binEdges_pt.at(idx) = idx * 10.;
+    binEdges_pt.at(idx) = idx * 2.;
   }
   // std::vector<float> binEdges_pt(16);
   // for (uint idx = 0; idx < binEdges_pt.size(); ++idx) {
