@@ -16,8 +16,8 @@ runPeriods: []
 
 # with this provides very minimal output for efficiencies calculations only. It will contain only offline quantities in the output directories with minimal info, needed for efficiencies.
 lightVersion: true 
-# this will skip the NoSelection category. In case of MC can be set to False to provide denominators for efficiencies/unbiased selections for performances.
-useOnlyTriggers: true
+# this will skip the NoSelection category. In case of MC/re-running from RAW can be set to False to provide denominators for efficiencies/unbiased selections for performances.
+useOnlyTriggers: false
 # this will use only run periods definitions for categories selection. For MC should be deactivated.
 useOnlyRunPeriods: false
 
