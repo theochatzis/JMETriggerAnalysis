@@ -1,5 +1,4 @@
 triggers_list:
-  - HLT_PFJet500
   - HLT_PFJet60
   - HLT_PFJet140
   - HLT_PFJet320
@@ -28,9 +27,9 @@ comparisonPeriods:
     2024_beforeHLTJECs: "before HLT JECs"
     2024_HLTJECs: "after HLT JECs"
   2024_hcal_conditions:
-    2024_HCALRespCorrs1: "HCAL RespCorrs HFv1"
-    2024_HCALRespCorrs2: "HCAL RespCorrs (generic)"
-    2024_HCALRespCorrs3: "HCAL RespCorrs HFv2"
+    2024_HCALRespCorrs1: "HCAL RespCorrs v1"
+    2024_HCALRespCorrs2: "HCAL RespCorrs v2"
+    2024_HCALRespCorrs3: "HCAL RespCorrs v3"
   2024_fpix:
     2024_beforeFPix: "2024 (before FPix)"
     2024_FPix: "2024 (after FPix)"
@@ -45,22 +44,40 @@ regions_labels:
   FPix: "FPix region"
   FPixVeto: "Endcap (FPix Veto)"
 
-x_range_dict:
+x_range_dict: # Shows the range of the plots on x-axis
   HLT_PFMET120_PFMHT120_IDTight: [0., 500.]
   HLT_PFMETNoMu120_PFMHTNoMu120_IDTight: [0., 500.]
   HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_FilterHF: [0., 500.]
   HLT_PFHT370: [180., 500.0]
   HLT_PFHT510: [430.0, 700.0]
   HLT_PFHT780: [510., 1000.0]
-  HLT_PFHT1050: [780.0, 1300.0]
-  HLT_PFJet60: [40, 100.]
-  HLT_PFJet140: [80, 250.]
+  HLT_PFHT1050: [780.0, 1500.0]
+  HLT_PFJet60: [40, 200.]
+  HLT_PFJet140: [80, 300.]
   HLT_PFJet320: [260, 500.]
-  HLT_PFJet500: [400. , 700.]
-  HLT_PFJetFwd60: [40, 100.]
-  HLT_PFJetFwd140: [80, 100.]
+  HLT_PFJet500: [400. , 800.]
+  HLT_PFJetFwd60: [40, 200.]
+  HLT_PFJetFwd140: [80, 300.]
   HLT_PFJetFwd320: [260, 500.]
   HLT_PFJetFwd400: [320, 600.]
+
+rebin_dict: # Rebin if its provided as an integer, or variable bin width binning as a list
+  HLT_PFMET120_PFMHT120_IDTight: 1
+  HLT_PFMETNoMu120_PFMHTNoMu120_IDTight: 1
+  HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_FilterHF: 1
+  HLT_PFHT370: 1
+  HLT_PFHT510: 1
+  HLT_PFHT780: 1
+  HLT_PFHT1050: 2
+  HLT_PFJet60: 1
+  HLT_PFJet140: 2
+  HLT_PFJet320: 2
+  HLT_PFJet500: 4
+  HLT_PFJetFwd60: 1
+  HLT_PFJetFwd140: 2
+  HLT_PFJetFwd320: 2
+  HLT_PFJetFwd400: 4
+
 
 
 
