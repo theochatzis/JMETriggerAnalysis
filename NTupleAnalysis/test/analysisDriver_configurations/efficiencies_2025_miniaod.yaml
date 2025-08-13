@@ -1,0 +1,75 @@
+# determines which from the available detector jet regions categories on eta,phi, pt etc will be used. These are defined in JMETriggerAnalysisDriverRun3::jetBelongsToCategory(...) function in NTupleAnalysis/src/JMETriggerAnalysisDriverRun3.cc
+jetCategoryLabels:
+  - _EtaIncl
+  - _Eta2p5
+  - _HB
+  - _HE1
+  - _HE2
+  - _HF
+  - _BPix
+  - _BPixVeto
+  - _FPix
+  - _FPixVeto
+
+# determines which from the available run periods to be used. These are defined in JMETriggerAnalysisDriverRun3::runPeriod(...) function in NTupleAnalysis/src/JMETriggerAnalysisDriverRun3.cc
+runPeriods:
+  - 2024I
+  - 2025CV1
+  - 2025CV2
+  - 2025D_beforeIBCoff
+  - 2025D_afterIBCoff
+# - 2022
+# - 2023
+# - 2024
+# - 2023_eraC_beforeHCALOffline
+# - 2023_eraC_afterHCALOffline
+# - 2023_eraD
+# - 2024_beforeHLTJECs
+# - 2024_HLTJECs
+# - 2024_HCALRespCorrs1
+# - 2024_HCALRespCorrs2
+# - 2024_HCALRespCorrs3
+# - 2024_beforeFPix
+# - 2024_FPix
+
+# with this provides very minimal output for efficiencies calculations only. It will contain only offline quantities in the output directories with minimal info, needed for efficiencies.
+lightVersion: true 
+# this will skip the NoSelection category. In case of MC can be set to False to provide denominators for efficiencies/unbiased selections for performances.
+useOnlyTriggers: true
+# this will use only run periods definitions for categories selection. For MC should be deactivated.
+useOnlyRunPeriods: true
+
+# Booleans paths to be used in the analysis for defining regions. Make sure both your numerator and denominators are here for efficiencies calculations.
+jettriggers:
+  - HLT_PFJet60_HLTPathAccept
+  - HLT_PFJet60_HLTDenominatorPathAccept
+  - HLT_PFJet140_HLTPathAccept
+  - HLT_PFJet140_HLTDenominatorPathAccept
+  - HLT_PFJet320_HLTPathAccept
+  - HLT_PFJet320_HLTDenominatorPathAccept
+  - HLT_PFJet500_HLTPathAccept
+  - HLT_PFJet500_HLTDenominatorPathAccept
+  - HLT_PFJetFwd60_HLTPathAccept
+  - HLT_PFJetFwd60_HLTDenominatorPathAccept
+  - HLT_PFJetFwd140_HLTPathAccept
+  - HLT_PFJetFwd140_HLTDenominatorPathAccept
+  - HLT_PFJetFwd320_HLTPathAccept
+  - HLT_PFJetFwd320_HLTDenominatorPathAccept
+  - HLT_PFJetFwd400_HLTPathAccept
+  - HLT_PFJetFwd400_HLTDenominatorPathAccept
+
+httriggers:
+  - HLT_PFHT370_HLTPathAccept
+  - HLT_PFHT370_HLTDenominatorPathAccept
+  - HLT_PFHT510_HLTPathAccept
+  - HLT_PFHT510_HLTDenominatorPathAccept
+  - HLT_PFHT780_HLTPathAccept
+  - HLT_PFHT780_HLTDenominatorPathAccept
+  - HLT_PFHT1050_HLTPathAccept
+  - HLT_PFHT1050_HLTDenominatorPathAccept
+
+mettriggers: # []
+  - HLT_PFMET120_PFMHT120_IDTight_HLTPathAccept
+  - HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_HLTPathAccept
+  - HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_FilterHF_HLTPathAccept
+  - HLT_IsoMu27_HLTPathAccept
