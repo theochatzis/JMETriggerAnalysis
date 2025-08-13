@@ -150,9 +150,10 @@ The core steps of the analysis process are described first here, and below you c
 
 Links to use cases:
 
-- [Making Efficiencies from MiniAOD (DPNote Style)](https://github.com/theochatzis/JMETriggerAnalysis?tab=readme-ov-file#use-case-making-efficiencies-from-miniaod-dpnote-style)
-- [Making Efficiencies from RAW](https://github.com/theochatzis/JMETriggerAnalysis?tab=readme-ov-file#use-case-making-efficiencies-from-raw)
+- [Use Case: Making DPNote Style Efficiencies](https://github.com/theochatzis/JMETriggerAnalysis?tab=readme-ov-file#use-case-making-dpnote-style-efficiencies)
 - [Performances plots (only from RAW)](https://github.com/theochatzis/JMETriggerAnalysis?tab=readme-ov-file#use-case--performances-plots-only-from-raw)
+- [Making Efficiencies from RAW (older way)](https://github.com/theochatzis/JMETriggerAnalysis?tab=readme-ov-file#use-case-making-efficiencies-from-raw-older-way)
+
 
 
 **Tree -> Histograms production**: 
@@ -172,7 +173,7 @@ jetCategoryLabels:
 runPeriods: []
 # with this provides very minimal output for efficiencies calculations only. It will contain only offline quantities in the output directories with minimal info, needed for efficiencies.
 lightVersion: true 
-# this will skip the NoSelection category. In case of MC can be set to False to provide denominators for efficiencies/unbiased selections for performances.
+# this will skip the NoSelection category. In case of MC/re-running from RAW can be set to False to provide denominators for efficiencies/unbiased selections for performances.
 useOnlyTriggers: true
 # this will use only run periods definitions for categories selection. For MC should be deactivated.
 useOnlyRunPeriods: false
@@ -204,11 +205,13 @@ To run this plugin a condor submission script is used, that will process your in
 
 Options description:
 
-- `base-dir`: Base dir. Could be on EOS or anywhere.
-- `out-eos-dir`: Output is stored in an EOS dir.
-- `jobs-dir-name`: Name of condor submissions jobs directory. This is appearing locally.
-- `driver-config`: Name of file to use for plugin configuration. See analysisDriver_configurations directory for such configs examples.
-- `data-keys`: Comma seperated list of keys of data sub-directories to be used. If none is given will just take everything inside the BASE_DIR.
+- `--base-dir`: Base dir. Could be on EOS or anywhere.
+- `--out-eos-dir`: Output is stored in an EOS dir.
+- `--jobs-dir-name`: Name of condor submissions jobs directory. This is appearing locally.
+- `--driver-config`: Name of file to use for plugin configuration. See analysisDriver_configurations directory for such configs examples.
+- `--data-keys`: Comma seperated list of keys of data sub-directories to be used. If none is given will just take everything inside the BASE_DIR.
+- `--monitor-jobs`: Flag in which the script will just run to check the condor job statuses
+- `--resubmit-jobs`: Flag in which the script will just run to check the condor job statuses and resubmit
 
 After you run this you should see many jobs submitting. You can control the number of events per job and condor max runtime etc by adjusting the options of `batch_driver` in the script.
 
@@ -246,11 +249,11 @@ In practice this is done by the `runAnalysis_hltRun3_harvester.sh` script.
 
 Options description:
 
-- `skip-harvest`: Skip the harvesting step. This step is needed only if you want to make Graphs of efficiency, response etc. If histos is all you need can skip it.
+- `--skip-harvest`: Skip the harvesting step. This step is needed only if you want to make Graphs of efficiency, response etc. If histos is all you need can skip it.
 
-- `out-dir`: This is the directory that you will use as base for your output.
+- `--out-dir`: This is the directory that you will use as base for your output.
 
-- `output-file`: This is the ouput file name 
+- `--output-file`: This is the ouput file name 
 
 
 Note: There is also `runAnalysis_hltRun3_harvester_batch.sh` which supports adding the histograms in batches. This is something that can be used in case your adding gets too slow.
@@ -261,7 +264,7 @@ Note: There is also `runAnalysis_hltRun3_harvester_batch.sh` which supports addi
 
 Then by using available plotting scripts or writing your own you can create any plot you wish :).
 
-##### Use Case: Making Efficiencies from MiniAOD (DPNote Style)
+##### Use Case: Making DPNote Style Efficiencies
 
 For this we need two steps. 
 
@@ -270,7 +273,8 @@ First making the histograms with the analysis driver:
 ./runAnalysis_hltRun3_submitter.sh /eos/user/t/tchatzis/JetTriggers_DPNote/ DPNoteSubmitter DPNoteSubmitter efficiencies_miniaod
 ```
 this will submit the jobs for histograms creation. After these are done one can plot directly the efficiencies. 
-For DPNote style can use the `plotEfficienciesDPNote.py`. This script merges the output first on its own and then can make all the trigger efficiencies for different categories of events.
+For DPNote style can use the `plotEfficienciesDPNote.py`. This script merges the output first on its own and then can make all the trigger efficiencies for different categories of events. 
+**Note:** This is in case your input was from miniAOD based NTuples. In case you run `RAW` you need to replace `efficiencies_miniaod` with `efficiencies_raw`. 
 
 ```bash
 python3 plotEfficienciesDPNote.py \
@@ -289,7 +293,7 @@ python3 plotEfficienciesDPNote.py \
   --output_dir /eos/user/t/tchatzis/DPNotePlots
 ```
 
-##### Use Case: Making Efficiencies from RAW
+##### Use Case: Making Efficiencies from RAW (older way)
 
 First making the histograms with the analysis driver:
 
@@ -297,7 +301,7 @@ First making the histograms with the analysis driver:
 ./runAnalysis_hltRun3_submitter.sh /eos/user/t/tchatzis/JetTriggers_RawNTuples/ RawEfficienciesSubmitter RawEfficienciesSubmitter efficiencies_raw
 ```
 
-then add the histograms (if you want can skip the harvesting step with `--skip-harvest` to be faster...):
+After the submitter step you add the histograms (if you want can skip the harvesting step with `--skip-harvest` to be faster...):
 
 ```bash
 ./runAnalysis_hltRun3_harvester.sh --out-dir OutputSubmitter --output-file merged_ouput --skip-harvest

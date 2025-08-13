@@ -10,8 +10,12 @@ source env.sh
 #          
 # Default values
 BASE_DIR=/eos/user/t/tchatzis/JetTriggers_DPNote/
-OUT_EOS_DIR=DPNoteSubmitter
-JOBS_DIR_NAME=DPNoteSubmitter
+OUT_EOS_DIR=DPNoteSubmitterV3
+JOBS_DIR_NAME=DPNoteSubmitterV3
+
+# Flags for condor jobs
+monitor_jobs=0
+resubmit_jobs=0
 
 # Define dataKeys manually here if you want
 dataKeys=(
@@ -42,9 +46,17 @@ while [[ $# -gt 0 ]]; do
             IFS=',' read -r -a dataKeys <<< "$2"
             shift 2
             ;;
+        --monitor-jobs) # Flag in which the script will just run to check the condor job statuses
+            monitor_jobs=1
+            shift
+            ;;    
+        --resubmit-jobs) # Flag in which the script will just run to check the condor job statuses and resubmit
+            resubmit_jobs=1
+            shift
+            ;;    
         *)
             echo "Unknown option: $1"
-            echo "Usage: $0 [--base-dir DIR] [--out-eos-dir DIR] [--jobs-dir-name NAME] [--driver-config PLUGIN_CONFIGURATION_YAML_FILE] [--data-keys key1,key2,...]"
+            echo "Usage: $0 [--base-dir DIR] [--out-eos-dir DIR] [--jobs-dir-name NAME] [--driver-config PLUGIN_CONFIGURATION_YAML_FILE] [--data-keys key1,key2,...] [--monitor-jobs] [--resubmit-jobs]"
             exit 1
             ;;
     esac
@@ -76,15 +88,27 @@ for dataKey in "${dataKeys[@]}"; do
   OUTPUTDIR=/eos/user/${FIRST_USER_LETTER}/${USER}/${OUT_EOS_DIR}/${dataKey}/
 
   mkdir -p ${OUTDIR}
-  [ -d ${OUTDIR}/ntuples ] || (ln -sf ${INPDIR} ${OUTDIR}/ntuples)
-  batch_driver.py -l 1 -n 10000000 -p JMETriggerAnalysisDriverRun3 -cfg ${DRIVER_CONFIG} \
-   -i ${INPDIR}/*.root -o ${OUTDIR}/jobs \
-   -od ${OUTPUTDIR} \
-   --JobFlavour microcentury
-  
-  mkdir -p ${OUTPUTDIR}
 
-  batch_monitor.py -i ${OUTDIR}/jobs -r #--repe -f 1200
+  if [ "$monitor_jobs" -eq 1 ]; then
+      if [ "$resubmit_jobs" -eq 0 ]; then
+        # Just monitor existing jobs
+        batch_monitor.py -i "${OUTDIR}/jobs"
+      else
+        # Just monitor and resubmit existing jobs
+        batch_monitor.py -i "${OUTDIR}/jobs" -r
+      fi
+  else
+    # Jobs creation
+    [ -d ${OUTDIR}/ntuples ] || (ln -sf ${INPDIR} ${OUTDIR}/ntuples)
+    batch_driver.py -l 1 -n 10000000000000000000 -p JMETriggerAnalysisDriverRun3 -cfg ${DRIVER_CONFIG} \
+    -i ${INPDIR}/*.root -o ${OUTDIR}/jobs \
+    -od ${OUTPUTDIR} \
+    --JobFlavour microcentury
+    
+    mkdir -p ${OUTPUTDIR}
+    # Jobs submission
+    batch_monitor.py -i ${OUTDIR}/jobs -r #--repe -f 1200
+  fi
 done
 
 unset recoKey recoKey
