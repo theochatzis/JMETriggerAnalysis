@@ -47,6 +47,10 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
             print(f"Warning: histograms '{hist_num_key}' or '{hist_den_key}' not found in {file_name}")
             continue
         
+        if hist_num_root.GetEntries() < 100:
+            print(f"Warning: Numerator '{hist_num_key}' has less than 100 entries... Skipping this pair...")
+            continue
+        
         # Optional rebinning
         if rebin is not None:
             if isinstance(rebin, int):
@@ -385,7 +389,7 @@ def merging_exec(input_dir, merged_file, chunk_size):
         exit(1)
     # Create a root file from combining all ROOT files into one with chunky merging...
     n_cores = os.cpu_count() or 1
-    n_workers = 14 # max(1, n_cores // 2)
+    n_workers = max(1, n_cores // 2)
     chunky_merging(all_root_files, merged_file, chunk_size=chunk_size, n_workers=n_workers)
 
 if __name__ == "__main__":
