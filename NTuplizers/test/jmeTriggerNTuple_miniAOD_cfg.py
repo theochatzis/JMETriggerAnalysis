@@ -510,7 +510,8 @@ if not opts.isMuonData:
       # the triggers go as : ["Numerator_name","Denominator_name"]
       # Single jet
       ['HLT_PFJet60','HLT_PFJet40'],
-      ['HLT_PFJet140','HLT_PFJet80'],
+      ['HLT_PFJet80','HLT_PFJet60'],
+      ['HLT_PFJet140','HLT_PFJet110'],
       ['HLT_PFJet320','HLT_PFJet260'],
       ['HLT_PFJet500','HLT_PFJet400'],
       # Forward
@@ -519,7 +520,6 @@ if not opts.isMuonData:
       ['HLT_PFJetFwd320','HLT_PFJetFwd260'],
       ['HLT_PFJetFwd400','HLT_PFJetFwd320'],
       # HT
-      ['HLT_PFHT370','HLT_PFHT180'],
       ['HLT_PFHT510', 'HLT_PFHT430'],
       ['HLT_PFHT780','HLT_PFHT510'],
       ['HLT_PFHT1050','HLT_PFHT780'],
@@ -531,7 +531,7 @@ if not opts.isMuonData:
         _triggerFlagsModName = 'triggerFlags'+_hltPathUnv[0].replace('_','')
 
         # In case you use useEmulationFromDenominator = True, instead of the triggerBit decision you get the emulated decision, which is found as follows:
-        # 1) You take the HLT object from a reference trigger (denominator) which is the previous threshold
+        # 1) You take the HLT object from a reference trigger (denominator) which is a lower previous threshold
         # 2) You require the L1 seed to be accepted --> Emulated efficiency is "HLT Efficiency" not "L1+HLT Efficiency"
         # 3) As trigger decision you define Object_pt > trigger threshold
         # in case of emulation method the denominator decision also gets the L1 to be accepted always.
@@ -564,10 +564,10 @@ else:
       # muon
       ['HLT_IsoMu27','HLT_IsoMu27'],
       # Lowest unprescaled Single Jet
-      ['HLT_PFJet500','HLT_IsoMu27'],
+      #['HLT_PFJet500','HLT_IsoMu27'],
       # HT
       # Lowest unprescaled HT
-      ['HLT_PFHT1050','HLT_IsoMu27'],
+      #['HLT_PFHT1050','HLT_IsoMu27'],
       # MET MHT
       ['HLT_PFMET120_PFMHT120_IDTight','HLT_IsoMu27'],
       ['HLT_PFMET130_PFMHT130_IDTight','HLT_IsoMu27'],

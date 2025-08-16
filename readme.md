@@ -119,7 +119,7 @@ cmsRun jmeTriggerNTuple2023Data_miniAOD_cfg.py maxEvents=10 output=out_HLT_Run3T
 
 ```
 
-This script by default applies some selection criteria on using a muon skim i.e. requiring `HLT_IsoMu27` and some offline selection quality criteria. Thus it is recommended to run on a Muon dataset as is. The skim cut a lot the size of the output file.
+This script by default applies some selection criteria on using a muon skim i.e. requiring `HLT_IsoMu24` and some offline selection quality criteria. Thus it is recommended to run on a Muon dataset as is. The skim cut a lot the size of the output file.
 
 But can be modified for more general purposes and also include JetMET dataset.
 
