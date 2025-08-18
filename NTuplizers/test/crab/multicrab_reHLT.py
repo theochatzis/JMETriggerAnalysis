@@ -25,8 +25,33 @@ def getOutputName(input_dataset):
 job_name='compareCaloJets' 
 
 # Make sure you use both MINIAOD and RAW in case you want to have the offline inputs as well.
-primary_dataset='/Muon0/Run2024G-PromptReco-v1/MINIAOD'
-secondary_dataset='/Muon0/Run2024G-v1/RAW'
+
+primary_dataset_list = [
+    "/GJ-4Jets_Bin-HT-40to200-PTG-100to200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Reco-142X_mcRun3_2025_realistic_v9-v2/AODSIM",
+    "/GJ-4Jets_Bin-HT-200to400-PTG-100to200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Reco-142X_mcRun3_2025_realistic_v9-v2/AODSIM",
+    "/GJ-4Jets_Bin-HT-400to600-PTG-100to200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Reco-142X_mcRun3_2025_realistic_v9-v2/AODSIM",
+    "/GJ-4Jets_Bin-HT-600to1000-PTG-100to200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Reco-142X_mcRun3_2025_realistic_v9-v2/AODSIM",
+    "/GJ-4Jets_Bin-HT-1000-PTG-100to200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Reco-142X_mcRun3_2025_realistic_v9-v2/AODSIM",
+    "/GJ-4Jets_Bin-HT-40to400-PTG-200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Reco-142X_mcRun3_2025_realistic_v9-v2/AODSIM",
+    "/GJ-4Jets_Bin-HT-400to600-PTG-200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Reco-142X_mcRun3_2025_realistic_v9-v2/AODSIM",
+    "/GJ-4Jets_Bin-HT-600to1000-PTG-200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Reco-142X_mcRun3_2025_realistic_v9-v2/AODSIM",
+    "/GJ-4Jets_Bin-HT-1000-PTG-200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Reco-142X_mcRun3_2025_realistic_v9-v2/AODSIM",
+]
+
+secondary_dataset_list = [
+    "/GJ-4Jets_Bin-HT-40to200-PTG-100to200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Digi-142X_mcRun3_2025_realistic_v9-v2/GEN-SIM-RAW",
+    "/GJ-4Jets_Bin-HT-200to400-PTG-100to200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Digi-142X_mcRun3_2025_realistic_v9-v2/GEN-SIM-RAW",
+    "/GJ-4Jets_Bin-HT-400to600-PTG-100to200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Digi-142X_mcRun3_2025_realistic_v9-v2/GEN-SIM-RAW",
+    "/GJ-4Jets_Bin-HT-600to1000-PTG-100to200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Digi-142X_mcRun3_2025_realistic_v9-v2/GEN-SIM-RAW",
+    "/GJ-4Jets_Bin-HT-1000-PTG-100to200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Digi-142X_mcRun3_2025_realistic_v9-v2/GEN-SIM-RAW",
+    "/GJ-4Jets_Bin-HT-40to400-PTG-200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Digi-142X_mcRun3_2025_realistic_v9-v2/GEN-SIM-RAW",
+    "/GJ-4Jets_Bin-HT-400to600-PTG-200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Digi-142X_mcRun3_2025_realistic_v9-v2/GEN-SIM-RAW",
+    "/GJ-4Jets_Bin-HT-600to1000-PTG-200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Digi-142X_mcRun3_2025_realistic_v9-v2/GEN-SIM-RAW",
+    "/GJ-4Jets_Bin-HT-1000-PTG-200_Par-dRGJ-0p25_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter25Digi-142X_mcRun3_2025_realistic_v9-v2/GEN-SIM-RAW",
+]
+
+# primary_dataset='/Muon0/Run2024G-PromptReco-v1/MINIAOD'
+# secondary_dataset='/Muon0/Run2024G-v1/RAW'
 
 # Options for reco argument
 recoOptions=[
@@ -82,25 +107,27 @@ def submit(config):
     crabCommand('submit', config = config)
 
 ## loop over bpix cases and samples 
-for reco in recoOptions:
-    config.JobType.pyCfgParams = ['reco='+reco]
-    
-    output_requestName = job_name+'_'+getOutputName(primary_dataset.split('/')[2])+reco
-    config.General.requestName = output_requestName
-    config.Data.outLFNDirBase = '/store/user/%s/%s/%s'%(getUsername(),job_name,output_requestName)
-    config.Data.inputDataset = primary_dataset
-    config.Data.secondaryInputDataset = secondary_dataset
-    ## adding needed input files for calibrations and corresponding command arguments per job
-    config.JobType.inputFiles = []
-    if reco in recoOptionsPFHCs.keys():
-        config.JobType.inputFiles.append(input_file_dir + recoOptionsPFHCs[reco])
-        config.JobType.pyCfgParams.append('pfhcDBfile='+recoOptionsPFHCs[reco])
-    if reco in recoOptionsJECs.keys() :
-        config.JobType.inputFiles.append(input_file_dir + recoOptionsJECs[reco])
-        config.JobType.pyCfgParams.append('jecDBfile='+recoOptionsJECs[reco])
-    
-    # needed to be able to use pyCfgParams 
-    p = Process(target=submit, args=(config,))
-    p.start()
-    p.join()
+for primary_dataset,secondary_dataset in zip(primary_dataset_list, secondary_dataset_list):
+    for reco in recoOptions:
+        config.JobType.pyCfgParams = ['reco='+reco]
+        #output_requestName = job_name+'_'+getOutputName(primary_dataset.split('/')[2])+reco
+        output_requestName = job_name+'_'+primary_dataset+'_'+reco
+        config.General.requestName = output_requestName
+        config.Data.outLFNDirBase = '/store/user/%s/%s/%s'%(getUsername(),job_name,output_requestName)
+        config.Data.inputDataset = primary_dataset
+        config.Data.secondaryInputDataset = secondary_dataset
+        ## adding needed input files for calibrations and corresponding command arguments per job
+        config.JobType.inputFiles = []
+        if reco in recoOptionsPFHCs.keys():
+            config.JobType.inputFiles.append(input_file_dir + recoOptionsPFHCs[reco])
+            config.JobType.pyCfgParams.append('pfhcDBfile='+recoOptionsPFHCs[reco])
+        if reco in recoOptionsJECs.keys() :
+            config.JobType.inputFiles.append(input_file_dir + recoOptionsJECs[reco])
+            config.JobType.pyCfgParams.append('jecDBfile='+recoOptionsJECs[reco])
+        print(reco)
+        print(f"{primary_dataset} \n {secondary_dataset}")
+        # needed to be able to use pyCfgParams 
+        #p = Process(target=submit, args=(config,))
+        #p.start()
+        #p.join()
 
