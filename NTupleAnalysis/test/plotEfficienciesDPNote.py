@@ -21,20 +21,21 @@ hep.style.use("CMS")
 #              | |                                                           
 #              |_|                                                           
 
-def FixHist(passed, total):
-        """Functions that ennsures passed <= total for all bins..."""
-        nbins = passed.GetNbinsX()
-        for i in range(1, nbins + 1):
-            p = passed.GetBinContent(i)
-            t = total.GetBinContent(i)
-            if p > t:
-                print(f"[FixHist] Bin {i}: passed={p} > total={t}, setting passed=total")
-                passed.SetBinContent(i, t)
-            # Optional: fix negative totals
-            if t < 0:
-                print(f"[FixHist] Bin {i}: total={t} < 0, setting total=0 and passed=0")
-                total.SetBinContent(i, 0)
-                passed.SetBinContent(i, 0)
+
+# def FixHist(passed, total):
+#         """Functions that ennsures passed <= total for all bins..."""
+#         nbins = passed.GetNbinsX()
+#         for i in range(1, nbins + 1):
+#             p = passed.GetBinContent(i)
+#             t = total.GetBinContent(i)
+#             if p > t:
+#                 print(f"[FixHist] Bin {i}: passed={p} > total={t}, setting passed=total")
+#                 passed.SetBinContent(i, t)
+#             # Optional: fix negative totals
+#             if t < 0:
+#                 print(f"[FixHist] Bin {i}: total={t} < 0, setting total=0 and passed=0")
+#                 total.SetBinContent(i, 0)
+#                 passed.SetBinContent(i, 0)
 
 def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_efficiency.png", 
                          x_range=None, rebin=None, trigger_name=None):
@@ -81,8 +82,8 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
             else:
                 raise ValueError("`rebin` must be None, int, or a sequence of bin edges.")
         
-        # Fix inconsistencies (if any)
-        FixHist(hist_num_root, hist_den_root)
+        # Fix inconsistencies (if any) - this was used to fix entries where numerator is bigger than denominator.
+        #FixHist(hist_num_root, hist_den_root)
 
         # Create the TEfficiency object
         eff = ROOT.TEfficiency(hist_num_root, hist_den_root)
@@ -115,11 +116,9 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
             else:
                 threshold = float(trigger_name.split('PFJet')[1])
                 x_axis_quantity = "Leading Offline Jet $p_T$ (GeV)"
-            y_axis_quantity = "HLT Efficiency"
         elif 'PFHT' in trigger_name:
             threshold = float(trigger_name.split('PFHT')[1])
             x_axis_quantity = "Offline $H_T$ (GeV)"
-            y_axis_quantity = "HLT Efficiency"
         elif 'PFMET' in trigger_name:
             threshold = 120.0
             x_axis_quantity = "Offline $p^{miss}_T$ (GeV)"
@@ -127,6 +126,9 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
         elif 'PFMETNoMu' in trigger_name:
             threshold = 120.0
             x_axis_quantity = "Offline $p^{miss}_{T,no-\mu}$ (GeV)"
+            
+        y_axis_quantity = "HLT Efficiency"
+        if 'IsoMu' in hist_label_pairs[0][1]:
             y_axis_quantity = "L1T+HLT Efficiency"
 
     if threshold != "":
@@ -144,7 +146,13 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
     #      fontsize=12)  # Adjust fontsize if needed
 
     # Add plot labels and CMS styling....
-    hep.cms.label("Preliminary", data=True, com=13.6, lumi=0.0)
+    hep.cms.label("Preliminary",
+                   data=True,
+                   com=13.6,
+                   lumi=0.0, # set to zero as a placeholder, can be also string with LaTex...
+                   loc=0
+                   )
+    
     plt.xlabel(x_axis_quantity)
     plt.ylabel(y_axis_quantity)
     plt.ylim(0, 1.2)
@@ -190,38 +198,41 @@ def root_files_hunter(base_dir):
 def add_histograms(in_dir, out_dir):
     """
     Recursively add histograms and other ROOT objects from in_dir into out_dir.
-    Handles directories, histograms (TH1), and other objects.
+    how it works:
+      - TH1 objects are cloned & detached from input files
+      - If histogram exists in output -> then you add
+      - If not -> then you clone and register once
+      - Only write at the very end (out_file.Write())
     """
     for key in in_dir.GetListOfKeys():
         obj_name = key.GetName()
         obj = key.ReadObj()
 
         if obj.InheritsFrom("TDirectory"):
-            # Create subdirectory in output if it doesn't exist
+            # Handle subdirectories
             out_subdir = out_dir.GetDirectory(obj_name)
             if not out_subdir:
-                out_dir.mkdir(obj_name)
-                out_subdir = out_dir.GetDirectory(obj_name)
-            # Recurse into subdirectory
+                out_subdir = out_dir.mkdir(obj_name)
             add_histograms(obj, out_subdir)
 
         elif obj.InheritsFrom("TH1"):
             out_hist = out_dir.Get(obj_name)
             if out_hist:
+                # Add directly
                 out_hist.Add(obj)
             else:
-                out_dir.cd()
-                obj_clone = obj.Clone()
-                obj_clone.SetDirectory(out_dir)
-                obj_clone.Write()
+                # First time -> clone and detach
+                obj_clone = obj.Clone(obj_name)
+                obj_clone.SetDirectory(0)  # detach from input file
+                out_dir.Append(obj_clone)  # register in output
 
         else:
-            # For other objects, just write if not already present
+            # For other objects, only copy if not already present
             if not out_dir.Get(obj_name):
-                out_dir.cd()
-                obj_clone = obj.Clone()
-                obj_clone.SetDirectory(out_dir)
-                obj_clone.Write()
+                obj_clone = obj.Clone(obj_name)
+                obj_clone.SetDirectory(0)
+                out_dir.Append(obj_clone)
+
 
 
 def process_chunk(args):
