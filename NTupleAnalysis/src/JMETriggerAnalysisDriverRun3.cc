@@ -658,10 +658,13 @@ bool JMETriggerAnalysisDriverRun3::runPeriod(std::string const& key) const {
   else if ( key == "2024_HCALRespCorrs3" ) return ( runNumber_ > 386401 and runNumber_ < 387121 ); // This was again for HF to fix the over-correction in Era I (up to end or era I)
   else if ( key == "2024_beforeFPix" ) return (runNumber_ > 383219 and runNumber_ < 382798 ); // after last HCAL resp corrs update before FPix
   else if ( key == "2024_FPix" ) return (runNumber_ > 382798 and runNumber_ < 383219 ); // in FPix period
+  // --- for 2025
   else if ( key == "2024I" ) return ( runNumber_ >  386409 and runNumber_ < 387121); // used as reference in 2025
+  else if ( key == "2025C" ) return ( runNumber_ > 392159	and runNumber_ < 393609); 
+  else if ( key == "2025D" ) return ( runNumber_ > 394286 );
   else if ( key == "2025CV1" ) return ( runNumber_ > 392159	and runNumber_ < 393108); 
-  else if ( key == "2025CV2" ) return ( runNumber_ > 393111	and runNumber_ < 393609 ); // In CV2 reate a drop in responses in HF 
-  else if ( key == "2025D_beforeIBCoff" ) return ( runNumber_ > 394286 and runNumber_ < 394790); // big MET rate drop, small rate drop in Fwd  
+  else if ( key == "2025CV2" ) return ( runNumber_ > 393111	and runNumber_ < 393609 ); // In CV2 create a drop in responses in HF 
+  else if ( key == "2025D_beforeIBCoff" ) return ( runNumber_ > 394286 and runNumber_ < 394790); // big MET rate drop, small rate drop in Fwd  // Prompt JECs update start of Era D: 394431
   else if ( key == "2025D_afterIBCoff") return ( runNumber_ > 394790 ); 
   else
     throw std::runtime_error("JMETriggerAnalysisDriverRun3::runPeriod(\""+key+"\") -- invalid key");
