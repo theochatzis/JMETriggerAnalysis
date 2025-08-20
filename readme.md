@@ -387,4 +387,23 @@ We store the menus in `Common/python/configs` directory and use shell scripts to
 ```
 and get the menu produced.
 
+### Luminosity calculation with `brilcalc` tool
+First source for the tool to work:
+```
+source /cvmfs/cms-bril.cern.ch/cms-lumi-pog/brilws-docker/brilws-env
+```
+
+then examples:
+```bash
+# run for a given json file
+brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /fb -i /eos/user/c/cmsdqm/www/CAF/certification/Collisions22/Cert_Collisions2022_355100_362760_Golden.json
+
+# run for a given json file and trigger paths
+brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /fb -i /eos/user/c/cmsdqm/www/CAF/certification/Collisions22/Cert_Collisions2022_355100_362760_Golden.json --hltpath "HLT_IsoMu27_v*"
+
+# run for a given json file and run range
+brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /fb -i /eos/user/c/cmsdqm/www/CAF/certification/Collisions22/Cert_Collisions2022_355100_362760_Golden.json --begin 355100 --end 360000
+
+```
+
 
