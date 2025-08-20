@@ -14,6 +14,8 @@ jetCategoryLabels:
 # determines which from the available run periods to be used. These are defined in JMETriggerAnalysisDriverRun3::runPeriod(...) function in NTupleAnalysis/src/JMETriggerAnalysisDriverRun3.cc
 runPeriods:
   - 2024I
+  - 2025C
+  - 2025D
   - 2025CV1
   - 2025CV2
   - 2025D_beforeIBCoff
