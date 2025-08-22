@@ -39,13 +39,13 @@ cmsrel CMSSW_15_0_11
 cd CMSSW_15_0_11/src
 cmsenv
 git cms-init
-## --- You can find bellow useful additions to standard CMSSW for relevant studies ---
-# Needed: Merge updates from tracking for 2025 - CA automation for patatrack params + mkFit for track building
-git cms-merge-topic elusian:1501_newCAtuning 
 
-## -----------------------------------------------------------------------------------
-
+# Clone this repository
 git clone git@github.com:theochatzis/JMETriggerAnalysis.git
+
+
+## --- You can find bellow useful additions to standard CMSSW for relevant studies ---
+## -----------------------------------------------------------------------------------
 
 ## Additional studies
 ## Only use those in case you want to perform such a study. 
