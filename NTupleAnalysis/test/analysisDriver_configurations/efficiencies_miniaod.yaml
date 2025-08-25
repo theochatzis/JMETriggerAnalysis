@@ -56,8 +56,6 @@ jettriggers:
   - HLT_PFJetFwd400_HLTDenominatorPathAccept
 
 httriggers:
-  - HLT_PFHT370_HLTPathAccept
-  - HLT_PFHT370_HLTDenominatorPathAccept
   - HLT_PFHT510_HLTPathAccept
   - HLT_PFHT510_HLTDenominatorPathAccept
   - HLT_PFHT780_HLTPathAccept
