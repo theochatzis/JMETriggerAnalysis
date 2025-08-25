@@ -1,0 +1,95 @@
+triggers_list:
+  - HLT_PFJet60
+  - HLT_PFJet140
+  - HLT_PFJet320
+  - HLT_PFJet500
+  - HLT_PFJetFwd60
+  - HLT_PFJetFwd140
+  - HLT_PFJetFwd320
+  - HLT_PFJetFwd400
+  - HLT_PFHT510
+  - HLT_PFHT780
+  - HLT_PFHT1050
+  - HLT_PFMET120_PFMHT120_IDTight
+  - HLT_PFMETNoMu120_PFMHTNoMu120_IDTight
+
+comparisonPeriods:
+  eras_comparison:
+    2024I: "2024I"
+    2025C: "2025C"
+    2025D: "2025D"
+  2025C_v1vsv2:
+    2025CV1: "2025Cv1"
+    2025CV2: "2025Cv2"
+    2025C: "2025C"
+  eraD_IBCoff:
+    2025D_beforeIBCoff: "2025D w/o IBC off"
+    2025D_afterIBCoff: "2025D w/ IBC off"
+    2025D: "2025D"
+
+# years_comparison:
+#   2022: "2022"
+#   2023: "2023"
+#   2024: "2024"
+# 2023_hcal_conditions:
+#   2023_eraC_beforeHCALOffline: "2023 (before HCAL)"
+#   2023_eraC_afterHCALOffline: "2023 (after HCAL)"
+# 2023_bpix:
+#   2023_eraC_afterHCALOffline: "2023 (before BPix)"
+#   2023_eraD: "2023 (after BPix)"
+# 2024_jecs_change:
+#   2024_beforeHLTJECs: "before HLT JECs"
+#   2024_HLTJECs: "after HLT JECs"
+# 2024_hcal_conditions:
+#   2024_HCALRespCorrs1: "HCAL RespCorrs v1"
+#   2024_HCALRespCorrs2: "HCAL RespCorrs v2"
+#   2024_HCALRespCorrs3: "HCAL RespCorrs v3"
+# 2024_fpix:
+#   2024_beforeFPix: "2024 (before FPix)"
+#   2024_FPix: "2024 (after FPix)"
+
+regions_labels:
+  HB: "$|\\eta|<1.3$"
+  HE1: "$1.3<|\\eta|<2.5$"
+  HE2: "$2.5<|\\eta|<3.0$"
+  HF: "$|\\eta|>3.0$"
+  BPix: "BPix region"
+  BPixVeto: "Barrel (BPix Veto)"
+  FPix: "FPix region"
+  FPixVeto: "Endcap (FPix Veto)"
+
+x_range_dict: # Shows the range of the plots on x-axis
+  HLT_PFMET120_PFMHT120_IDTight: [0., 500.]
+  HLT_PFMETNoMu120_PFMHTNoMu120_IDTight: [0., 500.]
+  HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_FilterHF: [0., 500.]
+  HLT_PFHT510: [430.0, 700.0]
+  HLT_PFHT780: [510., 1200.0]
+  HLT_PFHT1050: [780.0, 1500.0]
+  HLT_PFJet60: [40, 200.]
+  HLT_PFJet140: [80, 300.]
+  HLT_PFJet320: [260, 500.]
+  HLT_PFJet500: [400. , 1000.]
+  HLT_PFJetFwd60: [40, 200.]
+  HLT_PFJetFwd140: [80, 300.]
+  HLT_PFJetFwd320: [260, 500.]
+  HLT_PFJetFwd400: [320, 600.]
+
+rebin_dict: # Rebin if its provided as an integer, or variable bin width binning as a list
+  HLT_PFMET120_PFMHT120_IDTight: 1
+  HLT_PFMETNoMu120_PFMHTNoMu120_IDTight: 1
+  HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_FilterHF: 1
+  HLT_PFHT510: 1
+  HLT_PFHT780: 1
+  HLT_PFHT1050: 2
+  HLT_PFJet60: 1
+  HLT_PFJet140: 2
+  HLT_PFJet320: 2
+  HLT_PFJet500: 5
+  HLT_PFJetFwd60: 1
+  HLT_PFJetFwd140: 2
+  HLT_PFJetFwd320: 2
+  HLT_PFJetFwd400: 4
+
+
+
+
