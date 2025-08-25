@@ -49,6 +49,11 @@ opts.register('reco', 'default',
               vpo.VarParsing.varType.string,
               'keyword to define HLT reconstruction')
 
+opts.register('sampletype', 'data',
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.string,
+                'keyword either "mc" or "data" to define whether working on data or MC. Default is "data".')
+
 opts.register('output', 'out.root',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
@@ -88,10 +93,21 @@ opts.parseArguments()
 ###
 ### HLT configuration
 ###
-from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_15_0_0_GRun_configDump_data import cms, process
+##from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_15_0_0_GRun_configDump_data import cms, process
+
+if opts.sampletype == 'data':
+    from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_15_0_0_GRun_configDump_data import cms, process
+elif opts.sampletype == 'mc':
+    from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_15_0_0_GRun_configDump_mc import cms, process
+else:
+    raise RuntimeError('keyword "sampletype = '+opts.sampletype'" not recognised or not given.')
+
 
 if opts.reco == 'default':
-  process.GlobalTag.globaltag = cms.string('150X_dataRun3_HLT_v1')
+    if opts.sampletype =='data':
+        process.GlobalTag.globaltag = cms.string('150X_dataRun3_HLT_v1') # DATA (DEFAULT) GLOBAL TAG used for HCAL resp. corr. investigations (August '25)
+    elif opts.sampletype =='mc':
+        process.GlobalTag.globaltag = cms.string('142X_mcRun3_2025_realistic_v7') # MONTE CARLO GLOBAL TAG
 elif opts.reco == 'hcal_hbhe':
   process.GlobalTag.globaltag = cms.string('150X_dataRun3_HLT_HCAL_HBHE_Target_w30_v1')
 elif opts.reco == 'hcal_alcaraw':
@@ -460,7 +476,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     #hltPFCHSMET = cms.InputTag('hltPFCHSMET'),
     #hltPFCHSMETTypeOne = cms.InputTag('hltPFCHSMETTypeOne'),
 
-    #hltPFPuppiMET = cms.InputTag('hltPFPuppiMET'),
+    #hltPFPuppiMET = cms.InputTag('hltPFPuppiMET'),                 #is this the one we need for MPF: I need RawPuppiMET
     #hltPFPuppiMETTypeOne = cms.InputTag('hltPFPuppiMETTypeOne'),
   ),
 
@@ -524,7 +540,8 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
-    'root://cms-xrd-global.cern.ch//store/data/Run2025C/EGamma0/RAW-RECO/IsoPhotonEB-PromptReco-v1/000/392/175/00000/404a96ad-5571-40d3-a9e0-118a23dc75d0.root'
+    #'root://cms-xrd-global.cern.ch//store/data/Run2025C/EGamma0/RAW-RECO/IsoPhotonEB-PromptReco-v1/000/392/175/00000/404a96ad-5571-40d3-a9e0-118a23dc75d0.root'
+    '/store/data/Run2025C/EGamma0/RAW-RECO/IsoPhotonEB-PromptReco-v1/000/392/175/00000/0a6dde4c-e1da-429d-9793-c6bb6e9a7f5a.root'
   ]
 
 # input EDM files [secondary]
