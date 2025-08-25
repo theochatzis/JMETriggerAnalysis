@@ -656,7 +656,7 @@ bool JMETriggerAnalysisDriverRun3::runPeriod(std::string const& key) const {
   else if ( key == "2024_HCALRespCorrs1") return ( runNumber_ > 380637 and runNumber_ < 383219 ); // HF resp corrs update
   else if ( key == "2024_HCALRespCorrs2" ) return ( runNumber_ > 383219 and runNumber_ < 386401 ); // Generic HCAL resp corrs
   else if ( key == "2024_HCALRespCorrs3" ) return ( runNumber_ > 386401 and runNumber_ < 387121 ); // This was again for HF to fix the over-correction in Era I (up to end or era I)
-  else if ( key == "2024_beforeFPix" ) return (runNumber_ > 383219 and runNumber_ < 382798 ); // after last HCAL resp corrs update before FPix
+  else if ( key == "2024_beforeFPix" ) return (runNumber_ > 380637 and runNumber_ < 382798 ); // after last HCAL resp corrs update before FPix
   else if ( key == "2024_FPix" ) return (runNumber_ > 382798 and runNumber_ < 383219 ); // in FPix period
   // --- for 2025
   else if ( key == "2024I" ) return ( runNumber_ >  386409 and runNumber_ < 387121); // used as reference in 2025
