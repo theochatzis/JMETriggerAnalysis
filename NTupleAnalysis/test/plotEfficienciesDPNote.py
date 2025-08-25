@@ -9,6 +9,7 @@ import argparse
 from tqdm import tqdm
 import math
 from multiprocessing import Pool
+import re 
 
 hep.style.use("CMS")
 
@@ -21,6 +22,24 @@ hep.style.use("CMS")
 #              | |                                                           
 #              |_|                                                           
 
+
+def trigger_pattern(trigger):
+    """
+    Find the trigger type and main threshold (first number).
+    
+    Inputs:
+    - trigger: The name of the trigger as a string, e.g. 'HLT_PFJet60'
+    
+    Returns a dictionary with the type of trigger, and the threshold { "type": str, "threshold": int }
+    """
+    trigger_types = ["PFJetFwd", "PFJet", "PFHT", "PFMETNoMu", "PFMET"]
+    
+    for type_ in trigger_types:
+        match = re.search(rf"{type_}(\d+)", trigger)
+        if match:
+            return {"type": type_, "threshold": int(match.group(1))}
+    
+    return {"type": None, "threshold": None}
 
 # def FixHist(passed, total):
 #         """Functions that ennsures passed <= total for all bins..."""
@@ -38,7 +57,7 @@ hep.style.use("CMS")
 #                 passed.SetBinContent(i, 0)
 
 def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_efficiency.png", 
-                         x_range=None, rebin=None, trigger_name=None):
+                         x_range=None, rebin=None, trigger_name=None, lumi=0):
     """
     Plots multiple efficiencies using TEfficiency from pairs of TH1D histograms with custom labels and saves the plot as a .png file.
     
@@ -92,49 +111,63 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
         x_edges = [hist_num_root.GetBinLowEdge(i+1) for i in range(hist_num_root.GetNbinsX())]
         x_edges.append(hist_num_root.GetBinLowEdge(hist_num_root.GetNbinsX()) + hist_num_root.GetBinWidth(hist_num_root.GetNbinsX()))
         x_mid = 0.5 * (np.array(x_edges[:-1]) + np.array(x_edges[1:]))
-        
+        x_err_low = np.array(x_mid) - np.array(x_edges[:-1]) 
+        x_err_high = np.array(x_edges[1:]) - np.array(x_mid)
+
         # Retrieve efficiency values and errors
         eff_values = [eff.GetEfficiency(i + 1) for i in range(hist_num_root.GetNbinsX())]
         eff_errors_low = [eff.GetEfficiencyErrorLow(i + 1) for i in range(hist_num_root.GetNbinsX())]
         eff_errors_up = [eff.GetEfficiencyErrorUp(i + 1) for i in range(hist_num_root.GetNbinsX())]
         
         # Plot efficiency with error bars and custom label
-        plt.errorbar(x_mid, eff_values, yerr=[eff_errors_low, eff_errors_up], fmt='o', label=label_name)
+        plt.errorbar(x_mid, eff_values, xerr=[x_err_low, x_err_high], yerr=[eff_errors_low, eff_errors_up], fmt='o', label=label_name)
     
-    # Set the x-axis range if provided
+    # Set the x-axis range if provided else will automatically find the range to have data...
+    xmin = 0.
+    xmax = 1.
     if x_range is not None:
-        plt.xlim(x_range)
+        xmin = x_range[0]
+        xmax = x_range[1]
+        #plt.xlim(x_range)
+    else:
+        # Auto-range from histogram content
+        first_bin = None
+        last_bin = None
+        for i in range(1, hist_den_root.GetNbinsX() + 1):
+            if hist_den_root.GetBinContent(i) > 0:
+                if first_bin is None:
+                    first_bin = i
+                last_bin = i
+        if first_bin is not None and last_bin is not None:
+            xmin = hist_den_root.GetBinLowEdge(first_bin)
+            xmax = hist_den_root.GetBinLowEdge(last_bin) + hist_den_root.GetBinWidth(last_bin)
+    plt.xlim(xmin, xmax)
 
     threshold = ""
     x_axis_quantity = ""
     y_axis_quantity = ""
-    if trigger_name:
-        if 'PFJet' in trigger_name:
-            if 'Fwd' in trigger_name:
-                threshold = float(trigger_name.split('PFJetFwd')[1])
-                x_axis_quantity = "Leading Forward Offline Jet $p_T$ (GeV)"
-            else:
-                threshold = float(trigger_name.split('PFJet')[1])
-                x_axis_quantity = "Leading Offline Jet $p_T$ (GeV)"
-        elif 'PFHT' in trigger_name:
-            threshold = float(trigger_name.split('PFHT')[1])
-            x_axis_quantity = "Offline $H_T$ (GeV)"
-        elif 'PFMET' in trigger_name:
-            threshold = 120.0
-            x_axis_quantity = "Offline $p^{miss}_T$ (GeV)"
-            y_axis_quantity = "L1T+HLT Efficiency"
-        elif 'PFMETNoMu' in trigger_name:
-            threshold = 120.0
-            x_axis_quantity = "Offline $p^{miss}_{T,no-\mu}$ (GeV)"
-            
-        y_axis_quantity = "HLT Efficiency"
-        if 'IsoMu' in hist_label_pairs[0][1]:
-            y_axis_quantity = "L1T+HLT Efficiency"
-
+    
+    trigger_pattern_ = trigger_pattern(trigger_name)
+    typeOfTrigger_ = trigger_pattern_["type"]
+    threshold = str(trigger_pattern_["threshold"])
+    
+    x_axis_quantity_dict = {
+        'PFJet' : "Leading Offline Jet $p_T$ (GeV)",
+        'PFJetFwd' : "Leading Forward Offline Jet $p_T$ (GeV)",
+        'PFHT' : "Offline $H_T$ (GeV)",
+        'PFMET' : "Offline $p^{miss}_T$ (GeV)",
+        'PFMETNoMu' : "Offline $p^{miss}_{T,no-\mu}$ (GeV)"
+    }
+    x_axis_quantity = x_axis_quantity_dict[typeOfTrigger_]
+    y_axis_quantity = "HLT Efficiency"
+    if 'IsoMu' in hist_label_pairs[0][1]:
+        y_axis_quantity = "L1T+HLT Efficiency"
+    
+    # Vertical line of threshold...
     if threshold != "":
-        plt.axvline(x=threshold, color='red', linestyle='-', label='Threshold')
+        plt.axvline(x=float(threshold), color='red', linestyle='-', label='Threshold')
 
-    # Vertical line with 1.0 efficiency...
+    # Horizontal line with 1.0 efficiency...
     plt.axhline(y=1.0, color='black', linestyle='--')
 
     # If trigger_name is provided, add a label above the vertical line
@@ -149,24 +182,37 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
     hep.cms.label("Preliminary",
                    data=True,
                    com=13.6,
-                   lumi=0.0, # set to zero as a placeholder, can be also string with LaTex...
+                   lumi=lumi, # set to zero as a placeholder, can be also string with LaTex...
                    loc=0
                    )
     
+
     plt.xlabel(x_axis_quantity)
     plt.ylabel(y_axis_quantity)
     plt.ylim(0, 1.2)
-
-    if ('PFMETNoMu120_' in trigger_name) and ('FilterHF' in trigger_name):
-        trigger_name = 'PF MET$(no-\mu)$ > 120GeV (Filter HF)'
     
-    if 'PFMETNoMu120_' in trigger_name:
-        trigger_name = 'PF MET$(no-\mu)$ > 120GeV'
 
-    if 'PFMET120_' in trigger_name:
-        trigger_name = 'PFMET120'
+    trigger_description_dict = {
+        'PFJet' : f"HLT PF Jet $p_T > {threshold}$ GeV",
+        'PFJetFwd' : f"HLT PF Jet with $|\eta|>3.0$ and $p_T > {threshold}$ GeV",
+        'PFHT' : f"HLT PF $H_T > {threshold}$ GeV",
+        'PFMET' : "HLT $p^{miss}_T > "+str(threshold)+"$ GeV and $H^{miss}_T >"+str(threshold)+"$ GeV",
+        'PFMETNoMu' : "HLT $p^{miss}_{T,no-\mu} > "+str(threshold)+"$ GeV \nand $H^{miss}_{T,no-\mu} >"+str(threshold)+"$ GeV"
+    }
+
+    # Adding text with trigger cuts etc...
+    trigger_description = ""
+    trigger_description = trigger_description_dict[typeOfTrigger_]
+    if trigger_description != "":
+        plt.text(
+            0.02, 0.95, trigger_description,
+            transform=plt.gca().transAxes,   # use axes coordinates (0,0 = bottom left, 1,1 = top right)
+            ha='left', va='top',             # align relative to that point
+            fontsize=20
+        )
+        #plt.text(0.30*(xmax-xmin), 1.1, trigger_description)
     
-    plt.legend(loc="right", title=trigger_name)  # Use bbox for a text box with labels
+    plt.legend(loc="right", title="")  # Use bbox for a text box with labels
     #plt.legend(loc="upper left", bbox_to_anchor=(1, 1), title=trigger_name)  # Use bbox for a text box with labels
     
     # Adding a grid to both x and y axes
@@ -505,12 +551,14 @@ if __name__ == "__main__":
 
         for comparisonPeriodCategory, comparisonPeriodsDict in comparisonPeriods.items():
             hist_label_pairs = []
+            lumi = 0
             for period in comparisonPeriodsDict.keys():
                 hist_label_pairs.append([
                     f"{trigger_name}_HLTPathAccept_{period}/{offlineQuantity}",
                     f"{den_trigger_name}_{period}/{offlineQuantity}",
-                    comparisonPeriodsDict[period]
+                    comparisonPeriodsDict[period]["label"]
                 ])
+                lumi += comparisonPeriodsDict[period]["lumi"]
 
             output_dir = os.path.join(args.output_dir, trigger_name, comparisonPeriodCategory)
             os.makedirs(output_dir, exist_ok=True)
@@ -520,7 +568,8 @@ if __name__ == "__main__":
                                           output_name,
                                           x_range_dict.get(trigger_name),
                                           rebin_dict.get(trigger_name),
-                                          trigger_name)
+                                          trigger_name,
+                                          lumi)
 
             for period in comparisonPeriodsDict.keys():
                 if ("PFJet" in trigger_name) and ("Fwd" not in trigger_name):
@@ -541,7 +590,8 @@ if __name__ == "__main__":
                                             output_name,
                                             x_range_dict.get(trigger_name),
                                             rebin_dict.get(trigger_name),
-                                            trigger_name)
+                                            trigger_name,
+                                            lumi)
 
                         hist_label_pairs = [
                             [f"{trigger_name}_HLTPathAccept_{period}/offlineAK4PFPuppiJetsCorrected_leadJet_BPix_pt0",
@@ -555,7 +605,8 @@ if __name__ == "__main__":
                                             output_name,
                                             x_range_dict.get(trigger_name),
                                             rebin_dict.get(trigger_name),
-                                            trigger_name)
+                                            trigger_name,
+                                            lumi)
 
                         hist_label_pairs = [
                             [f"{trigger_name}_HLTPathAccept_{period}/offlineAK4PFPuppiJetsCorrected_leadJet_FPix_pt0",
@@ -569,7 +620,8 @@ if __name__ == "__main__":
                                             output_name,
                                             x_range_dict.get(trigger_name),
                                             rebin_dict.get(trigger_name),
-                                            trigger_name)
+                                            trigger_name,
+                                            lumi)
                     else:
                         hist_label_pairs = [
                             [f"{trigger_name}_{period}/offlineAK4PFPuppiJetsCorrected_leadJet_HB_pt0",
@@ -587,7 +639,8 @@ if __name__ == "__main__":
                                             output_name,
                                             x_range_dict.get(trigger_name),
                                             rebin_dict.get(trigger_name),
-                                            trigger_name)
+                                            trigger_name,
+                                            lumi)
 
                         hist_label_pairs = [
                             [f"{trigger_name}_{period}/offlineAK4PFPuppiJetsCorrected_leadJet_BPix_pt0",
@@ -601,7 +654,8 @@ if __name__ == "__main__":
                                             output_name,
                                             x_range_dict.get(trigger_name),
                                             rebin_dict.get(trigger_name),
-                                            trigger_name)
+                                            trigger_name,
+                                            lumi)
 
                         hist_label_pairs = [
                             [f"{trigger_name}_{period}/offlineAK4PFPuppiJetsCorrected_leadJet_FPix_pt0",
@@ -615,7 +669,8 @@ if __name__ == "__main__":
                                                 output_name, 
                                                 x_range_dict.get(trigger_name), 
                                                 rebin_dict.get(trigger_name),
-                                                trigger_name,)
+                                                trigger_name,
+                                                lumi)
 
                 
 
