@@ -87,6 +87,7 @@ elif opts.reco == 'testMHT':
   process = customizerHLTforMHT(process)
 
 elif opts.reco == 'mixedPFPuppi':
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_15_0_0_GRun_configDump import cms, process
   # adding mixed tracking in PF
   print("adding mixed tracking in PF")
   from HLTrigger.Configuration.customizeHLTforMixedTrkPUPPI import *
