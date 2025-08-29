@@ -174,8 +174,10 @@ vetoPaths = [
 
 
 
-# list of paths that are kept
-listOfPaths = []
+# list of paths that are kept #(added puppi path 29 Aug 2025)
+listOfPaths = [
+    'HLT_PFPuppiJet40_v1' #added this as test
+]
 
 for _modname in sorted(process.paths_()):
     _keepPath = False
