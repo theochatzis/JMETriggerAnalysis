@@ -101,15 +101,6 @@ else:
   raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
 
 
-# Tracking updates 2025
-from HLTrigger.Configuration.customize_CAPixelOnlyRetune import customize_CAPixelOnlyRetuneSameEff
-process = customize_CAPixelOnlyRetuneSameEff(process)
-from RecoTracker.MkFit.customizeHLTIter0ToMkFit import customizeHLTIter0ToMkFit
-process = customizeHLTIter0ToMkFit(process)
-
-process.hltSiPixelClustersSoA.clusterThreshold_layer1 = 2000
-process.hltSiPixelClusters.clusterThreshold_layer1 = 2000
-
 # New PFHC
 process.GlobalTag.toGet += [
   cms.PSet(
