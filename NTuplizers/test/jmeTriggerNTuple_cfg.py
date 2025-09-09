@@ -87,6 +87,7 @@ elif opts.reco == 'testMHT':
   process = customizerHLTforMHT(process)
 
 elif opts.reco == 'mixedPFPuppi':
+  from JMETriggerAnalysis.Common.configs.HLT_dev_CMSSW_15_0_0_GRun_configDump import cms, process
   # adding mixed tracking in PF
   print("adding mixed tracking in PF")
   from HLTrigger.Configuration.customizeHLTforMixedTrkPUPPI import *
@@ -99,15 +100,6 @@ elif opts.reco == 'mixedPFPuppi':
 else:
   raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
 
-
-# Tracking updates 2025
-from HLTrigger.Configuration.customize_CAPixelOnlyRetune import customize_CAPixelOnlyRetuneSameEff
-process = customize_CAPixelOnlyRetuneSameEff(process)
-from RecoTracker.MkFit.customizeHLTIter0ToMkFit import customizeHLTIter0ToMkFit
-process = customizeHLTIter0ToMkFit(process)
-
-process.hltSiPixelClustersSoA.clusterThreshold_layer1 = 2000
-process.hltSiPixelClusters.clusterThreshold_layer1 = 2000
 
 # New PFHC
 process.GlobalTag.toGet += [
@@ -125,7 +117,8 @@ for producer in producers_by_type(process, "CaloTowersCreator"):
 
 
 # Remove HLT_PFJet40_GPUvsCPU_v7
-process.schedule.remove(process.HLT_PFJet40_GPUvsCPU_v7)
+#process.schedule.remove(process.HLT_PFJet40_GPUvsCPU_v7) #commented out for testing
+process.schedule.remove(process.HLT_PFJet40_GPUvsCPU_v8) #added this to avoid error
 
 
 # By pass global tag of menu if needed
@@ -175,7 +168,14 @@ vetoPaths = [
 
 
 # list of paths that are kept
-listOfPaths = []
+listOfPaths = []    #this is just the list initialisation, will be filled in for-loop below
+
+'''
+# list of paths that are kept #(added puppi path 29 Aug 2025)
+listOfPaths = [
+    'HLT_PFPuppiJet40_v1' #added this as test
+]
+'''
 
 for _modname in sorted(process.paths_()):
     _keepPath = False
@@ -431,8 +431,8 @@ if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
-    '/store/mc/Run3Winter25Digi/QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to120_142X_mcRun3_2025_realistic_v7-v3/90000/01264d3b-3e70-4995-aeea-ce434d408b6e.root'
-
+    #'/store/mc/Run3Winter25Digi/QCD_Bin-Pt-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to120_142X_mcRun3_2025_realistic_v7-v3/90000/01264d3b-3e70-4995-aeea-ce434d408b6e.root' #not available?
+    '/store/mc/Run3Winter25Digi/QCD_Bin-PT-15to7000_Par-PT-flat2022_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/142X_mcRun3_2025_realistic_v9-v4/2810008/398da565-661f-4a28-b5f7-ec8466ae1ccd.root' #use this instead (added 29.08.2025)
   ]
 
 # input EDM files [secondary]
