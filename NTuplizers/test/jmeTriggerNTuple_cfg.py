@@ -95,7 +95,7 @@ elif opts.reco == 'mixedPFPuppi':
    # adding CHS/PUPPI
   print("adding CHS/PUPPI")
   process = addPaths_MC_JMEPFCHS(process)
-  process = addPaths_MC_JMEPFPuppi(process)[0]
+  process = addPaths_MC_JMEPFPuppi(process,[])[0] #why only the first argument?, #added empty list cause fct needs listOfPaths (might wanna solve this differently)
 
 else:
   raise RuntimeError('keyword "reco = '+opts.reco+'" not recognised')
@@ -157,7 +157,10 @@ keepPaths = [
   'HLT_PFHT*_v*',
   'HLT_PFMET*_PFMHT*_v*',
   #'AlCa_*',
-  'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*'
+  'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*',
+  'HLT_PFPuppiJet*_v*',    #adding this here explicitly (08.09.2025)
+  'HLT_AK8PFPuppiJet*_v*', #adding this here explicitly (09.09.2025)
+  'MC_JMEPFPuppi_v*'      #adding this now also explicitly (reconstruction, 10.09.2025)
 ]
 
 vetoPaths = [
@@ -168,7 +171,7 @@ vetoPaths = [
 
 
 # list of paths that are kept
-listOfPaths = []    #this is just the list initialisation, will be filled in for-loop below
+listOfPaths = []    #this is just the list initialisation, will be filled in for-loop below, #should initialise this before calling addPaths_MC_JMEPFPuppi(), otherwise gets reset here?
 
 '''
 # list of paths that are kept #(added puppi path 29 Aug 2025)
@@ -326,8 +329,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     #hltAK4PFCHSJets = cms.InputTag('hltAK4PFCHSJets'),
     #hltAK4PFCHSJetsCorrected = cms.InputTag('hltAK4PFCHSJetsCorrected'),
 
-    #hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
-    #hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
+    hltAK4PFPuppiJets = cms.InputTag('hltAK4PFPuppiJets'),
+    hltAK4PFPuppiJetsCorrected = cms.InputTag('hltAK4PFPuppiJetsCorrected'),
 
     #hltAK8PFJets = cms.InputTag('hltAK8PFJets'),
     #hltAK8PFJetsCorrected = cms.InputTag('hltAK8PFJetsCorrected'),
@@ -335,8 +338,8 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     #hltAK8PFCHSJets = cms.InputTag('hltAK8PFCHSJets'),
     #hltAK8PFCHSJetsCorrected = cms.InputTag('hltAK8PFCHSJetsCorrected'),
 
-    #hltAK8PFPuppiJets = cms.InputTag('hltAK8PFPuppiJets'),
-    #hltAK8PFPuppiJetsCorrected = cms.InputTag('hltAK8PFPuppiJetsCorrected'),
+    hltAK8PFPuppiJets = cms.InputTag('hltAK8PFPuppiJets'),
+    hltAK8PFPuppiJetsCorrected = cms.InputTag('hltAK8PFPuppiJetsCorrected'),
   ),
 
   patJetCollections = cms.PSet(
