@@ -40,6 +40,8 @@ useOnlyRunPeriods: true
 jettriggers:
   - HLT_PFJet60_HLTPathAccept
   - HLT_PFJet60_HLTDenominatorPathAccept
+  - HLT_PFJet80_HLTPathAccept
+  - HLT_PFJet80_HLTDenominatorPathAccept
   - HLT_PFJet140_HLTPathAccept
   - HLT_PFJet140_HLTDenominatorPathAccept
   - HLT_PFJet320_HLTPathAccept
@@ -56,8 +58,6 @@ jettriggers:
   - HLT_PFJetFwd400_HLTDenominatorPathAccept
 
 httriggers:
-  - HLT_PFHT370_HLTPathAccept
-  - HLT_PFHT370_HLTDenominatorPathAccept
   - HLT_PFHT510_HLTPathAccept
   - HLT_PFHT510_HLTDenominatorPathAccept
   - HLT_PFHT780_HLTPathAccept

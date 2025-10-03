@@ -1,5 +1,6 @@
 triggers_list:
   - HLT_PFJet60
+  - HLT_PFJet80
   - HLT_PFJet140
   - HLT_PFJet320
   - HLT_PFJet500
@@ -7,32 +8,66 @@ triggers_list:
   - HLT_PFJetFwd140
   - HLT_PFJetFwd320
   - HLT_PFJetFwd400
-  - HLT_PFHT370
   - HLT_PFHT510
   - HLT_PFHT780
   - HLT_PFHT1050
 
 comparisonPeriods:
   years_comparison:
-    2022: "2022"
-    2023: "2023"
-    2024: "2024"
+    2022:
+      label: "2022"
+      lumi: 34.6
+    2023:
+      label: "2023"
+      lumi: 27.3
+    2024:
+      label: "2024"
+      lumi: 109
+  2022_hcal_conditions:
+    2022_eraCDE:
+      label: "2022 CDE"
+      lumi: 13.8
+    2022_eraFG:
+      label: "2022 FG"
+      lumi: 20.9
   2023_hcal_conditions:
-    2023_eraC_beforeHCALOffline: "2023 (before HCAL)"
-    2023_eraC_afterHCALOffline: "2023 (after HCAL)"
+    2023_eraC_beforeHCALOffline:
+      label: "2023 (before HCAL)"
+      lumi: 7.2
+    2023_eraC_afterHCALOffline:
+      label: "2023 (after HCAL)"
+      lumi: 10.8
   2023_bpix:
-    2023_eraC_afterHCALOffline: "2023 (before BPix)"
-    2023_eraD: "2023 (after BPix)"
+    2023_eraC_afterHCALOffline:
+      label: "2023 (before BPix)"
+      lumi: 10.8
+    2023_eraD:
+      label: "2023 (after BPix)"
+      lumi: 9.7
   2024_jecs_change:
-    2024_beforeHLTJECs: "before HLT JECs"
-    2024_HLTJECs: "after HLT JECs"
+    2024_beforeHLTJECs:
+      label: "before HLT JECs"
+      lumi: 7.5
+    2024_HLTJECs:
+      label: "after HLT JECs"
+      lumi: 7.6
   2024_hcal_conditions:
-    2024_HCALRespCorrs1: "HCAL RespCorrs v1"
-    2024_HCALRespCorrs2: "HCAL RespCorrs v2"
-    2024_HCALRespCorrs3: "HCAL RespCorrs v3"
+    2024_HCALRespCorrs1:
+      label: "HCAL RespCorrs v1"
+      lumi: 27.6
+    2024_HCALRespCorrs2:
+      label: "HCAL RespCorrs v2"
+      lumi: 55.7
+    2024_HCALRespCorrs3:
+      label: "HCAL RespCorrs v3"
+      lumi: 11.4
   2024_fpix:
-    2024_beforeFPix: "2024 (before FPix)"
-    2024_FPix: "2024 (after FPix)"
+    2024_beforeFPix:
+      label: "2024 (before FPix)"
+      lumi: 21.4
+    2024_FPix:
+      label: "2024 (after FPix)"
+      lumi: 6.2
 
 regions_labels:
   HB: "$|\\eta|<1.3$"
@@ -48,12 +83,12 @@ x_range_dict: # Shows the range of the plots on x-axis
   HLT_PFMET120_PFMHT120_IDTight: [0., 500.]
   HLT_PFMETNoMu120_PFMHTNoMu120_IDTight: [0., 500.]
   HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_FilterHF: [0., 500.]
-  HLT_PFHT370: [180., 500.0]
   HLT_PFHT510: [430.0, 700.0]
-  HLT_PFHT780: [510., 1000.0]
+  HLT_PFHT780: [510., 1200.0]
   HLT_PFHT1050: [780.0, 1500.0]
   HLT_PFJet60: [40, 200.]
-  HLT_PFJet140: [80, 300.]
+  HLT_PFJet80: [60, 250.]
+  HLT_PFJet140: [110, 300.]
   HLT_PFJet320: [260, 500.]
   HLT_PFJet500: [400. , 1000.]
   HLT_PFJetFwd60: [40, 200.]
@@ -65,12 +100,12 @@ rebin_dict: # Rebin if its provided as an integer, or variable bin width binning
   HLT_PFMET120_PFMHT120_IDTight: 1
   HLT_PFMETNoMu120_PFMHTNoMu120_IDTight: 1
   HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_FilterHF: 1
-  HLT_PFHT370: 1
   HLT_PFHT510: 1
   HLT_PFHT780: 1
   HLT_PFHT1050: 2
   HLT_PFJet60: 1
-  HLT_PFJet140: 2
+  HLT_PFJet80: 1
+  HLT_PFJet140: 4
   HLT_PFJet320: 2
   HLT_PFJet500: 5
   HLT_PFJetFwd60: 1

@@ -79,6 +79,27 @@ bool JMETriggerAnalysisDriverRun3::jetBelongsToCategory(const std::string& categ
     ret = (3.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (130 <= jetPt);
   } 
   
+    else if(categLabel == "_HF1"){ ret = (3.0 <= jetAbsEta) and (jetAbsEta < 4.0); }
+  else if (categLabel == "_HF1Pt0" ) {  //------------- pt regions
+    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 4.0) and (jetPt < 60.);
+  } else if (categLabel == "_HF1Pt1" ) {
+    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 4.0) and (60. <= jetPt) and (jetPt <= 80);
+  } else if (categLabel == "_HF1Pt2" ) {
+    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 4.0) and (80. <= jetPt) and (jetPt <= 130);
+  } else if (categLabel == "_HF1Pt3" ) {
+    ret = (3.0 <= jetAbsEta) and (jetAbsEta < 4.0) and (130 <= jetPt);
+  } 
+
+    else if(categLabel == "_HF2"){ ret = (4.0 <= jetAbsEta) and (jetAbsEta < 5.0); }
+  else if (categLabel == "_HF2Pt0" ) {  //------------- pt regions
+    ret = (4.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (jetPt < 60.);
+  } else if (categLabel == "_HF2Pt1" ) {
+    ret = (4.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (60. <= jetPt) and (jetPt <= 80);
+  } else if (categLabel == "_HF2Pt2" ) {
+    ret = (4.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (80. <= jetPt) and (jetPt <= 130);
+  } else if (categLabel == "_HF2Pt3" ) {
+    ret = (4.0 <= jetAbsEta) and (jetAbsEta < 5.0) and (130 <= jetPt);
+  } 
   
   else if(categLabel == "_HE21"){ ret = (2.5 <= jetAbsEta) and (jetAbsEta < 2.7); }
   else if (categLabel == "_HE21Pt0" ) {  //------------- pt regions
@@ -132,7 +153,9 @@ void JMETriggerAnalysisDriverRun3::init(){
     {"hltAK4CaloJets"                       , {{"GEN", "ak4GenJetsNoNu"},{"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
     {"hltAK4PFJetsCorrected"       , {{"GEN", "ak4GenJetsNoNu"},{"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
     {"hltAK4PFJets"                , {{"GEN", "ak4GenJetsNoNu"},{"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
-    {"offlineAK4PFPuppiJetsCorrected"                ,{{"hltCaloCorr", "hltAK4CaloJetsCorrected"},{"hltPFCorr", "hltAK4PFJetsCorrected"}}},
+    {"hltAK4PFPuppiJetsCorrected"       , {{"GEN", "ak4GenJetsNoNu"},{"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
+    {"hltAK4PFPuppiJets"                , {{"GEN", "ak4GenJetsNoNu"},{"Offline", "offlineAK4PFPuppiJetsCorrected"}}},
+    {"offlineAK4PFPuppiJetsCorrected"                ,{{"hltCaloCorr", "hltAK4CaloJetsCorrected"},{"hltPFCorr", "hltAK4PFJetsCorrected"}, {"hltPFPuppiCorr", "hltAK4PFPuppiJetsCorrected"}}},
   };
 
   labelMap_jetAK8_.clear();
@@ -143,16 +166,20 @@ void JMETriggerAnalysisDriverRun3::init(){
     {"hltAK8CaloJets"                       , {{"GEN", "ak8GenJetsNoNu"},{"Offline", "offlineAK8PFPuppiJetsCorrected"}}},
     {"hltAK8PFJetsCorrected"       , {{"GEN", "ak8GenJetsNoNu"},{"Offline", "offlineAK8PFPuppiJetsCorrected"}}},
     {"hltAK8PFJets"                , {{"GEN", "ak8GenJetsNoNu"},{"Offline", "offlineAK8PFPuppiJetsCorrected"}}},
-    {"offlineAK8PFPuppiJetsCorrected"                ,{{"hltCaloCorr", "hltAK8CaloJetsCorrected"},{"hltPFCorr", "hltAK8PFJetsCorrected"}}},
+    {"hltAK8PFPuppiJetsCorrected"       , {{"GEN", "ak8GenJetsNoNu"},{"Offline", "offlineAK8PFPuppiJetsCorrected"}}},
+    {"hltAK8PFPuppiJets"                , {{"GEN", "ak8GenJetsNoNu"},{"Offline", "offlineAK8PFPuppiJetsCorrected"}}},
+    {"offlineAK8PFPuppiJetsCorrected"                ,{{"hltCaloCorr", "hltAK8CaloJetsCorrected"},{"hltPFCorr", "hltAK8PFJetsCorrected"}, {"hltPFPuppiCorr","hltAK8PFPuppiJetsCorrected"}}},
   };
 
   labelMap_MET_.clear();
   labelMap_MET_ = {
     {"genMETCalo", {}},
     {"genMETTrue", {}},
-    {"hltCaloMET"             , {{"GEN", "genMETCalo"},{"Offline","offlinePFPuppiMET_Type1"}}},
-    {"hltPFMET"               , {{"GEN", "genMETCalo"},{"Offline","offlinePFPuppiMET_Type1"}}},
-    {"hltPFMETTypeOne"        , {{"GEN", "genMETCalo"},{"Offline","offlinePFPuppiMET_Type1"}}},
+    {"hltCaloMET"             , {{"GEN", "genMETTrue"},{"Offline","offlinePFPuppiMET_Type1"}}},
+    {"hltPFMET"               , {{"GEN", "genMETTrue"},{"Offline","offlinePFPuppiMET_Type1"}}},
+    {"hltPFMETTypeOne"        , {{"GEN", "genMETTrue"},{"Offline","offlinePFPuppiMET_Type1"}}},
+    {"hltPFPuppiMET"          , {{"GEN", "genMETTrue"},{"Offline","offlinePFPuppiMET_Type1"}}},
+    {"hltPFPuppiMETTypeOne"   , {{"GEN", "genMETTrue"},{"Offline","offlinePFPuppiMET_Type1"}}},
     {"offlinePFMET_Raw"       , {{"GEN", "genMETTrue"}}},
     {"offlinePFMET_Type1"     , {{"GEN", "genMETTrue"}}},
     {"offlinePFPuppiMET_Raw"  , {{"GEN", "genMETTrue"}}},
@@ -644,7 +671,7 @@ bool JMETriggerAnalysisDriverRun3::runPeriod(std::string const& key) const {
   else if ( key == "2022_eraCDE" ) return ( runNumber_ > 355794 and runNumber_ < 360332 ); // 2022 era C->E 
   else if ( key == "2022_eraFG" ) return ( runNumber_ > 360332 and runNumber_ < 362760 ); // 2022 era F , HCAL scale got updated
   else if (key == "2023_eraC_beforeHCALOffline") return (runNumber_ > 367080 and runNumber_ < 367765); // era C change of HCAL resp corrs in offline only
-  else if (key == "2023_eraC_afterHCALOffline") return (runNumber_ >= 367765 and runNumber_ < 369864); // era C after HCAL resp corrs update in offline (this is right before era D)
+  else if (key == "2023_eraC_afterHCALOffline") return (runNumber_ >= 367765 and runNumber_ < 369802); // era C after HCAL resp corrs update in offline (this is right before era D)
   else if (key == "2023_eraD") return (runNumber_ >= 369864 and runNumber_ < 372415); // the BPix run was 369334 so this contains BPix.
   // 2024 periods 
   // if(key == "beforeHCAL") return (runNumber_ < 382287 );
@@ -656,16 +683,18 @@ bool JMETriggerAnalysisDriverRun3::runPeriod(std::string const& key) const {
   else if ( key == "2024_HCALRespCorrs1") return ( runNumber_ > 380637 and runNumber_ < 383219 ); // HF resp corrs update
   else if ( key == "2024_HCALRespCorrs2" ) return ( runNumber_ > 383219 and runNumber_ < 386401 ); // Generic HCAL resp corrs
   else if ( key == "2024_HCALRespCorrs3" ) return ( runNumber_ > 386401 and runNumber_ < 387121 ); // This was again for HF to fix the over-correction in Era I (up to end or era I)
-  else if ( key == "2024_beforeFPix" ) return (runNumber_ > 383219 and runNumber_ < 382798 ); // after last HCAL resp corrs update before FPix
+  else if ( key == "2024_beforeFPix" ) return (runNumber_ > 380637 and runNumber_ < 382798 ); // after last HCAL resp corrs update before FPix
   else if ( key == "2024_FPix" ) return (runNumber_ > 382798 and runNumber_ < 383219 ); // in FPix period
   // --- for 2025
   else if ( key == "2024I" ) return ( runNumber_ >  386409 and runNumber_ < 387121); // used as reference in 2025
   else if ( key == "2025C" ) return ( runNumber_ > 392159	and runNumber_ < 393609); 
-  else if ( key == "2025D" ) return ( runNumber_ > 394286 );
+  else if ( key == "2025D" ) return ( runNumber_ > 394286 and runNumber_ < 395967);
+  else if ( key == "2025E" ) return ( runNumber_ > 395967 and runNumber_ < 396598);
+  else if ( key == "2025F" ) return ( runNumber_ > 396598 );
   else if ( key == "2025CV1" ) return ( runNumber_ > 392159	and runNumber_ < 393108); 
   else if ( key == "2025CV2" ) return ( runNumber_ > 393111	and runNumber_ < 393609 ); // In CV2 create a drop in responses in HF 
   else if ( key == "2025D_beforeIBCoff" ) return ( runNumber_ > 394286 and runNumber_ < 394790); // big MET rate drop, small rate drop in Fwd  // Prompt JECs update start of Era D: 394431
-  else if ( key == "2025D_afterIBCoff") return ( runNumber_ > 394790 ); 
+  else if ( key == "2025D_afterIBCoff") return ( runNumber_ > 394790 and runNumber_ < 395967 ); 
   else
     throw std::runtime_error("JMETriggerAnalysisDriverRun3::runPeriod(\""+key+"\") -- invalid key");
   return false;
