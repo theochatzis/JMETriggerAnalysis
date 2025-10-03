@@ -22,19 +22,8 @@ useOnlyTriggers: false
 useOnlyRunPeriods: false
 
 # Booleans paths to be used in the analysis for defining regions. Make sure both your numerator and denominators are here for efficiencies calculations.
-jettriggers:
-  - HLT_PFJet60
-  - HLT_PFJet140
-  - HLT_PFJet320
-  - HLT_PFJet500
+jettriggers: []
 
+httriggers: []
 
-httriggers:
-  - HLT_PFHT1050
-
-
-mettriggers: # []
-  - HLT_PFMET120_PFMHT120_IDTight
-  - HLT_PFMETNoMu120_PFMHTNoMu120_IDTight
-  - HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_FilterHF
-  - HLT_IsoMu27
+mettriggers: []

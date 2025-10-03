@@ -58,12 +58,14 @@ samples_muons = {
   'Muon0_Run2025CV2':["/Muon0/Run2025C-PromptReco-v2/MINIAOD","Winter25Prompt25_RunC_V1_DATA","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
   'Muon0_Run2025DV1':["/Muon0/Run2025D-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
   'Muon0_Run2025EV1':["/Muon0/Run2025E-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
+  'Muon0_Run2025FV1':["/Muon0/Run2025F-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
   #2025 Muon1
   #'Muon1_Run2025B':["/Muon1/Run2025B-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
   'Muon1_Run2025CV1':["/Muon1/Run2025C-PromptReco-v1/MINIAOD","Winter25Prompt25_RunC_V1_DATA","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
   'Muon1_Run2025CV2':["/Muon1/Run2025C-PromptReco-v2/MINIAOD","Winter25Prompt25_RunC_V1_DATA","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
-  'Muon1_Run2025DV1':["/Muon0/Run2025D-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
+  'Muon1_Run2025DV1':["/Muon1/Run2025D-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
   'Muon1_Run2025EV1':["/Muon1/Run2025E-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
+  'Muon1_Run2025FV1':["/Muon1/Run2025F-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
 }
 
 samples = {
@@ -120,13 +122,14 @@ samples = {
   'JetMET0_Run2025CV2':["/JetMET0/Run2025C-PromptReco-v2/MINIAOD","Winter25Prompt25_RunC_V1_DATA","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
   'JetMET0_Run2025D':["/JetMET0/Run2025D-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
   'JetMET0_Run2025EV1':["/JetMET0/Run2025E-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
+  'JetMET0_Run2025FV1':["/JetMET0/Run2025F-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
   #2025 JetMET1
   #'JetMET1_Run2025B':["/JetMET1/Run2025B-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
   'JetMET1_Run2025CV1':["/JetMET1/Run2025C-PromptReco-v1/MINIAOD","Winter25Prompt25_RunC_V1_DATA","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
   'JetMET1_Run2025CV2':["/JetMET1/Run2025C-PromptReco-v2/MINIAOD","Winter25Prompt25_RunC_V1_DATA","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
-  'JetMET1_Run2025DV1':["/JetMET0/Run2025D-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
+  'JetMET1_Run2025DV1':["/JetMET1/Run2025D-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
   'JetMET1_Run2025EV1':["/JetMET1/Run2025E-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
-
+  'JetMET1_Run2025FV1':["/JetMET1/Run2025F-PromptReco-v1/MINIAOD","","Collisions25/DCSOnly_JSONS/dailyDCSOnlyJSON/Collisions25_13p6TeV_Latest.json","150X_dataRun3_Prompt_v1"],
 }
 
 def main():

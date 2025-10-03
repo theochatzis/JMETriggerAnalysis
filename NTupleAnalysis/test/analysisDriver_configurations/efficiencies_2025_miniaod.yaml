@@ -6,6 +6,10 @@ jetCategoryLabels:
   - _HE1
   - _HE2
   - _HF
+  - _HF1
+  - _HF2
+  - _HE21
+  - _HE22
   - _BPix
   - _BPixVeto
   - _FPix
@@ -16,6 +20,8 @@ runPeriods:
   - 2024I
   - 2025C
   - 2025D
+  - 2025E
+  - 2025F
   - 2025CV1
   - 2025CV2
   - 2025D_beforeIBCoff

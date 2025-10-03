@@ -10,6 +10,9 @@ from tqdm import tqdm
 import math
 from multiprocessing import Pool
 import re 
+from scipy.optimize import curve_fit
+from scipy.special import erf
+from scipy.optimize import minimize
 
 hep.style.use("CMS")
 
@@ -21,6 +24,66 @@ hep.style.use("CMS")
 # \_| |_/\___|_| .__/ \___|_|    \_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
 #              | |                                                           
 #              |_|                                                           
+
+# Error function for turn-on fit
+def erf_turnon(x, A, mu, sigma):
+    return 0.5 * A * (1 + erf((x - mu) / (np.sqrt(2) * sigma)))
+
+def jacobian_erf(x, A, mu, sigma):
+    arg = (x - mu) / (np.sqrt(2) * sigma)
+    dA = 0.5 * (1 + erf(arg))
+    dmu = -(A / (np.sqrt(2*np.pi) * sigma)) * np.exp(-arg**2)
+    dsigma = -(A * (x - mu) / (np.sqrt(2*np.pi) * sigma**2)) * np.exp(-arg**2)
+    return np.array([dA, dmu, dsigma])
+
+def prediction_with_uncertainty(x_vals, popt, cov):
+    A, mu, sigma = popt
+    y = erf_turnon(x_vals, A, mu, sigma)
+    y_err = []
+    for x in x_vals:
+        J = jacobian_erf(x, A, mu, sigma)
+        var = J @ cov @ J.T   # matrix multiplication
+        y_err.append(np.sqrt(var) if var > 0 else 0)
+    return y, np.array(y_err)
+
+def prediction_with_uncertainty_uncorr(x_vals, popt, cov):
+    """
+    Compute prediction and uncertainty ignoring correlations between parameters.
+
+    Parameters:
+    - x_vals: array-like of x values
+    - popt: fitted parameters [A, mu, sigma]
+    - cov: covariance matrix (3x3)
+
+    Returns:
+    - y: predicted values
+    - y_err: uncertainties ignoring off-diagonal correlations
+    """
+    A, mu, sigma = popt
+    y = erf_turnon(x_vals, A, mu, sigma)
+
+    # Extract standard deviations
+    sigma_A, sigma_mu, sigma_sigma = np.sqrt(np.diag(cov))
+
+    y_err = []
+    for x in x_vals:
+        arg = (x - mu) / (np.sqrt(2) * sigma)
+        # partial derivatives
+        dA = 0.5 * (1 + erf(arg))
+        dmu = -(A / (np.sqrt(2*np.pi) * sigma)) * np.exp(-arg**2)
+        dsigma = -(A * (x - mu) / (np.sqrt(2*np.pi) * sigma**2)) * np.exp(-arg**2)
+        # Uncorrelated error propagation
+        var = (dA * sigma_A)**2 + (dmu * sigma_mu)**2 + (dsigma * sigma_sigma)**2
+        y_err.append(np.sqrt(var) if var > 0 else 0)
+    
+    return y, np.array(y_err)
+
+def nll(params, x, k, N, model):
+    """Negative log-likelihood for binomial efficiencies"""
+    p = model(x, *params)
+    # avoid log(0)
+    p = np.clip(p, 1e-9, 1-1e-9)
+    return -np.sum(k * np.log(p) + (N - k) * np.log(1 - p))
 
 
 def trigger_pattern(trigger):
@@ -56,7 +119,7 @@ def trigger_pattern(trigger):
 #                 total.SetBinContent(i, 0)
 #                 passed.SetBinContent(i, 0)
 
-def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_efficiency.png", 
+def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_efficiency.png", plot_label_name="",
                          x_range=None, rebin=None, trigger_name=None, lumi=0):
     """
     Plots multiple efficiencies using TEfficiency from pairs of TH1D histograms with custom labels and saves the plot as a .png file.
@@ -73,7 +136,15 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
 
     # Open the ROOT file
     root_file = ROOT.TFile.Open(file_name)
-
+    
+    threshold = ""
+    x_axis_quantity = ""
+    y_axis_quantity = ""
+    
+    trigger_pattern_ = trigger_pattern(trigger_name)
+    typeOfTrigger_ = trigger_pattern_["type"]
+    threshold = str(trigger_pattern_["threshold"])
+    
     for hist_num_key, hist_den_key, label_name in hist_label_pairs:
         # Get the numerator and denominator histograms as ROOT TH1D
         hist_num_root = root_file.Get(hist_num_key)
@@ -120,8 +191,87 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
         eff_errors_up = [eff.GetEfficiencyErrorUp(i + 1) for i in range(hist_num_root.GetNbinsX())]
         
         # Plot efficiency with error bars and custom label
-        plt.errorbar(x_mid, eff_values, xerr=[x_err_low, x_err_high], yerr=[eff_errors_low, eff_errors_up], fmt='o', label=label_name)
-    
+        #plt.errorbar(x_mid, eff_values, xerr=[x_err_low, x_err_high], yerr=[eff_errors_low, eff_errors_up], fmt='o', label=label_name)
+         # Plot efficiency points
+        points = plt.errorbar(
+            x_mid, eff_values, 
+            xerr=[x_err_low, x_err_high], 
+            yerr=[eff_errors_low, eff_errors_up],
+            fmt='o', label=label_name
+        )
+
+        x_fit = x_mid # range to fit
+        # if "MET" in typeOfTrigger_:
+        #     x_fit = x_fit[x_fit>150] # fit from 170 GeV and above
+        # Perform fit with error the larger from the low and up.
+        # chi^2 fit
+
+        # eff_errors = np.maximum(eff_errors_low, eff_errors_up)
+
+        # popt, pcov = curve_fit(
+        #     erf_turnon, x_mid, eff_values, sigma=eff_errors, 
+        #     p0=[1.0, np.median(x_mid), 10.0],  # Initial parameters guesses
+        #     bounds=([0, np.min(x_mid), 0], [1.2, np.max(x_mid)*2, np.max(x_mid)]) # lower upper limits for parameters
+        # ) 
+        # perr = np.sqrt(np.diag(pcov))
+
+        # ML fit with binomials (k,N) per bin
+        # Extract numerator and denominator counts
+        k = np.array([hist_num_root.GetBinContent(i+1) for i in range(hist_num_root.GetNbinsX())])
+        N = np.array([hist_den_root.GetBinContent(i+1) for i in range(hist_den_root.GetNbinsX())])
+        threshold_value = float(threshold)
+        # if "MET" in typeOfTrigger_:
+        #     k = k[len(k)-len(x_fit)-1:-1]
+        #     N = N[len(N)-len(x_fit)-1:-1]
+        res = minimize(
+            nll,
+            x0=[1.0, threshold_value, 0.1*threshold_value],
+            args=(x_fit, k, N, erf_turnon),
+            method="L-BFGS-B",
+            bounds=[(0.9, 1.0), (0.5*threshold_value, 1.5*threshold_value), (0.001*threshold_value, 0.5*threshold_value)]
+        )
+        
+        popt = res.x # results of fitted params
+        
+        # Hessian erros
+        if res.hess_inv is not None:
+            # Convert to dense matrix
+            cov = res.hess_inv.todense() if hasattr(res.hess_inv, "todense") else res.hess_inv
+            perr = np.sqrt(np.diag(cov))   # 1 sigma errors
+        else:
+            perr = None
+        #print(perr)
+        # Correlation matrix
+        corr = cov / np.outer(np.sqrt(np.diag(cov)), np.sqrt(np.diag(cov)))
+        print(corr)
+        
+        # Generate smooth fit curve
+        x_fit = np.linspace(np.min(x_fit), np.max(x_fit), 500)
+
+        # Get color assigned by matplotlib to the points
+        curve_color = points[0].get_color()
+        
+        y_fit, y_err = prediction_with_uncertainty_uncorr(x_fit, popt, cov)
+        
+        # Plot fit curve with same color
+        plt.plot(
+            x_fit, y_fit, '-', color=curve_color,
+            label=r"plateau="+f"{popt[0]:.2f}"+r" $\mu$="+f"{popt[1]:.0f}"+r" $\sigma$="+f"{popt[2]:.0f}"+r" $\sigma/\mu$="+f"{popt[2]/popt[1]:.2f}"
+        )
+        # Draw uncertainty band
+        #plt.fill_between(x_fit, y_fit - y_err, y_fit + y_err, color=curve_color, alpha=0.3, linewidth=0)
+
+        # # Plot fit with same color
+        # plt.plot(
+        #     x_fit, erf_turnon(x_fit, *popt), '-', color=curve_color,
+        #     label=r"plateau="+f"{popt[0]:.2f}"+r" $\mu$="+f"{popt[1]:.0f}"+r" $\sigma$="+f"{popt[2]:.0f}"+r" $\sigma/\mu$="+f"{popt[2]/popt[1]:.2f}"
+        # )
+
+        # Draw vertical dashed line at fitted midpoint (p1), same color
+        plt.axvline(
+            x=popt[1], color=curve_color, linestyle='--', alpha=0.7
+        )
+
     # Set the x-axis range if provided else will automatically find the range to have data...
     xmin = 0.
     xmax = 1.
@@ -143,13 +293,7 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
             xmax = hist_den_root.GetBinLowEdge(last_bin) + hist_den_root.GetBinWidth(last_bin)
     plt.xlim(xmin, xmax)
 
-    threshold = ""
-    x_axis_quantity = ""
-    y_axis_quantity = ""
-    
-    trigger_pattern_ = trigger_pattern(trigger_name)
-    typeOfTrigger_ = trigger_pattern_["type"]
-    threshold = str(trigger_pattern_["threshold"])
+
     
     x_axis_quantity_dict = {
         'PFJet' : "Leading Offline Jet $p_T$ (GeV)",
@@ -202,7 +346,7 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
 
     # Adding text with trigger cuts etc...
     trigger_description = ""
-    trigger_description = trigger_description_dict[typeOfTrigger_]
+    trigger_description = trigger_description_dict[typeOfTrigger_] + " "+ plot_label_name
     if trigger_description != "":
         plt.text(
             0.02, 0.95, trigger_description,
@@ -212,13 +356,15 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
         )
         #plt.text(0.30*(xmax-xmin), 1.1, trigger_description)
     
-    plt.legend(loc="right", title="")  # Use bbox for a text box with labels
+    #plt.legend(loc="right", title="")  # Use bbox for a text box with labels
     #plt.legend(loc="upper left", bbox_to_anchor=(1, 1), title=trigger_name)  # Use bbox for a text box with labels
-    
+    plt.legend(fontsize=14, frameon=False, loc="best")
+
     # Adding a grid to both x and y axes
     plt.grid(True, which='both', axis='both', linestyle='--', linewidth=1, color='gray', alpha=0.2)
     # Save the figure as a .png file.
     os.makedirs(os.path.dirname(output_name), exist_ok=True)
+
     plt.savefig(output_name, dpi=300, bbox_inches='tight')
     
     plt.clf() # Clear figure after saving
@@ -357,102 +503,6 @@ def chunky_merging(input_files, output_file, chunk_size=100, n_workers=4):
 
     print("Chunky merging complete!")
 
-"""
-def add_histograms(in_dir, out_dir):
-    #
-    # adding histos in directories in recursive way... 
-    #
-    for key in in_dir.GetListOfKeys():
-        obj_name = key.GetName()
-        obj = key.ReadObj()
-        # Check if it's a directory and do the same...
-        if obj.InheritsFrom("TDirectory"):
-            # Create subdir if not exists
-            out_subdir = out_dir.GetDirectory(obj_name)
-            if not out_subdir:
-                out_dir.mkdir(obj_name)
-                out_subdir = out_dir.GetDirectory(obj_name)
-            add_histograms(obj, out_subdir)
-        elif obj.InheritsFrom("TH1"):  # Histogram type ( this includes also TH2Fs they inherit from TH1 - note this for 2D efficiencies if needed)
-            # Check if histogram already exists in output dir
-            out_hist = out_dir.Get(obj_name)
-            if out_hist: 
-                out_hist.Add(obj)  # Add histo...
-            else:
-                out_dir.cd()
-                obj_clone = obj.Clone()
-                obj_clone.SetDirectory(out_dir)
-                obj_clone.Write()
-        else:
-            # For other objects, just write if not exist
-            if not out_dir.Get(obj_name):
-                out_dir.cd()
-                obj_clone = obj.Clone()
-                obj_clone.SetDirectory(out_dir)
-                obj_clone.Write()
-
-def chunky_merging(input_files, output_file, chunk_size=100):
-
-    # Merge ROOT files in chunks, adding histograms with the same name.
-    # Inputs:
-    # - input_files: list of ROOT file paths to merge
-    # - output_file: final merged ROOT file path
-    # - chunk_size: number of files to use per chunk
-    
-    n_files = len(input_files)
-    n_chunks = math.ceil(n_files / chunk_size)
-    temp_files = []
-
-    # Merge in chunks
-    for i in range(n_chunks):
-        start = i * chunk_size
-        end = min((i + 1) * chunk_size, n_files)
-        chunk_files = input_files[start:end]
-
-        temp_file = f"temp_merge_{i}.root"
-        temp_files.append(temp_file)
-
-        out_file = ROOT.TFile.Open(temp_file, "RECREATE")
-
-        print(f"Merging chunk {i+1}/{n_chunks} with {len(chunk_files)} files...")
-        for fpath in tqdm(chunk_files, unit="file"):
-            in_file = ROOT.TFile.Open(fpath, "READ")
-            if not in_file or in_file.IsZombie():
-                print(f"Warning: could not open {fpath}")
-                continue
-
-            add_histograms(in_file, out_file)
-
-            in_file.Close()
-
-        out_file.Write()
-        out_file.Close()
-
-    # Merge chunk files into final output
-    print(f"Merging {len(temp_files)} chunk files into final output file {output_file} ...")
-    final_out = ROOT.TFile.Open(output_file, "RECREATE")
-    for temp_f in tqdm(temp_files, unit="chunk file"):
-        temp_in = ROOT.TFile.Open(temp_f, "READ")
-        if not temp_in or temp_in.IsZombie():
-            print(f"Warning: could not open {temp_f}")
-            continue
-
-        add_histograms(temp_in, final_out)
-
-        temp_in.Close()
-    final_out.Write()
-    final_out.Close()
-
-    # Clean up temp files
-    for temp_f in temp_files:
-        try:
-            os.remove(temp_f)
-        except Exception as e:
-            print(f"Could not remove temp file {temp_f}: {e}")
-
-    print("Chunky merging complete!")
-"""
-
 def merging_exec(input_dir, merged_file, chunk_size):
     '''
     Takes a directory and merges all files. Merges means it adds histograms and keeps the structure intact.
@@ -566,10 +616,45 @@ if __name__ == "__main__":
             efficiencies_plotter(args.merged_file,
                                           hist_label_pairs,
                                           output_name,
+                                          comparisonPeriodCategory,
                                           x_range_dict.get(trigger_name),
                                           rebin_dict.get(trigger_name),
                                           trigger_name,
                                           lumi)
+            
+            if ("PFJet" in trigger_name) and ("Fwd" not in trigger_name):
+                for eta_region in regions_labels.keys():
+                    hist_pairs_tmp = []
+                    for period in comparisonPeriodsDict.keys():
+                        hist_pairs_tmp.append([f"{trigger_name}_HLTPathAccept_{period}/offlineAK4PFPuppiJetsCorrected_leadJet_{eta_region}_pt0",
+                                                f"{trigger_name}_HLTDenominatorPathAccept_{period}/offlineAK4PFPuppiJetsCorrected_leadJet_{eta_region}_pt0",
+                                                comparisonPeriodsDict[period]["label"]])
+                    output_name = os.path.join(output_dir, f"{trigger_name}_{eta_region}_periods.png")
+                    efficiencies_plotter(args.merged_file,
+                                        hist_pairs_tmp,
+                                        output_name,
+                                        regions_labels[eta_region],
+                                        x_range_dict.get(trigger_name),
+                                        rebin_dict.get(trigger_name),
+                                        trigger_name,
+                                        lumi)
+            
+            if ("PFJetFwd" in trigger_name):# also partition for forward triggers the two eta regions
+                for eta_region in ["HF1","HF2"]:
+                    hist_pairs_tmp = []
+                    for period in comparisonPeriodsDict.keys():
+                        hist_pairs_tmp.append([f"{trigger_name}_HLTPathAccept_{period}/offlineAK4PFPuppiJetsCorrected_{eta_region}_pt0",
+                                                f"{trigger_name}_HLTDenominatorPathAccept_{period}/offlineAK4PFPuppiJetsCorrected_{eta_region}_pt0",
+                                                comparisonPeriodsDict[period]["label"]])
+                    output_name = os.path.join(output_dir, f"{trigger_name}_{eta_region}_periods.png")
+                    efficiencies_plotter(args.merged_file,
+                                        hist_pairs_tmp,
+                                        output_name,
+                                        regions_labels[eta_region],
+                                        x_range_dict.get(trigger_name),
+                                        rebin_dict.get(trigger_name),
+                                        trigger_name,
+                                        lumi)
 
             for period in comparisonPeriodsDict.keys():
                 if ("PFJet" in trigger_name) and ("Fwd" not in trigger_name):
@@ -588,6 +673,7 @@ if __name__ == "__main__":
                         efficiencies_plotter(args.merged_file,
                                             hist_label_pairs,
                                             output_name,
+                                            period,
                                             x_range_dict.get(trigger_name),
                                             rebin_dict.get(trigger_name),
                                             trigger_name,
@@ -603,6 +689,7 @@ if __name__ == "__main__":
                         efficiencies_plotter(args.merged_file,
                                             hist_label_pairs,
                                             output_name,
+                                            period,
                                             x_range_dict.get(trigger_name),
                                             rebin_dict.get(trigger_name),
                                             trigger_name,
@@ -618,6 +705,7 @@ if __name__ == "__main__":
                         efficiencies_plotter(args.merged_file,
                                             hist_label_pairs,
                                             output_name,
+                                            period,
                                             x_range_dict.get(trigger_name),
                                             rebin_dict.get(trigger_name),
                                             trigger_name,
@@ -637,6 +725,7 @@ if __name__ == "__main__":
                         efficiencies_plotter(args.merged_file,
                                             hist_label_pairs,
                                             output_name,
+                                            period,
                                             x_range_dict.get(trigger_name),
                                             rebin_dict.get(trigger_name),
                                             trigger_name,
@@ -652,6 +741,7 @@ if __name__ == "__main__":
                         efficiencies_plotter(args.merged_file,
                                             hist_label_pairs,
                                             output_name,
+                                            period,
                                             x_range_dict.get(trigger_name),
                                             rebin_dict.get(trigger_name),
                                             trigger_name,
@@ -667,6 +757,7 @@ if __name__ == "__main__":
                         efficiencies_plotter(args.merged_file, 
                                             hist_label_pairs, 
                                                 output_name, 
+                                                period,
                                                 x_range_dict.get(trigger_name), 
                                                 rebin_dict.get(trigger_name),
                                                 trigger_name,
