@@ -742,10 +742,10 @@ void JMETriggerAnalysisDriver::bookHistograms_Jets(const std::string& dir,
                   matchLabel + "_pt",
               binEdges_response,
               binEdges_pt);
-      addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_leadCandPt_over" + matchLabel + "__vs__" +
-                  matchLabel + "_pt",
-              binEdges_response,
-              binEdges_pt);
+      //addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_leadCandPt_over" + matchLabel + "__vs__" +
+      //            matchLabel + "_pt",
+      //        binEdges_response,
+      //        binEdges_pt);
       // addTH2D(dirPrefix + jetType + catLabel + "_MatchedTo" + matchLabel + "_leadCandPt_over" + matchLabel + "__vs__" +
       //             matchLabel + "_simNPU",
       //             binEdges_response,
@@ -1003,7 +1003,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
   auto const* v_eta(this->vector_ptr<float>(fhData.jetCollection + "_eta"));
   auto const* v_phi(this->vector_ptr<float>(fhData.jetCollection + "_phi"));
   auto const* v_mass(this->vector_ptr<float>(fhData.jetCollection + "_mass"));
-  auto const* v_leadCandPt(this->vector_ptr<float>(fhData.jetCollection + "_leadCandPt"));
+  //auto const* v_leadCandPt(this->vector_ptr<float>(fhData.jetCollection + "_leadCandPt"));
   
   
   auto const* v_numberOfDaughters(this->vector_ptr<uint>(fhData.jetCollection + "_numberOfDaughters"));
@@ -1163,7 +1163,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
     auto const* v_match_eta(this->vector_ptr<float>(matchJetColl + "_eta"));
     auto const* v_match_phi(this->vector_ptr<float>(matchJetColl + "_phi"));
     auto const* v_match_mass(this->vector_ptr<float>(matchJetColl + "_mass"));
-    auto const* v_match_leadCandPt(this->vector_ptr<float>(matchJetColl + "_leadCandPt"));
+    //auto const* v_match_leadCandPt(this->vector_ptr<float>(matchJetColl + "_leadCandPt"));
 
     if (not(v_match_pt and v_match_eta and v_match_phi and v_match_mass)) {
       if (verbosity_ >= 0) {
@@ -1404,16 +1404,16 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
             H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel +
                "__vs__" + matchLabel + "_pt")
                 ->Fill(jetPtRatio, jetMatchPt, weight);
-            if (v_leadCandPt && v_match_leadCandPt){
-              H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_leadCandPt_over" + matchLabel +
-                 "__vs__" + matchLabel + "_pt")
-                  ->Fill(v_leadCandPt->at(jetIdx)/v_match_leadCandPt->at(jetMatchIdx), jetMatchPt, weight);
+            // if (v_leadCandPt && v_match_leadCandPt){
+            //   H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_leadCandPt_over" + matchLabel +
+            //      "__vs__" + matchLabel + "_pt")
+            //       ->Fill(v_leadCandPt->at(jetIdx)/v_match_leadCandPt->at(jetMatchIdx), jetMatchPt, weight);
               
-              // H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_leadCandPt_over" + matchLabel +
-              //    "__vs__" + matchLabel + "_simNPU")
-              //     ->Fill(v_leadCandPt->at(jetIdx)/v_match_leadCandPt->at(jetMatchIdx), simNPU, weight);
+            //   // H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_leadCandPt_over" + matchLabel +
+            //   //    "__vs__" + matchLabel + "_simNPU")
+            //   //     ->Fill(v_leadCandPt->at(jetIdx)/v_match_leadCandPt->at(jetMatchIdx), simNPU, weight);
               
-            }
+            // }
             H2(dirPrefix + fhData.jetCollection + catLabel + "_MatchedTo" + matchLabel + "_pt_over" + matchLabel +
                "__vs__pt")
                 ->Fill(jetPtRatio, jetPt, weight);
@@ -1642,7 +1642,7 @@ void JMETriggerAnalysisDriver::fillHistograms_MET(const std::string& dir,
   
   // in case muons exist in the data calculate also METNoMu
   float ptNoMu(0.0);
-  if (v_muPt->size()>0){
+  if (v_muPt){
     auto const muonPt(v_muPt->at(0));
     auto const muonPhi(v_muPhi->at(0));
     
