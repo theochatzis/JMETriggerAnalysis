@@ -4,7 +4,7 @@ from CRABClient.UserUtilities import config
 config = config()
 
 # === Given by the user ===
-name='test_crab_prod'
+name='test_crab_new2'
 outputDirName='HLT_Phase2Productions'
 recoOption = 'default'
 dataset='/TT_TuneCP5_14TeV-powheg-pythia8/Phase2Spring24DIGIRECOMiniAOD-PU200_AllTP_140X_mcRun4_realistic_v4-v1/GEN-SIM-DIGI-RAW-MINIAOD'
@@ -20,11 +20,11 @@ config.General.transferLogs = True
 
 config.section_('JobType')
 config.JobType.pluginName = 'Analysis'
-config.JobType.maxMemoryMB = 2500
+config.JobType.maxMemoryMB = 5000
 config.JobType.psetName = 'PSet.py'
 config.JobType.allowUndistributedCMSSW = True
 config.JobType.scriptExe = 'crabExe.sh'
-config.JobType.inputFiles = [input_file_dir + f'Phase2Spring24_MC_{recoOption}.db', input_file_dir+'jmeTriggerNTuple_cfg.py', input_file_dir+'jmeTriggerNTuple_L1Only_cfg.py']
+config.JobType.inputFiles = [input_file_dir + f'Phase2Spring24_MC_{recoOption}.db', input_file_dir+'jmeTriggerNTuple_L1Only_cfg.py', input_file_dir+'jmeTriggerNTuple_cfg.py']
 
 config.section_('Data')
 config.Data.publication = False
@@ -32,7 +32,7 @@ config.Data.ignoreLocality = False
 config.Data.inputDataset = dataset
 config.Data.splitting = 'EventAwareLumiBased'
 config.Data.unitsPerJob = 10
-config.Data.totalUnits = 50
+config.Data.totalUnits = 10
 
 config.Data.outLFNDirBase = f'/store/user/{os.environ["USER"]}/{outputDirName}/{name}/{recoOption}/'
 
