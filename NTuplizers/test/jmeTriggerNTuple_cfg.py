@@ -97,10 +97,11 @@ opts.register('output', 'out.root',
 opts.parseArguments()
 
 ###
-### base configuration file
+### use base configuration files from L1 , HLT steps and define the final process
 ###
 
-if opts.reco == 'default':
+
+if opts.reco == 'default':  
   from JMETriggerAnalysis.Common.configs.HLT_75e33_D110_cfg import cms, process
 
 elif opts.reco == 'trimmedTracking':
@@ -121,6 +122,31 @@ elif opts.reco == 'HLT_75e33_time':
 
 else:
   raise RuntimeError('invalid argument for option "reco": "'+opts.reco+'"')
+
+# EDM Input Files
+if opts.inputFiles and opts.secondaryInputFiles:
+   process.source.fileNames = opts.inputFiles
+   process.source.secondaryFileNames = opts.secondaryInputFiles
+elif opts.inputFiles:
+   process.source.fileNames = opts.inputFiles
+   process.source.secondaryFileNames = []
+else:
+   process.source.fileNames = [
+   #'/store/mc/Phase2Spring24DIGIRECOMiniAOD/DYToLL_M-10To50_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200ALCA_pilot_140X_mcRun4_realistic_v4-v1/130000/00969257-fdc7-4748-be48-d21074b28511.root'
+   '/store/mc/Phase2Spring24DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_AllTP_140X_mcRun4_realistic_v4-v1/2560000/11d1f6f0-5f03-421e-90c7-b5815197fc85.root'
+   #'/store/relval/CMSSW_14_0_6/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_140X_mcRun4_realistic_v3_STD_2026D110_PU-v1/2590000/00042ff4-01a3-48a9-b88e-83412b3a65c6.root'
+   #'/store/mc/Phase2Spring23DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_Trk1GeV_131X_mcRun4_realistic_v5-v1/30000/01607282-0427-4687-a122-ef0a41220590.root'
+   #'/store/mc/PhaseIISpring22DRMiniAOD/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_castor_123X_mcRun4_realistic_v11-v1/40000/009871c5-babe-40aa-9e82-7d91f772b3e4.root'
+   #'/store/relval/CMSSW_13_1_0_pre3/RelValQCD_Pt15To7000_Flat_14/MINIAODSIM/PU_131X_mcRun4_realistic_v2_2026D95PU200-v1/00000/f19a93e6-ee91-4f47-81ec-697697c32c66.root'
+   ]
+   process.source.secondaryFileNames = [
+#    '/store/relval/CMSSW_13_1_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_131X_mcRun4_realistic_v2_2026D95PU200-v1/00000/00443525-cac0-4db8-85d2-7c9bd9986266.root',
+# '/store/relval/CMSSW_13_1_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_131X_mcRun4_realistic_v2_2026D95PU200-v1/00000/fcb028a5-b0f8-47b0-8109-ce7556b7af35.root',
+   ]
+# max number of events to be processed
+process.maxEvents.input = opts.maxEvents
+# number of events to be skipped
+process.source.skipEvents = cms.untracked.uint32(opts.skipEvents)
 
 ###
 ### analysis sequence
@@ -161,16 +187,16 @@ process.offlinePrimaryVerticesMultiplicity = _hltVertexMultiplicityValueProducer
 process.jmeTriggerNTupleInputsSeq = cms.Sequence(
   #  process.siPixelClusters
   #+ process.hltPixelClustersMultiplicity
-    process.hltOuterTrackerClustersMultiplicity
-  + process.hltPixelTracksMultiplicity
-  + process.hltPixelTracksCleanerMultiplicity
-  + process.hltPixelTracksMergerMultiplicity
-  + process.hltTracksMultiplicity
-  + process.hltComplementTracksMultiplicity
-  + process.hltMixedTracksMultiplicity 
-  + process.hltPixelVerticesMultiplicity
-  + process.hltPrimaryVerticesMultiplicity
-  + process.offlinePrimaryVerticesMultiplicity
+  #   process.hltOuterTrackerClustersMultiplicity
+  # + process.hltPixelTracksMultiplicity
+  # + process.hltPixelTracksCleanerMultiplicity
+  # + process.hltPixelTracksMergerMultiplicity
+  # + process.hltTracksMultiplicity
+  # + process.hltComplementTracksMultiplicity
+  # + process.hltMixedTracksMultiplicity 
+  # + process.hltPixelVerticesMultiplicity
+  process.hltPrimaryVerticesMultiplicity
+#  + process.offlinePrimaryVerticesMultiplicity
   #+ process.qcdWeightPU140 # see above mcStitching
   #+ process.qcdWeightPU200
 )
@@ -334,7 +360,7 @@ if opts.rerunPUPPI:
 
 ## ---- updated JECs from local db file ------------------------------------------
 process.jescESSource = cms.ESSource('PoolDBESSource',
-  _CondDB.clone(connect = 'sqlite_file:'+os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/Phase2Spring24_MC_'+opts.reco+'.db'),
+  _CondDB.clone(connect = 'sqlite_file:Phase2Spring24_MC_'+opts.reco+'.db'),
   toGet = cms.VPSet(
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
@@ -391,17 +417,17 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
     #qcdWeightPU140 = cms.InputTag('qcdWeightPU140'),
     #qcdWeightPU200 = cms.InputTag('qcdWeightPU200'),
 
-    fixedGridRhoFastjetAllTmp = cms.InputTag('fixedGridRhoFastjetAllTmp'),
+    fixedGridRhoFastjetAllTmp = cms.InputTag('hltFixedGridRhoFastjetAll'),
  #   offlineFixedGridRhoFastjetAll = cms.InputTag('fixedGridRhoFastjetAll::RECO'),
     #hltPixelClustersMultiplicity = cms.InputTag('hltPixelClustersMultiplicity'),
-    hltOuterTrackerClustersMultiplicity = cms.InputTag('hltOuterTrackerClustersMultiplicity'),
-    hltPixelTracksMultiplicity = cms.InputTag('hltPixelTracksMultiplicity'),
-    hltPixelTracksCleanerMultiplicity = cms.InputTag('hltPixelTracksCleanerMultiplicity'),
-    hltPixelTracksMergerMultiplicity = cms.InputTag('hltPixelTracksMergerMultiplicity'),
-    hltTracksMultiplicity = cms.InputTag('hltTracksMultiplicity'),
-    hltComplementTracksMultiplicity = cms.InputTag('hltComplementTracksMultiplicity'),
-    hltMixedTracksMultiplicity = cms.InputTag('hltMixedTracksMultiplicity'), 
-    hltPixelVerticesMultiplicity = cms.InputTag('hltPixelVerticesMultiplicity'),
+    # hltOuterTrackerClustersMultiplicity = cms.InputTag('hltOuterTrackerClustersMultiplicity'),
+    # hltPixelTracksMultiplicity = cms.InputTag('hltPixelTracksMultiplicity'),
+    # hltPixelTracksCleanerMultiplicity = cms.InputTag('hltPixelTracksCleanerMultiplicity'),
+    # hltPixelTracksMergerMultiplicity = cms.InputTag('hltPixelTracksMergerMultiplicity'),
+    # hltTracksMultiplicity = cms.InputTag('hltTracksMultiplicity'),
+    # hltComplementTracksMultiplicity = cms.InputTag('hltComplementTracksMultiplicity'),
+    # hltMixedTracksMultiplicity = cms.InputTag('hltMixedTracksMultiplicity'), 
+    # hltPixelVerticesMultiplicity = cms.InputTag('hltPixelVerticesMultiplicity'),
     hltPrimaryVerticesMultiplicity = cms.InputTag('hltPrimaryVerticesMultiplicity'),
 #    offlinePrimaryVerticesMultiplicity = cms.InputTag('offlinePrimaryVerticesMultiplicity'),
   ),
@@ -417,7 +443,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   recoVertexCollections = cms.PSet(
 
 #    hltPixelVertices = cms.InputTag('pixelVertices'),
-     hltPrimaryVertices = cms.InputTag('goodOfflinePrimaryVertices'),
+     hltPrimaryVertices = cms.InputTag('hltGoodOfflinePrimaryVertices'),
 #    hltPrimaryVertices4D = cms.InputTag('goodOfflinePrimaryVertices4D'),
 #    hltUnsortedPrimaryVertices4D = cms.InputTag('unsortedOfflinePrimaryVertices4D'),
 #    offlinePrimaryVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
@@ -663,11 +689,6 @@ if opts.globalTag is not None:
    #process.GlobalTag = GlobalTag(process.GlobalTag, opts.globalTag, '')
    process.GlobalTag.globaltag = cms.string(opts.globalTag)
 
-# max number of events to be processed
-process.maxEvents.input = opts.maxEvents
-
-# number of events to be skipped
-process.source.skipEvents = cms.untracked.uint32(opts.skipEvents)
 
 # multi-threading settings
 process.options.numberOfThreads = max(opts.numThreads, 1)
@@ -951,26 +972,7 @@ if opts.logs:
      ),
    )
 
-# EDM Input Files
-if opts.inputFiles and opts.secondaryInputFiles:
-   process.source.fileNames = opts.inputFiles
-   process.source.secondaryFileNames = opts.secondaryInputFiles
-elif opts.inputFiles:
-   process.source.fileNames = opts.inputFiles
-   process.source.secondaryFileNames = []
-else:
-   process.source.fileNames = [
-   #'/store/mc/Phase2Spring24DIGIRECOMiniAOD/DYToLL_M-10To50_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200ALCA_pilot_140X_mcRun4_realistic_v4-v1/130000/00969257-fdc7-4748-be48-d21074b28511.root'
-   '/store/mc/Phase2Spring24DIGIRECOMiniAOD/TT_TuneCP5_14TeV-POWHEG-Pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU140_Trk1GeV_140X_mcRun4_realistic_v4-v2/70000/04d3b116-8343-4ed2-ac89-a8eee89bb613.root'
-   #'/store/relval/CMSSW_14_0_6/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_140X_mcRun4_realistic_v3_STD_2026D110_PU-v1/2590000/00042ff4-01a3-48a9-b88e-83412b3a65c6.root'
-   #'/store/mc/Phase2Spring23DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_Trk1GeV_131X_mcRun4_realistic_v5-v1/30000/01607282-0427-4687-a122-ef0a41220590.root'
-   #'/store/mc/PhaseIISpring22DRMiniAOD/QCD_Pt-15To3000_TuneCP5_Flat_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_castor_123X_mcRun4_realistic_v11-v1/40000/009871c5-babe-40aa-9e82-7d91f772b3e4.root'
-   #'/store/relval/CMSSW_13_1_0_pre3/RelValQCD_Pt15To7000_Flat_14/MINIAODSIM/PU_131X_mcRun4_realistic_v2_2026D95PU200-v1/00000/f19a93e6-ee91-4f47-81ec-697697c32c66.root'
-   ]
-   process.source.secondaryFileNames = [
-#    '/store/relval/CMSSW_13_1_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_131X_mcRun4_realistic_v2_2026D95PU200-v1/00000/00443525-cac0-4db8-85d2-7c9bd9986266.root',
-# '/store/relval/CMSSW_13_1_0_pre3/RelValQCD_Pt15To7000_Flat_14/GEN-SIM-DIGI-RAW/PU_131X_mcRun4_realistic_v2_2026D95PU200-v1/00000/fcb028a5-b0f8-47b0-8109-ce7556b7af35.root',
-   ]
+
 
 process.prune()
 

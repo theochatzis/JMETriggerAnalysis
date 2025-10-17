@@ -24,7 +24,10 @@ if __name__ == '__main__':
 
    parser.add_argument('-c', '--cfg', dest='cmsRun_cfg', action='store', default=None, required=True,
                        help='path to cmsRun cfg file')
-
+   
+   parser.add_argument('-cl1', '--l1-cfg', dest='cmsRun_level1_cfg', action='store', default=None, required=True,
+                       help='path to cmsRun cfg file of L1 trigger emulator step')
+   
    parser.add_argument('-d', '--dataset', dest='dataset', action='store', default=None, required=True,
                        help='name of input data set in DAS')
 
@@ -32,6 +35,7 @@ if __name__ == '__main__':
                        help='path to output directory')
    parser.add_argument('-fo', '--final-output', dest='final_output', action='store', default='./', required=False,
                        help='path to final output directory i.e. directory with the NTuples')
+   
    parser.add_argument('--customize-cfg', dest='customize_cfg', action='store_true', default=False,
                        help='append minimal customization to cmsRun-cfg required by the driver')
 
@@ -100,7 +104,10 @@ if __name__ == '__main__':
 
    if not os.path.isfile(opts.cmsRun_cfg):
      KILL(log_prx+'invalid path to cmsRun cfg file [-c]: '+str(opts.cmsRun_cfg))
-
+   
+   if (opts.cmsRun_level1_cfg != None) and (not os.path.isfile(opts.cmsRun_cfg)):
+     KILL(log_prx+'invalid path to cmsRun cfg file for Level 1 [-cl1]: '+str(opts.cmsRun_cfg))
+     
    if os.path.exists(opts.output):
      KILL(log_prx+'target path to output directory already exists [-o]: '+str(opts.output))
 
@@ -237,6 +244,10 @@ if __name__ == '__main__':
    ### copy cmsRun-cfg into output directory
    out_cmsRun_cfg = os.path.abspath(OUTPUT_DIR+'/cfg.py')
    EXE('cp '+opts.cmsRun_cfg+' '+out_cmsRun_cfg, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+   out_cmsRun_level1_cfg = ""
+   if opts.cmsRun_level1_cfg != None:
+     out_cmsRun_level1_cfg = os.path.abspath(OUTPUT_DIR+'/L1_cfg.py')
+     EXE('cp '+opts.cmsRun_level1_cfg+' '+out_cmsRun_level1_cfg, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
 
    if opts.customize_cfg:
      with open(out_cmsRun_cfg, 'a') as cfg_file:
@@ -470,29 +481,57 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
              if opts.export_LD_LIBRARY_PATH:
                 if 'LD_LIBRARY_PATH' in os.environ:
                    f_exefile.write('\n'+'export LD_LIBRARY_PATH='+os.environ['LD_LIBRARY_PATH']+'\n')
+             if opts.cmsRun_level1_cfg is None:
+                # cmsRun arguments (cfg-file + options)
+                cmsRun_opts = os.path.relpath(out_cmsRun_cfg, i_OUTPUT_DIR)
+                cmsRun_opts += ' \\\n maxEvents='+str(i_maxEvents)
+                cmsRun_opts += ' \\\n skipEvents='+str(opts.n_events*i_job)
+                cmsRun_opts += ' \\\n inputFiles='+str(i_inputFile)
+                if i_secondaryInputFiles:
+                  cmsRun_opts += ' \\\n secondaryInputFiles='+str(','.join(i_secondaryInputFiles))
+                cmsRun_opts += ' \\\n output='+opts.final_output+'/out'+outputname_postfix_format.format(jobCounter)+'.root'
 
-             # cmsRun arguments (cfg-file + options)
-             cmsRun_opts = os.path.relpath(out_cmsRun_cfg, i_OUTPUT_DIR)
-             cmsRun_opts += ' \\\n maxEvents='+str(i_maxEvents)
-             cmsRun_opts += ' \\\n skipEvents='+str(opts.n_events*i_job)
-             cmsRun_opts += ' \\\n inputFiles='+str(i_inputFile)
-             if i_secondaryInputFiles:
-               cmsRun_opts += ' \\\n secondaryInputFiles='+str(','.join(i_secondaryInputFiles))
-             cmsRun_opts += ' \\\n output='+opts.final_output+'/out'+outputname_postfix_format.format(jobCounter)+'.root'
+                for _tmp in cmsRun_addopts:
+                  cmsRun_opts += ' \\\n '+str(_tmp)
 
-             for _tmp in cmsRun_addopts:
-               cmsRun_opts += ' \\\n '+str(_tmp)
+                i_SHELL_COMMANDS = [
+                  ['set -e'],
+                  ['cd '+os.environ['CMSSW_BASE']+'/src'],
+                  ['eval `scram runtime -sh`'],
+                  ['cd '+i_OUTPUT_DIR],
+                  ['[ ! -f flag.done ] || exit 0'],
+                  ['cmsRun '+cmsRun_opts],
+                  ['touch flag.done'],
+                ]
+             else:
+                # first add L1 and then the HLT step runs on L1 output (all events).
+                cmsRun_opts_L1 = os.path.relpath(out_cmsRun_level1_cfg, i_OUTPUT_DIR)
+                cmsRun_opts_L1 += ' \\\n maxEvents='+str(i_maxEvents)
+                cmsRun_opts_L1 += ' \\\n skipEvents='+str(opts.n_events*i_job)
+                cmsRun_opts_L1 += ' \\\n inputFiles='+str(i_inputFile)
+                l1_output_ = opts.final_output+'/L1_output'+outputname_postfix_format.format(jobCounter)+'.root'
+                cmsRun_opts_L1 += ' \\\n output='+l1_output_
+                if i_secondaryInputFiles:
+                  cmsRun_opts_L1 += ' \\\n secondaryInputFiles='+str(','.join(i_secondaryInputFiles))
+                
+                cmsRun_opts = os.path.relpath(out_cmsRun_cfg, i_OUTPUT_DIR)
+                cmsRun_opts += ' \\\n inputFiles=file:'+str(l1_output_)
+                cmsRun_opts += ' \\\n output='+opts.final_output+'/out'+outputname_postfix_format.format(jobCounter)+'.root'
 
-             i_SHELL_COMMANDS = [
-              ['set -e'],
-              ['cd '+os.environ['CMSSW_BASE']+'/src'],
-              ['eval `scram runtime -sh`'],
-              ['cd '+i_OUTPUT_DIR],
-              ['[ ! -f flag.done ] || exit 0'],
-              ['cmsRun '+cmsRun_opts],
-              ['touch flag.done'],
-             ]
+                for _tmp in cmsRun_addopts:
+                  cmsRun_opts += ' \\\n '+str(_tmp)
 
+                i_SHELL_COMMANDS = [
+                  ['set -e'],
+                  ['cd '+os.environ['CMSSW_BASE']+'/src'],
+                  ['eval `scram runtime -sh`'],
+                  ['cd '+i_OUTPUT_DIR],
+                  ['[ ! -f flag.done ] || exit 0'],
+                  ['cmsRun '+cmsRun_opts_L1], # First run L1 step
+                  ['cmsRun '+cmsRun_opts],
+                  ['rm '+l1_output_], # remove the L1 after done
+                  ['touch flag.done'],
+                ]   
              f_exefile.write('\n'+('\n\n'.join([' \\\n '.join(_tmp) for _tmp in i_SHELL_COMMANDS]))+'\n')
 
          os.chmod(EXEFILE_ABSPATH, os.stat(EXEFILE_ABSPATH).st_mode | stat.S_IEXEC)
