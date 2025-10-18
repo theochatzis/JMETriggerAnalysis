@@ -4,7 +4,7 @@ from CRABClient.UserUtilities import config
 config = config()
 
 # === Given by the user ===
-name='test_crab_new2'
+name='test_crab_prods'
 outputDirName='HLT_Phase2Productions'
 recoOption = 'default'
 dataset='/TT_TuneCP5_14TeV-powheg-pythia8/Phase2Spring24DIGIRECOMiniAOD-PU200_AllTP_140X_mcRun4_realistic_v4-v1/GEN-SIM-DIGI-RAW-MINIAOD'
@@ -30,9 +30,9 @@ config.section_('Data')
 config.Data.publication = False
 config.Data.ignoreLocality = False
 config.Data.inputDataset = dataset
-config.Data.splitting = 'EventAwareLumiBased'
-config.Data.unitsPerJob = 10
-config.Data.totalUnits = 10
+config.Data.splitting = 'FileBased'
+config.Data.unitsPerJob = 1
+config.Data.totalUnits = 1
 
 config.Data.outLFNDirBase = f'/store/user/{os.environ["USER"]}/{outputDirName}/{name}/{recoOption}/'
 
