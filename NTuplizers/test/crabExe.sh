@@ -18,7 +18,7 @@ EOF
 
 echo "Input files: $input_files"
 
-events_per_chunk=2 # 10 events correspond to roughly 110 MB with the skimming of L1 Output (CRAB has max at 120MB disk)
+events_per_chunk=5 # 10 events correspond to roughly 110 MB with the skimming of L1 Output (CRAB has max at 120MB disk)
 out_file="out.root"
 
 # Make sure input_files is readable remotely
