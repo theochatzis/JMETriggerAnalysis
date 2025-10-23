@@ -4,7 +4,7 @@ from CRABClient.UserUtilities import config
 config = config()
 
 # === Given by the user ===
-name='test_crab_prods'
+name='test_crab_filebased'
 outputDirName='HLT_Phase2Productions'
 recoOption = 'default'
 dataset='/TT_TuneCP5_14TeV-powheg-pythia8/Phase2Spring24DIGIRECOMiniAOD-PU200_AllTP_140X_mcRun4_realistic_v4-v1/GEN-SIM-DIGI-RAW-MINIAOD'
@@ -20,7 +20,7 @@ config.General.transferLogs = True
 
 config.section_('JobType')
 config.JobType.pluginName = 'Analysis'
-config.JobType.maxMemoryMB = 5000
+config.JobType.maxMemoryMB = 3000
 config.JobType.psetName = 'PSet.py'
 config.JobType.allowUndistributedCMSSW = True
 config.JobType.scriptExe = 'crabExe.sh'

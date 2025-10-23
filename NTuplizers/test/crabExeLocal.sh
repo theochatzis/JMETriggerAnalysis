@@ -1,24 +1,9 @@
 #!/bin/bash
 set -e
 
-# Extract file list from PSet.py
-echo "Extracting input files from PSet.py..."
-input_files=$(python3 - <<'EOF'
-import importlib.util, sys
-spec = importlib.util.spec_from_file_location("PSet", "PSet.py")
-PSet = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(PSet)
-try:
-    print(','.join(PSet.process.source.fileNames))
-except Exception as e:
-    print(f"ERROR: could not read input files: {e}", file=sys.stderr)
-    sys.exit(1)
-EOF
-)
+input_files=/store/mc/Phase2Spring24DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_AllTP_140X_mcRun4_realistic_v4-v1/2560000/086c6a16-9e7c-455e-83e4-96a0fee12bfb.root
 
-echo "Input files: $input_files"
-
-events_per_chunk=2 # 10 events correspond to roughly 110 MB with the skimming of L1 Output (CRAB has max at 120MB disk)
+events_per_chunk=5 # 10 events correspond to roughly 110 MB with the skimming of L1 Output (CRAB has max at 120MB disk)
 out_file="out.root"
 
 # Make sure input_files is readable remotely
