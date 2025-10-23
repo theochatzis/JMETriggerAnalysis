@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-# Extract file list from PSet.py
 echo "Extracting input files from PSet.py..."
 input_files=$(python3 - <<'EOF'
 import importlib.util, sys
@@ -16,10 +15,23 @@ except Exception as e:
 EOF
 )
 
+out_file=$(python3 - <<'EOF'
+import importlib.util, sys
+spec = importlib.util.spec_from_file_location("PSet", "PSet.py")
+PSet = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(PSet)
+try:
+    print(PSet.process.output.fileName.value())
+except Exception as e:
+    print(f"ERROR: could not find output fileName: {e}", file=sys.stderr)
+    sys.exit(1)
+EOF
+)
+
 echo "Input files: $input_files"
+echo "Output file from PSet: $out_file"
 
 events_per_chunk=5 # 10 events correspond to roughly 110 MB with the skimming of L1 Output (CRAB has max at 120MB disk)
-out_file="out.root"
 
 # Make sure input_files is readable remotely
 input_files=$(echo "$input_files" | sed 's#^/store/#root://xrootd-cms.infn.it//store/#')
@@ -58,5 +70,5 @@ while [ $skip -lt $total_events ]; do
 done
 
 echo "Merging all chunks..."
-hadd -f out.root HLT_chunk_*.root
+hadd -f $out_file HLT_chunk_*.root
 rm -f HLT_chunk_*.root

@@ -69,6 +69,12 @@ opts.register('onlyTriggerResultsInNTuple', False,
               vpo.VarParsing.varType.bool,
               'store only the trigger-results booleans in the output NTuple')
 
+
+opts.register('monitorMemory', False,
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.bool,
+              'show cmsRun memory consumption per event')
+
 opts.register('trkdqm', 0,
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.int,
@@ -122,6 +128,14 @@ elif opts.reco == 'HLT_75e33_time':
 
 else:
   raise RuntimeError('invalid argument for option "reco": "'+opts.reco+'"')
+
+# --- Per-event memory monitoring ---
+if opts.monitorMemory:
+  process.SimpleMemoryCheck = cms.Service(
+      "SimpleMemoryCheck",
+      ignoreTotal = cms.untracked.int32(1),      # ignore total memory, just report RSS delta
+      oncePerEventMode = cms.untracked.bool(True) # print memory usage for every event
+  )
 
 # EDM Input Files
 if opts.inputFiles and opts.secondaryInputFiles:

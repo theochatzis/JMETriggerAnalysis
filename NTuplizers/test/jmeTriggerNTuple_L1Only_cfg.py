@@ -34,6 +34,11 @@ opts.register('wantSummary', False,
               vpo.VarParsing.varType.bool,
               'show cmsRun summary at job completion')
 
+opts.register('monitorMemory', False,
+              vpo.VarParsing.multiplicity.singleton,
+              vpo.VarParsing.varType.bool,
+              'show cmsRun memory consumption per event')
+
 opts.register('globalTag', None,
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
@@ -76,6 +81,13 @@ process.maxEvents.input = opts.maxEvents
 # number of events to be skipped
 process.source.skipEvents = cms.untracked.uint32(opts.skipEvents)
 
+# --- Per-event memory monitoring ---
+if opts.monitorMemory:
+  process.SimpleMemoryCheck = cms.Service(
+      "SimpleMemoryCheck",
+      ignoreTotal = cms.untracked.int32(1),      # ignore total memory, just report RSS delta
+      oncePerEventMode = cms.untracked.bool(True) # print memory usage for every event
+  )
 
 ## update process.GlobalTag.globaltag
 if opts.globalTag is not None:

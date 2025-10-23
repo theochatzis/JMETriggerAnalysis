@@ -9,7 +9,7 @@ process.source = cms.Source(
     # lumisToProcess=cms.untracked.VLuminosityBlockRange("254231:1-254231:24")
 )
 process.source.fileNames = [
-    '../../NanoAOD/test/lzma.root'  # you can change only this line
+    '/store/mc/Phase2Spring24DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_AllTP_140X_mcRun4_realistic_v4-v1/2560000/086c6a16-9e7c-455e-83e4-96a0fee12bfb.root'  # you can change only this line
 ]
 process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(10))
 process.output = cms.OutputModule("PoolOutputModule",
