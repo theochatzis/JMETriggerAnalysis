@@ -509,7 +509,8 @@ process.source.secondaryFileNames = opts.secondaryInputFiles
                 cmsRun_opts_L1 += ' \\\n maxEvents='+str(i_maxEvents)
                 cmsRun_opts_L1 += ' \\\n skipEvents='+str(opts.n_events*i_job)
                 cmsRun_opts_L1 += ' \\\n inputFiles='+str(i_inputFile)
-                l1_output_ = opts.final_output+'/L1_output'+outputname_postfix_format.format(jobCounter)+'.root'
+                #l1_output_ = opts.final_output+'/L1_output'+outputname_postfix_format.format(jobCounter)+'.root'
+                l1_output_ = 'L1_output'+outputname_postfix_format.format(jobCounter)+'.root'
                 cmsRun_opts_L1 += ' \\\n output='+l1_output_
                 if i_secondaryInputFiles:
                   cmsRun_opts_L1 += ' \\\n secondaryInputFiles='+str(','.join(i_secondaryInputFiles))
