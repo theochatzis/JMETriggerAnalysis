@@ -373,17 +373,17 @@ if opts.rerunPUPPI:
   process.schedule_().append(process.offlinePFPuppiPath)
 
 ## ---- updated JECs from local db file ------------------------------------------
-process.jescESSource = cms.ESSource('PoolDBESSource',
-  _CondDB.clone(connect = 'sqlite_file:Phase2Spring24_MC_'+opts.reco+'.db'),
-  toGet = cms.VPSet(
-    cms.PSet(
-      record = cms.string('JetCorrectionsRecord'),
-      tag = cms.string('JetCorrectorParametersCollection_Phase2Spring24_MC_'+opts.reco+'_AK4PFPuppiHLT'),
-      label = cms.untracked.string('AK4PFPuppi'),
-    ),
-  ),
-)
-process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
+# process.jescESSource = cms.ESSource('PoolDBESSource',
+#   _CondDB.clone(connect = 'sqlite_file:Phase2Spring24_MC_'+opts.reco+'.db'),
+#   toGet = cms.VPSet(
+#     cms.PSet(
+#       record = cms.string('JetCorrectionsRecord'),
+#       tag = cms.string('JetCorrectorParametersCollection_Phase2Spring24_MC_'+opts.reco+'_AK4PFPuppiHLT'),
+#       label = cms.untracked.string('AK4PFPuppi'),
+#     ),
+#   ),
+# )
+# process.jescESPrefer = cms.ESPrefer('PoolDBESSource', 'jescESSource')
 # ---------------------------------------------------------------------------------
 
 # JME Trigger NTuple analyzer
