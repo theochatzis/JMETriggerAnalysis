@@ -53,7 +53,7 @@ for sampleKey in ${!samplesMap[@]}; do
   # Note: You can automatically run the jobs after creating them by using --submit option of bdriver
   
   if [[ "${sampleName}" == *"GEN-SIM-DIGI-RAW"* ]]; then
-  bdriver -c .tmp_cfg.py -cl1 .tmp_L1_cfg.py --customize-cfg -m ${numEvents} -n 5 --cpus 1 --memory 2G --time 02:00:00 ${opts} --batch-system htc \
+  bdriver -c .tmp_cfg.py -cl1 .tmp_L1_cfg.py --customize-cfg -m ${numEvents} -n 50 --memory 16G --time 02:00:00 ${opts} --batch-system htc \
   -d ${sampleName} -p 0 -o ${ODIR}/${sampleKey} \
   --final-output ${FINAL_OUTPUT_DIR} \
   --customise-commands \
