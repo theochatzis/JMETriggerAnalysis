@@ -36,6 +36,15 @@ You can test locally by using the `./runLocally.sh` shell script.
 
 For batch submission one can use an executable in CRAB and run the two steps using a crab config file. An example crab config file that can be used is `crab_cfg.py`.
 
+### JECs derivation (Fast JECs iteration)
+Additionally to the JMETriggerAnalysis package, you need to add the JetMETAnalysi using:
+```
+git clone https://github.com/theochatzis/JetMETAnalysis.git -b hlt_run3
+```
+Steps:
+- Make JRA NTuples with `NTuplizers/test/jescJRA_cfg.py`. Example at `runLocallyJRA.sh`.
+- Run the analysis for deriving JECs.
+
 ### Useful links
 - [Phase 2 Google Doc](https://docs.google.com/document/d/1EkEUHmPk8S2aB78rGi_Bh-89ip59Pyg-PclPrdL6iGs/edit?usp=sharing)
 - [HLT Phase2 documentation](https://cmshltupgrade.docs.cern.ch/)
