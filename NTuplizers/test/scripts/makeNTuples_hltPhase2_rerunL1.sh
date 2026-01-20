@@ -56,6 +56,7 @@ for sampleKey in ${!samplesMap[@]}; do
   bdriver -c .tmp_cfg.py -cl1 .tmp_L1_cfg.py --customize-cfg -m ${numEvents} -n 50 --memory 16G --time 02:00:00 ${opts} --batch-system htc \
   -d ${sampleName} -p 0 -o ${ODIR}/${sampleKey} \
   --final-output ${FINAL_OUTPUT_DIR} \
+  --submit \
   --customise-commands \
   '# output [TFileService]' \
   "if hasattr(process, 'TFileService'):" \
