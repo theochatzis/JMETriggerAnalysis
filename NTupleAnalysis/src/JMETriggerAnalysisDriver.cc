@@ -996,6 +996,7 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
     dirPrefix += "/";
   }
 
+
   // adding the simulated number of PU in the variables
   // auto const simNPU = this->value<int>("pileupInfo_BX0_numPUInteractions"); 
   
@@ -1022,7 +1023,6 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
   auto const* v_photonEnergyFraction(this->vector_ptr<float>(fhData.jetCollection + "_photonEnergyFraction"));
   auto const* v_muonEnergyFraction(this->vector_ptr<float>(fhData.jetCollection + "_muonEnergyFraction"));
   
-  
   if (not(v_pt and v_eta and v_phi and v_mass)) {
     if (verbosity_ >= 0) {
       std::cout << "JMETriggerAnalysisDriver::fillHistograms_Jets(\"" << dir << "\", const fillHistoDataJets&) -- "
@@ -1031,15 +1031,20 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
     }
     return;
   }
-  
+
+
   // Fill histograms based on the category of the leading jet only.
-  for (auto const& catLabel : jetCategoryLabels_) {
-    if (jetBelongsToCategory(catLabel, v_pt->at(0), std::abs(v_eta->at(0)), v_phi->at(0), v_eta->at(0))) {
-      H1(dirPrefix + fhData.jetCollection + "_leadJet" + catLabel + "_pt0")->Fill(v_pt->at(0), weight);
+  if (v_pt -> size() > 0){
+    for (auto const& catLabel : jetCategoryLabels_) {
+      if (jetBelongsToCategory(catLabel, v_pt->at(0), std::abs(v_eta->at(0)), v_phi->at(0), v_eta->at(0))) {
+        H1(dirPrefix + fhData.jetCollection + "_leadJet" + catLabel + "_pt0")->Fill(v_pt->at(0), weight);
+      }
     }
   }
+
   
   // Fill histograms based on jet category.
+
   for (auto const& catLabel : jetCategoryLabels_) {
     std::vector<size_t> jetIndices;
     jetIndices.reserve(v_pt->size());
@@ -1152,7 +1157,6 @@ void JMETriggerAnalysisDriver::fillHistograms_Jets(const std::string& dir,
   if(lightVersion){ // stop here in light version, do not perform any matching etc.
     return;
   }
-
   for (auto const& fhDataMatch : fhData.matches) {
     auto const matchLabel(fhDataMatch.label);
     auto const matchJetColl(fhDataMatch.jetCollection);
