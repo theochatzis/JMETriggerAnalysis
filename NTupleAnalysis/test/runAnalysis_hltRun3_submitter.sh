@@ -9,9 +9,17 @@ source env.sh
 #                                            | |              
 #          
 # Default values
-BASE_DIR=/eos/user/t/tchatzis/JetTriggers_DPNote/
-OUT_EOS_DIR=DPNoteSubmitterV3
-JOBS_DIR_NAME=DPNoteSubmitterV3
+#BASE_DIR=/eos/user/t/tchatzis/CoffTeaNTuples_v15011_Run2024I_Run2025CDEF_20251009T1624/
+BASE_DIR=/eos/user/b/blehtela/HFscale26Nov2025evaluation_2025Dec01/
+JOBS_DIR_NAME=pelekanos_HFscale2025Dec01 #kukuvagiaNov13_2025FG
+
+# BASE_DIR=/eos/user/t/tchatzis/CoffTeaNTuples_v15011_Run2022CDEFG_Run2023CDE_Run2024CDEFGHI_Run2025CD_20250812T2315/
+# OUT_EOS_DIR=testPuppiBetty
+# JOBS_DIR_NAME=testPuppiBetty
+
+#BASE_DIR=/eos/user/t/tchatzis/JetTriggersNote_LatestNTuples/
+#OUT_EOS_DIR=DPNoteSubmitterSepV2
+#JOBS_DIR_NAME=DPNoteSubmitterSepV2
 
 # Flags for condor jobs
 monitor_jobs=0
@@ -19,10 +27,43 @@ resubmit_jobs=0
 
 # Define dataKeys manually here if you want
 dataKeys=(
-  #JetMET0_Run2022CV1
+HFscale26Nov2025evaluation_2025Dec01_Muon0_default
+HFscale26Nov2025evaluation_2025Dec01_Muon0_HFscaleNov2025
+# Muon0_Run2025FV1
+# Muon1_Run2025FV1
+# JetMET0_Run2025FV1
+# JetMET1_Run2025FV1
+# Muon0_Run2025GV1
+# Muon1_Run2025GV1
+# JetMET0_Run2025GV1
+# JetMET1_Run2025GV1
+# Muon0_Run2024IV1
+# Muon1_Run2024IV1
+# JetMET0_Run2024IV1
+# JetMET1_Run2024IV1
+# Muon0_Run2025CV1
+# Muon1_Run2025CV1
+# JetMET0_Run2025CV1
+# JetMET1_Run2025CV1
+# Muon0_Run2025CV2
+# Muon1_Run2025CV2
+# JetMET0_Run2025CV2
+# JetMET1_Run2025CV2
+# Muon0_Run2025D
+# Muon1_Run2025D
+# JetMET0_Run2025D
+# JetMET1_Run2025D
+# Muon0_Run2025EV1
+# Muon1_Run2025EV1
+# JetMET0_Run2025EV1
+# JetMET1_Run2025EV1
+# Muon0_Run2025FV1
+# Muon1_Run2025FV1
+# JetMET0_Run2025FV1
+# JetMET1_Run2025FV1
 )
 
-DRIVER_CONFIG=efficiencies_miniaod
+DRIVER_CONFIG=efficiencies_raw #efficiencies_2025_miniaod
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case $1 in

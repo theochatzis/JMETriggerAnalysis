@@ -228,7 +228,7 @@ def efficiencies_plotter(file_name, hist_label_pairs, output_name="output_effici
             x0=[1.0, threshold_value, 0.1*threshold_value],
             args=(x_fit, k, N, erf_turnon),
             method="L-BFGS-B",
-            bounds=[(0.9, 1.0), (0.5*threshold_value, 1.5*threshold_value), (0.001*threshold_value, 0.5*threshold_value)]
+            bounds=[(0.95, 1.0), (0.5*threshold_value, 1.5*threshold_value), (0.001*threshold_value, 0.5*threshold_value)]
         )
         
         popt = res.x # results of fitted params

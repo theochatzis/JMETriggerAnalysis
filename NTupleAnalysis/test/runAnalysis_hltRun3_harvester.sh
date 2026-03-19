@@ -9,7 +9,7 @@ source env.sh
 #                                            | |              
 #                                            |_|              
 # Default values
-OUT_EOS_DIR="/DPNoteSubmitter/"
+OUT_EOS_DIR=/HFscaleDec01/HFscale26Nov2025evaluation_2025Dec01_Muon0_HFscaleNov2025/ #"/DPNoteSubmitter/"
 OUTPUT_FILE_NAME="data"
 SKIP_HARVEST=false
 
@@ -60,7 +60,7 @@ fi
 
 ## Merge Jobs with hadd
 echo "Merging all ROOT files into: ${INPUT_DIR}/${OUTPUT_FILE_NAME}.root"
-hadd "${INPUT_DIR}/${OUTPUT_FILE_NAME}.root" $ROOT_FILES
+hadd -j 8 "${INPUT_DIR}/${OUTPUT_FILE_NAME}.root" $ROOT_FILES
 
 ## Harvest i.e. create responses, matching efficiency etc
 if [ "$SKIP_HARVEST" = true ]; then

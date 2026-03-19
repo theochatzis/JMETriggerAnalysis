@@ -15,7 +15,7 @@ jetCategoryLabels:
 runPeriods: []
 
 # with this provides very minimal output for efficiencies calculations only. It will contain only offline quantities in the output directories with minimal info, needed for efficiencies.
-lightVersion: true 
+lightVersion: false 
 # this will skip the NoSelection category. In case of MC/re-running from RAW can be set to False to provide denominators for efficiencies/unbiased selections for performances.
 useOnlyTriggers: false
 # this will use only run periods definitions for categories selection. For MC should be deactivated.
@@ -27,6 +27,10 @@ jettriggers:
   - HLT_PFJet140
   - HLT_PFJet320
   - HLT_PFJet500
+  - HLT_PFJetFwd60
+  - HLT_PFJetFwd80
+  - HLT_PFJetFwd140
+  - HLT_PFJetFwd320
 
 httriggers:
   - HLT_PFHT1050
