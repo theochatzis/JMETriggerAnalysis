@@ -2,11 +2,11 @@
 source env.sh
 
 # directory with input(s) 
-INPDIR=/eos/user/t/tchatzis/samples2023/
+INPDIR=/eos/user/t/tchatzis/HFscaleDec01/
 
 
 #OUTDIR=./plots_test_winter24
-OUTDIR=/eos/user/t/tchatzis/plots_calo_thresholds/
+OUTDIR=/eos/user/t/tchatzis/plots_HFscaleDec01/
 
 
 
@@ -15,9 +15,9 @@ rm -rf ${OUTDIR}
 
 jmePlots.py -k version_check_data_new \
 -o ${OUTDIR} \
--i /eos/user/t/tchatzis/samples2023/test_calojet_default/harvesting/data.root:'Default CaloTower':1:1:20 \
-   /eos/user/t/tchatzis/samples2023/test_calojet_ecal_thresh/harvesting/data.root:'PF RecHit Threshold':632:1:20 \
--l '#font[61]{CMS} #font[52]{Run-3 Data} Muon Dataset (Era G)'
+-i /eos/user/t/tchatzis/HFscaleDec01/HFscale26Nov2025evaluation_2025Dec01_Muon0_default/harvesting/data.root:'Default':1:1:20 \
+   /eos/user/t/tchatzis/HFscaleDec01/HFscale26Nov2025evaluation_2025Dec01_Muon0_HFscaleNov2025/harvesting/data.root:'HF scale update':632:1:20 \
+-l '#font[61]{CMS} #font[52]{Run-3 Data} Muon Dataset 2025 Era G'
 
 # jmePlots.py -k version_check_data_new \
 # -o ${OUTDIR} \
@@ -35,25 +35,10 @@ rm ${OUTDIR}/NoSelection/*mass*.png
 Regions=(
 EtaIncl_
 HB_
-HBPt0_
-HBPt1_
-HBPt2_
-HBPt3_
-HEPt0_
-HEPt1_
-HEPt2_
-HEPt3_
+HE_
 HE1_
 HE2_
 HF_
-# BPix_plus4_
-# BPix_minus4_
-# BPix_plus8_
-# BPix_minus8_
-BPix_
-BPixVeto_
-FPix_
-FPixVeto_
 )
 
 for region_name in "${Regions[@]}"; do

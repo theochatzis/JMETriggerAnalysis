@@ -26,6 +26,14 @@ runPeriods:
   - 2025CV2
   - 2025D_beforeIBCoff
   - 2025D_afterIBCoff
+  - 2025F_beforePhiSymmetry
+  - 2025F_afterPhiSymmetry
+  - 2025F_phiSymmetryRollback
+  - 2025F_beforeHV
+  - 2025F_afterHV
+  - 2025G
+  - 2025G_beforeDigiMorph
+  - 2025G_afterDigiMorph
 # - 2022
 # - 2023
 # - 2024

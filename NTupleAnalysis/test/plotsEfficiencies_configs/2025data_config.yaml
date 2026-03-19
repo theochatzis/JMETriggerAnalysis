@@ -1,16 +1,17 @@
 triggers_list:
+  - HLT_PFMET120_PFMHT120_IDTight
+  - HLT_PFMETNoMu120_PFMHTNoMu120_IDTight
   - HLT_PFJet60
+  - HLT_PFJet140
   - HLT_PFJet320
   - HLT_PFJet500
   - HLT_PFJetFwd60
+  - HLT_PFJetFwd140
   - HLT_PFJetFwd320
   - HLT_PFJetFwd400
   - HLT_PFHT510
   - HLT_PFHT780
   - HLT_PFHT1050
-  - HLT_PFMET120_PFMHT120_IDTight
-  - HLT_PFMETNoMu120_PFMHTNoMu120_IDTight
-
 
 
 comparisonPeriods:
@@ -29,6 +30,9 @@ comparisonPeriods:
       lumi: 0.0
     2025F:
       label: "2025F"
+      lumi: 0.0
+    2025G:
+      label: "2025G"
       lumi: 0.0
   2025C_v1vsv2:
     2025CV1: 
@@ -50,6 +54,40 @@ comparisonPeriods:
     2025D: 
       label: "2025D"
       lumi: 0.0
+  eraF_HCALPhisymmetry:
+    2025F_beforePhiSymmetry:
+      label: "before HCAL phi sym"
+      lumi: 0.0
+    2025F_afterPhiSymmetry:
+      label: "after HCAL phi sym"
+      lumi: 0.0
+    2025F_phiSymmetryRollback:
+      label: "phi sym rollback"
+      lumi: 0.0
+    2025F:
+      label: "2025F"
+      lumi: 0.0
+  eraF_HVchange:
+    2025F_beforeHV:
+      label: "before HV"
+      lumi: 0.0
+    2025F_afterHV:
+      label: "after HV"
+      lumi: 0.0
+    2025F:
+      label: "2025F"
+      lumi: 0.0
+  DigiMorph_update:
+    2025G:
+      label: "2025G full"
+      lumi: 0.0
+    2025G_beforeDigiMorph:
+      label: "2025G before DigiMorph"
+      lumi: 0.0
+    2025G_afterDigiMorph:
+      label: "2025G after DigiMorph"
+      lumi: 0.0
+      
 
 # years_comparison:
 #   2022: "2022"

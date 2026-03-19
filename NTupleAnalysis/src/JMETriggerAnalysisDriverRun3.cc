@@ -539,7 +539,7 @@ void JMETriggerAnalysisDriverRun3::analyze(){
     }
   }
 
-
+  
   // AK8 Jets
   const float minAK8JetPt(30.);
   const float minAK8JetPtRef(20.);
@@ -690,11 +690,19 @@ bool JMETriggerAnalysisDriverRun3::runPeriod(std::string const& key) const {
   else if ( key == "2025C" ) return ( runNumber_ > 392159	and runNumber_ < 393609); 
   else if ( key == "2025D" ) return ( runNumber_ > 394286 and runNumber_ < 395967);
   else if ( key == "2025E" ) return ( runNumber_ > 395967 and runNumber_ < 396598);
-  else if ( key == "2025F" ) return ( runNumber_ > 396598 );
+  else if ( key == "2025F" ) return ( runNumber_ > 396598 and runNumber_ < 397854);
+  else if ( key == "2025G" ) return ( runNumber_ > 397854);
   else if ( key == "2025CV1" ) return ( runNumber_ > 392159	and runNumber_ < 393108); 
   else if ( key == "2025CV2" ) return ( runNumber_ > 393111	and runNumber_ < 393609 ); // In CV2 create a drop in responses in HF 
   else if ( key == "2025D_beforeIBCoff" ) return ( runNumber_ > 394286 and runNumber_ < 394790); // big MET rate drop, small rate drop in Fwd  // Prompt JECs update start of Era D: 394431
   else if ( key == "2025D_afterIBCoff") return ( runNumber_ > 394790 and runNumber_ < 395967 ); 
+  else if ( key == "2025F_beforePhiSymmetry") return ( runNumber_ > 396598 and runNumber_ < 396886 );
+  else if ( key == "2025F_afterPhiSymmetry") return ( runNumber_ > 396886 and runNumber_ <  397081 ); 
+  else if ( key == "2025F_phiSymmetryRollback") return ( runNumber_ > 397611 ); 
+  else if ( key == "2025F_beforeHV") return ( runNumber_ > 396886 and runNumber_ <  397081 ); 
+  else if ( key == "2025F_afterHV") return ( runNumber_ > 397081 and runNumber_ <  397611 ); 
+  else if ( key == "2025G_beforeDigiMorph" ) return ( runNumber_ > 397854 and runNumber_ <  398288 );
+  else if ( key == "2025G_afterDigiMorph" ) return ( runNumber_ > 398288 );
   else
     throw std::runtime_error("JMETriggerAnalysisDriverRun3::runPeriod(\""+key+"\") -- invalid key");
   return false;
